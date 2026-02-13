@@ -42,16 +42,14 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
         const payload = { ...data, balance: parseAmount(data.balance).toString() };
 
         if (editingWallet) {
-            put(route('wallets.update', editingWallet.id), {
-                data: payload,
+            router.put(route('wallets.update', editingWallet.id), payload, {
                 onSuccess: () => {
                     setIsModalOpen(false); reset(); setEditingWallet(null);
                     toast.success('Dompet berhasil diperbarui!');
                 }
             });
         } else {
-            post(route('wallets.store'), {
-                data: payload,
+            router.post(route('wallets.store'), payload, {
                 onSuccess: () => {
                     setIsModalOpen(false); reset();
                     toast.success('Dompet berhasil ditambahkan!');
