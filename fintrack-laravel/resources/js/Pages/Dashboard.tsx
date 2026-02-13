@@ -111,6 +111,8 @@ export default function Dashboard({
         e.preventDefault();
         const payload = { ...data, type: inputType, amount: parseAmount(data.amount).toString() };
         router.post(route('transactions.store'), payload, {
+            preserveState: true,
+            preserveScroll: true,
             onSuccess: () => {
                 setIsAddModalOpen(false);
                 reset();

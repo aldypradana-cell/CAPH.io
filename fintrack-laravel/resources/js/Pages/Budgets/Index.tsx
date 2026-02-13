@@ -169,7 +169,16 @@ export default function BudgetsIndex({ auth, budgets, categories }: PageProps<{ 
                         <p className="text-sm text-center text-slate-500 mb-6 px-4">Tindakan ini tidak dapat dibatalkan.</p>
                         <div className="flex gap-3">
                             <button onClick={() => setDeleteId(null)} className="flex-1 py-3 rounded-xl font-bold text-slate-600 bg-slate-100 dark:bg-slate-800 dark:text-slate-300 transition-colors">Batal</button>
-                            <button onClick={() => { router.delete(route('budgets.destroy', deleteId), { onSuccess: () => toast.success('Dihapus!') }); setDeleteId(null); }} className="flex-1 py-3 rounded-xl font-bold text-white bg-red-600 shadow-lg shadow-red-500/30 transition-colors">Ya, Hapus</button>
+                            <button onClick={() => {
+                                router.delete(route('budgets.destroy', deleteId), {
+                                    preserveState: true,
+                                    preserveScroll: true,
+                                    onSuccess: () => {
+                                        setDeleteId(null);
+                                        toast.success('Dihapus!');
+                                    }
+                                });
+                            }} className="flex-1 py-3 rounded-xl font-bold text-white bg-red-600 shadow-lg shadow-red-500/30 transition-colors">Ya, Hapus</button>
                         </div>
                     </div>
                 </div>

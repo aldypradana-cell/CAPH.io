@@ -77,7 +77,7 @@ class DashboardController extends Controller
                 'id' => $t->id,
                 'date' => $t->date->format('Y-m-d'),
                 'description' => $t->description,
-                'amount' => $t->amount,
+                'amount' => (float) $t->amount,
                 'type' => $t->type,
                 'category' => $t->category,
                 'wallet' => $t->wallet ? ['id' => $t->wallet->id, 'name' => $t->wallet->name] : null,

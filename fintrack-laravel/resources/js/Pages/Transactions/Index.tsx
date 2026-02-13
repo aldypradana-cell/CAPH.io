@@ -99,14 +99,7 @@ export default function TransactionsIndex({
         setIsModalOpen(true);
     };
 
-    const confirmDelete = () => {
-        if (deleteId) {
-            router.delete(route('transactions.destroy', deleteId), {
-                onSuccess: () => toast.success('Transaksi berhasil dihapus')
-            });
-            setDeleteId(null);
-        }
-    };
+
 
     const applyFilters = () => {
         router.get(route('transactions.index'), {
@@ -329,9 +322,16 @@ export default function TransactionsIndex({
                             <button onClick={() => setDeleteId(null)} className="flex-1 py-3 rounded-xl font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
                                 Batal
                             </button>
-                            <button onClick={confirmDelete} className="flex-1 py-3 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 shadow-lg shadow-red-500/30 transition-colors">
-                                Ya, Hapus
-                            </button>
+                            <button onClick={() => {
+                                router.delete(route('transactions.destroy', deleteId), {
+                                    preserveState: true,
+                                    preserveScroll: true,
+                                    onSuccess: () => {
+                                        setDeleteId(null);
+                                        toast.success('Transaksi berhasil dihapus');
+                                    }
+                                });
+                            }} className="flex-1 py-3 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 shadow-lg shadow-red-500/30 transition-colors">Ya, Hapus</button>
                         </div>
                     </div>
                 </div>
