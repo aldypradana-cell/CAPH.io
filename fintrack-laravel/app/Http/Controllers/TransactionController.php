@@ -7,6 +7,7 @@ use App\Models\Wallet;
 use App\Models\Category;
 use App\Services\TransactionService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class TransactionController extends Controller
@@ -50,9 +51,11 @@ class TransactionController extends Controller
 
     public function store(Request $request)
     {
+        $userId = $request->user()->id;
+        
         $validated = $request->validate([
-            'wallet_id' => 'required|exists:wallets,id',
-            'to_wallet_id' => 'nullable|exists:wallets,id',
+            'wallet_id' => ['required', Rule::exists('wallets', 'id')->where('user_id', $userId)],
+            'to_wallet_id' => ['nullable', Rule::exists('wallets', 'id')->where('user_id', $userId)],
             'date' => 'required|date',
             'description' => 'required|string|max:255',
             'amount' => 'required|numeric|min:0',
@@ -76,9 +79,11 @@ class TransactionController extends Controller
             abort(403);
         }
         
+        $userId = $request->user()->id;
+
         $validated = $request->validate([
-            'wallet_id' => 'required|exists:wallets,id',
-            'to_wallet_id' => 'nullable|exists:wallets,id',
+            'wallet_id' => ['required', Rule::exists('wallets', 'id')->where('user_id', $userId)],
+            'to_wallet_id' => ['nullable', Rule::exists('wallets', 'id')->where('user_id', $userId)],
             'date' => 'required|date',
             'description' => 'required|string|max:255',
             'amount' => 'required|numeric|min:0',
