@@ -37,23 +37,19 @@ export default function SmartEntryIndex({ auth, wallets, categories }: PageProps
         setIsParsing(true);
         setError(null);
         try {
-            const response = await fetch(route('smart-entry.parse'), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                },
-                body: JSON.stringify({ input }),
-            });
-            const result = await response.json();
+            // Using axios instead of fetch to handle CSRF and cookies automatically
+            const response = await window.axios.post(route('smart-entry.parse'), { input });
+
+            const result = response.data;
             if (result.success) {
                 setParsedTransactions(result.transactions);
                 toast.success(`${result.transactions.length} transaksi terdeteksi!`);
             } else {
                 setError(result.message || 'Gagal memproses input');
             }
-        } catch (e) {
-            setError('Terjadi kesalahan. Silakan coba lagi.');
+        } catch (e: any) {
+            console.error(e);
+            setError(e.response?.data?.message || 'Terjadi kesalahan. Silakan coba lagi.');
         } finally {
             setIsParsing(false);
         }

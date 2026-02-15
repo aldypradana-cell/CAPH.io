@@ -55,7 +55,7 @@ class InsightsController extends Controller
 
             return response()->json([
                 'success' => true,
-                'advice' => $advice,
+                'insight' => $advice,
             ]);
         } catch (\Exception $e) {
             return response()->json([

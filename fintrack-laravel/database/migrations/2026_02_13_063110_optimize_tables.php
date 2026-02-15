@@ -15,6 +15,9 @@ return new class extends Migration
             if (!Schema::hasColumn('transactions', 'deleted_at')) {
                 $table->softDeletes();
             }
+        });
+
+        Schema::table('transactions', function (Blueprint $table) {
             // Use unique names to avoid conflicts with existing indexes
             // We use a try-catch equivalent by checking implied logic or just custom names
             // If the index exists under a different name, adding another is fine (just redundant)
@@ -29,6 +32,9 @@ return new class extends Migration
             if (!Schema::hasColumn('debts', 'deleted_at')) {
                 $table->softDeletes();
             }
+        });
+
+        Schema::table('debts', function (Blueprint $table) {
             try { $table->index(['user_id', 'type', 'is_paid'], 'idx_opt_debt_status'); } catch (\Exception $e) {}
         });
 

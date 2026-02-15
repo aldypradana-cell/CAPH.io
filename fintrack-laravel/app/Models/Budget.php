@@ -32,4 +32,13 @@ class Budget extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function transactions()
+    {
+        // Relasi ke transaksi berdasarkan kategori
+        // Kita juga perlu memastikan transaksi tersebut milik user yang sama
+        // Namun di level relasi model ini, kita hanya menghubungkan via category
+        // Filtering user_id sebaiknya dilakukan saat eager loading atau query
+        return $this->hasMany(Transaction::class, 'category', 'category');
+    }
 }

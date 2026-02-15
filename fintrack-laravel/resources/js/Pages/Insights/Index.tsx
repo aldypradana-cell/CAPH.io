@@ -13,22 +13,19 @@ export default function InsightsIndex({ auth }: PageProps) {
     const handleGenerate = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(route('insights.generate'), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                },
-            });
-            const result = await response.json();
+            // Using axios for automatic CSRF handling
+            const response = await window.axios.post(route('insights.generate'));
+
+            const result = response.data;
             if (result.success) {
                 setInsight(result.insight);
                 toast.success('Analisis selesai!');
             } else {
                 toast.error(result.message || 'Gagal menghasilkan analisis');
             }
-        } catch (e) {
-            toast.error('Terjadi kesalahan');
+        } catch (e: any) {
+            console.error(e);
+            toast.error(e.response?.data?.message || 'Terjadi kesalahan');
         } finally {
             setIsLoading(false);
         }

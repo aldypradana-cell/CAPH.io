@@ -6,6 +6,9 @@ use App\Models\User;
 use Gemini\Laravel\Facades\Gemini;
 use Gemini\Data\GenerationConfig;
 use Gemini\Enums\ModelType;
+use Gemini\Enums\ResponseMimeType;
+use Gemini\Data\Schema;
+use Gemini\Enums\DataType;
 use Illuminate\Support\Collection;
 
 class GeminiService
@@ -28,10 +31,24 @@ Kembalikan array objek JSON dengan properti:
 - category (string): Kategori yang paling relevan (Contoh: Makanan, Transportasi, Gaji, dll)
 - date (string): Tanggal dalam format ISO (YYYY-MM-DD). Jika tidak disebutkan, gunakan tanggal hari ini: {$today}.";
 
-            $result = Gemini::generativeModel(ModelType::GEMINI_PRO)
+            $result = Gemini::generativeModel(env('GEMINI_MODEL', 'gemini-2.5-flash'))
                 ->withGenerationConfig(
                     new GenerationConfig(
-                        responseMimeType: 'application/json'
+                        responseMimeType: ResponseMimeType::APPLICATION_JSON,
+                        responseSchema: new Schema(
+                            type: DataType::ARRAY,
+                            items: new Schema(
+                                type: DataType::OBJECT,
+                                properties: [
+                                    'description' => new Schema(type: DataType::STRING),
+                                    'amount' => new Schema(type: DataType::NUMBER),
+                                    'type' => new Schema(type: DataType::STRING, enum: ['INCOME', 'EXPENSE']),
+                                    'category' => new Schema(type: DataType::STRING),
+                                    'date' => new Schema(type: DataType::STRING),
+                                ],
+                                required: ['description', 'amount', 'type', 'category', 'date']
+                            )
+                        )
                     )
                 )
                 ->generateContent($prompt);
@@ -116,7 +133,7 @@ Poin-poin analisis yang WAJIB ada:
    - Bandingkan angka tersebut dengan sisa uang (surplus) bulanan rata-rata user saat ini.
 5. **3 Rekomendasi Konkret**: Langkah nyata untuk memperbaiki keuangan atau mencapai target.";
 
-            $result = Gemini::generativeModel(ModelType::GEMINI_PRO)
+            $result = Gemini::generativeModel(env('GEMINI_MODEL', 'gemini-1.5-flash'))
                 ->generateContent($prompt);
 
             return $result->text() ?? 'Maaf, saya tidak dapat menganalisis data saat ini.';

@@ -13,9 +13,17 @@ class BudgetController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $budgets = Budget::where('user_id', $user->id)->get();
+        
+        // Eager load transactions that match the budget's category and belong to the user
+        // We filter by 'EXPENSE' type here as well to reduce data size
+        $budgets = Budget::where('user_id', $user->id)
+            ->with(['transactions' => function ($query) use ($user) {
+                $query->where('user_id', $user->id)
+                      ->where('type', 'EXPENSE');
+            }])
+            ->get();
 
-        $budgetsWithProgress = $budgets->map(function ($budget) use ($user) {
+        $budgetsWithProgress = $budgets->map(function ($budget) {
             $now = Carbon::now();
             $start = null;
             $end = null;
@@ -32,11 +40,12 @@ class BudgetController extends Controller
                 $end = $now->copy()->endOfMonth()->format('Y-m-d');
             }
 
-            $spent = Transaction::forUser($user->id)
-                ->byType('EXPENSE')
-                ->where('category', $budget->category)
-                ->inDateRange($start, $end)
-                ->sum('amount');
+            // Filter transactions eagerly loaded
+            // We use filter explicitly to handle Carbon date comparison with string dates safely
+            $spent = $budget->transactions->filter(function ($transaction) use ($start, $end) {
+                return $transaction->date->format('Y-m-d') >= $start && 
+                       $transaction->date->format('Y-m-d') <= $end;
+            })->sum('amount');
 
             return [
                 'id' => $budget->id,

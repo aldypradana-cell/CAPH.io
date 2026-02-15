@@ -13,9 +13,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('debts', function (Blueprint $table) {
-            // Using DB::statement because doctrine/dbal is not installed
-            DB::statement('ALTER TABLE debts MODIFY description TEXT NULL');
-            DB::statement('ALTER TABLE debts MODIFY due_date DATE NULL');
+            $table->text('description')->nullable()->change();
+            $table->date('due_date')->nullable()->change();
         });
     }
 
@@ -27,8 +26,8 @@ return new class extends Migration
         Schema::table('debts', function (Blueprint $table) {
             DB::statement('UPDATE debts SET description="" WHERE description IS NULL');
             DB::statement('UPDATE debts SET due_date=CURRENT_DATE WHERE due_date IS NULL');
-            DB::statement('ALTER TABLE debts MODIFY description TEXT NOT NULL');
-            DB::statement('ALTER TABLE debts MODIFY due_date DATE NOT NULL');
+            $table->text('description')->nullable(false)->change();
+            $table->date('due_date')->nullable(false)->change();
         });
     }
 };
