@@ -133,14 +133,64 @@ Poin-poin analisis yang WAJIB ada:
    - Bandingkan angka tersebut dengan sisa uang (surplus) bulanan rata-rata user saat ini.
 5. **3 Rekomendasi Konkret**: Langkah nyata untuk memperbaiki keuangan atau mencapai target.";
 
-            $result = Gemini::generativeModel(env('GEMINI_MODEL', 'gemini-1.5-flash'))
-                ->generateContent($prompt);
+            $apiKey = env('GEMINI_API_KEY');
+            $model = env('GEMINI_MODEL', 'gemini-1.5-flash');
+            $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}";
 
-            return $result->text() ?? 'Maaf, saya tidak dapat menganalisis data saat ini.';
+            $payload = [
+                'contents' => [
+                    [
+                        'parts' => [
+                            ['text' => $prompt]
+                        ]
+                    ]
+                ]
+            ];
+
+            $options = [
+                'http' => [
+                    'header'  => "Content-type: application/json\r\n",
+                    'method'  => 'POST',
+                    'content' => json_encode($payload),
+                    'ignore_errors' => true,
+                    'timeout' => 60
+                ],
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                ],
+                'socket' => [
+                    'bindto' => '0:0' // Force IPv4
+                ]
+            ];
+
+            $context  = stream_context_create($options);
+            $response = file_get_contents($url, false, $context);
+
+            if ($response === false) {
+                 \Log::error('Gemini connection failed');
+                 return 'Gagal menghubungkan ke server AI.';
+            }
+
+            $data = json_decode($response, true);
+            
+            // Log error response from API
+            if (isset($data['error'])) {
+                 \Log::error('Gemini API Error: ' . json_encode($data['error']));
+                 return 'AI Error: ' . ($data['error']['message'] ?? 'Unknown');
+            }
+
+            $text = $data['candidates'][0]['content']['parts'][0]['text'] ?? null;
+            
+            if (!$text) {
+                \Log::warning('Gemini empty response: ' . $response);
+            }
+
+            return $text ?? 'Maaf, saya tidak dapat menganalisis data saat ini.';
 
         } catch (\Exception $e) {
-            \Log::error('Gemini AI advice error: ' . $e->getMessage());
-            return 'Terjadi kesalahan saat menghubungkan ke AI. Silakan coba lagi nanti.';
+            \Log::error('Gemini AI advice exception: ' . $e->getMessage());
+            return 'Terjadi kesalahan sistem saat analisis.';
         }
     }
 }

@@ -125,4 +125,70 @@ NO explanations. JUST JSON.";
             throw new \Exception('Gagal memproses dengan Groq AI: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Analyze financial data and provide insights
+     */
+    public function analyzeFinancials(\App\Models\User $user, $summary, $profileContext): string
+    {
+        try {
+            $systemPrompt = "You are a friendly and strategic Financial Planner. 
+Analyze the provided financial data and user profile.
+Return the analysis in **Indonesian (Bahasa Indonesia)** using valid **Markdown**.
+Keep it concise, encouraging, and actionable.
+
+Structure your response sections as follows:
+1. **🔍 Cashflow Health**: Brief comment on Income vs Expense.
+2. **🛡️ Risk & Emergency**: Assessment based on their job stability vs spending.
+3. **💡 Smart Insight**: One key observation about their spending habits (e.g., spending too much on Coffee).
+4. **🚀 3 Actionable Tips**: Three bullet points of what to do next to improve.
+
+Do not use H1 (#). Start with H2 (##) or bold text.";
+
+            $userPrompt = "Profile:\n{$profileContext}\n\nRecent Transactions Summary:\n{$summary}\n\nPlease analyze.";
+
+            // Setup stream context options to bypass cURL issues
+            $options = [
+                'http' => [
+                    'header'  => "Content-type: application/json\r\n" .
+                               "Authorization: Bearer {$this->apiKey}\r\n" .
+                               "Connection: close\r\n",
+                    'method'  => 'POST',
+                    'content' => json_encode([
+                        'model' => $this->model,
+                        'messages' => [
+                            ['role' => 'system', 'content' => $systemPrompt],
+                            ['role' => 'user', 'content' => $userPrompt]
+                        ],
+                        'temperature' => 0.3, 
+                        'max_tokens' => 1000
+                    ]),
+                    'ignore_errors' => true,
+                    'timeout' => 10 // longer timeout for analysis
+                ],
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                ],
+                'socket' => [
+                    'bindto' => '0:0'
+                ]
+            ];
+
+            $context  = stream_context_create($options);
+            $result = file_get_contents($this->baseUrl, false, $context);
+
+            if ($result === false) {
+                Log::error('Groq Insight Error');
+                return "Maaf, sistem analisis sedang sibuk. Coba lagi nanti.";
+            }
+            
+            $data = json_decode($result, true);
+            return $data['choices'][0]['message']['content'] ?? "Gagal mendapatkan analisis.";
+
+        } catch (\Exception $e) {
+            Log::error('Groq Insight Exception: ' . $e->getMessage());
+            return "Terjadi kesalahan sistem saat analisis.";
+        }
+    }
 }

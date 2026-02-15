@@ -17,14 +17,18 @@ export default function InsightsIndex({ auth }: PageProps) {
             const response = await window.axios.post(route('insights.generate'));
 
             const result = response.data;
+            console.log('Server Response:', result);
+
             if (result.success) {
+                console.log('Setting insight:', result.insight);
                 setInsight(result.insight);
                 toast.success('Analisis selesai!');
             } else {
+                console.log('Result failed:', result.message);
                 toast.error(result.message || 'Gagal menghasilkan analisis');
             }
         } catch (e: any) {
-            console.error(e);
+            console.error('Frontend Error:', e);
             toast.error(e.response?.data?.message || 'Terjadi kesalahan');
         } finally {
             setIsLoading(false);
