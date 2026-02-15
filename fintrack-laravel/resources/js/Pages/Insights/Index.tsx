@@ -1,5 +1,5 @@
 import AppLayout from '@/Layouts/AppLayout';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { useState } from 'react';
 import {
@@ -184,6 +184,24 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile }: Pa
             <Toaster position="top-right" />
 
             <div className="max-w-5xl mx-auto space-y-6 animate-fade-in-up">
+
+                {/* ── Profile Completion Banner ── */}
+                {!hasProfile && (
+                    <div className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-200 dark:border-indigo-800/30 rounded-2xl p-4 flex items-center justify-between animate-fade-in-up">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl text-indigo-600 dark:text-indigo-400">
+                                <Info className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <p className="text-sm font-bold text-slate-800 dark:text-white">Profil Finansial Belum Lengkap</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">Lengkapi di Pengaturan agar AI dapat menganalisis Dana Darurat & Proyeksi Goal.</p>
+                            </div>
+                        </div>
+                        <Link href={route('settings.index')} className="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold hover:bg-indigo-700 transition-colors flex-shrink-0">
+                            Lengkapi →
+                        </Link>
+                    </div>
+                )}
 
                 {/* ── Hero / Generate Button ── */}
                 {!insight && (
@@ -452,10 +470,10 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile }: Pa
                                         <div
                                             key={alert.category}
                                             className={`p-4 rounded-2xl border-l-4 ${alert.severity === 'DANGER'
-                                                    ? 'border-red-500 bg-red-50 dark:bg-red-900/10'
-                                                    : alert.severity === 'WARNING'
-                                                        ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/10'
-                                                        : 'border-blue-500 bg-blue-50 dark:bg-blue-900/10'
+                                                ? 'border-red-500 bg-red-50 dark:bg-red-900/10'
+                                                : alert.severity === 'WARNING'
+                                                    ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/10'
+                                                    : 'border-blue-500 bg-blue-50 dark:bg-blue-900/10'
                                                 }`}
                                         >
                                             <div className="flex items-center justify-between mb-1">
@@ -463,8 +481,8 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile }: Pa
                                                 <div className="flex items-center gap-2">
                                                     <span className="text-xs font-bold text-slate-600 dark:text-slate-300">{formatShortIDR(alert.amount)}</span>
                                                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${alert.changePercent > 0
-                                                            ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400'
-                                                            : 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'
+                                                        ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400'
+                                                        : 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'
                                                         }`}>
                                                         {alert.changePercent > 0 ? '+' : ''}{alert.changePercent}%
                                                     </span>
@@ -500,8 +518,8 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile }: Pa
                                     {insight.actionItems.map((item) => (
                                         <div key={item.priority} className="flex items-start gap-4 p-4 border border-slate-100 dark:border-slate-700 rounded-2xl hover:shadow-md transition-shadow">
                                             <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-white text-sm font-black flex-shrink-0 ${item.impact === 'HIGH' ? 'bg-gradient-to-br from-red-500 to-orange-500'
-                                                    : item.impact === 'MEDIUM' ? 'bg-gradient-to-br from-amber-500 to-yellow-500'
-                                                        : 'bg-gradient-to-br from-blue-500 to-indigo-500'
+                                                : item.impact === 'MEDIUM' ? 'bg-gradient-to-br from-amber-500 to-yellow-500'
+                                                    : 'bg-gradient-to-br from-blue-500 to-indigo-500'
                                                 }`}>
                                                 {item.priority}
                                             </div>

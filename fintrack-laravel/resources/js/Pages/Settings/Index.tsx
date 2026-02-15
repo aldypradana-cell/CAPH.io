@@ -1,7 +1,7 @@
 import AppLayout from '@/Layouts/AppLayout';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, usePage, router } from '@inertiajs/react';
 import { useState, useRef, useEffect } from 'react';
-import { Moon, Sun, Bell, DollarSign, Globe, Shield, Database, Upload, Download, Users, Briefcase, Target, Plus, Trash2, ChevronRight } from 'lucide-react';
+import { Moon, Sun, Bell, DollarSign, Globe, Shield, Database, Upload, Download, Users, Briefcase, Target, Plus, Trash2, ChevronRight, Save, Loader2 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
 interface FinancialGoal { id: string; name: string; amount: number; deadline: string; }
@@ -27,6 +27,8 @@ export default function Settings() {
     const [dependents, setDependents] = useState(0);
     const [occupation, setOccupation] = useState('PRIVATE');
     const [goals, setGoals] = useState<FinancialGoal[]>([]);
+    const [savingProfile, setSavingProfile] = useState(false);
+    const [profileDirty, setProfileDirty] = useState(false);
 
     // Goal form
     const [newGoalName, setNewGoalName] = useState('');
@@ -34,6 +36,54 @@ export default function Settings() {
     const [newGoalDate, setNewGoalDate] = useState('');
 
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Load saved financial profile from DB on mount
+    useEffect(() => {
+        const fp = (user as any).financial_profile;
+        if (fp) {
+            setMaritalStatus(fp.maritalStatus || 'SINGLE');
+            setDependents(fp.dependents ?? 0);
+            setOccupation(fp.occupation || 'PRIVATE');
+            if (Array.isArray(fp.goals)) {
+                setGoals(fp.goals.map((g: any, i: number) => ({
+                    id: g.id || `saved-${i}`,
+                    name: g.name || '',
+                    amount: g.amount || 0,
+                    deadline: g.deadline || '',
+                })));
+            }
+        }
+    }, []);
+
+    // Save financial profile to backend
+    const handleSaveProfile = () => {
+        setSavingProfile(true);
+        router.patch(route('profile.financial'), {
+            financial_profile: {
+                maritalStatus,
+                dependents,
+                occupation,
+                goals: goals.map(g => ({ name: g.name, amount: g.amount, deadline: g.deadline })),
+            },
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success('Profil finansial berhasil disimpan!');
+                setProfileDirty(false);
+                setSavingProfile(false);
+            },
+            onError: (errors) => {
+                console.error('Save profile errors:', errors);
+                toast.error('Gagal menyimpan profil.');
+                setSavingProfile(false);
+            },
+        });
+    };
+
+    // Mark dirty on any profile change
+    const updateMarital = (v: string) => { setMaritalStatus(v); setProfileDirty(true); };
+    const updateDependents = (v: number) => { setDependents(v); setProfileDirty(true); };
+    const updateOccupation = (v: string) => { setOccupation(v); setProfileDirty(true); };
 
     const handleToggleTheme = () => {
         const t = theme === 'light' ? 'dark' : 'light';
@@ -51,7 +101,8 @@ export default function Settings() {
         if (!newGoalName || !newGoalAmount || !newGoalDate) { toast.error('Mohon lengkapi data target'); return; }
         const amount = parseFloat(newGoalAmount.replace(/\./g, '')) || 0;
         setGoals(prev => [...prev, { id: Date.now().toString(), name: newGoalName, amount, deadline: newGoalDate }]);
-        toast.success('Target finansial ditambahkan');
+        setProfileDirty(true);
+        toast.success('Target ditambahkan — jangan lupa Simpan!');
         setNewGoalName(''); setNewGoalAmount(''); setNewGoalDate('');
     };
 
@@ -115,14 +166,14 @@ export default function Settings() {
                                 <div className="space-y-4">
                                     <div>
                                         <label className="block text-xs text-indigo-200 mb-1">Status Pernikahan</label>
-                                        <select value={maritalStatus} onChange={(e) => setMaritalStatus(e.target.value)} className="w-full bg-slate-900/30 border border-white/20 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:bg-slate-900/50">
+                                        <select value={maritalStatus} onChange={(e) => updateMarital(e.target.value)} className="w-full bg-slate-900/30 border border-white/20 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:bg-slate-900/50">
                                             <option value="SINGLE">Lajang (Single)</option>
                                             <option value="MARRIED">Menikah (Married)</option>
                                         </select>
                                     </div>
                                     <div>
                                         <label className="block text-xs text-indigo-200 mb-1">Jumlah Tanggungan (Anak/Ortu)</label>
-                                        <input type="number" min="0" value={dependents} onChange={(e) => setDependents(parseInt(e.target.value) || 0)} className="w-full bg-slate-900/30 border border-white/20 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:bg-slate-900/50" />
+                                        <input type="number" min="0" value={dependents} onChange={(e) => updateDependents(parseInt(e.target.value) || 0)} className="w-full bg-slate-900/30 border border-white/20 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:bg-slate-900/50" />
                                     </div>
                                 </div>
                             </div>
@@ -132,7 +183,7 @@ export default function Settings() {
                                 <div className="space-y-4">
                                     <div>
                                         <label className="block text-xs text-indigo-200 mb-1">Jenis Pekerjaan</label>
-                                        <select value={occupation} onChange={(e) => setOccupation(e.target.value)} className="w-full bg-slate-900/30 border border-white/20 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:bg-slate-900/50">
+                                        <select value={occupation} onChange={(e) => updateOccupation(e.target.value)} className="w-full bg-slate-900/30 border border-white/20 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:bg-slate-900/50">
                                             <option value="STABLE">PNS / BUMN (Pendapatan Stabil)</option>
                                             <option value="PRIVATE">Karyawan Swasta (Menengah)</option>
                                             <option value="FREELANCE">Freelancer / Pengusaha (Fluktuatif)</option>
@@ -168,7 +219,7 @@ export default function Settings() {
                                                 <p className="text-xs text-indigo-200">Target: Rp {goal.amount.toLocaleString('id-ID')} <span className="mx-1">•</span> {goal.deadline}</p>
                                             </div>
                                         </div>
-                                        <button onClick={() => { setGoals(prev => prev.filter(g => g.id !== goal.id)); toast.success('Target dihapus'); }} className="p-2 text-white/50 hover:text-red-400 hover:bg-white/10 rounded-lg transition-colors">
+                                        <button onClick={() => { setGoals(prev => prev.filter(g => g.id !== goal.id)); setProfileDirty(true); toast.success('Target dihapus — jangan lupa Simpan!'); }} className="p-2 text-white/50 hover:text-red-400 hover:bg-white/10 rounded-lg transition-colors">
                                             <Trash2 className="w-4 h-4" />
                                         </button>
                                     </div>
@@ -193,6 +244,24 @@ export default function Settings() {
                                     <Plus className="w-4 h-4 mr-1" /> Tambah
                                 </button>
                             </div>
+                        </div>
+
+                        {/* Save Button */}
+                        <div className="flex items-center justify-between mt-8 pt-6 border-t border-white/10">
+                            <p className={`text-xs transition-opacity ${profileDirty ? 'opacity-100 text-amber-300' : 'opacity-0'}`}>
+                                ⚠ Ada perubahan belum disimpan
+                            </p>
+                            <button
+                                onClick={handleSaveProfile}
+                                disabled={savingProfile}
+                                className={`px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 transition-all active:scale-95 ${profileDirty
+                                        ? 'bg-white text-indigo-700 hover:bg-indigo-50 shadow-lg shadow-white/20 hover:scale-105'
+                                        : 'bg-white/20 text-white/70 cursor-default'
+                                    } disabled:opacity-50`}
+                            >
+                                {savingProfile ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                                {savingProfile ? 'Menyimpan...' : 'Simpan Profil Finansial'}
+                            </button>
                         </div>
                     </div>
                 </div>
