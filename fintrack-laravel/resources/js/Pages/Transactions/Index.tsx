@@ -12,6 +12,7 @@ import TagInput from '@/Components/TagInput';
 interface TagData {
     id: number;
     name: string;
+    slug: string;
     color: string | null;
 }
 
@@ -57,6 +58,7 @@ export default function TransactionsIndex({
     const [filterType, setFilterType] = useState(filters?.type || '');
     const [startDate, setStartDate] = useState(filters?.start_date || '');
     const [endDate, setEndDate] = useState(filters?.end_date || '');
+    const [filterTag, setFilterTag] = useState(filters?.tag || '');
 
     const [inputType, setInputType] = useState<'EXPENSE' | 'INCOME' | 'TRANSFER'>('EXPENSE');
 
@@ -120,6 +122,7 @@ export default function TransactionsIndex({
             type: filterType || undefined,
             start_date: startDate || undefined,
             end_date: endDate || undefined,
+            tag: filterTag || undefined,
         }, { preserveState: true });
     };
 
@@ -127,6 +130,7 @@ export default function TransactionsIndex({
         setFilterType('');
         setStartDate('');
         setEndDate('');
+        setFilterTag('');
         router.get(route('transactions.index'), {}, { preserveState: true });
     };
 
@@ -209,35 +213,52 @@ export default function TransactionsIndex({
                     {/* Filter & Actions */}
                     <div className="flex items-center gap-3 flex-wrap">
                         {/* Type Filter */}
-                        <div className="relative">
+                        <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
                             <select
                                 value={filterType}
-                                onChange={(e) => { setFilterType(e.target.value); }}
-                                className="pl-9 pr-4 py-3 glass-card rounded-2xl text-sm outline-none font-medium text-slate-700 dark:text-slate-200 border-none appearance-none cursor-pointer"
+                                onChange={(e) => setFilterType(e.target.value)}
+                                className="px-4 py-2 bg-slate-100 dark:bg-slate-800 border-none rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 focus:ring-2 focus:ring-indigo-500 cursor-pointer"
                             >
                                 <option value="">Semua Tipe</option>
                                 <option value="INCOME">Pemasukan</option>
                                 <option value="EXPENSE">Pengeluaran</option>
                                 <option value="TRANSFER">Transfer</option>
                             </select>
-                            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-                        </div>
 
-                        {/* Date Range */}
-                        <div className="flex items-center gap-2">
-                            <div className="relative">
-                                <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="pl-9 pr-3 py-3 glass-card rounded-2xl text-sm outline-none font-medium text-slate-700 dark:text-slate-200 border-none w-36" />
-                                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                            <select
+                                value={filterTag}
+                                onChange={(e) => setFilterTag(e.target.value)}
+                                className="px-4 py-2 bg-slate-100 dark:bg-slate-800 border-none rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+                            >
+                                <option value="">Semua Tag</option>
+                                {userTags.map(tag => (
+                                    <option key={tag.id} value={tag.slug || tag.name}>#{tag.name}</option>
+                                ))}
+                            </select>
+
+                            <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 rounded-xl px-2">
+                                <Calendar className="w-4 h-4 text-slate-400" />
+                                <input
+                                    type="date"
+                                    value={startDate}
+                                    onChange={(e) => setStartDate(e.target.value)}
+                                    className="bg-transparent border-none text-xs font-medium text-slate-600 dark:text-slate-300 focus:ring-0 p-2 w-28"
+                                />
+                                <span className="text-slate-400">-</span>
+                                <input
+                                    type="date"
+                                    value={endDate}
+                                    onChange={(e) => setEndDate(e.target.value)}
+                                    className="bg-transparent border-none text-xs font-medium text-slate-600 dark:text-slate-300 focus:ring-0 p-2 w-28"
+                                />
                             </div>
-                            <span className="text-slate-400 text-xs">—</span>
-                            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="px-3 py-3 glass-card rounded-2xl text-sm outline-none font-medium text-slate-700 dark:text-slate-200 border-none w-36" />
                         </div>
 
                         <button onClick={applyFilters} className="px-4 py-3 bg-indigo-600 text-white rounded-2xl text-sm font-bold hover:bg-indigo-700 transition-all active:scale-95">
                             Filter
                         </button>
 
-                        {(filterType || startDate || endDate) && (
+                        {(filterType || startDate || endDate || filterTag) && (
                             <button onClick={clearFilters} className="px-4 py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-2xl text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95">
                                 Reset
                             </button>

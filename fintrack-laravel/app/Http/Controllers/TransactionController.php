@@ -37,6 +37,13 @@ class TransactionController extends Controller
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->inDateRange($request->start_date, $request->end_date);
         }
+
+        // Apply tag filter
+        if ($request->filled('tag')) {
+            $query->whereHas('tags', function ($q) use ($request) {
+                $q->where('slug', $request->tag);
+            });
+        }
         
         $transactions = $query->paginate(20);
         
@@ -48,7 +55,7 @@ class TransactionController extends Controller
             'transactions' => $transactions,
             'wallets' => $wallets,
             'categories' => $categories,
-            'filters' => $request->only(['type', 'start_date', 'end_date']),
+            'filters' => $request->only(['type', 'start_date', 'end_date', 'tag']),
             'userTags' => $userTags,
         ]);
     }
