@@ -68,18 +68,14 @@ Kembalikan array objek JSON dengan properti:
     }
 
     /**
-     * Get financial advice based on user profile and transactions
+     * Get structured financial advice based on user profile, transactions, and trends
+     * Returns parsed JSON array matching the InsightData schema
      */
-    public function getFinancialAdvice(User $user, Collection $transactions): string
+    public function getFinancialAdvice(User $user, array $contextData): array
     {
         try {
-            // Simplify data to save tokens
-            $summary = $transactions->take(50)->map(function ($t) {
-                return "{$t->date}: {$t->type} - {$t->category} - Rp" . number_format($t->amount, 0, ',', '.') . " ({$t->description})";
-            })->join("\n");
-
             // Build Profile Context
-            $profileContext = "";
+            $profileContext = "Profil belum diisi.";
             if ($user->financial_profile) {
                 $fp = $user->financial_profile;
                 $occupationMap = [
@@ -96,42 +92,90 @@ Kembalikan array objek JSON dengan properti:
                 if (!empty($fp['goals'])) {
                     foreach ($fp['goals'] as $goal) {
                         $amount = number_format($goal['amount'] ?? 0, 0, ',', '.');
-                        $goals .= "- {$goal['name']}: Target Rp{$amount} pada {$goal['deadline']}\n";
+                        $goals .= "  - {$goal['name']}: Target Rp{$amount} pada {$goal['deadline']}\n";
                     }
                 } else {
-                    $goals = 'Belum ada target spesifik.';
+                    $goals = '  Belum ada target spesifik.';
                 }
                 
-                $profileContext = "
-DATA PROFIL PENGGUNA:
-- Status Pernikahan: {$maritalStatus}
-- Jumlah Tanggungan: {$dependents} orang
-- Pekerjaan: {$occupation}
-- Target Finansial (Financial Goals):
-{$goals}";
+                $profileContext = "Status: {$maritalStatus}, Tanggungan: {$dependents}, Pekerjaan: {$occupation}\nGoals:\n{$goals}";
             }
 
-            $prompt = "Bertindaklah sebagai penasihat keuangan pribadi (Financial Planner) yang sangat cerdas, empatik, dan strategis.
+            $prompt = "Kamu adalah AI Financial Planner. Analisis data keuangan berikut dan kembalikan HANYA JSON valid (tanpa markdown, tanpa backtick, tanpa penjelasan di luar JSON).
 
+=== PROFIL PENGGUNA ===
 {$profileContext}
 
-RIWAYAT TRANSAKSI TERAKHIR (50 item):
-{$summary}
+=== TRANSAKSI BULAN INI (Detail) ===
+{$contextData['currentMonthDetail']}
 
-TUGAS ANDA:
-Berikan analisis keuangan yang mendalam dalam Bahasa Indonesia yang profesional namun ramah. Gunakan format Markdown.
+=== RINGKASAN 6 BULAN TERAKHIR ===
+{$contextData['sixMonthSummary']}
 
-Poin-poin analisis yang WAJIB ada:
-1. **Kesehatan Cachflow**: Analisis pemasukan vs pengeluaran berdasarkan data transaksi.
-2. **Analisis Profil Risiko & Dana Darurat**: 
-   - Berdasarkan pekerjaan pengguna, hitung berapa bulan Dana Darurat yang ideal.
-   - Bandingkan dengan pola pengeluaran mereka saat ini.
-3. **Kewajaran Pengeluaran**:
-   - Apakah pengeluaran untuk kebutuhan pokok terlihat wajar?
-4. **Gap Analysis Target Finansial**:
-   - Untuk setiap 'Target Finansial', hitung berapa yang harus ditabung per bulan mulai sekarang hingga deadline.
-   - Bandingkan angka tersebut dengan sisa uang (surplus) bulanan rata-rata user saat ini.
-5. **3 Rekomendasi Konkret**: Langkah nyata untuk memperbaiki keuangan atau mencapai target.";
+=== TOP KATEGORI BULAN INI ===
+{$contextData['topCategories']}
+
+=== TUGAS ===
+Analisis semua data di atas dan kembalikan JSON dengan struktur PERSIS seperti ini:
+
+{
+  \"healthScore\": <number 0-100>,
+  \"healthLabel\": <string, contoh: \"Cukup Sehat\">,
+  \"sentiment\": <\"EXCELLENT\" | \"GOOD\" | \"CAUTIOUS\" | \"WARNING\" | \"CRITICAL\">,
+  \"summary\": <string, ringkasan 1-2 kalimat dalam Bahasa Indonesia>,
+  \"cashflow\": {
+    \"income\": <number total pemasukan bulan ini>,
+    \"expense\": <number total pengeluaran bulan ini>,
+    \"surplus\": <number selisih>,
+    \"savingsRate\": <number persentase>,
+    \"verdict\": <string analisis singkat>
+  },
+  \"emergencyFund\": {
+    \"idealMonths\": <number bulan ideal berdasarkan pekerjaan & tanggungan>,
+    \"monthlyExpenseAvg\": <number rata-rata pengeluaran>,
+    \"idealAmount\": <number total dana darurat ideal>,
+    \"verdict\": <string analisis & saran>
+  },
+  \"goalProjections\": [
+    {
+      \"name\": <string nama goal>,
+      \"targetAmount\": <number>,
+      \"deadline\": <string>,
+      \"monthsRemaining\": <number>,
+      \"requiredMonthly\": <number tabungan per bulan yang diperlukan>,
+      \"currentSurplus\": <number surplus saat ini>,
+      \"status\": <\"ON_TRACK\" | \"DELAYED\" | \"AT_RISK\">,
+      \"projectedDate\": <string estimasi kapan tercapai>,
+      \"verdict\": <string penjelasan singkat>
+    }
+  ],
+  \"spendingAlerts\": [
+    {
+      \"category\": <string>,
+      \"amount\": <number>,
+      \"avgLast6m\": <number rata-rata 6 bulan>,
+      \"changePercent\": <number>,
+      \"severity\": <\"INFO\" | \"WARNING\" | \"DANGER\">,
+      \"advice\": <string saran konkret>
+    }
+  ],
+  \"actionItems\": [
+    {
+      \"priority\": <number 1-3>,
+      \"title\": <string>,
+      \"description\": <string>,
+      \"impact\": <\"HIGH\" | \"MEDIUM\" | \"LOW\">,
+      \"savingsPotential\": <number estimasi penghematan per bulan>
+    }
+  ]
+}
+
+PENTING:
+- Semua angka dalam Rupiah (tanpa simbol Rp, tanpa titik pemisah ribuan, hanya angka).
+- SEMUA teks dalam Bahasa Indonesia.
+- Jika tidak cukup data untuk suatu field, beri estimasi terbaik.
+- Jika user belum punya goal, kembalikan goalProjections sebagai array kosong [].
+- JSON HARUS valid. Jangan tambahkan komentar atau teks di luar JSON.";
 
             $apiKey = env('GEMINI_API_KEY');
             $model = env('GEMINI_MODEL', 'gemini-1.5-flash');
@@ -144,6 +188,10 @@ Poin-poin analisis yang WAJIB ada:
                             ['text' => $prompt]
                         ]
                     ]
+                ],
+                'generationConfig' => [
+                    'response_mime_type' => 'application/json',
+                    'temperature' => 0.7,
                 ]
             ];
 
@@ -153,14 +201,14 @@ Poin-poin analisis yang WAJIB ada:
                     'method'  => 'POST',
                     'content' => json_encode($payload),
                     'ignore_errors' => true,
-                    'timeout' => 60
+                    'timeout' => 90
                 ],
                 'ssl' => [
                     'verify_peer' => false,
                     'verify_peer_name' => false,
                 ],
                 'socket' => [
-                    'bindto' => '0:0' // Force IPv4
+                    'bindto' => '0:0'
                 ]
             ];
 
@@ -168,29 +216,42 @@ Poin-poin analisis yang WAJIB ada:
             $response = file_get_contents($url, false, $context);
 
             if ($response === false) {
-                 \Log::error('Gemini connection failed');
-                 return 'Gagal menghubungkan ke server AI.';
+                 \Log::error('Gemini connection failed for insights');
+                 throw new \Exception('Gagal menghubungkan ke server AI.');
             }
 
             $data = json_decode($response, true);
             
-            // Log error response from API
             if (isset($data['error'])) {
-                 \Log::error('Gemini API Error: ' . json_encode($data['error']));
-                 return 'AI Error: ' . ($data['error']['message'] ?? 'Unknown');
+                 \Log::error('Gemini API Error (Insights): ' . json_encode($data['error']));
+                 throw new \Exception('AI Error: ' . ($data['error']['message'] ?? 'Unknown'));
             }
 
             $text = $data['candidates'][0]['content']['parts'][0]['text'] ?? null;
             
             if (!$text) {
-                \Log::warning('Gemini empty response: ' . $response);
+                \Log::warning('Gemini empty insight response: ' . $response);
+                throw new \Exception('AI tidak memberikan respons.');
             }
 
-            return $text ?? 'Maaf, saya tidak dapat menganalisis data saat ini.';
+            // Clean potential markdown wrapping
+            $text = trim($text);
+            $text = preg_replace('/^```json\s*/i', '', $text);
+            $text = preg_replace('/\s*```$/i', '', $text);
+            $text = trim($text);
+
+            $parsed = json_decode($text, true);
+            
+            if (!$parsed || !isset($parsed['healthScore'])) {
+                \Log::warning('Gemini invalid JSON insight: ' . $text);
+                throw new \Exception('AI mengembalikan format yang tidak valid.');
+            }
+
+            return $parsed;
 
         } catch (\Exception $e) {
-            \Log::error('Gemini AI advice exception: ' . $e->getMessage());
-            return 'Terjadi kesalahan sistem saat analisis.';
+            \Log::error('Gemini AI insight exception: ' . $e->getMessage());
+            throw $e;
         }
     }
 }
