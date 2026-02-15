@@ -1,7 +1,7 @@
 import AppLayout from '@/Layouts/AppLayout';
 import { Head, useForm } from '@inertiajs/react';
 import { PageProps } from '@/types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Zap, Sparkles, Check, X, Loader2, TrendingUp, TrendingDown, Hash
 } from 'lucide-react';
@@ -26,12 +26,17 @@ export default function SmartEntryIndex({ auth, wallets, categories }: PageProps
     const [parsedTransactions, setParsedTransactions] = useState<ParsedTransaction[]>([]);
     const [isParsing, setIsParsing] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [selectedWallet, setSelectedWallet] = useState('');
+    const [selectedWallet, setSelectedWallet] = useState(wallets.length > 0 ? wallets[0].id.toString() : '');
 
     const { data, setData, post, processing } = useForm({
         transactions: [] as ParsedTransaction[],
         wallet_id: '',
     });
+
+    // Sync state to form data to ensure single-click submission works
+    useEffect(() => {
+        setData(d => ({ ...d, transactions: parsedTransactions, wallet_id: selectedWallet }));
+    }, [parsedTransactions, selectedWallet]);
 
     const handleParse = async () => {
         if (!input.trim()) return;
@@ -61,7 +66,7 @@ export default function SmartEntryIndex({ auth, wallets, categories }: PageProps
             toast.error('Pilih dompet terlebih dahulu!');
             return;
         }
-        setData({ transactions: parsedTransactions, wallet_id: selectedWallet });
+        // Data is already synced via useEffect
         post(route('smart-entry.confirm'), {
             onSuccess: () => {
                 setParsedTransactions([]);
@@ -175,7 +180,7 @@ export default function SmartEntryIndex({ auth, wallets, categories }: PageProps
                             </div>
                             <div className="flex gap-3">
                                 <button onClick={() => setParsedTransactions([])} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors active:scale-95">Batal</button>
-                                <button onClick={handleConfirm} disabled={processing || !selectedWallet} className="flex-1 py-3 bg-emerald-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50">
+                                <button onClick={handleConfirm} disabled={processing} className="flex-1 py-3 bg-emerald-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50">
                                     {processing ? 'Menyimpan...' : 'Konfirmasi & Simpan'}
                                 </button>
                             </div>
