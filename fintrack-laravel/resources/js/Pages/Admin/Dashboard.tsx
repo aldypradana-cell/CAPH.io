@@ -46,7 +46,7 @@ export default function AdminDashboard() {
             case 'master':
                 return <MasterTab categories={categories} />;
             case 'logs':
-                return <LogsTab logs={logs} />;
+                return <LogsTab logs={logs} filters={filters} />;
             case 'overview':
             default:
                 // Pass processed stats for Overview

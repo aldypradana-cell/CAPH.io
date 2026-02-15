@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\SystemLog;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
@@ -45,6 +46,8 @@ class MasterDataController extends Controller
             );
         }
 
+        SystemLog::log('SEED_CATEGORIES', 'Master Data', ['count' => count($defaults)]);
+
         return redirect()->back()->with('success', 'Kategori default berhasil ditambahkan');
     }
 
@@ -57,13 +60,15 @@ class MasterDataController extends Controller
             'color' => 'required|string',
         ]);
 
-        Category::create([
+        $category = Category::create([
             'name' => $validated['name'],
             'type' => $validated['type'],
             'icon' => $validated['icon'],
             'color' => $validated['color'],
-            'user_id' => null, // Global category
+            'user_id' => null,
         ]);
+
+        SystemLog::log('CREATE_CATEGORY', "Category #{$category->id} ({$category->name})", $validated);
 
         return redirect()->back()->with('success', 'Kategori master berhasil ditambahkan');
     }
@@ -84,6 +89,8 @@ class MasterDataController extends Controller
 
         $category->update($validated);
 
+        SystemLog::log('UPDATE_CATEGORY', "Category #{$category->id} ({$category->name})", $validated);
+
         return redirect()->back()->with('success', 'Kategori berhasil diupdate');
     }
 
@@ -93,6 +100,11 @@ class MasterDataController extends Controller
             abort(403);
         }
         
+        SystemLog::log('DELETE_CATEGORY', "Category #{$category->id} ({$category->name})", [
+            'name' => $category->name,
+            'type' => $category->type,
+        ]);
+
         $category->delete();
         
         return redirect()->back()->with('success', 'Kategori berhasil dihapus');
