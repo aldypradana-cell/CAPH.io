@@ -17,10 +17,14 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        // Filter parameters
+        // Filter parameters for Trend/Stats
         $startDate = $request->input('startDate', now()->startOfMonth()->format('Y-m-d'));
         $endDate = $request->input('endDate', now()->endOfMonth()->format('Y-m-d'));
         $mode = $request->input('mode', 'DAILY'); // DAILY, WEEKLY, MONTHLY
+
+        // Filter parameters for Pie Chart (Independent)
+        $pieStartDate = $request->input('pieStartDate', $startDate);
+        $pieEndDate = $request->input('pieEndDate', $endDate);
         
         // Get user wallets
         $wallets = Wallet::where('user_id', $user->id)->get();
@@ -32,10 +36,13 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
         
-        // Calculate stats (Totals for current view)
-        // We can optimize this to run one query for income/expense
+        // Calculate stats (Totals for Current Month - FIXED)
+        // User requested these to be fixed and not affected by filters
+        $fixedStartDate = Carbon::now()->startOfMonth()->format('Y-m-d');
+        $fixedEndDate = Carbon::now()->endOfMonth()->format('Y-m-d');
+
         $statsData = Transaction::forUser($user->id)
-            ->inDateRange($startDate, $endDate)
+            ->inDateRange($fixedStartDate, $fixedEndDate)
             ->selectRaw('type, SUM(amount) as total')
             ->groupBy('type')
             ->pluck('total', 'type');
@@ -43,7 +50,7 @@ class DashboardController extends Controller
         $totalIncome = (float) ($statsData['INCOME'] ?? 0);
         $totalExpense = (float) ($statsData['EXPENSE'] ?? 0);
         $balance = (float) $wallets->sum('balance'); // Current balance is always real-time from wallets
-        $transactionCount = Transaction::forUser($user->id)->inDateRange($startDate, $endDate)->count();
+        $transactionCount = Transaction::forUser($user->id)->inDateRange($fixedStartDate, $fixedEndDate)->count();
         
         // --- Raw Data for Client-Side Aggregation (Trend Chart) ---
         // User requested client-side mechanism. Returning raw transactions in range.
@@ -53,9 +60,9 @@ class DashboardController extends Controller
             ->orderBy('date')
             ->get();
 
-        // --- Aggregation for Pie Chart (Expense by Category) ---
+        // --- Aggregation for Pie Chart (Expense by Category) - INDEPENDENT FILTER ---
         $pieData = Transaction::forUser($user->id)
-            ->inDateRange($startDate, $endDate)
+            ->inDateRange($pieStartDate, $pieEndDate)
             ->where('type', 'EXPENSE')
             ->selectRaw('category as name, SUM(amount) as value')
             ->groupBy('category')
@@ -124,6 +131,8 @@ class DashboardController extends Controller
                 'startDate' => $startDate,
                 'endDate' => $endDate,
                 'mode' => $mode,
+                'pieStartDate' => $pieStartDate,
+                'pieEndDate' => $pieEndDate,
             ]
         ]);
     }

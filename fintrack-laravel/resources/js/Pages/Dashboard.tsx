@@ -81,7 +81,7 @@ const formatShortIDR = (amount: number) => {
     return formatIDR(amount);
 };
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label, total }: any) => {
     if (active && payload && payload.length) {
         return (
             <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl p-4 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 text-left">
@@ -93,9 +93,16 @@ const CustomTooltip = ({ active, payload, label }: any) => {
                                 <div className="w-2.5 h-2.5 rounded-full shadow-sm ring-2 ring-white dark:ring-slate-900" style={{ backgroundColor: entry.color }} />
                                 <span className="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">{entry.name}</span>
                             </div>
-                            <span className="text-slate-700 dark:text-slate-200 font-bold font-mono text-sm">
-                                {formatIDR(entry.value)}
-                            </span>
+                            <div className="text-right">
+                                <span className="text-slate-700 dark:text-slate-200 font-bold font-mono text-sm block">
+                                    {formatIDR(entry.value)}
+                                </span>
+                                {total && (
+                                    <span className="text-[10px] text-slate-400 font-bold">
+                                        {((entry.value / total) * 100).toFixed(1)}%
+                                    </span>
+                                )}
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -104,6 +111,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     }
     return null;
 };
+
+
 
 interface TrendData {
     id: number;
@@ -137,7 +146,7 @@ export default function Dashboard({
     upcomingBills: Debt[];
     categories: CategoryData[];
     userTags: TagData[];
-    filters: { startDate: string; endDate: string; mode: string };
+    filters: { startDate: string; endDate: string; mode: string; pieStartDate?: string; pieEndDate?: string };
 }>) {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [inputType, setInputType] = useState<'EXPENSE' | 'INCOME' | 'TRANSFER'>('EXPENSE');
@@ -336,6 +345,17 @@ export default function Dashboard({
             mode: 'DAILY' // Custom range implies detailed view usually
         });
         setActiveFilter('CUSTOM');
+    };
+
+    const handlePieDateChange = (field: 'start' | 'end', value: string) => {
+        router.get(route('dashboard'), {
+            ...filters,
+            [field === 'start' ? 'pieStartDate' : 'pieEndDate']: value
+        }, {
+            preserveState: true,
+            preserveScroll: true,
+            only: ['pieData', 'filters']
+        });
     };
 
     // Derived data for display
@@ -543,36 +563,23 @@ export default function Dashboard({
                             </div>
                         </div>
                         <div className="flex justify-center gap-2 mb-4">
-                            <input type="date" value={filters.startDate} onChange={(e) => handleDateChange('start', e.target.value)} className="bg-slate-50 dark:bg-slate-800 border-none rounded-lg text-[10px] text-slate-500 dark:text-slate-400 px-2 py-1 outline-none" />
-                            <input type="date" value={filters.endDate} onChange={(e) => handleDateChange('end', e.target.value)} className="bg-slate-50 dark:bg-slate-800 border-none rounded-lg text-[10px] text-slate-500 dark:text-slate-400 px-2 py-1 outline-none" />
+                            <input type="date" value={filters.pieStartDate || filters.startDate} onChange={(e) => handlePieDateChange('start', e.target.value)} className="bg-slate-50 dark:bg-slate-800 border-none rounded-lg text-[10px] text-slate-500 dark:text-slate-400 px-2 py-1 outline-none" />
+                            <input type="date" value={filters.pieEndDate || filters.endDate} onChange={(e) => handlePieDateChange('end', e.target.value)} className="bg-slate-50 dark:bg-slate-800 border-none rounded-lg text-[10px] text-slate-500 dark:text-slate-400 px-2 py-1 outline-none" />
                         </div>
                         {pieData.length > 0 ? (
                             <>
-                                <div className="flex-1 min-h-[200px] flex items-center justify-center">
-                                    <ResponsiveContainer width="100%" height={200}>
+                                <div className="flex-1 min-h-[300px] flex items-center justify-center">
+                                    <ResponsiveContainer width="100%" height="100%">
                                         <PieChart>
-                                            <Pie data={pieData} cx="50%" cy="50%" innerRadius={55} outerRadius={80} paddingAngle={4} dataKey="value" cornerRadius={6} animationDuration={800}>
+                                            <Pie data={pieData} cx="50%" cy="50%" innerRadius={80} outerRadius={110} paddingAngle={4} dataKey="value" cornerRadius={6} animationDuration={800}>
                                                 {pieData.map((_, index) => (
                                                     <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} strokeWidth={0} />
                                                 ))}
                                             </Pie>
-                                            <Tooltip content={<CustomTooltip />} />
+                                            <Tooltip content={<CustomTooltip total={totalCategoryExpense} />} />
                                             <Legend layout="horizontal" verticalAlign="bottom" align="center" iconType="circle" wrapperStyle={{ fontSize: '11px', paddingTop: '20px' }} />
                                         </PieChart>
                                     </ResponsiveContainer>
-                                </div>
-                                <div className="space-y-2 mt-2 max-h-[120px] overflow-y-auto scrollbar-hide">
-                                    {pieData.slice(0, 5).map((item, idx) => (
-                                        <div key={item.name} className="flex items-center justify-between text-xs">
-                                            <div className="flex items-center">
-                                                <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: PIE_COLORS[idx % PIE_COLORS.length] }} />
-                                                <span className="text-slate-600 dark:text-slate-300 truncate max-w-[120px]">{item.name}</span>
-                                            </div>
-                                            <span className="font-bold text-slate-700 dark:text-slate-200">
-                                                {totalCategoryExpense > 0 ? ((item.value / totalCategoryExpense) * 100).toFixed(0) : 0}%
-                                            </span>
-                                        </div>
-                                    ))}
                                 </div>
                             </>
                         ) : (
