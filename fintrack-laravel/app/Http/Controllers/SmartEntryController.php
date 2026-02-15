@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Wallet;
 use App\Models\Category;
+use App\Models\Tag;
 use App\Services\GroqService;
 use App\Services\TransactionService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class SmartEntryController extends Controller
@@ -40,6 +42,12 @@ class SmartEntryController extends Controller
         try {
             $parsedTransactions = $this->groqService->parseNaturalLanguageTransaction($validated['input']);
             
+            // Ensure each transaction has a tags array
+            $parsedTransactions = array_map(function ($t) {
+                $t['tags'] = $t['tags'] ?? [];
+                return $t;
+            }, $parsedTransactions);
+
             return response()->json([
                 'success' => true,
                 'transactions' => $parsedTransactions,
@@ -61,15 +69,58 @@ class SmartEntryController extends Controller
             'transactions.*.type' => 'required|in:INCOME,EXPENSE',
             'transactions.*.category' => 'required|string',
             'transactions.*.date' => 'required|date',
+            'transactions.*.tags' => 'nullable|array',
+            'transactions.*.tags.*' => 'string|max:50',
             'wallet_id' => 'required|exists:wallets,id',
         ]);
         
-        $this->transactionService->createTransactions(
+        $userId = $request->user()->id;
+
+        // Extract tags per transaction before creating (since createTransactions doesn't handle tags)
+        $tagsPerTransaction = [];
+        foreach ($validated['transactions'] as $idx => $txData) {
+            $tagsPerTransaction[$idx] = $txData['tags'] ?? [];
+        }
+
+        $newTransactions = $this->transactionService->createTransactions(
             $validated['transactions'],
-            $request->user()->id,
+            $userId,
             $validated['wallet_id']
         );
         
+        // Sync tags for each created transaction
+        foreach ($newTransactions as $idx => $transaction) {
+            $tagNames = $tagsPerTransaction[$idx] ?? [];
+            if (!empty($tagNames)) {
+                $tagIds = $this->resolveTagIds($tagNames, $userId);
+                $transaction->tags()->sync($tagIds);
+            }
+        }
+        
         return redirect()->route('dashboard')->with('success', 'Transaksi AI berhasil disimpan!');
+    }
+
+    /**
+     * Resolve an array of tag names to IDs, creating new tags if they don't exist.
+     */
+    private function resolveTagIds(array $tagNames, int $userId): array
+    {
+        $tagIds = [];
+
+        foreach ($tagNames as $name) {
+            $name = trim($name);
+            if (empty($name)) continue;
+
+            $slug = Str::slug($name);
+
+            $tag = Tag::firstOrCreate(
+                ['user_id' => $userId, 'slug' => $slug],
+                ['name' => $name, 'color' => Tag::randomColor()]
+            );
+
+            $tagIds[] = $tag->id;
+        }
+
+        return $tagIds;
     }
 }

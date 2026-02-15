@@ -3,7 +3,7 @@ import { Head, useForm } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { useState } from 'react';
 import {
-    Zap, Sparkles, Check, X, Loader2, TrendingUp, TrendingDown
+    Zap, Sparkles, Check, X, Loader2, TrendingUp, TrendingDown, Hash
 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -15,6 +15,7 @@ interface ParsedTransaction {
     type: 'INCOME' | 'EXPENSE';
     category: string;
     date: string;
+    tags?: string[];
 }
 
 const formatIDR = (amount: number) =>
@@ -147,7 +148,14 @@ export default function SmartEntryIndex({ auth, wallets, categories }: PageProps
                                         </div>
                                         <div>
                                             <p className="text-sm font-bold text-slate-800 dark:text-white">{t.description}</p>
-                                            <p className="text-[10px] text-slate-400">{t.category} · {new Date(t.date).toLocaleDateString('id-ID')}</p>
+                                            <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                                                <span className="text-[10px] text-slate-400">{t.category} · {new Date(t.date).toLocaleDateString('id-ID')}</span>
+                                                {t.tags && t.tags.length > 0 && t.tags.map((tag, ti) => (
+                                                    <span key={ti} className="inline-flex items-center gap-0.5 text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-1.5 py-0.5 rounded-full">
+                                                        <Hash className="w-2.5 h-2.5" />{tag}
+                                                    </span>
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
                                     <span className={`text-base font-bold ${t.type === 'INCOME' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
@@ -180,9 +188,9 @@ export default function SmartEntryIndex({ auth, wallets, categories }: PageProps
                     <h3 className="text-sm font-bold text-slate-600 dark:text-slate-300 mb-3">💡 Contoh Input:</h3>
                     <div className="space-y-2">
                         {[
-                            'beli nasi goreng 25ribu, kopi susu 15rb, parkir 5000',
-                            'terima gaji 5 juta, bonus 500ribu',
-                            'bayar listrik 300rb, internet 350000, air 100ribu'
+                            'beli nasi goreng 25ribu, kopi susu 15rb #nongkrong, parkir 5000',
+                            'terima gaji 5 juta, bonus 500ribu #rezeki',
+                            'beli rokok surya 30rb #boros, bayar listrik 300rb'
                         ].map((ex, i) => (
                             <div key={i} onClick={() => setInput(ex)} className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-sm text-slate-600 dark:text-slate-400 cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors border border-transparent hover:border-indigo-200 dark:hover:border-indigo-800">
                                 "{ex}"

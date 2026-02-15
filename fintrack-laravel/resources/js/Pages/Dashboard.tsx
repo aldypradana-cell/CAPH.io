@@ -13,6 +13,13 @@ import {
     PieChart, Pie, Cell, Legend
 } from 'recharts';
 import toast, { Toaster } from 'react-hot-toast';
+import TagInput from '@/Components/TagInput';
+
+interface TagData {
+    id: number;
+    name: string;
+    color: string | null;
+}
 
 interface Stats {
     totalIncome: number;
@@ -111,7 +118,7 @@ interface PieData {
 }
 
 export default function Dashboard({
-    auth, stats, trendData, pieData, budgetProgress, recentTransactions, wallets, upcomingBills, categories, filters
+    auth, stats, trendData, pieData, budgetProgress, recentTransactions, wallets, upcomingBills, categories, userTags, filters
 }: PageProps<{
     stats: Stats;
     trendData: TrendData[];
@@ -121,10 +128,12 @@ export default function Dashboard({
     wallets: WalletData[];
     upcomingBills: Debt[];
     categories: CategoryData[];
+    userTags: TagData[];
     filters: { startDate: string; endDate: string; mode: string };
 }>) {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [inputType, setInputType] = useState<'EXPENSE' | 'INCOME' | 'TRANSFER'>('EXPENSE');
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
     const { data, setData, post, processing, reset } = useForm({
         wallet_id: '',
@@ -134,6 +143,7 @@ export default function Dashboard({
         amount: '',
         type: 'EXPENSE' as 'INCOME' | 'EXPENSE' | 'TRANSFER',
         category: '',
+        tags: [] as string[],
     });
 
     const handleAmountChange = (val: string) => {
@@ -146,13 +156,14 @@ export default function Dashboard({
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const payload = { ...data, type: inputType, amount: parseAmount(data.amount).toString() };
+        const payload = { ...data, type: inputType, amount: parseAmount(data.amount).toString(), tags: selectedTags };
         router.post(route('transactions.store'), payload, {
             preserveState: true,
             preserveScroll: true,
             onSuccess: () => {
                 setIsAddModalOpen(false);
                 reset();
+                setSelectedTags([]);
                 toast.success('Transaksi berhasil ditambahkan!');
             }
         });
@@ -657,6 +668,12 @@ export default function Dashboard({
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Deskripsi</label>
                                     <input type="text" value={data.description} onChange={(e) => setData('description', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="Makan siang" required />
                                 </div>
+
+                                <TagInput
+                                    availableTags={userTags || []}
+                                    selectedTags={selectedTags}
+                                    onChange={setSelectedTags}
+                                />
 
                                 <div className="flex space-x-3 pt-4">
                                     <button type="button" onClick={() => setIsAddModalOpen(false)} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors active:scale-95">Batal</button>

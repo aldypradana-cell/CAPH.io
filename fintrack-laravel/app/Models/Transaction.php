@@ -49,6 +49,11 @@ class Transaction extends Model
         return $this->belongsTo(Wallet::class, 'to_wallet_id');
     }
 
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'transaction_tag');
+    }
+
     /**
      * Scopes
      */

@@ -29,17 +29,21 @@ class GroqService
 Analyze the user's input and extract transaction data.
 Return ONLY a valid JSON array of objects.
 Each object must have:
-- description (string): Brief description
+- description (string): Brief description (do NOT include hashtags in description)
 - amount (number): Amount in IDR (pure number)
 - type (string): 'INCOME' or 'EXPENSE'
 - category (string): Relevant category (e.g., Makanan, Transport, Gaji)
 - date (string): ISO format YYYY-MM-DD. Default to {$today} if not specified.
+- tags (array of strings): Extract tags from the input. Rules:
+  1. Any word starting with '#' becomes a tag (remove the # symbol).
+  2. If the description contains notable context keywords (brand names, places, habits), suggest them as tags.
+  3. If no tags are found, return an empty array [].
 
-Input Example: 'Makan siang 15rb, beli bensin 20rb'
+Input Example: 'Makan siang 15rb #hemat, beli bensin di Shell 20rb #kendaraan'
 Output Example:
 [
-  {\"description\": \"Makan siang\", \"amount\": 15000, \"type\": \"EXPENSE\", \"category\": \"Makanan\", \"date\": \"{$today}\"},
-  {\"description\": \"Beli bensin\", \"amount\": 20000, \"type\": \"EXPENSE\", \"category\": \"Transportasi\", \"date\": \"{$today}\"}
+  {\"description\": \"Makan siang\", \"amount\": 15000, \"type\": \"EXPENSE\", \"category\": \"Makanan\", \"date\": \"{$today}\", \"tags\": [\"hemat\"]},
+  {\"description\": \"Beli bensin di Shell\", \"amount\": 20000, \"type\": \"EXPENSE\", \"category\": \"Transportasi\", \"date\": \"{$today}\", \"tags\": [\"kendaraan\", \"Shell\"]}
 ]
 NO explanations. JUST JSON.";
 

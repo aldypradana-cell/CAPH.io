@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Transaction;
 use App\Models\Wallet;
 use App\Models\Category;
+use App\Models\Tag;
 use App\Services\TransactionService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class TransactionController extends Controller
@@ -24,7 +26,7 @@ class TransactionController extends Controller
         $user = $request->user();
         
         $query = Transaction::forUser($user->id)
-            ->with(['wallet', 'toWallet'])
+            ->with(['wallet', 'toWallet', 'tags'])
             ->orderBy('date', 'desc');
         
         // Apply filters
@@ -40,12 +42,14 @@ class TransactionController extends Controller
         
         $wallets = Wallet::where('user_id', $user->id)->get();
         $categories = Category::userCategories($user->id)->get();
+        $userTags = Tag::where('user_id', $user->id)->orderBy('name')->get();
         
         return Inertia::render('Transactions/Index', [
             'transactions' => $transactions,
             'wallets' => $wallets,
             'categories' => $categories,
             'filters' => $request->only(['type', 'start_date', 'end_date']),
+            'userTags' => $userTags,
         ]);
     }
 
@@ -61,13 +65,21 @@ class TransactionController extends Controller
             'amount' => 'required|numeric|min:0',
             'type' => 'required|in:INCOME,EXPENSE,TRANSFER',
             'category' => 'required|string',
+            'tags' => 'nullable|array',
+            'tags.*' => 'string|max:50',
         ]);
         
-        $this->transactionService->createTransactions(
+        $transactions = $this->transactionService->createTransactions(
             [$validated],
             $request->user()->id,
             $validated['wallet_id']
         );
+        
+        // Sync tags after creating the transaction
+        if (!empty($validated['tags']) && !empty($transactions)) {
+            $tagIds = $this->resolveTagIds($validated['tags'], $userId);
+            $transactions[0]->tags()->sync($tagIds);
+        }
         
         return redirect()->back()->with('success', 'Transaksi berhasil ditambahkan');
     }
@@ -89,9 +101,15 @@ class TransactionController extends Controller
             'amount' => 'required|numeric|min:0',
             'type' => 'required|in:INCOME,EXPENSE,TRANSFER',
             'category' => 'required|string',
+            'tags' => 'nullable|array',
+            'tags.*' => 'string|max:50',
         ]);
         
         $this->transactionService->updateTransaction($transaction, $validated);
+        
+        // Sync tags after updating the transaction
+        $tagIds = $this->resolveTagIds($validated['tags'] ?? [], $userId);
+        $transaction->tags()->sync($tagIds);
         
         return redirect()->back()->with('success', 'Transaksi berhasil diupdate');
     }
@@ -106,5 +124,29 @@ class TransactionController extends Controller
         $this->transactionService->deleteTransaction($transaction);
         
         return redirect()->back()->with('success', 'Transaksi berhasil dihapus');
+    }
+
+    /**
+     * Resolve an array of tag names to IDs, creating new tags if they don't exist.
+     */
+    private function resolveTagIds(array $tagNames, int $userId): array
+    {
+        $tagIds = [];
+
+        foreach ($tagNames as $name) {
+            $name = trim($name);
+            if (empty($name)) continue;
+
+            $slug = Str::slug($name);
+
+            $tag = Tag::firstOrCreate(
+                ['user_id' => $userId, 'slug' => $slug],
+                ['name' => $name, 'color' => Tag::randomColor()]
+            );
+
+            $tagIds[] = $tag->id;
+        }
+
+        return $tagIds;
     }
 }

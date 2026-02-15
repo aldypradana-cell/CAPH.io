@@ -7,6 +7,7 @@ use App\Models\Wallet;
 use App\Models\Category;
 use App\Models\Debt;
 use App\Models\Budget;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Inertia\Inertia;
@@ -26,7 +27,7 @@ class DashboardController extends Controller
         
         // Get recent transactions (limit 10) instead of all
         $recentTransactions = Transaction::forUser($user->id)
-            ->with(['wallet', 'toWallet'])
+            ->with(['wallet', 'toWallet', 'tags'])
             ->orderBy('date', 'desc')
             ->take(10)
             ->get();
@@ -143,6 +144,7 @@ class DashboardController extends Controller
         
         // Get user categories for standard inputs
         $categories = Category::userCategories($user->id)->get();
+        $userTags = Tag::where('user_id', $user->id)->orderBy('name')->get();
 
         return Inertia::render('Dashboard', [
             'stats' => [
@@ -159,6 +161,7 @@ class DashboardController extends Controller
             'wallets' => $wallets,
             'upcomingBills' => $upcomingBills,
             'categories' => $categories,
+            'userTags' => $userTags,
             'filters' => [
                 'startDate' => $startDate,
                 'endDate' => $endDate,

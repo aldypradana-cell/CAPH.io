@@ -4,9 +4,16 @@ import { PageProps } from '@/types';
 import { useState } from 'react';
 import {
     Plus, Pencil, Trash2, X, Search, Filter, Download, ArrowDownUp,
-    TrendingUp, TrendingDown, ArrowRightLeft, AlertTriangle, Calendar
+    TrendingUp, TrendingDown, ArrowRightLeft, AlertTriangle, Calendar, Hash
 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
+import TagInput from '@/Components/TagInput';
+
+interface TagData {
+    id: number;
+    name: string;
+    color: string | null;
+}
 
 interface Transaction {
     id: number;
@@ -17,6 +24,7 @@ interface Transaction {
     category: string;
     wallet: { id: number; name: string };
     to_wallet?: { id: number; name: string };
+    tags?: TagData[];
 }
 
 interface Wallet {
@@ -34,12 +42,13 @@ const formatIDR = (amount: number) =>
     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
 
 export default function TransactionsIndex({
-    auth, transactions, wallets, categories, filters
+    auth, transactions, wallets, categories, filters, userTags
 }: PageProps<{
     transactions: { data: Transaction[]; links?: any[]; current_page?: number; last_page?: number };
     wallets: Wallet[];
     categories: Category[];
     filters: any;
+    userTags: TagData[];
 }>) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
@@ -51,6 +60,8 @@ export default function TransactionsIndex({
 
     const [inputType, setInputType] = useState<'EXPENSE' | 'INCOME' | 'TRANSFER'>('EXPENSE');
 
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
     const { data, setData, post, put, processing, reset } = useForm({
         wallet_id: '',
         to_wallet_id: '',
@@ -59,6 +70,7 @@ export default function TransactionsIndex({
         amount: '',
         type: 'EXPENSE' as 'INCOME' | 'EXPENSE' | 'TRANSFER',
         category: '',
+        tags: [] as string[],
     });
 
     const handleAmountChange = (val: string) => {
@@ -71,15 +83,15 @@ export default function TransactionsIndex({
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const payload = { ...data, type: inputType, amount: parseAmount(data.amount).toString() };
+        const payload = { ...data, type: inputType, amount: parseAmount(data.amount).toString(), tags: selectedTags };
 
         if (editingTransaction) {
             router.put(route('transactions.update', editingTransaction.id), payload, {
-                onSuccess: () => { setIsModalOpen(false); reset(); setEditingTransaction(null); toast.success('Diperbarui!'); }
+                onSuccess: () => { setIsModalOpen(false); reset(); setSelectedTags([]); setEditingTransaction(null); toast.success('Diperbarui!'); }
             });
         } else {
             router.post(route('transactions.store'), payload, {
-                onSuccess: () => { setIsModalOpen(false); reset(); toast.success('Ditambahkan!'); }
+                onSuccess: () => { setIsModalOpen(false); reset(); setSelectedTags([]); toast.success('Ditambahkan!'); }
             });
         }
     };
@@ -87,6 +99,7 @@ export default function TransactionsIndex({
     const handleEdit = (transaction: Transaction) => {
         setEditingTransaction(transaction);
         setInputType(transaction.type);
+        setSelectedTags(transaction.tags?.map(t => t.name) || []);
         setData({
             wallet_id: transaction.wallet.id.toString(),
             to_wallet_id: transaction.to_wallet?.id.toString() || '',
@@ -95,6 +108,7 @@ export default function TransactionsIndex({
             amount: transaction.amount.toLocaleString('id-ID'),
             type: transaction.type,
             category: transaction.category,
+            tags: transaction.tags?.map(t => t.name) || [],
         });
         setIsModalOpen(true);
     };
@@ -236,7 +250,7 @@ export default function TransactionsIndex({
 
                         {/* Add Button */}
                         <button
-                            onClick={() => { setEditingTransaction(null); reset(); setInputType('EXPENSE'); setIsModalOpen(true); }}
+                            onClick={() => { setEditingTransaction(null); reset(); setSelectedTags([]); setInputType('EXPENSE'); setIsModalOpen(true); }}
                             className="flex items-center px-5 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95"
                         >
                             <Plus className="w-4 h-4 mr-2" /> Transaksi Baru
@@ -262,7 +276,7 @@ export default function TransactionsIndex({
                                     {/* Details */}
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-bold text-slate-800 dark:text-white truncate">{t.description}</p>
-                                        <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                                        <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                                             <span className="text-[10px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">{t.category}</span>
                                             <span className="text-[10px] text-slate-400">{t.wallet?.name}</span>
                                             {t.type === 'TRANSFER' && t.to_wallet && (
@@ -270,6 +284,11 @@ export default function TransactionsIndex({
                                                     <ArrowRightLeft className="w-3 h-3" /> {t.to_wallet.name}
                                                 </span>
                                             )}
+                                            {t.tags && t.tags.length > 0 && t.tags.map(tag => (
+                                                <span key={tag.id} className="inline-flex items-center gap-0.5 text-[10px] font-bold text-white px-1.5 py-0.5 rounded-full" style={{ backgroundColor: tag.color || '#6366f1' }}>
+                                                    <Hash className="w-2.5 h-2.5 opacity-70" />{tag.name}
+                                                </span>
+                                            ))}
                                         </div>
                                     </div>
 
@@ -434,6 +453,12 @@ export default function TransactionsIndex({
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Deskripsi</label>
                                     <input type="text" value={data.description} onChange={(e) => setData('description', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="Makan siang" required />
                                 </div>
+
+                                <TagInput
+                                    availableTags={userTags || []}
+                                    selectedTags={selectedTags}
+                                    onChange={setSelectedTags}
+                                />
 
                                 <div className="flex space-x-3 pt-4">
                                     <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors active:scale-95">Batal</button>
