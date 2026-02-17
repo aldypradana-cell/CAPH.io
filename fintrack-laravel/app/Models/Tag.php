@@ -57,4 +57,28 @@ class Tag extends Model
 
         return $colors[array_rand($colors)];
     }
+
+    /**
+     * Resolve an array of tag names to IDs, creating new tags if they don't exist.
+     */
+    public static function resolveIds(array $tagNames, int $userId): array
+    {
+        $tagIds = [];
+
+        foreach ($tagNames as $name) {
+            $name = trim($name);
+            if (empty($name)) continue;
+
+            $slug = Str::slug($name);
+
+            $tag = static::firstOrCreate(
+                ['user_id' => $userId, 'slug' => $slug],
+                ['name' => $name, 'color' => static::randomColor()]
+            );
+
+            $tagIds[] = $tag->id;
+        }
+
+        return $tagIds;
+    }
 }

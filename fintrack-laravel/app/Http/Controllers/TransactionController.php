@@ -93,7 +93,7 @@ class TransactionController extends Controller
         
         // Sync tags after creating the transaction
         if (!empty($validated['tags']) && !empty($transactions)) {
-            $tagIds = $this->resolveTagIds($validated['tags'], $userId);
+            $tagIds = Tag::resolveIds($validated['tags'], $userId);
             $transactions[0]->tags()->sync($tagIds);
         }
         
@@ -124,7 +124,7 @@ class TransactionController extends Controller
         $this->transactionService->updateTransaction($transaction, $validated);
         
         // Sync tags after updating the transaction
-        $tagIds = $this->resolveTagIds($validated['tags'] ?? [], $userId);
+        $tagIds = Tag::resolveIds($validated['tags'] ?? [], $userId);
         $transaction->tags()->sync($tagIds);
         
         return redirect()->back()->with('success', 'Transaksi berhasil diupdate');
@@ -142,27 +142,5 @@ class TransactionController extends Controller
         return redirect()->back()->with('success', 'Transaksi berhasil dihapus');
     }
 
-    /**
-     * Resolve an array of tag names to IDs, creating new tags if they don't exist.
-     */
-    private function resolveTagIds(array $tagNames, int $userId): array
-    {
-        $tagIds = [];
 
-        foreach ($tagNames as $name) {
-            $name = trim($name);
-            if (empty($name)) continue;
-
-            $slug = Str::slug($name);
-
-            $tag = Tag::firstOrCreate(
-                ['user_id' => $userId, 'slug' => $slug],
-                ['name' => $name, 'color' => Tag::randomColor()]
-            );
-
-            $tagIds[] = $tag->id;
-        }
-
-        return $tagIds;
-    }
 }

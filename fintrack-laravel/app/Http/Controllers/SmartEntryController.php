@@ -92,7 +92,7 @@ class SmartEntryController extends Controller
         foreach ($newTransactions as $idx => $transaction) {
             $tagNames = $tagsPerTransaction[$idx] ?? [];
             if (!empty($tagNames)) {
-                $tagIds = $this->resolveTagIds($tagNames, $userId);
+                $tagIds = Tag::resolveIds($tagNames, $userId);
                 $transaction->tags()->sync($tagIds);
             }
         }
@@ -100,27 +100,5 @@ class SmartEntryController extends Controller
         return redirect()->route('dashboard')->with('success', 'Transaksi AI berhasil disimpan!');
     }
 
-    /**
-     * Resolve an array of tag names to IDs, creating new tags if they don't exist.
-     */
-    private function resolveTagIds(array $tagNames, int $userId): array
-    {
-        $tagIds = [];
 
-        foreach ($tagNames as $name) {
-            $name = trim($name);
-            if (empty($name)) continue;
-
-            $slug = Str::slug($name);
-
-            $tag = Tag::firstOrCreate(
-                ['user_id' => $userId, 'slug' => $slug],
-                ['name' => $name, 'color' => Tag::randomColor()]
-            );
-
-            $tagIds[] = $tag->id;
-        }
-
-        return $tagIds;
-    }
 }
