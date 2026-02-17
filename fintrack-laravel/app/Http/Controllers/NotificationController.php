@@ -21,7 +21,7 @@ class NotificationController extends Controller
     public function page(Request $request)
     {
         return \Inertia\Inertia::render('Notifications/Index', [
-            'notifications' => $request->user()->notifications()->get()
+            'notifications' => $request->user()->notifications()->paginate(15)
         ]);
     }
 

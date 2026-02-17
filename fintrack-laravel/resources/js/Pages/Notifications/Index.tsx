@@ -1,6 +1,6 @@
 import AppLayout from '@/Layouts/AppLayout';
 import { Head, router } from '@inertiajs/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Bell, Check, Trash2, Info, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -16,15 +16,31 @@ interface NotificationItem {
     read_at: string | null;
 }
 
-export default function NotificationCenter({ notifications: initialNotifications }: { notifications: NotificationItem[] }) {
-    const [notifications, setNotifications] = useState<NotificationItem[]>(initialNotifications);
+export default function NotificationCenter({ notifications }: {
+    notifications: {
+        data: NotificationItem[];
+        links: { url: string | null; label: string; active: boolean }[];
+        current_page: number;
+        last_page: number;
+        from: number;
+        to: number;
+        total: number;
+    }
+}) {
+    const [localNotifications, setLocalNotifications] = useState<NotificationItem[]>(notifications.data);
     const [filter, setFilter] = useState<'ALL' | 'UNREAD'>('ALL');
-    const unreadCount = notifications.filter(n => !n.read_at).length;
+
+    // Sync state when page changes
+    useEffect(() => {
+        setLocalNotifications(notifications.data);
+    }, [notifications.data]);
+
+    const unreadCount = localNotifications.filter(n => !n.read_at).length;
 
     const handleMarkAsRead = (id: string) => {
         router.post(route('notifications.read', id), {}, {
             preserveScroll: true,
-            onSuccess: () => setNotifications(prev => prev.map(n => n.id === id ? { ...n, read_at: new Date().toISOString() } : n))
+            onSuccess: () => setLocalNotifications(prev => prev.map(n => n.id === id ? { ...n, read_at: new Date().toISOString() } : n))
         });
     };
 
@@ -32,7 +48,7 @@ export default function NotificationCenter({ notifications: initialNotifications
         router.post(route('notifications.readAll'), {}, {
             preserveScroll: true,
             onSuccess: () => {
-                setNotifications(prev => prev.map(n => ({ ...n, read_at: new Date().toISOString() })));
+                setLocalNotifications(prev => prev.map(n => ({ ...n, read_at: new Date().toISOString() })));
                 toast.success('Semua notifikasi ditandai sudah dibaca');
             }
         });
@@ -45,11 +61,11 @@ export default function NotificationCenter({ notifications: initialNotifications
     // Actually user might want to delete. But standard Laravel notification doesn't implement delete easily without a route.
     // I will remove delete button functionality for now or just fake it locally.
     const handleDelete = (id: string) => {
-        setNotifications(prev => prev.filter(n => n.id !== id));
+        setLocalNotifications(prev => prev.filter(n => n.id !== id));
         toast.success('Notifikasi disembunyikan');
     };
 
-    const filteredNotifications = notifications.filter(n => filter === 'UNREAD' ? !n.read_at : true);
+    const filteredNotifications = localNotifications.filter(n => filter === 'UNREAD' ? !n.read_at : true);
 
     const getIcon = (type: string) => {
         switch (type) {
@@ -138,6 +154,36 @@ export default function NotificationCenter({ notifications: initialNotifications
                         )}
                     </div>
                 </div>
+
+                {/* Pagination Controls */}
+                {notifications.last_page > 1 && (
+                    <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                            Menampilkan <span className="font-bold">{notifications.from}</span> sampai <span className="font-bold">{notifications.to}</span> dari <span className="font-bold">{notifications.total}</span> notifikasi
+                        </p>
+                        <div className="flex items-center gap-1 overflow-x-auto pb-2 sm:pb-0 max-w-full">
+                            {notifications.links.map((link, i) => (
+                                link.url ? (
+                                    <button
+                                        key={i}
+                                        onClick={() => router.get(link.url!, {}, { preserveScroll: true, preserveState: true })}
+                                        className={`px-3 py-2 text-xs font-bold rounded-xl transition-all ${link.active
+                                                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
+                                                : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-indigo-600 dark:hover:text-indigo-400'
+                                            }`}
+                                        dangerouslySetInnerHTML={{ __html: link.label }}
+                                    />
+                                ) : (
+                                    <span
+                                        key={i}
+                                        className="px-3 py-2 text-xs font-medium text-slate-400 dark:text-slate-600"
+                                        dangerouslySetInnerHTML={{ __html: link.label }}
+                                    />
+                                )
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         </AppLayout>
     );
