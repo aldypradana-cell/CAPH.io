@@ -1,7 +1,7 @@
 import AppLayout from '@/Layouts/AppLayout';
 import { Head, useForm, router } from '@inertiajs/react';
 import { PageProps } from '@/types';
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
     Plus, Pencil, Trash2, X, Search, Filter, Download, ArrowDownUp,
     TrendingUp, TrendingDown, ArrowRightLeft, AlertTriangle, Calendar, Hash
@@ -45,7 +45,15 @@ const formatIDR = (amount: number) =>
 export default function TransactionsIndex({
     auth, transactions, wallets, categories, filters, userTags
 }: PageProps<{
-    transactions: { data: Transaction[]; links?: any[]; current_page?: number; last_page?: number };
+    transactions: {
+        data: Transaction[];
+        links: { url: string | null; label: string; active: boolean }[];
+        current_page: number;
+        last_page: number;
+        from: number | null;
+        to: number | null;
+        total: number;
+    };
     wallets: Wallet[];
     categories: Category[];
     filters: any;
@@ -54,11 +62,38 @@ export default function TransactionsIndex({
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
     const [deleteId, setDeleteId] = useState<number | null>(null);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState(filters?.search || '');
     const [filterType, setFilterType] = useState(filters?.type || '');
     const [startDate, setStartDate] = useState(filters?.start_date || '');
     const [endDate, setEndDate] = useState(filters?.end_date || '');
     const [filterTag, setFilterTag] = useState(filters?.tag || '');
+
+    // Debounced server-side search
+    const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const isFirstRender = useRef(true);
+
+    useEffect(() => {
+        // Skip first render to avoid unnecessary request on page load
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+
+        if (searchTimer.current) clearTimeout(searchTimer.current);
+        searchTimer.current = setTimeout(() => {
+            router.get(route('transactions.index'), {
+                search: searchTerm || undefined,
+                type: filterType || undefined,
+                start_date: startDate || undefined,
+                end_date: endDate || undefined,
+                tag: filterTag || undefined,
+            }, { preserveState: true, preserveScroll: true });
+        }, 400);
+
+        return () => {
+            if (searchTimer.current) clearTimeout(searchTimer.current);
+        };
+    }, [searchTerm]);
 
     const [inputType, setInputType] = useState<'EXPENSE' | 'INCOME' | 'TRANSFER'>('EXPENSE');
 
@@ -119,6 +154,7 @@ export default function TransactionsIndex({
 
     const applyFilters = () => {
         router.get(route('transactions.index'), {
+            search: searchTerm || undefined,
             type: filterType || undefined,
             start_date: startDate || undefined,
             end_date: endDate || undefined,
@@ -127,6 +163,7 @@ export default function TransactionsIndex({
     };
 
     const clearFilters = () => {
+        setSearchTerm('');
         setFilterType('');
         setStartDate('');
         setEndDate('');
@@ -156,12 +193,8 @@ export default function TransactionsIndex({
         toast.success('Data berhasil diexport!');
     };
 
-    // Client-side search filter
-    const filteredTransactions = transactions.data.filter(t =>
-        searchTerm === '' ||
-        t.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        t.category.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Server-side search — data already filtered from backend
+    const filteredTransactions = transactions.data;
 
     const getTypeIcon = (type: string) => {
         switch (type) {
@@ -344,6 +377,39 @@ export default function TransactionsIndex({
                         </div>
                     )}
                 </div>
+
+                {/* Pagination */}
+                {transactions.last_page > 1 && (
+                    <div className="flex items-center justify-between glass-card rounded-2xl p-4">
+                        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                            Menampilkan {transactions.from}–{transactions.to} dari {transactions.total} transaksi
+                        </p>
+                        <div className="flex items-center gap-1">
+                            {transactions.links.map((link, i) => {
+                                if (!link.url) {
+                                    return (
+                                        <span
+                                            key={i}
+                                            className="px-3 py-2 text-xs font-medium text-slate-300 dark:text-slate-600 rounded-xl"
+                                            dangerouslySetInnerHTML={{ __html: link.label }}
+                                        />
+                                    );
+                                }
+                                return (
+                                    <button
+                                        key={i}
+                                        onClick={() => router.get(link.url!, {}, { preserveState: true, preserveScroll: true })}
+                                        className={`px-3 py-2 text-xs font-bold rounded-xl transition-all active:scale-95 ${link.active
+                                                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
+                                                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                                            }`}
+                                        dangerouslySetInnerHTML={{ __html: link.label }}
+                                    />
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Delete Confirmation Modal */}

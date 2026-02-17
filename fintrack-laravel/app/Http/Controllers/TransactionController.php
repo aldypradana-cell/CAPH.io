@@ -44,8 +44,17 @@ class TransactionController extends Controller
                 $q->where('slug', $request->tag);
             });
         }
+
+        // Apply search filter (server-side)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('description', 'LIKE', "%{$search}%")
+                  ->orWhere('category', 'LIKE', "%{$search}%");
+            });
+        }
         
-        $transactions = $query->paginate(20);
+        $transactions = $query->paginate(20)->withQueryString();
         
         $wallets = Wallet::where('user_id', $user->id)->get();
         $categories = Category::userCategories($user->id)->get();
@@ -55,7 +64,7 @@ class TransactionController extends Controller
             'transactions' => $transactions,
             'wallets' => $wallets,
             'categories' => $categories,
-            'filters' => $request->only(['type', 'start_date', 'end_date', 'tag']),
+            'filters' => $request->only(['type', 'start_date', 'end_date', 'tag', 'search']),
             'userTags' => $userTags,
         ]);
     }
