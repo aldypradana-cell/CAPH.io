@@ -1,7 +1,7 @@
 import AppLayout from '@/Layouts/AppLayout';
 import { Head, Link, useForm, router } from '@inertiajs/react';
 import { PageProps } from '@/types';
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import {
     Plus, Sparkles, TrendingUp, TrendingDown, Wallet as WalletIcon,
     ArrowUpRight, ArrowDownRight, BarChart3, Target,
@@ -113,15 +113,6 @@ const CustomTooltip = ({ active, payload, label, total }: any) => {
 };
 
 
-
-interface TrendData {
-    id: number;
-    date: string;
-    type: 'INCOME' | 'EXPENSE';
-    amount: number;
-    category: string;
-}
-
 interface ChartData {
     name: string;
     Pemasukan: number;
@@ -142,10 +133,10 @@ interface TopTagData {
 }
 
 export default function Dashboard({
-    auth, stats, trendData: transactions, pieData, budgetProgress, recentTransactions, wallets, upcomingBills, topTags, categories, userTags, filters
+    auth, stats, trendData: chartData, pieData, budgetProgress, recentTransactions, wallets, upcomingBills, topTags, categories, userTags, filters
 }: PageProps<{
     stats: Stats;
-    trendData: TrendData[];
+    trendData: ChartData[];
     pieData: PieData[];
     budgetProgress: BudgetProgress[];
     recentTransactions: Transaction[];
@@ -154,7 +145,7 @@ export default function Dashboard({
     topTags: TopTagData[];
     categories: CategoryData[];
     userTags: TagData[];
-    filters: { startDate: string; endDate: string; mode: string; pieStartDate?: string; pieEndDate?: string };
+    filters: { startDate: string; endDate: string; mode: string; trendCategory: string; pieStartDate?: string; pieEndDate?: string };
 }>) {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [inputType, setInputType] = useState<'EXPENSE' | 'INCOME' | 'TRANSFER'>('EXPENSE');
@@ -196,111 +187,15 @@ export default function Dashboard({
 
     // --- QUERY STATE ---
     const [activeFilter, setActiveFilter] = useState<string>(filters.mode);
-    const [trendCategory, setTrendCategory] = useState<string>('ALL');
+    const [trendCategory, setTrendCategory] = useState<string>(filters.trendCategory || 'ALL');
 
-    // Helper
+    // Helper for formatting local date strings
     const getLocalDateString = (date: Date = new Date()) => {
         const offset = date.getTimezoneOffset() * 60000;
         return new Date(date.getTime() - offset).toISOString().split('T')[0];
     };
 
-    // --- CLIENT-SIDE AGGREGATION ---
-    const chartData = useMemo(() => {
-        const start = new Date(filters.startDate);
-        const end = new Date(filters.endDate);
-        const data: ChartData[] = [];
-
-        // Helper to filter transactions in a specific date range [s, e]
-        const sumInRange = (s: Date, e: Date) => {
-            const sStr = getLocalDateString(s);
-            const eStr = getLocalDateString(e);
-
-            const inRange = transactions.filter(t => {
-                // Fix: Compare only date part (YYYY-MM-DD)
-                const tDate = t.date.substring(0, 10);
-                const dateMatch = tDate >= sStr && tDate <= eStr;
-                const categoryMatch = trendCategory === 'ALL' || t.category === trendCategory;
-                return dateMatch && categoryMatch;
-            });
-
-            return {
-                income: inRange.filter(t => t.type === 'INCOME').reduce((acc, t) => acc + Number(t.amount), 0),
-                expense: inRange.filter(t => t.type === 'EXPENSE').reduce((acc, t) => acc + Number(t.amount), 0)
-            };
-        };
-
-        if (filters.mode === 'DAILY') {
-            // Loop daily
-            for (let d = new Date(start.getTime()); d.getTime() <= end.getTime(); d.setDate(d.getDate() + 1)) {
-                const dayKey = getLocalDateString(d);
-                const dayLabel = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-
-                const sums = sumInRange(d, d);
-                data.push({ name: dayLabel, fullDate: dayKey, Pemasukan: sums.income, Pengeluaran: sums.expense });
-            }
-        }
-        else if (filters.mode === 'WEEKLY') {
-            // Align start to the nearest Monday or just use chunks of 7 days
-            let current = new Date(start.getTime());
-            // Let's do calendar weeks logic:
-            const day = current.getDay();
-            const diff = current.getDate() - day + (day === 0 ? -6 : 1);
-            current.setDate(diff); // Set to Monday
-
-            while (current.getTime() <= end.getTime()) {
-                const weekStart = new Date(current.getTime());
-                const weekEnd = new Date(current.getTime());
-                weekEnd.setDate(weekEnd.getDate() + 6);
-
-                // Only add if there is some overlap with the selected range
-                if (weekEnd.getTime() >= start.getTime()) {
-                    const label = `${weekStart.getDate()} ${weekStart.toLocaleDateString('id-ID', { month: 'short' })}`;
-                    const sums = sumInRange(weekStart, weekEnd);
-                    data.push({ name: label, Pemasukan: sums.income, Pengeluaran: sums.expense });
-                }
-
-                current.setDate(current.getDate() + 7);
-            }
-        }
-        else if (filters.mode === 'MONTHLY') {
-            // Align to 1st of month
-            let current = new Date(start.getFullYear(), start.getMonth(), 1);
-            const endDateObj = new Date(end.getTime());
-
-            while (current.getTime() <= endDateObj.getTime()) {
-                const monthStart = new Date(current.getFullYear(), current.getMonth(), 1);
-                const monthEnd = new Date(current.getFullYear(), current.getMonth() + 1, 0);
-
-                // Check overlap
-                if (monthEnd.getTime() >= start.getTime()) {
-                    const label = current.toLocaleDateString('id-ID', { month: 'short', year: '2-digit' });
-                    const sums = sumInRange(monthStart, monthEnd);
-                    data.push({ name: label, Pemasukan: sums.income, Pengeluaran: sums.expense });
-                }
-                current.setMonth(current.getMonth() + 1);
-            }
-        }
-        else if (filters.mode === 'YEARLY') {
-            // Align to 1st of year
-            let current = new Date(start.getFullYear(), 0, 1);
-            const endDateObj = new Date(end.getTime());
-
-            while (current.getTime() <= endDateObj.getTime()) {
-                const yearStart = new Date(current.getFullYear(), 0, 1);
-                const yearEnd = new Date(current.getFullYear(), 11, 31);
-
-                // Check overlap
-                if (yearEnd.getTime() >= start.getTime()) {
-                    const label = current.getFullYear().toString();
-                    const sums = sumInRange(yearStart, yearEnd);
-                    data.push({ name: label, Pemasukan: sums.income, Pengeluaran: sums.expense });
-                }
-                current.setFullYear(current.getFullYear() + 1);
-            }
-        }
-
-        return data;
-    }, [transactions, filters.startDate, filters.endDate, filters.mode, trendCategory]);
+    // chartData comes pre-aggregated from the server (trendData prop aliased as chartData above)
 
     const updateParams = (newParams: Record<string, any>) => {
         router.get(route('dashboard'), { ...filters, ...newParams }, {
@@ -320,13 +215,13 @@ export default function Dashboard({
         let mode = 'DAILY';
 
         if (filter === 'DAILY') {
-            start = new Date(now.getFullYear(), now.getMonth(), 1);
-            end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+            end = new Date(now.getFullYear(), now.getMonth() + 2, 0);
             mode = 'DAILY';
         }
         else if (filter === 'WEEKLY') {
-            start = new Date(now.getFullYear(), now.getMonth() - 3, 1);
-            end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            start = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+            end = new Date(now.getFullYear(), now.getMonth() + 2, 0);
             mode = 'WEEKLY';
         }
         else if (filter === 'MONTHLY') {

@@ -20,7 +20,8 @@ class DashboardController extends Controller
         // Filter parameters for Trend/Stats
         $startDate = $request->input('startDate', now()->startOfMonth()->format('Y-m-d'));
         $endDate = $request->input('endDate', now()->endOfMonth()->format('Y-m-d'));
-        $mode = $request->input('mode', 'DAILY'); // DAILY, WEEKLY, MONTHLY
+        $mode = $request->input('mode', 'DAILY'); // DAILY, WEEKLY, MONTHLY, YEARLY
+        $trendCategory = $request->input('trendCategory', 'ALL');
 
         // Filter parameters for Pie Chart (Independent)
         $pieStartDate = $request->input('pieStartDate', $startDate);
@@ -52,13 +53,8 @@ class DashboardController extends Controller
         $balance = (float) $wallets->sum('balance'); // Current balance is always real-time from wallets
         $transactionCount = Transaction::forUser($user->id)->inDateRange($fixedStartDate, $fixedEndDate)->count();
         
-        // --- Raw Data for Client-Side Aggregation (Trend Chart) ---
-        // User requested client-side mechanism. Returning raw transactions in range.
-        $trendData = Transaction::forUser($user->id)
-            ->inDateRange($startDate, $endDate)
-            ->select('id', 'date', 'type', 'amount', 'category')
-            ->orderBy('date')
-            ->get();
+        // --- Server-Side Aggregation for Trend Chart ---
+        $trendData = $this->aggregateTrendData($user->id, $startDate, $endDate, $mode, $trendCategory);
 
         // --- Aggregation for Pie Chart (Expense by Category) - INDEPENDENT FILTER ---
         $pieData = Transaction::forUser($user->id)
@@ -152,9 +148,88 @@ class DashboardController extends Controller
                 'startDate' => $startDate,
                 'endDate' => $endDate,
                 'mode' => $mode,
+                'trendCategory' => $trendCategory,
                 'pieStartDate' => $pieStartDate,
                 'pieEndDate' => $pieEndDate,
             ]
         ]);
+    }
+
+    /**
+     * Aggregate trend data server-side using SQL GROUP BY.
+     * Returns pre-computed chart data: [ { name, Pemasukan, Pengeluaran } ]
+     */
+    private function aggregateTrendData(int $userId, string $startDate, string $endDate, string $mode, string $trendCategory): array
+    {
+        // Determine GROUP BY expression and sort key based on mode
+        switch ($mode) {
+            case 'WEEKLY':
+                $groupBy = "YEARWEEK(date, 1)"; // ISO week (Monday start)
+                $selectKey = "YEARWEEK(date, 1) as period_key, MIN(date) as period_start";
+                break;
+            case 'MONTHLY':
+                $groupBy = "DATE_FORMAT(date, '%Y-%m')";
+                $selectKey = "DATE_FORMAT(date, '%Y-%m') as period_key, MIN(date) as period_start";
+                break;
+            case 'YEARLY':
+                $groupBy = "YEAR(date)";
+                $selectKey = "YEAR(date) as period_key, MIN(date) as period_start";
+                break;
+            default: // DAILY
+                $groupBy = "DATE(date)";
+                $selectKey = "DATE(date) as period_key, DATE(date) as period_start";
+                break;
+        }
+
+        $query = Transaction::forUser($userId)
+            ->inDateRange($startDate, $endDate)
+            ->selectRaw("
+                {$selectKey},
+                SUM(CASE WHEN type = 'INCOME' THEN amount ELSE 0 END) as pemasukan,
+                SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0 END) as pengeluaran
+            ")
+            ->groupByRaw($groupBy)
+            ->orderByRaw("MIN(date) ASC");
+
+        // Optional category filter
+        if ($trendCategory !== 'ALL') {
+            $query->where('category', $trendCategory);
+        }
+
+        $results = $query->get();
+
+        // Indonesian month abbreviations
+        $months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+        return $results->map(function ($row) use ($mode, $months) {
+            $date = Carbon::parse($row->period_start);
+
+            switch ($mode) {
+                case 'WEEKLY':
+                    $weekStart = $date->copy()->startOfWeek(Carbon::MONDAY);
+                    $weekEnd = $weekStart->copy()->addDays(6);
+                    if ($weekStart->month === $weekEnd->month) {
+                        $name = $weekStart->day . '-' . $weekEnd->day . ' ' . $months[$weekStart->month - 1];
+                    } else {
+                        $name = $weekStart->day . ' ' . $months[$weekStart->month - 1] . '-' . $weekEnd->day . ' ' . $months[$weekEnd->month - 1];
+                    }
+                    break;
+                case 'MONTHLY':
+                    $name = $months[$date->month - 1] . " '" . $date->format('y');
+                    break;
+                case 'YEARLY':
+                    $name = (string) $date->year;
+                    break;
+                default: // DAILY
+                    $name = $date->day . ' ' . $months[$date->month - 1];
+                    break;
+            }
+
+            return [
+                'name' => $name,
+                'Pemasukan' => (float) $row->pemasukan,
+                'Pengeluaran' => (float) $row->pengeluaran,
+            ];
+        })->values()->toArray();
     }
 }
