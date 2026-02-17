@@ -113,12 +113,14 @@ function HealthGauge({ score, sentiment }: { score: number; sentiment: string })
 }
 
 // ── Main Component ───────────────────────────────────
-export default function InsightsIndex({ auth, transactionCount, hasProfile }: PageProps<{
+export default function InsightsIndex({ auth, transactionCount, hasProfile, latestInsight }: PageProps<{
     transactionCount: number;
     hasProfile: boolean;
+    latestInsight?: { id: number; content: InsightData; created_at: string } | null;
 }>) {
     const [isLoading, setIsLoading] = useState(false);
-    const [insight, setInsight] = useState<InsightData | null>(null);
+    const [insight, setInsight] = useState<InsightData | null>(latestInsight ? latestInsight.content : null);
+    const [lastUpdated, setLastUpdated] = useState<string | null>(latestInsight ? latestInsight.created_at : null);
 
     // Period Filter State
     const [period, setPeriod] = useState<'THIS_MONTH' | 'LAST_MONTH' | 'CUSTOM'>('THIS_MONTH');
@@ -159,7 +161,8 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile }: Pa
             const result = response.data;
             if (result.success) {
                 setInsight(result.insight);
-                toast.success('Analisis selesai!');
+                setLastUpdated(new Date().toISOString());
+                toast.success('Analisis selesai & tersimpan!');
             } else {
                 toast.error(result.message || 'Gagal menghasilkan analisis');
             }
@@ -178,6 +181,9 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile }: Pa
             <div className="flex flex-col">
                 <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Analisis AI</h1>
                 <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Insight cerdas dari data keuangan Anda</p>
+                {lastUpdated && (
+                    <p className="text-xs text-slate-400 mt-1">Terakhir diupdate: {new Date(lastUpdated).toLocaleString('id-ID')}</p>
+                )}
             </div>
         }>
             <Head title="Analisis AI" />
@@ -314,7 +320,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile }: Pa
                                 className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl text-sm font-bold hover:shadow-lg transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
                             >
                                 {isLoading ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Sparkles className="w-4 h-4 mr-1" />}
-                                Re-generate
+                                Refresh Analysis
                             </button>
                         </div>
 

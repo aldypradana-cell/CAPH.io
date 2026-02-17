@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
+use App\Models\FinancialInsight;
 use App\Services\GeminiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -29,6 +30,7 @@ class InsightsController extends Controller
         return Inertia::render('Insights/Index', [
             'transactionCount' => $transactionCount,
             'hasProfile' => !empty($user->financial_profile),
+            'latestInsight' => FinancialInsight::where('user_id', $user->id)->latest()->first(),
         ]);
     }
 
@@ -149,9 +151,16 @@ class InsightsController extends Controller
         try {
             $insight = $this->geminiService->getFinancialAdvice($user, $contextData);
 
+            // Save to database
+            $storedInsight = FinancialInsight::create([
+                'user_id' => $user->id,
+                'content' => $insight,
+            ]);
+
             return response()->json([
                 'success' => true,
                 'insight' => $insight,
+                'saved_at' => $storedInsight->created_at,
             ]);
         } catch (\Exception $e) {
             return response()->json([
