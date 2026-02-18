@@ -6,7 +6,7 @@ import {
     Plus, Sparkles, TrendingUp, TrendingDown, Wallet as WalletIcon,
     ArrowUpRight, ArrowDownRight, BarChart3, Target,
     CalendarClock, AlertTriangle, ChevronDown, X, ArrowRightLeft,
-    Filter, Calendar, PieChart as PieChartIcon, Tag as TagIcon
+    Filter, Calendar, PieChart as PieChartIcon, Tag as TagIcon, Repeat
 } from 'lucide-react';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -67,6 +67,14 @@ interface Debt {
     amount: number;
     due_date: string;
     description?: string;
+}
+
+interface RecurringTransaction {
+    id: number;
+    name: string;
+    amount: number;
+    next_run_date: string;
+    frequency: string;
 }
 
 const COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#eab308', '#22c55e', '#06b6d4'];
@@ -133,7 +141,7 @@ interface TopTagData {
 }
 
 export default function Dashboard({
-    auth, stats, trendData: chartData, pieData, budgetProgress, recentTransactions, wallets, upcomingBills, topTags, categories, userTags, filters
+    auth, stats, trendData: chartData, pieData, budgetProgress, recentTransactions, wallets, upcomingBills, recurringTransactions = [], topTags, categories, userTags, filters
 }: PageProps<{
     stats: Stats;
     trendData: ChartData[];
@@ -142,6 +150,7 @@ export default function Dashboard({
     recentTransactions: Transaction[];
     wallets: WalletData[];
     upcomingBills: Debt[];
+    recurringTransactions: RecurringTransaction[];
     topTags: TopTagData[];
     categories: CategoryData[];
     userTags: TagData[];
@@ -520,6 +529,48 @@ export default function Dashboard({
                         </div>
                     </div>
 
+
+                    {/* Recurring Transactions */}
+                    <div className="glass-card p-6 rounded-[2rem] flex flex-col transition-all hover:shadow-lg duration-500 animate-fade-in-up" style={{ animationDelay: '650ms' }}>
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center">
+                                <Repeat className="w-5 h-5 mr-2 text-blue-500" /> Transaksi Rutin
+                            </h3>
+                            <Link href={route('recurring.index')} className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">Lihat</Link>
+                        </div>
+                        <div className="space-y-3 flex-1 overflow-y-auto scrollbar-hide">
+                            {recurringTransactions.length > 0 ? (
+                                recurringTransactions.map((rt) => {
+                                    const nextDate = new Date(rt.next_run_date);
+                                    const daysUntil = Math.ceil((nextDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+                                    const isSoon = daysUntil <= 3; // Highlight if within 3 days
+
+                                    return (
+                                        <div key={rt.id} className={`flex items-center justify-between p-3 rounded-xl border ${isSoon ? 'border-blue-200 dark:border-blue-900/50 bg-blue-50/80 dark:bg-blue-900/10' : 'border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50'} transition-colors`}>
+                                            <div className="flex items-center gap-3">
+                                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold ${rt.frequency === 'MONTHLY' ? 'bg-indigo-500' : 'bg-purple-500'}`}>
+                                                    {rt.frequency === 'MONTHLY' ? 'BLN' : 'MG'}
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-bold text-slate-700 dark:text-slate-200">{rt.name}</p>
+                                                    <p className="text-[10px] text-slate-400">
+                                                        {nextDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                                                        {daysUntil >= 0 ? ` (H-${daysUntil})` : ' (Lewat)'}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{formatShortIDR(rt.amount)}</span>
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <div className="flex items-center justify-center flex-1 text-slate-400 text-sm py-8">
+                                    Belum ada transaksi rutin
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
                     {/* Upcoming Bills */}
                     <div className="glass-card p-6 rounded-[2rem] flex flex-col transition-all hover:shadow-lg duration-500 animate-fade-in-up" style={{ animationDelay: '700ms' }}>
                         <div className="flex items-center justify-between mb-4">
@@ -631,128 +682,130 @@ export default function Dashboard({
             </div>
 
             {/* Modern Add Transaction Modal */}
-            {isAddModalOpen && (
-                <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 animate-fade-in">
-                    <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity" onClick={() => setIsAddModalOpen(false)} />
-                    <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-pop-in">
-                        {/* Gradient top bar */}
-                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 z-10" />
+            {
+                isAddModalOpen && (
+                    <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 animate-fade-in">
+                        <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity" onClick={() => setIsAddModalOpen(false)} />
+                        <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-pop-in">
+                            {/* Gradient top bar */}
+                            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 z-10" />
 
-                        {/* Header */}
-                        <div className="p-5 pb-0 shrink-0">
-                            <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-lg font-bold text-slate-800 dark:text-white">Transaksi Baru</h3>
-                                <button onClick={() => setIsAddModalOpen(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
-                                    <X className="w-5 h-5" />
-                                </button>
-                            </div>
-
-                            {/* Type Toggle */}
-                            <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl mb-2">
-                                {(['EXPENSE', 'INCOME', 'TRANSFER'] as const).map(type => (
-                                    <button
-                                        key={type}
-                                        type="button"
-                                        onClick={() => {
-                                            setInputType(type);
-                                            setData(d => ({
-                                                ...d,
-                                                type,
-                                                category: ''
-                                            }));
-                                        }}
-                                        className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 ${inputType === type
-                                            ? type === 'INCOME' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
-                                                : type === 'EXPENSE' ? 'bg-red-500 text-white shadow-lg shadow-red-500/30'
-                                                    : 'bg-blue-500 text-white shadow-lg shadow-blue-500/30'
-                                            : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
-                                            }`}
-                                    >
-                                        {type === 'EXPENSE' ? <><TrendingDown className="w-3 h-3" /> KELUAR</> :
-                                            type === 'INCOME' ? <><TrendingUp className="w-3 h-3" /> MASUK</> :
-                                                <><ArrowRightLeft className="w-3 h-3" /> TRANSFER</>}
+                            {/* Header */}
+                            <div className="p-5 pb-0 shrink-0">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h3 className="text-lg font-bold text-slate-800 dark:text-white">Transaksi Baru</h3>
+                                    <button onClick={() => setIsAddModalOpen(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                                        <X className="w-5 h-5" />
                                     </button>
-                                ))}
+                                </div>
+
+                                {/* Type Toggle */}
+                                <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl mb-2">
+                                    {(['EXPENSE', 'INCOME', 'TRANSFER'] as const).map(type => (
+                                        <button
+                                            key={type}
+                                            type="button"
+                                            onClick={() => {
+                                                setInputType(type);
+                                                setData(d => ({
+                                                    ...d,
+                                                    type,
+                                                    category: ''
+                                                }));
+                                            }}
+                                            className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 ${inputType === type
+                                                ? type === 'INCOME' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
+                                                    : type === 'EXPENSE' ? 'bg-red-500 text-white shadow-lg shadow-red-500/30'
+                                                        : 'bg-blue-500 text-white shadow-lg shadow-blue-500/30'
+                                                : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+                                                }`}
+                                        >
+                                            {type === 'EXPENSE' ? <><TrendingDown className="w-3 h-3" /> KELUAR</> :
+                                                type === 'INCOME' ? <><TrendingUp className="w-3 h-3" /> MASUK</> :
+                                                    <><ArrowRightLeft className="w-3 h-3" /> TRANSFER</>}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
 
-                        {/* Form */}
-                        <div className="p-5 pt-4 overflow-y-auto scrollbar-hide">
-                            <form onSubmit={handleSubmit} className="space-y-3">
-                                {/* Amount First */}
-                                <div>
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Jumlah (Rp)</label>
-                                    <input type="text" value={data.amount} onChange={(e) => handleAmountChange(e.target.value)} className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-2xl text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 text-center" placeholder="0" autoFocus required />
-                                </div>
-
-                                <div>
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Dompet</label>
-                                    <select value={data.wallet_id} onChange={(e) => setData('wallet_id', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required>
-                                        <option value="">Pilih Dompet</option>
-                                        {wallets.map(w => (
-                                            <option key={w.id} value={w.id}>{w.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                {inputType === 'TRANSFER' && (
+                            {/* Form */}
+                            <div className="p-5 pt-4 overflow-y-auto scrollbar-hide">
+                                <form onSubmit={handleSubmit} className="space-y-3">
+                                    {/* Amount First */}
                                     <div>
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Ke Dompet</label>
-                                        <select value={data.to_wallet_id} onChange={(e) => setData('to_wallet_id', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required>
-                                            <option value="">Pilih Dompet Tujuan</option>
-                                            {wallets.filter(w => w.id.toString() !== data.wallet_id).map(w => (
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Jumlah (Rp)</label>
+                                        <input type="text" value={data.amount} onChange={(e) => handleAmountChange(e.target.value)} className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-2xl text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 text-center" placeholder="0" autoFocus required />
+                                    </div>
+
+                                    <div>
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Dompet</label>
+                                        <select value={data.wallet_id} onChange={(e) => setData('wallet_id', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required>
+                                            <option value="">Pilih Dompet</option>
+                                            {wallets.map(w => (
                                                 <option key={w.id} value={w.id}>{w.name}</option>
                                             ))}
                                         </select>
                                     </div>
-                                )}
 
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Kategori</label>
-                                        <select
-                                            value={data.category}
-                                            onChange={(e) => setData('category', e.target.value)}
-                                            className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50"
-                                            required
-                                        >
-                                            <option value="">Pilih</option>
-                                            {categories
-                                                .filter(c => c.type === inputType)
-                                                .map(cat => (
-                                                    <option key={cat.id} value={cat.name}>{cat.name}</option>
-                                                ))
-                                            }
-                                        </select>
+                                    {inputType === 'TRANSFER' && (
+                                        <div>
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Ke Dompet</label>
+                                            <select value={data.to_wallet_id} onChange={(e) => setData('to_wallet_id', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required>
+                                                <option value="">Pilih Dompet Tujuan</option>
+                                                {wallets.filter(w => w.id.toString() !== data.wallet_id).map(w => (
+                                                    <option key={w.id} value={w.id}>{w.name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    )}
+
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Kategori</label>
+                                            <select
+                                                value={data.category}
+                                                onChange={(e) => setData('category', e.target.value)}
+                                                className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50"
+                                                required
+                                            >
+                                                <option value="">Pilih</option>
+                                                {categories
+                                                    .filter(c => c.type === inputType)
+                                                    .map(cat => (
+                                                        <option key={cat.id} value={cat.name}>{cat.name}</option>
+                                                    ))
+                                                }
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Tanggal</label>
+                                            <input type="date" value={data.date} onChange={(e) => setData('date', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required />
+                                        </div>
                                     </div>
+
                                     <div>
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Tanggal</label>
-                                        <input type="date" value={data.date} onChange={(e) => setData('date', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required />
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Deskripsi</label>
+                                        <input type="text" value={data.description} onChange={(e) => setData('description', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="Makan siang" required />
                                     </div>
-                                </div>
 
-                                <div>
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Deskripsi</label>
-                                    <input type="text" value={data.description} onChange={(e) => setData('description', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="Makan siang" required />
-                                </div>
+                                    <TagInput
+                                        availableTags={userTags || []}
+                                        selectedTags={selectedTags}
+                                        onChange={setSelectedTags}
+                                    />
 
-                                <TagInput
-                                    availableTags={userTags || []}
-                                    selectedTags={selectedTags}
-                                    onChange={setSelectedTags}
-                                />
-
-                                <div className="flex space-x-3 pt-4">
-                                    <button type="button" onClick={() => setIsAddModalOpen(false)} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors active:scale-95">Batal</button>
-                                    <button type="submit" disabled={processing} className="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-indigo-500/30 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50">
-                                        {processing ? 'Menyimpan...' : 'Simpan'}
-                                    </button>
-                                </div>
-                            </form>
+                                    <div className="flex space-x-3 pt-4">
+                                        <button type="button" onClick={() => setIsAddModalOpen(false)} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors active:scale-95">Batal</button>
+                                        <button type="submit" disabled={processing} className="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-indigo-500/30 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50">
+                                            {processing ? 'Menyimpan...' : 'Simpan'}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
         </>
     );
 }
