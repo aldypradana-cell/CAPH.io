@@ -71,8 +71,8 @@ export default function BudgetsIndex({ auth, budgets, categories }: PageProps<{ 
         return { bar: 'bg-emerald-500', text: 'text-emerald-600 dark:text-emerald-400', ring: 'ring-emerald-500/20' };
     };
 
-    const totalBudget = budgets.reduce((s, b) => s + b.limit, 0);
-    const totalSpent = budgets.reduce((s, b) => s + b.spent, 0);
+    const totalBudget = budgets.reduce((s, b) => s + Number(b.limit), 0);
+    const totalSpent = budgets.reduce((s, b) => s + Number(b.spent), 0);
     const overallPct = totalBudget > 0 ? Math.min(100, Math.round((totalSpent / totalBudget) * 100)) : 0;
 
     return (
