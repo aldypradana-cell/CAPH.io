@@ -47,12 +47,7 @@ export default function CategoriesIndex({ auth, categories }: PageProps<{ catego
     const filtered = categories.filter(c => activeTab === 'ALL' || c.type === activeTab);
 
     return (
-        <AppLayout header={
-            <div className="flex flex-col">
-                <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Kategori</h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Kelola kategori transaksi</p>
-            </div>
-        }>
+        <>
             <Head title="Kategori" />
             <Toaster position="top-right" />
 
@@ -158,6 +153,17 @@ export default function CategoriesIndex({ auth, categories }: PageProps<{ catego
                     </div>
                 </div>
             )}
-        </AppLayout>
+        </>
     );
 }
+
+CategoriesIndex.layout = (page: any) => (
+    <AppLayout header={
+        <div className="flex flex-col">
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Kategori</h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Kelola kategori transaksi</p>
+        </div>
+    }>
+        {page}
+    </AppLayout>
+);

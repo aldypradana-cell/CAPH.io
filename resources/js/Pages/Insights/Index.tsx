@@ -177,19 +177,14 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
     const sc = insight ? (sentimentConfig[insight.sentiment] || sentimentConfig.CAUTIOUS) : null;
 
     return (
-        <AppLayout header={
-            <div className="flex flex-col">
-                <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Analisis AI</h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Insight cerdas dari data keuangan Anda</p>
-                {lastUpdated && (
-                    <p className="text-xs text-slate-400 mt-1">Terakhir diupdate: {new Date(lastUpdated).toLocaleString('id-ID')}</p>
-                )}
-            </div>
-        }>
+        <>
             <Head title="Analisis AI" />
             <Toaster position="top-right" />
 
             <div className="max-w-5xl mx-auto space-y-6 animate-fade-in-up">
+                {lastUpdated && (
+                    <p className="text-xs text-slate-400 -mt-2 mb-2">Terakhir diupdate: {new Date(lastUpdated).toLocaleString('id-ID')}</p>
+                )}
 
                 {/* ── Profile Completion Banner ── */}
                 {!hasProfile && (
@@ -552,6 +547,17 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                     </>
                 )}
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+InsightsIndex.layout = (page: any) => (
+    <AppLayout header={
+        <div className="flex flex-col">
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Analisis AI</h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Insight cerdas dari data keuangan Anda</p>
+        </div>
+    }>
+        {page}
+    </AppLayout>
+);

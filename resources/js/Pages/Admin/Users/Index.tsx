@@ -40,12 +40,7 @@ export default function AdminUsers({ auth, users, filters }: PageProps<{ users: 
     };
 
     return (
-        <AppLayout header={
-            <div className="flex flex-col">
-                <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Manajemen User</h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Kelola pengguna aplikasi</p>
-            </div>
-        }>
+        <>
             <Head title="Admin - Users" />
             <Toaster position="top-right" />
 
@@ -138,6 +133,17 @@ export default function AdminUsers({ auth, users, filters }: PageProps<{ users: 
                     </div>
                 </div>
             )}
-        </AppLayout>
+        </>
     );
 }
+
+AdminUsers.layout = (page: any) => (
+    <AppLayout header={
+        <div className="flex flex-col">
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Manajemen User</h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Kelola pengguna aplikasi</p>
+        </div>
+    }>
+        {page}
+    </AppLayout>
+);

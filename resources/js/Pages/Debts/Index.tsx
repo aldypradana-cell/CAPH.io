@@ -245,12 +245,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
     const availableCategories = categories.filter(c => c.type === recurringForm.data.type);
 
     return (
-        <AppLayout header={
-            <div className="flex flex-col">
-                <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Tagihan & Kewajiban</h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Kelola langganan rutin, hutang, dan piutang Anda</p>
-            </div>
-        }>
+        <>
             <Head title="Tagihan & Kewajiban" />
             <Toaster position="top-right" />
 
@@ -656,6 +651,17 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                     </div>
                 </div>
             )}
-        </AppLayout>
+        </>
     );
 }
+
+DebtsIndex.layout = (page: any) => (
+    <AppLayout header={
+        <div className="flex flex-col">
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Tagihan & Kewajiban</h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Kelola langganan rutin, hutang, dan piutang Anda</p>
+        </div>
+    }>
+        {page}
+    </AppLayout>
+);

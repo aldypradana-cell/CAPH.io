@@ -100,14 +100,7 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
     };
 
     return (
-        <AppLayout
-            header={
-                <div className="flex flex-col">
-                    <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Dompet Saya</h1>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Kelola sumber dana keuangan Anda</p>
-                </div>
-            }
-        >
+        <>
             <Head title="Dompet" />
             <Toaster position="top-right" />
 
@@ -253,6 +246,19 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                     </div>
                 </div>
             )}
-        </AppLayout>
+        </>
     );
 }
+
+WalletsIndex.layout = (page: any) => (
+    <AppLayout
+        header={
+            <div className="flex flex-col">
+                <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Dompet Saya</h1>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Kelola sumber dana keuangan Anda</p>
+            </div>
+        }
+    >
+        {page}
+    </AppLayout>
+);

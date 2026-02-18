@@ -276,16 +276,7 @@ export default function Dashboard({
     };
 
     return (
-        <AppLayout
-            header={
-                <div className="flex flex-col">
-                    <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Dashboard Ringkasan</h1>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
-                        Selamat datang kembali, {auth.user.name.split(' ')[0]}!
-                    </p>
-                </div>
-            }
-        >
+        <>
             <Head title="Dashboard" />
             <Toaster position="top-right" />
 
@@ -762,6 +753,21 @@ export default function Dashboard({
                     </div>
                 </div>
             )}
-        </AppLayout>
+        </>
     );
 }
+
+Dashboard.layout = (page: any) => (
+    <AppLayout
+        header={
+            <div className="flex flex-col">
+                <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Dashboard Ringkasan</h1>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
+                    Selamat datang kembali, {page.props.auth.user.name.split(' ')[0]}!
+                </p>
+            </div>
+        }
+    >
+        {page}
+    </AppLayout>
+);

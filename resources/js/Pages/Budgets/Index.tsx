@@ -76,12 +76,7 @@ export default function BudgetsIndex({ auth, budgets, categories }: PageProps<{ 
     const overallPct = totalBudget > 0 ? Math.min(100, Math.round((totalSpent / totalBudget) * 100)) : 0;
 
     return (
-        <AppLayout header={
-            <div className="flex flex-col">
-                <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Anggaran</h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Pantau dan kelola batas pengeluaran Anda</p>
-            </div>
-        }>
+        <>
             <Head title="Anggaran" />
             <Toaster position="top-right" />
 
@@ -232,6 +227,17 @@ export default function BudgetsIndex({ auth, budgets, categories }: PageProps<{ 
                     </div>
                 </div>
             )}
-        </AppLayout>
+        </>
     );
 }
+
+BudgetsIndex.layout = (page: any) => (
+    <AppLayout header={
+        <div className="flex flex-col">
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Anggaran</h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Pantau dan kelola batas pengeluaran Anda</p>
+        </div>
+    }>
+        {page}
+    </AppLayout>
+);

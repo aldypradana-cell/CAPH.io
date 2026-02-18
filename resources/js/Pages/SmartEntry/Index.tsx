@@ -77,12 +77,7 @@ export default function SmartEntryIndex({ auth, wallets, categories }: PageProps
     };
 
     return (
-        <AppLayout header={
-            <div className="flex flex-col">
-                <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Input Cerdas AI</h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Masukkan transaksi dengan bahasa natural</p>
-            </div>
-        }>
+        <>
             <Head title="Input AI" />
             <Toaster position="top-right" />
 
@@ -204,6 +199,17 @@ export default function SmartEntryIndex({ auth, wallets, categories }: PageProps
                     </div>
                 </div>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+SmartEntryIndex.layout = (page: any) => (
+    <AppLayout header={
+        <div className="flex flex-col">
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Input Cerdas AI</h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Masukkan transaksi dengan bahasa natural</p>
+        </div>
+    }>
+        {page}
+    </AppLayout>
+);

@@ -75,12 +75,7 @@ export default function AdminMasterIndex({ categories }: { categories: Category[
     };
 
     return (
-        <AppLayout header={
-            <div className="flex flex-col">
-                <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Master Data</h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Kelola kategori global & referensi data</p>
-            </div>
-        }>
+        <>
             <Head title="Admin - Master Data" />
 
             <div className="space-y-6 animate-fade-in-up">
@@ -159,8 +154,8 @@ export default function AdminMasterIndex({ categories }: { categories: Category[
                                     type="button"
                                     onClick={() => setData('type', 'INCOME')}
                                     className={`p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${data.type === 'INCOME'
-                                            ? 'border-emerald-500 bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20'
-                                            : 'border-slate-200 dark:border-slate-700 text-slate-500'
+                                        ? 'border-emerald-500 bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20'
+                                        : 'border-slate-200 dark:border-slate-700 text-slate-500'
                                         }`}
                                 >
                                     <TrendingUp className="w-4 h-4" /> Pemasukan
@@ -169,8 +164,8 @@ export default function AdminMasterIndex({ categories }: { categories: Category[
                                     type="button"
                                     onClick={() => setData('type', 'EXPENSE')}
                                     className={`p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${data.type === 'EXPENSE'
-                                            ? 'border-red-500 bg-red-50 text-red-600 dark:bg-red-900/20'
-                                            : 'border-slate-200 dark:border-slate-700 text-slate-500'
+                                        ? 'border-red-500 bg-red-50 text-red-600 dark:bg-red-900/20'
+                                        : 'border-slate-200 dark:border-slate-700 text-slate-500'
                                         }`}
                                 >
                                     <TrendingDown className="w-4 h-4" /> Pengeluaran
@@ -206,6 +201,17 @@ export default function AdminMasterIndex({ categories }: { categories: Category[
                     </form>
                 </div>
             </Modal>
-        </AppLayout>
+        </>
     );
 }
+
+AdminMasterIndex.layout = (page: any) => (
+    <AppLayout header={
+        <div className="flex flex-col">
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Master Data</h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Kelola kategori global & referensi data</p>
+        </div>
+    }>
+        {page}
+    </AppLayout>
+);

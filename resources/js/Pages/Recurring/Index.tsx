@@ -163,16 +163,7 @@ export default function RecurringIndex({ auth, recurringTransactions, dueBills, 
     };
 
     return (
-        <AppLayout
-            header={
-                <div className="flex flex-col">
-                    <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Transaksi Rutin</h1>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
-                        Kelola langganan, cicilan, dan tagihan rutin Anda.
-                    </p>
-                </div>
-            }
-        >
+        <>
             <Head title="Transaksi Rutin" />
 
             <div className="py-12">
@@ -497,6 +488,21 @@ export default function RecurringIndex({ auth, recurringTransactions, dueBills, 
                     </div>
                 </form>
             </Modal>
-        </AppLayout>
+        </>
     );
 }
+
+RecurringIndex.layout = (page: any) => (
+    <AppLayout
+        header={
+            <div className="flex flex-col">
+                <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Transaksi Rutin</h1>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
+                    Kelola langganan, cicilan, dan tagihan rutin Anda.
+                </p>
+            </div>
+        }
+    >
+        {page}
+    </AppLayout>
+);

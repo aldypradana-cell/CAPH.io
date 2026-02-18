@@ -215,16 +215,7 @@ export default function TransactionsIndex({
     };
 
     return (
-        <AppLayout
-            header={
-                <div className="flex flex-col">
-                    <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Riwayat Transaksi</h1>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
-                        Kelola semua transaksi keuangan Anda
-                    </p>
-                </div>
-            }
-        >
+        <>
             <Head title="Transaksi" />
             <Toaster position="top-right" />
 
@@ -559,6 +550,21 @@ export default function TransactionsIndex({
                     </div>
                 </div>
             )}
-        </AppLayout>
+        </>
     );
 }
+
+TransactionsIndex.layout = (page: any) => (
+    <AppLayout
+        header={
+            <div className="flex flex-col">
+                <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Riwayat Transaksi</h1>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
+                    Kelola semua transaksi keuangan Anda
+                </p>
+            </div>
+        }
+    >
+        {page}
+    </AppLayout>
+);
