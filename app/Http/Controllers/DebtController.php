@@ -54,7 +54,7 @@ class DebtController extends Controller
             'recurring' => $recurring,
             'dueRecurring' => $dueRecurring,
             'wallets' => \App\Models\Wallet::where('user_id', $user->id)->get(['id', 'name', 'balance']),
-            'categories' => \App\Models\Category::where('user_id', $user->id)->get(['id', 'name', 'type']),
+            'categories' => \App\Models\Category::userCategories($user->id)->get(['id', 'name', 'type']),
             'summary' => $summary,
             'filters' => $request->only(['type', 'status']),
         ]);
