@@ -97,17 +97,8 @@ export default function NotificationCenter({ notifications }: {
     };
 
     return (
-        <AppLayout header={
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full">
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2"><Bell className="w-6 h-6 text-indigo-600 dark:text-indigo-400" /> Pusat Notifikasi</h1>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Anda memiliki <span className="font-bold text-indigo-600 dark:text-indigo-400">{unreadCount}</span> notifikasi baru.</p>
-                </div>
-                <button onClick={handleMarkAllRead} disabled={unreadCount === 0} className="px-4 py-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors disabled:opacity-50 flex items-center">
-                    <Check className="w-3 h-3 mr-1.5" /> Tandai Semua Dibaca
-                </button>
-            </div>
-        }>
+
+        <>
             <Head title="Notifikasi" />
             <Toaster position="top-right" />
 
@@ -168,8 +159,8 @@ export default function NotificationCenter({ notifications }: {
                                         key={i}
                                         onClick={() => router.get(link.url!, {}, { preserveScroll: true, preserveState: true })}
                                         className={`px-3 py-2 text-xs font-bold rounded-xl transition-all ${link.active
-                                                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
-                                                : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-indigo-600 dark:hover:text-indigo-400'
+                                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
+                                            : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-indigo-600 dark:hover:text-indigo-400'
                                             }`}
                                         dangerouslySetInnerHTML={{ __html: link.label }}
                                     />
@@ -185,6 +176,49 @@ export default function NotificationCenter({ notifications }: {
                     </div>
                 )}
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+NotificationCenter.layout = (page: any) => (
+    <AppLayout header={
+        // Access props from the page component if needed, but since layout is a static property, we can't easily access component props here directly unless we pass them or use usePage().
+        // However, we can duplicate the header logic here or just keep it simple.
+        // Wait, I can't access `unreadCount` inside the static layout function easily from here without context.
+        // Actually, `page` has props!
+        LayoutHeader(page)
+    }>
+        {page}
+    </AppLayout>
+);
+
+// Helper to render header with props from page
+const LayoutHeader = (page: any) => {
+    // We need to extract unreadCount logic or pass it from props.
+    // The page props are available in `page.props`.
+    const notifications = page.props.notifications;
+    const unreadCount = notifications ? notifications.data.filter((n: any) => !n.read_at).length : 0;
+
+    // We also need handleMarkAllRead... but we can't easily pass functions from component to static layout.
+    // Actually, we can just render the visual part in the header, and keep the logic in the component? 
+    // BUT the header is in AppLayout. 
+    // The original code had specific buttons in the header.
+    // If I move the header to AppLayout via the layout property, I lose access to component state and functions (like handleMarkAllRead).
+
+    // Alternative: Keep the header SIMPLE in the layout, and move the complex controls (like Mark All Read button) to the page body.
+    // OR: Use a portal? No.
+    // OR: Just hardcode the router visit in the header?
+
+    return (
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full">
+            <div>
+                <h1 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2"><Bell className="w-6 h-6 text-indigo-600 dark:text-indigo-400" /> Pusat Notifikasi</h1>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Anda memiliki <span className="font-bold text-indigo-600 dark:text-indigo-400">{unreadCount}</span> notifikasi baru.</p>
+            </div>
+            <button onClick={() => router.post(route('notifications.readAll'))} disabled={unreadCount === 0} className="px-4 py-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors disabled:opacity-50 flex items-center">
+                <Check className="w-3 h-3 mr-1.5" /> Tandai Semua Dibaca
+            </button>
+        </div>
+    );
+};
+

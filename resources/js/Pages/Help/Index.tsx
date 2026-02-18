@@ -31,12 +31,8 @@ export default function HelpCenter() {
     );
 
     return (
-        <AppLayout header={
-            <div className="flex flex-col">
-                <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Bantuan & FAQ</h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Temukan jawaban dan dapatkan bantuan</p>
-            </div>
-        }>
+
+        <>
             <Head title="Bantuan & FAQ" />
 
             <div className="space-y-8 animate-fade-in-up">
@@ -107,6 +103,18 @@ export default function HelpCenter() {
                     </div>
                 </div>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+HelpCenter.layout = (page: any) => (
+    <AppLayout header={
+        <div className="flex flex-col">
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Bantuan & FAQ</h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Temukan jawaban dan dapatkan bantuan</p>
+        </div>
+    }>
+        {page}
+    </AppLayout>
+);
+

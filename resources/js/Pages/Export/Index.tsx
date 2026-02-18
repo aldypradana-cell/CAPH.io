@@ -102,17 +102,8 @@ export default function ExportPage({ wallets }: ExportPageProps) {
     const fmtCompact = (n: number) => new Intl.NumberFormat('id-ID', { notation: 'compact', compactDisplay: 'short' }).format(n);
 
     return (
-        <AppLayout header={
-            <div className="flex items-center gap-4">
-                <div className="p-3 bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-xl">
-                    <FileDown className="w-6 h-6" />
-                </div>
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Export Laporan</h1>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Unduh riwayat transaksi dalam format Excel atau PDF</p>
-                </div>
-            </div>
-        }>
+
+        <>
             <Head title="Export Laporan" />
             <Toaster position="top-right" />
 
@@ -257,6 +248,23 @@ export default function ExportPage({ wallets }: ExportPageProps) {
                     </div>
                 </div>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+ExportPage.layout = (page: any) => (
+    <AppLayout header={
+        <div className="flex items-center gap-4">
+            <div className="p-3 bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-xl">
+                <FileDown className="w-6 h-6" />
+            </div>
+            <div>
+                <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Export Laporan</h1>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Unduh riwayat transaksi dalam format Excel atau PDF</p>
+            </div>
+        </div>
+    }>
+        {page}
+    </AppLayout>
+);
+

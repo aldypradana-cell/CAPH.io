@@ -138,12 +138,7 @@ export default function Settings() {
     };
 
     return (
-        <AppLayout header={
-            <div className="flex flex-col">
-                <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Pengaturan</h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Sesuaikan aplikasi dan profil finansial Anda</p>
-            </div>
-        }>
+        <>
             <Head title="Pengaturan" />
             <Toaster position="top-right" />
 
@@ -381,6 +376,18 @@ export default function Settings() {
 
                 <div className="text-center pt-4"><p className="text-xs text-slate-400">CAPH.io v1.2.0 with Financial Goals</p></div>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+Settings.layout = (page: any) => (
+    <AppLayout header={
+        <div className="flex flex-col">
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Pengaturan</h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Sesuaikan aplikasi dan profil finansial Anda</p>
+        </div>
+    }>
+        {page}
+    </AppLayout>
+);
+

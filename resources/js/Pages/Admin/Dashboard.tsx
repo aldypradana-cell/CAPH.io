@@ -61,19 +61,8 @@ export default function AdminDashboard() {
     };
 
     return (
-        <AppLayout header={
-            <div className="flex items-center gap-4">
-                <div className="p-3 bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-xl">
-                    <Shield className="w-6 h-6" />
-                </div>
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Admin Panel</h1>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
-                        {activeTabInfo.label} & Management Area
-                    </p>
-                </div>
-            </div>
-        }>
+
+        <>
             <Head title={`Admin - ${activeTabInfo.label}`} />
             <Toaster position="top-right" />
 
@@ -124,7 +113,41 @@ export default function AdminDashboard() {
                     {renderContent()}
                 </div>
             </div>
-        </AppLayout>
+        </>
     );
 }
+
+// Define the layout with a function that accesses page props to render the dynamic header
+AdminDashboard.layout = (page: any) => {
+    // We can access props from the page object.
+    // The structure is page.props.activeTabInfo... wait, 'activeTabInfo' is calculated inside the component.
+    // We need to derive it from 'tab' prop which is available in page.props.
+
+    // We can recreate the tabs array here or better yet, just extract the title/label logic.
+    // However, recreating 'tabs' array with icons might be repetitive.
+    // Let's try to infer the title from props or just use a generic title.
+    // The user wants "Admin Panel" and the subtitle.
+
+    const { tab } = page.props;
+    const tabLabel = tab ? (tab as string).charAt(0).toUpperCase() + (tab as string).slice(1) : 'Overview';
+
+    return (
+        <AppLayout header={
+            <div className="flex items-center gap-4">
+                <div className="p-3 bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-xl">
+                    <Shield className="w-6 h-6" />
+                </div>
+                <div>
+                    <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Admin Panel</h1>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
+                        {tabLabel} & Management Area
+                    </p>
+                </div>
+            </div>
+        }>
+            {page}
+        </AppLayout>
+    );
+};
+
 

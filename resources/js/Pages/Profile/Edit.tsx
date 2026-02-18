@@ -66,12 +66,8 @@ export default function Edit({
     const inputClass = "w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 transition-all";
 
     return (
-        <AppLayout header={
-            <div className="flex flex-col">
-                <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Profil Saya</h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Kelola informasi akun Anda</p>
-            </div>
-        }>
+
+        <>
             <Head title="Profil" />
             <Toaster position="top-right" />
 
@@ -241,6 +237,18 @@ export default function Edit({
                     </div>
                 </div>
             )}
-        </AppLayout>
+        </>
     );
 }
+
+Edit.layout = (page: any) => (
+    <AppLayout header={
+        <div className="flex flex-col">
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Profil Saya</h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Kelola informasi akun Anda</p>
+        </div>
+    }>
+        {page}
+    </AppLayout>
+);
+
