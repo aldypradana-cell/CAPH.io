@@ -1,7 +1,8 @@
 import AppLayout from '@/Layouts/AppLayout';
 import { Head, Link, useForm, router } from '@inertiajs/react';
 import { PageProps } from '@/types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
     Plus, Sparkles, TrendingUp, TrendingDown, Wallet as WalletIcon,
     ArrowUpRight, ArrowDownRight, BarChart3, Target,
@@ -141,7 +142,7 @@ interface TopTagData {
 }
 
 export default function Dashboard({
-    auth, stats, trendData: chartData, pieData, budgetProgress, recentTransactions, wallets, upcomingBills, recurringTransactions = [], topTags, categories, userTags, filters
+    auth, stats, trendData: chartData, pieData, budgetProgress, recentTransactions, wallets, upcomingBills, topTags, categories, userTags, filters
 }: PageProps<{
     stats: Stats;
     trendData: ChartData[];
@@ -150,7 +151,6 @@ export default function Dashboard({
     recentTransactions: Transaction[];
     wallets: WalletData[];
     upcomingBills: Debt[];
-    recurringTransactions: RecurringTransaction[];
     topTags: TopTagData[];
     categories: CategoryData[];
     userTags: TagData[];
@@ -159,6 +159,14 @@ export default function Dashboard({
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [inputType, setInputType] = useState<'EXPENSE' | 'INCOME' | 'TRANSFER'>('EXPENSE');
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [recurringTransactions, setRecurringTransactions] = useState<RecurringTransaction[]>([]);
+
+    // Fetch recurring transactions from dedicated API route (bypasses DashboardController)
+    useEffect(() => {
+        axios.get('/api/dashboard/recurring')
+            .then(res => setRecurringTransactions(res.data))
+            .catch(err => console.error('Failed to fetch recurring transactions:', err));
+    }, []);
 
     const { data, setData, post, processing, reset } = useForm({
         wallet_id: '',
@@ -536,7 +544,7 @@ export default function Dashboard({
                             <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center">
                                 <Repeat className="w-5 h-5 mr-2 text-blue-500" /> Transaksi Rutin
                             </h3>
-                            <Link href={route('recurring.index')} className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">Lihat</Link>
+                            <Link href={route('debts.index')} className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">Lihat</Link>
                         </div>
                         <div className="space-y-3 flex-1 overflow-y-auto scrollbar-hide">
                             {recurringTransactions.length > 0 ? (

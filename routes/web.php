@@ -46,8 +46,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Recurring Transactions
     Route::resource('recurring', RecurringTransactionController::class)
-        ->only(['index', 'store', 'update', 'destroy']);
+        ->only(['store', 'update', 'destroy']);
     Route::post('/recurring/{recurring}/process', [RecurringTransactionController::class , 'process'])->name('recurring.process');
+    Route::get('/api/dashboard/recurring', [RecurringTransactionController::class , 'dashboardWidget'])->name('api.dashboard.recurring');
 
     // Budgets
     Route::resource('budgets', BudgetController::class)

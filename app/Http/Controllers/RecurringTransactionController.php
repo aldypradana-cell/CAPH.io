@@ -20,35 +20,7 @@ class RecurringTransactionController extends Controller
         $this->transactionService = $transactionService;
     }
 
-    public function index(Request $request)
-    {
-        $user = $request->user();
 
-        $recurring = RecurringTransaction::where('user_id', $user->id)
-            ->with(['wallet'])
-            ->orderBy('is_active', 'desc')
-            ->orderBy('next_run_date', 'asc')
-            ->get();
-
-        // Get Due Bills (Active, Manual, Due Date <= Today)
-        $dueBills = RecurringTransaction::where('user_id', $user->id)
-            ->active()
-            ->due()
-            ->where('auto_cut', false)
-            ->with(['wallet'])
-            ->orderBy('next_run_date', 'asc')
-            ->get();
-
-        $wallets = Wallet::where('user_id', $user->id)->get();
-        $categories = Category::userCategories($user->id)->get();
-
-        return Inertia::render('Recurring/Index', [
-            'recurringTransactions' => $recurring,
-            'dueBills' => $dueBills,
-            'wallets' => $wallets,
-            'categories' => $categories,
-        ]);
-    }
 
     public function store(Request $request)
     {
@@ -111,6 +83,22 @@ class RecurringTransactionController extends Controller
         $recurring->delete();
 
         return redirect()->back()->with('success', 'Jadwal transaksi berhasil dihapus');
+    }
+
+    /**
+     * Return recurring transactions as JSON for the dashboard widget.
+     */
+    public function dashboardWidget(Request $request)
+    {
+        $user = $request->user();
+
+        $recurring = RecurringTransaction::where('user_id', $user->id)
+            ->where('is_active', true)
+            ->orderBy('next_run_date', 'asc')
+            ->take(5)
+            ->get(['id', 'name', 'amount', 'next_run_date', 'frequency', 'type', 'category']);
+
+        return response()->json($recurring);
     }
 
     /**

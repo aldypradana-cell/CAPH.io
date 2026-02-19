@@ -34,10 +34,10 @@ export default function Authenticated({
                                     Dashboard
                                 </NavLink>
                                 <NavLink
-                                    href={route('recurring.index')}
-                                    active={route().current('recurring.*')}
+                                    href={route('debts.index')}
+                                    active={route().current('debts.*')}
                                 >
-                                    Rutin
+                                    Tagihan & Rutin
                                 </NavLink>
                             </div>
                         </div>
@@ -144,10 +144,10 @@ export default function Authenticated({
                             Dashboard
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
-                            href={route('recurring.index')}
-                            active={route().current('recurring.*')}
+                            href={route('debts.index')}
+                            active={route().current('debts.*')}
                         >
-                            Rutin
+                            Tagihan & Rutin
                         </ResponsiveNavLink>
                     </div>
 
