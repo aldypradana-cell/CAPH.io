@@ -1,6 +1,7 @@
 import AppLayout from '@/Layouts/AppLayout';
 import { Head, usePage, router } from '@inertiajs/react';
 import { useState, useRef, useEffect } from 'react';
+import axios from 'axios';
 import { Moon, Sun, Bell, DollarSign, Globe, Shield, Database, Upload, Download, Users, Briefcase, Target, Plus, Trash2, ChevronRight, Save, Loader2 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -36,6 +37,7 @@ export default function Settings() {
     const [newGoalDate, setNewGoalDate] = useState('');
 
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [isRestoring, setIsRestoring] = useState(false);
 
     // Load saved financial profile from DB on mount
     useEffect(() => {
@@ -113,28 +115,45 @@ export default function Settings() {
     };
 
     const handleBackup = () => {
-        const data = { version: '1.0', timestamp: new Date().toISOString(), note: 'CAPH.io Backup' };
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `CAPH_Backup_${new Date().toISOString().split('T')[0]}.json`;
-        document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url);
-        toast.success('Data berhasil di-backup!');
+        // Trigger browser download via the Laravel API route
+        window.location.href = route('backup.download');
+        toast.success('Mengunduh backup...');
     };
 
     const handleRestore = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            try {
-                JSON.parse(event.target?.result as string);
-                toast.success('Data berhasil dipulihkan!');
-            } catch { toast.error('Gagal membaca file backup.'); }
-        };
-        reader.readAsText(file);
-        if (fileInputRef.current) fileInputRef.current.value = '';
+
+        const confirmed = window.confirm(
+            '⚠ PERINGATAN: Restore akan MENGHAPUS semua data Anda (transaksi, dompet, anggaran, dll.) dan menggantinya dengan data dari file backup ini.\n\nLanjutkan?'
+        );
+
+        if (!confirmed) {
+            if (fileInputRef.current) fileInputRef.current.value = '';
+            return;
+        }
+
+        setIsRestoring(true);
+        const formData = new FormData();
+        formData.append('file', file);
+
+        axios.post(route('backup.restore'), formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        }).then((res) => {
+            const r = res.data.restored;
+            toast.success(
+                `✅ Restore berhasil! ${r.wallets} dompet · ${r.transactions} transaksi · ${r.recurring} rutin · ${r.debts} hutang`,
+                { duration: 6000 }
+            );
+            // Reload page so data is fresh
+            setTimeout(() => window.location.reload(), 2000);
+        }).catch((err) => {
+            const msg = err.response?.data?.message || 'Restore gagal. Format file tidak valid.';
+            toast.error(msg, { duration: 8000 });
+        }).finally(() => {
+            setIsRestoring(false);
+            if (fileInputRef.current) fileInputRef.current.value = '';
+        });
     };
 
     return (
@@ -333,13 +352,21 @@ export default function Settings() {
                                     <p className="text-xs text-slate-500 dark:text-slate-400">Unduh data ke file JSON</p>
                                 </div>
                             </button>
-                            <button onClick={() => fileInputRef.current?.click()} className="flex items-center justify-center p-4 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group text-left">
-                                <div className="p-3 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-lg mr-4 group-hover:scale-110 transition-transform"><Upload className="w-6 h-6" /></div>
+                            <button
+                                onClick={() => !isRestoring && fileInputRef.current?.click()}
+                                disabled={isRestoring}
+                                className={`flex items-center justify-center p-4 border border-slate-200 dark:border-slate-700 rounded-xl transition-all group text-left ${isRestoring ? 'opacity-60 cursor-not-allowed' : 'hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+                            >
+                                <div className="p-3 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-lg mr-4 group-hover:scale-110 transition-transform">
+                                    {isRestoring ? <Loader2 className="w-6 h-6 animate-spin" /> : <Upload className="w-6 h-6" />}
+                                </div>
                                 <div>
-                                    <p className="font-bold text-slate-800 dark:text-white">Restore Data</p>
+                                    <p className="font-bold text-slate-800 dark:text-white">
+                                        {isRestoring ? 'Sedang Restore...' : 'Restore Data'}
+                                    </p>
                                     <p className="text-xs text-slate-500 dark:text-slate-400">Upload file JSON backup</p>
                                 </div>
-                                <input type="file" ref={fileInputRef} className="hidden" accept=".json" onChange={handleRestore} />
+                                <input type="file" ref={fileInputRef} className="hidden" accept=".json" onChange={handleRestore} disabled={isRestoring} />
                             </button>
                         </div>
                     </div>

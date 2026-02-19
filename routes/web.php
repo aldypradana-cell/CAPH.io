@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\TransactionController as AdminTransactionControll
 use App\Http\Controllers\Admin\MasterDataController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RecurringTransactionController;
+use App\Http\Controllers\BackupController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect to dashboard if authenticated, otherwise to login
@@ -97,6 +98,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/settings', fn() => \Inertia\Inertia::render('Settings/Index'))->name('settings.index');
     Route::get('/notifications-page', [NotificationController::class , 'page'])->name('notifications.page');
     Route::get('/help', fn() => \Inertia\Inertia::render('Help/Index'))->name('help.index');
+
+    // Backup & Restore
+    Route::get('/backup/download', [BackupController::class , 'download'])->name('backup.download');
+    Route::post('/backup/restore', [BackupController::class , 'restore'])->name('backup.restore');
 
     // Admin routes (protected by admin middleware)
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
