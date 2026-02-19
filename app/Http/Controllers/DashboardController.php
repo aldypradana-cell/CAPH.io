@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaction;
 use App\Models\Wallet;
+use App\Models\Asset;
 use App\Models\Category;
 use App\Models\Debt;
 use App\Models\Budget;
@@ -11,6 +12,7 @@ use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -53,6 +55,21 @@ class DashboardController extends Controller
         $balance = (float) $wallets->sum('balance'); // Current balance is always real-time from wallets
         $transactionCount = Transaction::forUser($user->id)->inDateRange($fixedStartDate, $fixedEndDate)->count();
         
+        // --- Net Worth Calculation ---
+        $totalReceivables = (float) Debt::where('user_id', $user->id)
+            ->where('type', 'RECEIVABLE')
+            ->where('is_paid', false)
+            ->sum('amount');
+            
+        $totalDebts = (float) Debt::where('user_id', $user->id)
+            ->where('type', 'DEBT')
+            ->where('is_paid', false)
+            ->sum('amount');
+            
+        $totalAssetsValue = (float) Asset::where('user_id', $user->id)->sum('value');
+        
+        $netWorth = ($balance + $totalReceivables + $totalAssetsValue) - $totalDebts;
+
         // --- Server-Side Aggregation for Trend Chart ---
         $trendData = $this->aggregateTrendData($user->id, $startDate, $endDate, $mode, $trendCategory);
 
@@ -134,6 +151,7 @@ class DashboardController extends Controller
                 'balance' => $balance,
                 'netFlow' => $totalIncome - $totalExpense,
                 'transactionCount' => $transactionCount,
+                'netWorth' => $netWorth,
             ],
             'trendData' => $trendData,
             'pieData' => $pieData, // Replaces expenseByCategory

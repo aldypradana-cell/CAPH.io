@@ -19,6 +19,7 @@ import UpcomingBillsWidget from '@/Components/Dashboard/UpcomingBillsWidget';
 import RecentTransactionsWidget from '@/Components/Dashboard/RecentTransactionsWidget';
 import TopTagsWidget from '@/Components/Dashboard/TopTagsWidget';
 import AddTransactionModal from '@/Components/Dashboard/AddTransactionModal';
+import NetWorthCard from '@/Components/Dashboard/NetWorthCard';
 
 // Types
 import {
@@ -196,17 +197,12 @@ export default function Dashboard({
             <Toaster position="top-right" />
 
             <div className="space-y-8">
-                {/* Quick Action Bar */}
+                {/* Header Action Bar */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 animate-fade-in-up" style={{ animationDelay: '0ms' }}>
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <h2 className="text-3xl font-bold text-slate-800 dark:text-white tracking-tight">Financial Overview</h2>
-                        </div>
-                        <p className="text-slate-500 dark:text-slate-400 font-medium">
-                            Pantau kondisi keuangan Anda secara real-time.
-                        </p>
+                    <div className="w-full md:w-auto">
+                        <NetWorthCard amount={stats.netWorth} />
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 ml-auto">
                         <button
                             onClick={resetLayout}
                             className="p-3 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-2xl border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all hover:scale-105 active:scale-95"

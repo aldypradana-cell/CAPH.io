@@ -9,6 +9,7 @@ export interface Stats {
     totalExpense: number;
     balance: number;
     netFlow: number;
+    netWorth: number; // Added for Net Worth feature
     transactionCount: number;
 }
 
