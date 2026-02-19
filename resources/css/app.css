@@ -90,11 +90,42 @@ html.dark ::-webkit-scrollbar-thumb:hover {
   scrollbar-width: none;
 }
 
-/* Scale animation helper */
 @keyframes scale-in {
   0% { transform: scale(0.9); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
 }
 .animate-scale-in {
   animation: scale-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* React Grid Layout Styles */
+.react-grid-placeholder {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 2px dashed rgba(99, 102, 241, 0.3) !important;
+  border-radius: 1.5rem !important;
+  opacity: 1 !important;
+  backdrop-filter: blur(4px);
+  z-index: 10;
+}
+
+html.dark .react-grid-placeholder {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(99, 102, 241, 0.3) !important;
+}
+
+.react-grid-item.resizing {
+  z-index: 100;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.react-grid-item.react-grid-placeholder {
+    transition: none !important; /* Fix stuttering placeholder */
+}
+
+/* Drag Handle Cursor */
+.drag-handle {
+    cursor: grab;
+}
+.drag-handle:active {
+    cursor: grabbing;
 }
