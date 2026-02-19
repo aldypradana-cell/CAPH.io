@@ -7,7 +7,7 @@ import {
     Plus, Sparkles, TrendingUp, TrendingDown, Wallet as WalletIcon,
     ArrowUpRight, ArrowDownRight, BarChart3, Target,
     CalendarClock, AlertTriangle, ChevronDown, X, ArrowRightLeft,
-    Filter, Calendar, PieChart as PieChartIcon, Tag as TagIcon, Repeat
+    Filter, Calendar, PieChart as PieChartIcon, Tag as TagIcon, Repeat, Receipt
 } from 'lucide-react';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -542,72 +542,133 @@ export default function Dashboard({
                     <div className="glass-card p-6 rounded-[2rem] flex flex-col transition-all hover:shadow-lg duration-500 animate-fade-in-up" style={{ animationDelay: '650ms' }}>
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center">
-                                <Repeat className="w-5 h-5 mr-2 text-blue-500" /> Transaksi Rutin
+                                <Repeat className="w-5 h-5 mr-2 text-indigo-500" /> Transaksi Rutin
                             </h3>
-                            <Link href={route('debts.index')} className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">Lihat</Link>
+                            <Link href={route('debts.index')} className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">Lihat Semua</Link>
                         </div>
                         <div className="space-y-3 flex-1 overflow-y-auto scrollbar-hide">
                             {recurringTransactions.length > 0 ? (
                                 recurringTransactions.map((rt) => {
                                     const nextDate = new Date(rt.next_run_date);
-                                    const daysUntil = Math.ceil((nextDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-                                    const isSoon = daysUntil <= 3; // Highlight if within 3 days
+                                    const now = new Date();
+                                    const diffTime = nextDate.getTime() - now.getTime();
+                                    const daysUntil = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                                    const isToday = daysUntil === 0;
+                                    const isOverdue = daysUntil < 0;
+                                    const isSoon = daysUntil > 0 && daysUntil <= 3;
 
                                     return (
-                                        <div key={rt.id} className={`flex items-center justify-between p-3 rounded-xl border ${isSoon ? 'border-blue-200 dark:border-blue-900/50 bg-blue-50/80 dark:bg-blue-900/10' : 'border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50'} transition-colors`}>
-                                            <div className="flex items-center gap-3">
-                                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold ${rt.frequency === 'MONTHLY' ? 'bg-indigo-500' : 'bg-purple-500'}`}>
-                                                    {rt.frequency === 'MONTHLY' ? 'BLN' : 'MG'}
+                                        <div key={rt.id} className="group relative p-3 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 hover:border-indigo-200 dark:hover:border-indigo-900 transition-all hover:shadow-md hover:scale-[1.02]">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-sm ${rt.type === 'EXPENSE' ? 'bg-gradient-to-br from-rose-500 to-pink-600' :
+                                                        rt.type === 'INCOME' ? 'bg-gradient-to-br from-emerald-500 to-teal-600' :
+                                                            'bg-gradient-to-br from-blue-500 to-indigo-600'
+                                                        }`}>
+                                                        {rt.frequency === 'MONTHLY' ? <span className="text-xs font-bold">BLN</span> : <Repeat className="w-5 h-5" />}
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm font-bold text-slate-800 dark:text-white line-clamp-1">{rt.name}</p>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400">{rt.category}</span>
+                                                            {rt.auto_cut && (
+                                                                <span className="px-1.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-[9px] font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-0.5">
+                                                                    <Sparkles className="w-2 h-2" /> Auto
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <p className="text-sm font-bold text-slate-700 dark:text-slate-200">{rt.name}</p>
-                                                    <p className="text-[10px] text-slate-400">
-                                                        {nextDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
-                                                        {daysUntil >= 0 ? ` (H-${daysUntil})` : ' (Lewat)'}
+                                                <div className="text-right">
+                                                    <p className={`text-sm font-bold ${rt.type === 'INCOME' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-700 dark:text-slate-200'}`}>
+                                                        {formatShortIDR(rt.amount)}
                                                     </p>
+
                                                 </div>
                                             </div>
-                                            <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{formatShortIDR(rt.amount)}</span>
+
+                                            {/* Date Indicator */}
+                                            <div className={`flex items-center justify-between text-[10px] font-bold px-2 py-1 rounded-lg ${isToday ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300' :
+                                                isOverdue ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300' :
+                                                    isSoon ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' :
+                                                        'bg-slate-100 text-slate-500 dark:bg-slate-700/50 dark:text-slate-400'
+                                                }`}>
+                                                <span className="flex items-center gap-1">
+                                                    <CalendarClock className="w-3 h-3" />
+                                                    {nextDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                                                </span>
+                                                <span>
+                                                    {isToday ? 'Hari Ini!' : isOverdue ? `Lewat ${Math.abs(daysUntil)} hari` : `H-${daysUntil}`}
+                                                </span>
+                                            </div>
                                         </div>
                                     );
                                 })
                             ) : (
-                                <div className="flex items-center justify-center flex-1 text-slate-400 text-sm py-8">
-                                    Belum ada transaksi rutin
+                                <div className="flex flex-col items-center justify-center flex-1 text-slate-400 py-8">
+                                    <Repeat className="w-12 h-12 mb-2 opacity-20" />
+                                    <span className="text-sm">Belum ada transaksi rutin</span>
                                 </div>
                             )}
                         </div>
                     </div>
 
-                    {/* Upcoming Bills */}
+                    {/* Upcoming Bills (Hutang Piutang) */}
                     <div className="glass-card p-6 rounded-[2rem] flex flex-col transition-all hover:shadow-lg duration-500 animate-fade-in-up" style={{ animationDelay: '700ms' }}>
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center">
-                                <CalendarClock className="w-5 h-5 mr-2 text-amber-500" /> Tagihan Mendatang
+                                <AlertTriangle className="w-5 h-5 mr-2 text-rose-500" /> Hutang & Piutang
                             </h3>
-                            <Link href={route('debts.index')} className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">Lihat</Link>
+                            <Link href={route('debts.index')} className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">Lihat Semua</Link>
                         </div>
                         <div className="space-y-3 flex-1 overflow-y-auto scrollbar-hide">
                             {upcomingBills.length > 0 ? (
                                 upcomingBills.map((bill) => {
-                                    const dueDate = new Date(bill.due_date);
-                                    const isOverdue = dueDate < new Date();
+                                    const dueDate = bill.due_date ? new Date(bill.due_date) : null;
+                                    const isOverdue = dueDate && dueDate < new Date();
+                                    const isDebt = bill.type === 'DEBT';
+                                    const isReceivable = bill.type === 'RECEIVABLE';
+
                                     return (
-                                        <div key={bill.id} className={`flex items-center justify-between p-3 rounded-xl border ${isOverdue ? 'border-red-200 dark:border-red-900/50 bg-red-50/80 dark:bg-red-900/10' : 'border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50'} transition-colors`}>
-                                            <div className="flex items-center gap-3">
-                                                <div className={`w-2 h-2 rounded-full ${isOverdue ? 'bg-red-500 animate-pulse' : 'bg-amber-500'}`} />
-                                                <div>
-                                                    <p className="text-sm font-bold text-slate-700 dark:text-slate-200">{bill.person}</p>
-                                                    <p className="text-[10px] text-slate-400">{dueDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</p>
+                                        <div key={bill.id} className="group relative p-3 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 hover:border-indigo-200 dark:hover:border-indigo-900 transition-all hover:shadow-md hover:scale-[1.02]">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-sm shrink-0 ${isDebt ? 'bg-gradient-to-br from-rose-500 to-red-600' :
+                                                        isReceivable ? 'bg-gradient-to-br from-emerald-500 to-teal-600' :
+                                                            'bg-gradient-to-br from-amber-500 to-orange-600'
+                                                        }`}>
+                                                        {isDebt ? <ArrowDownRight className="w-5 h-5" /> :
+                                                            isReceivable ? <ArrowUpRight className="w-5 h-5" /> :
+                                                                <Receipt className="w-5 h-5" />}
+                                                    </div>
+                                                    <div className="min-w-0">
+                                                        <p className="text-sm font-bold text-slate-800 dark:text-white truncate">{bill.person}</p>
+                                                        <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                                                            {isDebt ? 'Hutang' : isReceivable ? 'Piutang' : 'Tagihan'}
+                                                            {dueDate && (
+                                                                <span className={`flex items-center ml-1 ${isOverdue ? 'text-rose-500' : ''}`}>
+                                                                    • {dueDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                                                                </span>
+                                                            )}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className="text-right whitespace-nowrap pl-2">
+                                                    <p className={`text-sm font-bold ${isDebt ? 'text-rose-600 dark:text-rose-400' :
+                                                        isReceivable ? 'text-emerald-600 dark:text-emerald-400' :
+                                                            'text-amber-600 dark:text-amber-400'
+                                                        }`}>
+                                                        {formatShortIDR(bill.amount)}
+                                                    </p>
                                                 </div>
                                             </div>
-                                            <span className="text-sm font-bold text-red-600 dark:text-red-400">{formatShortIDR(bill.amount)}</span>
                                         </div>
                                     );
                                 })
                             ) : (
-                                <div className="flex items-center justify-center flex-1 text-slate-400 text-sm py-8">
-                                    Tidak ada tagihan
+                                <div className="flex flex-col items-center justify-center flex-1 text-slate-400 py-8">
+                                    <WalletIcon className="w-12 h-12 mb-2 opacity-20" />
+                                    <span className="text-sm">Tidak ada tagihan aktif</span>
                                 </div>
                             )}
                         </div>
