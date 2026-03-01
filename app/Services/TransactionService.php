@@ -90,10 +90,16 @@ class TransactionService
                 $wallet->increment('balance', $data['amount']);
             }
             elseif ($data['type'] === 'EXPENSE') {
+                if ($wallet->balance < $data['amount']) {
+                    throw new \Exception("Saldo dompet \"{$wallet->name}\" tidak cukup. Saldo: Rp" . number_format($wallet->balance, 0, ',', '.') . ", Dibutuhkan: Rp" . number_format($data['amount'], 0, ',', '.'));
+                }
                 $wallet->decrement('balance', $data['amount']);
                 $this->checkBudget($transaction);
             }
             elseif ($data['type'] === 'TRANSFER' && isset($data['to_wallet_id'])) {
+                if ($wallet->balance < $data['amount']) {
+                    throw new \Exception("Saldo dompet \"{$wallet->name}\" tidak cukup untuk transfer. Saldo: Rp" . number_format($wallet->balance, 0, ',', '.') . ", Dibutuhkan: Rp" . number_format($data['amount'], 0, ',', '.'));
+                }
                 $wallet->decrement('balance', $data['amount']);
                 Wallet::where('id', $data['to_wallet_id'])->increment('balance', $data['amount']);
             }
@@ -156,7 +162,7 @@ class TransactionService
                 ->whereBetween('date', [$start, $end])
                 ->sum('amount');
 
-            $percentage = ($spent / $budget->limit) * 100;
+            $percentage = $budget->limit > 0 ? ($spent / $budget->limit) * 100 : 0;
             $budget->percentage = round($percentage);
 
             if ($percentage >= 90) {

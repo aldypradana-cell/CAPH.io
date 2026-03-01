@@ -18,7 +18,7 @@ class UserManagementController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
@@ -52,6 +52,7 @@ class UserManagementController extends Controller
         $user->update(['status' => $newStatus]);
 
         // Log the action
+        $oldStatus = $newStatus === 'SUSPENDED' ? 'ACTIVE' : 'SUSPENDED';
         SystemLog::create([
             'admin_id' => $request->user()->id,
             'action' => $newStatus === 'SUSPENDED' ? 'SUSPEND_USER' : 'ACTIVATE_USER',
@@ -59,7 +60,7 @@ class UserManagementController extends Controller
             'details' => [
                 'user_id' => $user->id,
                 'user_email' => $user->email,
-                'old_status' => $user->status === 'SUSPENDED' ? 'ACTIVE' : 'SUSPENDED',
+                'old_status' => $oldStatus,
                 'new_status' => $newStatus,
             ],
         ]);
@@ -93,6 +94,17 @@ class UserManagementController extends Controller
                 'user_name' => $user->name,
             ],
         ]);
+
+        // Cascade delete all user data to prevent orphan records
+        \App\Models\Transaction::withTrashed()->where('user_id', $user->id)->forceDelete();
+        \App\Models\Wallet::where('user_id', $user->id)->delete();
+        \App\Models\Budget::withTrashed()->where('user_id', $user->id)->forceDelete();
+        \App\Models\Debt::withTrashed()->where('user_id', $user->id)->forceDelete();
+        \App\Models\RecurringTransaction::where('user_id', $user->id)->delete();
+        \App\Models\Category::where('user_id', $user->id)->delete();
+        \App\Models\Asset::where('user_id', $user->id)->delete();
+        \App\Models\FinancialInsight::where('user_id', $user->id)->delete();
+        \App\Models\Tag::where('user_id', $user->id)->delete();
 
         $user->delete();
 

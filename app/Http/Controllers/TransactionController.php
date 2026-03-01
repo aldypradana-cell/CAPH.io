@@ -24,16 +24,16 @@ class TransactionController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        
+
         $query = Transaction::forUser($user->id)
             ->with(['wallet', 'toWallet', 'tags'])
             ->orderBy('date', 'desc');
-        
+
         // Apply filters
         if ($request->filled('type')) {
             $query->where('type', $request->type);
         }
-        
+
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->inDateRange($request->start_date, $request->end_date);
         }
@@ -50,16 +50,16 @@ class TransactionController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('description', 'LIKE', "%{$search}%")
-                  ->orWhere('category', 'LIKE', "%{$search}%");
+                    ->orWhere('category', 'LIKE', "%{$search}%");
             });
         }
-        
+
         $transactions = $query->paginate(20)->withQueryString();
-        
+
         $wallets = Wallet::where('user_id', $user->id)->get();
         $categories = Category::userCategories($user->id)->get();
         $userTags = Tag::where('user_id', $user->id)->orderBy('name')->get();
-        
+
         return Inertia::render('Transactions/Index', [
             'transactions' => $transactions,
             'wallets' => $wallets,
@@ -72,7 +72,7 @@ class TransactionController extends Controller
     public function store(Request $request)
     {
         $userId = $request->user()->id;
-        
+
         $validated = $request->validate([
             'wallet_id' => ['required', Rule::exists('wallets', 'id')->where('user_id', $userId)],
             'to_wallet_id' => ['nullable', Rule::exists('wallets', 'id')->where('user_id', $userId)],
@@ -84,20 +84,25 @@ class TransactionController extends Controller
             'tags' => 'nullable|array',
             'tags.*' => 'string|max:50',
         ]);
-        
-        $transactions = $this->transactionService->createTransactions(
+
+        try {
+            $transactions = $this->transactionService->createTransactions(
             [$validated],
-            $request->user()->id,
-            $validated['wallet_id']
-        );
-        
-        // Sync tags after creating the transaction
-        if (!empty($validated['tags']) && !empty($transactions)) {
-            $tagIds = Tag::resolveIds($validated['tags'], $userId);
-            $transactions[0]->tags()->sync($tagIds);
+                $request->user()->id,
+                $validated['wallet_id']
+            );
+
+            // Sync tags after creating the transaction
+            if (!empty($validated['tags']) && !empty($transactions)) {
+                $tagIds = Tag::resolveIds($validated['tags'], $userId);
+                $transactions[0]->tags()->sync($tagIds);
+            }
+
+            return redirect()->back()->with('success', 'Transaksi berhasil ditambahkan');
         }
-        
-        return redirect()->back()->with('success', 'Transaksi berhasil ditambahkan');
+        catch (\Exception $e) {
+            return redirect()->back()->withErrors(['message' => $e->getMessage()]);
+        }
     }
 
     public function update(Request $request, Transaction $transaction)
@@ -106,7 +111,7 @@ class TransactionController extends Controller
         if ($transaction->user_id !== $request->user()->id) {
             abort(403);
         }
-        
+
         $userId = $request->user()->id;
 
         $validated = $request->validate([
@@ -120,13 +125,13 @@ class TransactionController extends Controller
             'tags' => 'nullable|array',
             'tags.*' => 'string|max:50',
         ]);
-        
+
         $this->transactionService->updateTransaction($transaction, $validated);
-        
+
         // Sync tags after updating the transaction
         $tagIds = Tag::resolveIds($validated['tags'] ?? [], $userId);
         $transaction->tags()->sync($tagIds);
-        
+
         return redirect()->back()->with('success', 'Transaksi berhasil diupdate');
     }
 
@@ -136,9 +141,9 @@ class TransactionController extends Controller
         if ($transaction->user_id !== $request->user()->id) {
             abort(403);
         }
-        
+
         $this->transactionService->deleteTransaction($transaction);
-        
+
         return redirect()->back()->with('success', 'Transaksi berhasil dihapus');
     }
 
