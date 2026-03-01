@@ -15,6 +15,7 @@ class ExportController extends Controller
 {
     /**
      * Preview summary for the export page (AJAX).
+     * Optimized: uses SQL aggregation instead of loading all rows into memory.
      */
     public function preview(Request $request)
     {
@@ -32,21 +33,26 @@ class ExportController extends Controller
             $query->where('wallet_id', $request->wallet_id);
         }
 
-        $transactions = $query->get();
-
-        $totalIncome  = (float) $transactions->where('type', 'INCOME')->sum('amount');
-        $totalExpense = (float) $transactions->where('type', 'EXPENSE')->sum('amount');
+        // Optimized: single SQL query with conditional SUM instead of loading all rows
+        $stats = (clone $query)
+            ->selectRaw("
+                COUNT(*) as count,
+                SUM(CASE WHEN type = 'INCOME' THEN amount ELSE 0 END) as income,
+                SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0 END) as expense
+            ")
+            ->first();
 
         return response()->json([
-            'count'   => $transactions->count(),
-            'income'  => $totalIncome,
-            'expense' => $totalExpense,
-            'net'     => $totalIncome - $totalExpense,
+            'count'   => (int) $stats->count,
+            'income'  => (float) $stats->income,
+            'expense' => (float) $stats->expense,
+            'net'     => (float) ($stats->income - $stats->expense),
         ]);
     }
 
     /**
      * Download export file (Excel or PDF).
+     * Optimized: aggregations done via SQL, only loads rows when needed for row-level output.
      */
     public function download(Request $request)
     {
@@ -62,32 +68,45 @@ class ExportController extends Controller
         $endDate   = Carbon::parse($request->end_date)->endOfDay();
 
         $baseQuery = Transaction::forUser($user->id)
-            ->inDateRange($startDate, $endDate)
-            ->with(['wallet', 'tags']);
+            ->inDateRange($startDate, $endDate);
 
         if ($request->filled('wallet_id')) {
             $baseQuery->where('wallet_id', $request->wallet_id);
         }
 
-        // Aggregate data for both formats
-        $allTransactions = (clone $baseQuery)->orderBy('date', 'desc')->orderBy('created_at', 'desc')->get();
+        // Aggregate totals via SQL (no memory overhead)
+        $totals = (clone $baseQuery)
+            ->selectRaw("
+                SUM(CASE WHEN type = 'INCOME' THEN amount ELSE 0 END) as total_income,
+                SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0 END) as total_expense
+            ")
+            ->first();
 
-        $totalIncome  = (float) $allTransactions->where('type', 'INCOME')->sum('amount');
-        $totalExpense = (float) $allTransactions->where('type', 'EXPENSE')->sum('amount');
+        $totalIncome  = (float) ($totals->total_income ?? 0);
+        $totalExpense = (float) ($totals->total_expense ?? 0);
 
-        $topCategories = $allTransactions
+        // Top categories via SQL aggregation
+        $topCategories = (clone $baseQuery)
             ->where('type', 'EXPENSE')
+            ->selectRaw('category, SUM(amount) as total')
             ->groupBy('category')
-            ->map(fn ($group, $cat) => [
-                'category' => $cat,
-                'total'    => (float) $group->sum('amount'),
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get()
+            ->map(fn ($row) => [
+                'category' => $row->category,
+                'total'    => (float) $row->total,
             ])
-            ->sortByDesc('total')
-            ->take(5)
-            ->values()
             ->toArray();
 
         $fileName = "FinTrack_Laporan_{$startDate->format('Ymd')}_{$endDate->format('Ymd')}";
+
+        // Load transactions with eager loading for row-level output
+        $allTransactions = (clone $baseQuery)
+            ->with(['wallet', 'tags'])
+            ->orderBy('date', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         // ── Excel ────────────────────────────────────────
         if ($request->format === 'excel') {
