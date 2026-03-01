@@ -35,10 +35,18 @@ class TransactionService
                 // Update Wallet Balance
                 if ($data['type'] === 'INCOME') {
                     $wallet->increment('balance', $data['amount']);
-                } elseif ($data['type'] === 'EXPENSE') {
+                }
+                elseif ($data['type'] === 'EXPENSE') {
+                    if ($wallet->balance < $data['amount']) {
+                        throw new \Exception("Saldo dompet \"{$wallet->name}\" tidak cukup. Saldo: Rp" . number_format($wallet->balance, 0, ',', '.') . ", Dibutuhkan: Rp" . number_format($data['amount'], 0, ',', '.'));
+                    }
                     $wallet->decrement('balance', $data['amount']);
                     $this->checkBudget($transaction);
-                } elseif ($data['type'] === 'TRANSFER' && isset($data['to_wallet_id'])) {
+                }
+                elseif ($data['type'] === 'TRANSFER' && isset($data['to_wallet_id'])) {
+                    if ($wallet->balance < $data['amount']) {
+                        throw new \Exception("Saldo dompet \"{$wallet->name}\" tidak cukup untuk transfer. Saldo: Rp" . number_format($wallet->balance, 0, ',', '.') . ", Dibutuhkan: Rp" . number_format($data['amount'], 0, ',', '.'));
+                    }
                     $wallet->decrement('balance', $data['amount']);
                     Wallet::where('id', $data['to_wallet_id'])->increment('balance', $data['amount']);
                 }
@@ -56,9 +64,11 @@ class TransactionService
             // 1. Revert old balance
             if ($transaction->type === 'INCOME') {
                 $transaction->wallet->decrement('balance', $transaction->amount);
-            } elseif ($transaction->type === 'EXPENSE') {
+            }
+            elseif ($transaction->type === 'EXPENSE') {
                 $transaction->wallet->increment('balance', $transaction->amount);
-            } elseif ($transaction->type === 'TRANSFER' && $transaction->to_wallet_id) {
+            }
+            elseif ($transaction->type === 'TRANSFER' && $transaction->to_wallet_id) {
                 $transaction->wallet->increment('balance', $transaction->amount);
                 Wallet::where('id', $transaction->to_wallet_id)->decrement('balance', $transaction->amount);
             }
@@ -78,10 +88,12 @@ class TransactionService
             $wallet = Wallet::findOrFail($data['wallet_id']);
             if ($data['type'] === 'INCOME') {
                 $wallet->increment('balance', $data['amount']);
-            } elseif ($data['type'] === 'EXPENSE') {
+            }
+            elseif ($data['type'] === 'EXPENSE') {
                 $wallet->decrement('balance', $data['amount']);
                 $this->checkBudget($transaction);
-            } elseif ($data['type'] === 'TRANSFER' && isset($data['to_wallet_id'])) {
+            }
+            elseif ($data['type'] === 'TRANSFER' && isset($data['to_wallet_id'])) {
                 $wallet->decrement('balance', $data['amount']);
                 Wallet::where('id', $data['to_wallet_id'])->increment('balance', $data['amount']);
             }
@@ -98,9 +110,11 @@ class TransactionService
             // Revert Balance
             if ($transaction->type === 'INCOME') {
                 $wallet->decrement('balance', $transaction->amount);
-            } elseif ($transaction->type === 'EXPENSE') {
+            }
+            elseif ($transaction->type === 'EXPENSE') {
                 $wallet->increment('balance', $transaction->amount);
-            } elseif ($transaction->type === 'TRANSFER' && $transaction->to_wallet_id) {
+            }
+            elseif ($transaction->type === 'TRANSFER' && $transaction->to_wallet_id) {
                 $wallet->increment('balance', $transaction->amount);
                 Wallet::where('id', $transaction->to_wallet_id)->decrement('balance', $transaction->amount);
             }
@@ -125,10 +139,12 @@ class TransactionService
             if ($budget->period === 'WEEKLY') {
                 $start = $date->copy()->startOfWeek()->format('Y-m-d');
                 $end = $date->copy()->endOfWeek()->format('Y-m-d');
-            } elseif ($budget->period === 'YEARLY') {
+            }
+            elseif ($budget->period === 'YEARLY') {
                 $start = $date->copy()->startOfYear()->format('Y-m-d');
                 $end = $date->copy()->endOfYear()->format('Y-m-d');
-            } else {
+            }
+            else {
                 // Default to MONTHLY
                 $start = $date->copy()->startOfMonth()->format('Y-m-d');
                 $end = $date->copy()->endOfMonth()->format('Y-m-d');
@@ -141,12 +157,12 @@ class TransactionService
                 ->sum('amount');
 
             $percentage = ($spent / $budget->limit) * 100;
-            $budget->percentage = round($percentage); 
+            $budget->percentage = round($percentage);
 
             if ($percentage >= 90) {
                 // Determine notification type based on budget period
                 $periodLabel = $budget->period === 'WEEKLY' ? 'Mingguan' : ($budget->period === 'YEARLY' ? 'Tahunan' : 'Bulanan');
-                
+
                 // Add period info to notification message via dynamic property or constructor
                 // Actually constructor takes budget object, so let's modify budget object slightly or just rely on standard message
                 // Standard message: "Pengeluaran untuk kategori 'Makan' telah mencapai..."

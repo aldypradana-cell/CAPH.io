@@ -24,13 +24,16 @@ class RecurringTransaction extends Model
         'description',
     ];
 
-    protected $casts = [
-        'amount' => 'decimal:2',
-        'start_date' => 'date',
-        'next_run_date' => 'date',
-        'auto_cut' => 'boolean',
-        'is_active' => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'amount' => 'decimal:2',
+            'start_date' => 'date',
+            'next_run_date' => 'date',
+            'auto_cut' => 'boolean',
+            'is_active' => 'boolean',
+        ];
+    }
 
     /**
      * Relationships

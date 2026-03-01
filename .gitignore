@@ -23,3 +23,10 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Debug & test scripts
+debug_*.php
+debug_*.txt
+test_*.php
+verify_*.php
+*.zip

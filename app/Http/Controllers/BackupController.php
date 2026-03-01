@@ -79,10 +79,11 @@ class BackupController extends Controller
 
         try {
             // -- Wipe existing data for the user --
-            Transaction::where('user_id', $user->id)->delete();
+            // Use forceDelete() for SoftDeletes models to truly remove records
+            Transaction::withTrashed()->where('user_id', $user->id)->forceDelete();
             Wallet::where('user_id', $user->id)->delete();
-            Budget::where('user_id', $user->id)->delete();
-            Debt::where('user_id', $user->id)->delete();
+            Budget::withTrashed()->where('user_id', $user->id)->forceDelete();
+            Debt::withTrashed()->where('user_id', $user->id)->forceDelete();
             RecurringTransaction::where('user_id', $user->id)->delete();
             Category::where('user_id', $user->id)->delete();
             Asset::where('user_id', $user->id)->delete();

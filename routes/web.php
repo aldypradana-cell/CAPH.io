@@ -36,75 +36,77 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('transactions', TransactionController::class)
         ->only(['index', 'store', 'update', 'destroy']);
 
-    // Smart Entry (AI)
-    Route::get('/smart-entry', [SmartEntryController::class , 'index'])->name('smart-entry.index');
-    Route::post('/smart-entry/parse', [SmartEntryController::class , 'parse'])->name('smart-entry.parse');
-    Route::post('/smart-entry/confirm', [SmartEntryController::class , 'confirm'])->name('smart-entry.confirm');
+    // Smart Entry (AI) - Rate limited to prevent API quota abuse
+    Route::middleware('throttle:10,1')->group(function () {
+            Route::get('/smart-entry', [SmartEntryController::class , 'index'])->name('smart-entry.index');
+            Route::post('/smart-entry/parse', [SmartEntryController::class , 'parse'])->name('smart-entry.parse');
+            Route::post('/smart-entry/confirm', [SmartEntryController::class , 'confirm'])->name('smart-entry.confirm');
+        }
+        );
 
-    // Wallets
-    Route::resource('wallets', WalletController::class)
-        ->only(['index', 'store', 'update', 'destroy']);
+        // Wallets
+        Route::resource('wallets', WalletController::class)
+            ->only(['index', 'store', 'update', 'destroy']);
 
-    // Recurring Transactions
-    Route::resource('recurring', RecurringTransactionController::class)
-        ->only(['store', 'update', 'destroy']);
-    Route::post('/recurring/{recurring}/process', [RecurringTransactionController::class , 'process'])->name('recurring.process');
-    Route::get('/api/dashboard/recurring', [RecurringTransactionController::class , 'dashboardWidget'])->name('api.dashboard.recurring');
+        // Recurring Transactions
+        Route::resource('recurring', RecurringTransactionController::class)
+            ->only(['store', 'update', 'destroy']);
+        Route::post('/recurring/{recurring}/process', [RecurringTransactionController::class , 'process'])->name('recurring.process');
+        Route::get('/api/dashboard/recurring', [RecurringTransactionController::class , 'dashboardWidget'])->name('api.dashboard.recurring');
 
-    // Budgets
-    Route::resource('budgets', BudgetController::class)
-        ->only(['index', 'store', 'update', 'destroy']);
+        // Budgets
+        Route::resource('budgets', BudgetController::class)
+            ->only(['index', 'store', 'update', 'destroy']);
 
-    // Debts / Receivables / Bills
-    Route::resource('debts', DebtController::class)
-        ->only(['index', 'store', 'update', 'destroy']);
-    Route::post('/debts/{debt}/toggle-paid', [DebtController::class , 'togglePaid'])->name('debts.toggle-paid');
+        // Debts / Receivables / Bills
+        Route::resource('debts', DebtController::class)
+            ->only(['index', 'store', 'update', 'destroy']);
+        Route::post('/debts/{debt}/toggle-paid', [DebtController::class , 'togglePaid'])->name('debts.toggle-paid');
 
-    // Notifications API
-    Route::get('/api/notifications', [NotificationController::class , 'index'])->name('notifications.index');
-    Route::post('/api/notifications/{id}/read', [NotificationController::class , 'markAsRead'])->name('notifications.read');
-    Route::post('/api/notifications/read-all', [NotificationController::class , 'markAllRead'])->name('notifications.readAll');
+        // Notifications API
+        Route::get('/api/notifications', [NotificationController::class , 'index'])->name('notifications.index');
+        Route::post('/api/notifications/{id}/read', [NotificationController::class , 'markAsRead'])->name('notifications.read');
+        Route::post('/api/notifications/read-all', [NotificationController::class , 'markAllRead'])->name('notifications.readAll');
 
-    // Assets
+        // Assets
+        Route::resource('assets', AssetController::class)
+            ->only(['index', 'store', 'update', 'destroy']);
 
-    // Assets
-    Route::resource('assets', AssetController::class)
-        ->only(['index', 'store', 'update', 'destroy']);
+        // Categories
+        Route::resource('categories', CategoryController::class)
+            ->only(['index', 'store', 'update', 'destroy']);
 
-    // Categories
-    Route::resource('categories', CategoryController::class)
-        ->only(['index', 'store', 'update', 'destroy']);
+        // Financial Insights (AI) - Rate limited
+        Route::middleware('throttle:5,1')->group(function () {
+            Route::get('/insights', [InsightsController::class , 'index'])->name('insights.index');
+            Route::post('/insights/generate', [InsightsController::class , 'generate'])->name('insights.generate');
+            Route::post('/insights/profile', [InsightsController::class , 'updateProfile'])->name('insights.profile');
+        }
+        );
 
-    // Financial Insights (AI)
-    Route::get('/insights', [InsightsController::class , 'index'])->name('insights.index');
-    Route::post('/insights/generate', [InsightsController::class , 'generate'])->name('insights.generate');
-    Route::post('/insights/profile', [InsightsController::class , 'updateProfile'])->name('insights.profile');
+        // Profile
+        Route::get('/profile', [ProfileController::class , 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class , 'update'])->name('profile.update');
+        Route::patch('/profile/preferences', [ProfileController::class , 'updatePreferences'])->name('profile.preferences');
+        Route::patch('/profile/financial', [ProfileController::class , 'updateFinancialProfile'])->name('profile.financial');
+        Route::delete('/profile', [ProfileController::class , 'destroy'])->name('profile.destroy');
 
-    // Profile
-    Route::get('/profile', [ProfileController::class , 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class , 'update'])->name('profile.update');
-    Route::patch('/profile/preferences', [ProfileController::class , 'updatePreferences'])->name('profile.preferences');
-    Route::patch('/profile/financial', [ProfileController::class , 'updateFinancialProfile'])->name('profile.financial');
-    Route::delete('/profile', [ProfileController::class , 'destroy'])->name('profile.destroy');
+        // Export
+        Route::get('/export', [\App\Http\Controllers\ExportController::class , 'index'])->name('export.index');
+        Route::get('/export/preview', [\App\Http\Controllers\ExportController::class , 'preview'])->name('export.preview');
+        Route::get('/export/download', [\App\Http\Controllers\ExportController::class , 'download'])->name('export.download');
 
-    // Export
-    Route::get('/export', fn() => \Inertia\Inertia::render('Export/Index', [
-    'wallets' => $wallets = \App\Models\Wallet::where('user_id', auth()->id())->get(['id', 'name']),
-    ]))->name('export.index');
-    Route::get('/export/preview', [\App\Http\Controllers\ExportController::class , 'preview'])->name('export.preview');
-    Route::get('/export/download', [\App\Http\Controllers\ExportController::class , 'download'])->name('export.download');
+        // Settings, Notifications, Help (frontend-only pages)
+        Route::get('/settings', fn() => \Inertia\Inertia::render('Settings/Index'))->name('settings.index');
+        Route::get('/notifications-page', [NotificationController::class , 'page'])->name('notifications.page');
+        Route::get('/help', fn() => \Inertia\Inertia::render('Help/Index'))->name('help.index');
 
-    // Settings, Notifications, Help (frontend-only pages)
-    Route::get('/settings', fn() => \Inertia\Inertia::render('Settings/Index'))->name('settings.index');
-    Route::get('/notifications-page', [NotificationController::class , 'page'])->name('notifications.page');
-    Route::get('/help', fn() => \Inertia\Inertia::render('Help/Index'))->name('help.index');
+        // Backup & Restore
+        Route::get('/backup/download', [BackupController::class , 'download'])->name('backup.download');
+        Route::post('/backup/restore', [BackupController::class , 'restore'])->name('backup.restore');
 
-    // Backup & Restore
-    Route::get('/backup/download', [BackupController::class , 'download'])->name('backup.download');
-    Route::post('/backup/restore', [BackupController::class , 'restore'])->name('backup.restore');
-
-    // Admin routes (protected by admin middleware)
-    Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
+        // Admin routes (protected by admin middleware)
+        Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
             Route::get('/dashboard', [AdminDashboardController::class , 'index'])->name('dashboard');
             Route::get('/users', [UserManagementController::class , 'index'])->name('users.index');
             Route::post('/users/{user}/suspend', [UserManagementController::class , 'suspend'])->name('users.suspend');

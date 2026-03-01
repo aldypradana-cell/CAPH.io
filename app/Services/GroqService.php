@@ -64,11 +64,11 @@ NO explanations. JUST JSON.";
                         'response_format' => ['type' => 'json_object']
                     ]),
                     'ignore_errors' => true,
-                    'timeout' => 3
+                    'timeout' => 15
                 ],
                 'ssl' => [
-                    'verify_peer' => false,
-                    'verify_peer_name' => false,
+                    'verify_peer' => app()->environment('production'),
+                    'verify_peer_name' => app()->environment('production'),
                 ],
                 // Force IPv4 to avoid Connection Reset on Windows (common issue)
                 'socket' => [
@@ -165,11 +165,11 @@ Do not use H1 (#). Start with H2 (##) or bold text.";
                         'max_tokens' => 1000
                     ]),
                     'ignore_errors' => true,
-                    'timeout' => 10 // longer timeout for analysis
+                    'timeout' => 30
                 ],
                 'ssl' => [
-                    'verify_peer' => false,
-                    'verify_peer_name' => false,
+                    'verify_peer' => app()->environment('production'),
+                    'verify_peer_name' => app()->environment('production'),
                 ],
                 'socket' => [
                     'bindto' => '0:0'
