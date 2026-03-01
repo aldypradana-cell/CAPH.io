@@ -195,7 +195,7 @@ class DashboardController extends Controller
                 break;
             default: // DAILY
                 $groupBy = "DATE(date)";
-                $selectKey = "DATE(date) as period_key, DATE(date) as period_start";
+                $selectKey = "DATE(date) as period_key, MIN(date) as period_start";
                 break;
         }
 
@@ -207,7 +207,7 @@ class DashboardController extends Controller
                 SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0 END) as pengeluaran
             ")
             ->groupByRaw($groupBy)
-            ->orderByRaw("MIN(date) ASC");
+            ->orderByRaw("{$groupBy} ASC");
 
         // Optional category filter
         if ($trendCategory !== 'ALL') {
