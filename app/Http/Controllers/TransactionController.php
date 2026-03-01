@@ -126,13 +126,18 @@ class TransactionController extends Controller
             'tags.*' => 'string|max:50',
         ]);
 
-        $this->transactionService->updateTransaction($transaction, $validated);
+        try {
+            $this->transactionService->updateTransaction($transaction, $validated);
 
-        // Sync tags after updating the transaction
-        $tagIds = Tag::resolveIds($validated['tags'] ?? [], $userId);
-        $transaction->tags()->sync($tagIds);
+            // Sync tags after updating the transaction
+            $tagIds = Tag::resolveIds($validated['tags'] ?? [], $userId);
+            $transaction->tags()->sync($tagIds);
 
-        return redirect()->back()->with('success', 'Transaksi berhasil diupdate');
+            return redirect()->back()->with('success', 'Transaksi berhasil diupdate');
+        }
+        catch (\Exception $e) {
+            return redirect()->back()->withErrors(['message' => $e->getMessage()]);
+        }
     }
 
     public function destroy(Request $request, Transaction $transaction)
