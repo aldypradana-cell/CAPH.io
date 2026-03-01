@@ -238,7 +238,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
             {/* Main Content */}
             < main className="flex-1 flex flex-col h-full overflow-hidden relative" >
                 {/* Glassmorphism Header */}
-                < header className="h-20 lg:h-24 flex items-center justify-between px-6 lg:px-10 z-20 sticky top-0 glass transition-colors" >
+                < header className="h-14 sm:h-20 lg:h-24 flex items-center justify-between px-4 sm:px-6 lg:px-10 z-20 sticky top-0 glass transition-colors" >
                     <div className="flex items-center gap-4 lg:gap-0">
                         <button onClick={() => setIsSidebarOpen(true)} className="lg:hidden p-2 mr-2 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 rounded-xl shadow-sm transition-all active:scale-95">
                             <Menu className="w-6 h-6" />

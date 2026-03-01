@@ -95,16 +95,18 @@ export default function TrendChart({
                         </div>
                     </div>
                 </div>
-                <div className="flex items-center gap-2 text-xs bg-slate-50 dark:bg-slate-800 p-2 rounded-xl border border-slate-100 dark:border-slate-700 w-fit" onMouseDown={(e) => e.stopPropagation()}>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs bg-slate-50 dark:bg-slate-800 p-2 rounded-xl border border-slate-100 dark:border-slate-700 w-fit" onMouseDown={(e) => e.stopPropagation()}>
                     <span className="font-bold text-slate-400 uppercase tracking-wider text-[10px]">Range:</span>
-                    <input type="date" value={filters.startDate} onChange={(e) => onDateChange('start', e.target.value)} className="bg-transparent font-medium text-slate-900 dark:text-slate-100 focus:outline-none text-xs" />
-                    <span className="text-slate-300">-</span>
-                    <input type="date" value={filters.endDate} onChange={(e) => onDateChange('end', e.target.value)} className="bg-transparent font-medium text-slate-900 dark:text-slate-100 focus:outline-none text-xs" />
+                    <div className="flex items-center gap-2">
+                        <input type="date" value={filters.startDate} onChange={(e) => onDateChange('start', e.target.value)} className="bg-transparent font-medium text-slate-900 dark:text-slate-100 focus:outline-none text-xs" />
+                        <span className="text-slate-300">-</span>
+                        <input type="date" value={filters.endDate} onChange={(e) => onDateChange('end', e.target.value)} className="bg-transparent font-medium text-slate-900 dark:text-slate-100 focus:outline-none text-xs" />
+                    </div>
                 </div>
             </div>
             <div className="flex-1 w-full min-h-0">
                 <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                         <defs>
                             <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="5%" stopColor="#10b981" stopOpacity={0.8} />

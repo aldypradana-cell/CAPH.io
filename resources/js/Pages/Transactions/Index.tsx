@@ -237,7 +237,7 @@ export default function TransactionsIndex({
                     {/* Filter & Actions */}
                     <div className="flex items-center gap-3 flex-wrap">
                         {/* Type Filter */}
-                        <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+                        <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
                             <select
                                 value={filterType}
                                 onChange={(e) => setFilterType(e.target.value)}
@@ -350,10 +350,10 @@ export default function TransactionsIndex({
                                     </span>
 
                                     <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                                        <button onClick={() => handleEdit(t)} className="p-2 text-slate-300 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-all hover:scale-110">
+                                        <button onClick={() => handleEdit(t)} className="p-3 sm:p-2 text-slate-300 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-all hover:scale-110">
                                             <Pencil className="w-4 h-4" />
                                         </button>
-                                        <button onClick={() => setDeleteId(t.id)} className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all hover:scale-110">
+                                        <button onClick={() => setDeleteId(t.id)} className="p-3 sm:p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all hover:scale-110">
                                             <Trash2 className="w-4 h-4" />
                                         </button>
                                     </div>

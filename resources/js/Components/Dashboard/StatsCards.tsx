@@ -10,9 +10,9 @@ const formatIDR = (amount: number) =>
 
 export default function StatsCards({ stats }: StatsCardsProps) {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="-mx-6 px-6 flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide md:mx-0 md:px-0 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible md:pb-0">
             {/* Balance */}
-            <div className="bg-gradient-to-br from-[#1e3a8a] via-[#2563eb] to-[#3b82f6] shadow-xl shadow-blue-500/20 p-6 rounded-[2rem] hover:scale-[1.02] transition-all duration-500 group relative overflow-hidden animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+            <div className="min-w-[280px] snap-center md:min-w-0 bg-gradient-to-br from-[#1e3a8a] via-[#2563eb] to-[#3b82f6] shadow-xl shadow-blue-500/20 p-5 md:p-6 rounded-[2rem] hover:scale-[1.02] transition-all duration-500 group relative overflow-hidden animate-fade-in-up" style={{ animationDelay: '100ms' }}>
                 <div className="absolute inset-0 opacity-10">
                     <div className="absolute -right-10 -top-10 w-32 h-32 bg-white rounded-full blur-2xl" />
                     <div className="absolute -left-10 -bottom-10 w-32 h-32 bg-white rounded-full blur-2xl" />
@@ -33,7 +33,7 @@ export default function StatsCards({ stats }: StatsCardsProps) {
             </div>
 
             {/* Income */}
-            <div className="bg-gradient-to-br from-[#059669] via-[#10b981] to-[#34d399] shadow-xl shadow-emerald-500/20 p-6 rounded-[2rem] hover:scale-[1.02] transition-all duration-500 group relative overflow-hidden animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+            <div className="min-w-[280px] snap-center md:min-w-0 bg-gradient-to-br from-[#059669] via-[#10b981] to-[#34d399] shadow-xl shadow-emerald-500/20 p-5 md:p-6 rounded-[2rem] hover:scale-[1.02] transition-all duration-500 group relative overflow-hidden animate-fade-in-up" style={{ animationDelay: '200ms' }}>
                 <div className="absolute inset-0 opacity-10">
                     <div className="absolute -right-10 -top-10 w-32 h-32 bg-white rounded-full blur-2xl" />
                     <div className="absolute -left-10 -bottom-10 w-32 h-32 bg-white rounded-full blur-2xl" />
@@ -53,7 +53,7 @@ export default function StatsCards({ stats }: StatsCardsProps) {
             </div>
 
             {/* Expense */}
-            <div className="bg-gradient-to-br from-[#9f1239] via-[#e11d48] to-[#f43f5e] shadow-xl shadow-rose-500/20 p-6 rounded-[2rem] hover:scale-[1.02] transition-all duration-500 group relative overflow-hidden animate-fade-in-up" style={{ animationDelay: '300ms' }}>
+            <div className="min-w-[280px] snap-center md:min-w-0 bg-gradient-to-br from-[#9f1239] via-[#e11d48] to-[#f43f5e] shadow-xl shadow-rose-500/20 p-5 md:p-6 rounded-[2rem] hover:scale-[1.02] transition-all duration-500 group relative overflow-hidden animate-fade-in-up" style={{ animationDelay: '300ms' }}>
                 <div className="absolute inset-0 opacity-10">
                     <div className="absolute -right-10 -top-10 w-32 h-32 bg-white rounded-full blur-2xl" />
                     <div className="absolute -left-10 -bottom-10 w-32 h-32 bg-white rounded-full blur-2xl" />
