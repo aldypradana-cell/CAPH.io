@@ -54,6 +54,22 @@ interface ActionItem {
     savingsPotential: number;
 }
 
+interface NetWorthSnapshot {
+    totalWallet: number;
+    totalAssets: number;
+    totalDebt: number;
+    netWorth: number;
+    verdict: string;
+}
+
+interface BudgetComplianceItem {
+    category: string;
+    limit: number;
+    spent: number;
+    usagePercent: number;
+    status: 'OK' | 'WARNING' | 'OVER';
+}
+
 interface InsightData {
     healthScore: number;
     healthLabel: string;
@@ -61,6 +77,8 @@ interface InsightData {
     summary: string;
     cashflow: Cashflow;
     emergencyFund: EmergencyFund;
+    netWorthSnapshot?: NetWorthSnapshot;
+    budgetCompliance?: BudgetComplianceItem[];
     goalProjections: GoalProjection[];
     spendingAlerts: SpendingAlert[];
     actionItems: ActionItem[];
@@ -204,92 +222,87 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                     </div>
                 )}
 
-                {/* ── Hero / Generate Button ── */}
-                {!insight && (
+                {/* ── Period Selector (Always Visible) ── */}
+                <div className="glass-card p-4 rounded-2xl animate-fade-in-up">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest shrink-0">Analisis Periode:</span>
+                        <div className="flex bg-slate-100 dark:bg-slate-800 rounded-xl p-1">
+                            <button
+                                onClick={() => setPeriod('THIS_MONTH')}
+                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${period === 'THIS_MONTH' ? 'bg-white dark:bg-slate-700 shadow text-indigo-600 dark:text-indigo-400' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                            >
+                                Bulan Ini
+                            </button>
+                            <button
+                                onClick={() => setPeriod('LAST_MONTH')}
+                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${period === 'LAST_MONTH' ? 'bg-white dark:bg-slate-700 shadow text-indigo-600 dark:text-indigo-400' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                            >
+                                Bulan Lalu
+                            </button>
+                            <button
+                                onClick={() => setPeriod('CUSTOM')}
+                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${period === 'CUSTOM' ? 'bg-white dark:bg-slate-700 shadow text-indigo-600 dark:text-indigo-400' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                            >
+                                Custom
+                            </button>
+                        </div>
+                        {period === 'CUSTOM' && (
+                            <div className="flex items-center gap-2 animate-fade-in">
+                                <input
+                                    type="date"
+                                    value={customStart}
+                                    onChange={(e) => setCustomStart(e.target.value)}
+                                    className="bg-white dark:bg-slate-800 border-none rounded-xl text-xs px-3 py-2 outline-none ring-1 ring-slate-200 dark:ring-slate-700 focus:ring-indigo-500"
+                                />
+                                <span className="text-slate-400">-</span>
+                                <input
+                                    type="date"
+                                    value={customEnd}
+                                    onChange={(e) => setCustomEnd(e.target.value)}
+                                    className="bg-white dark:bg-slate-800 border-none rounded-xl text-xs px-3 py-2 outline-none ring-1 ring-slate-200 dark:ring-slate-700 focus:ring-indigo-500"
+                                />
+                            </div>
+                        )}
+                        <button
+                            onClick={handleGenerate}
+                            disabled={isLoading}
+                            className="ml-auto inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl text-xs font-bold hover:shadow-lg hover:shadow-purple-500/30 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 shrink-0"
+                        >
+                            {isLoading ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />Menganalisis...</> : <><Sparkles className="w-3.5 h-3.5 mr-1.5" />{insight ? 'Refresh Analysis' : 'Generate Insights'}</>}
+                        </button>
+                    </div>
+                </div>
+
+                {/* ── Hero (first time, no insight yet) ── */}
+                {!insight && !isLoading && (
                     <div className="glass-card p-8 rounded-[2rem] text-center animate-fade-in-up">
                         <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center text-white mx-auto mb-4 shadow-lg shadow-purple-500/30 animate-pulse-slow">
                             <Sparkles className="w-8 h-8" />
                         </div>
                         <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">Financial Health Check</h2>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-6">
-                            AI akan menganalisis transaksi periode <strong>{period === 'THIS_MONTH' ? 'Bulan Ini' : period === 'LAST_MONTH' ? 'Bulan Lalu' : 'Kustom'}</strong> + bandingkan dengan tren historis.
+                        <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-4">
+                            AI akan menganalisis transaksi pada periode yang dipilih di atas, dan membandingkannya dengan tren historis 6 bulan terakhir.
                         </p>
-
-                        {/* Period Selector */}
-                        <div className="flex flex-col md:flex-row items-center justify-center gap-3 mb-6">
-                            <div className="flex bg-slate-100 dark:bg-slate-800 rounded-xl p-1">
-                                <button
-                                    onClick={() => setPeriod('THIS_MONTH')}
-                                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${period === 'THIS_MONTH' ? 'bg-white dark:bg-slate-700 shadow text-indigo-600 dark:text-indigo-400' : 'text-slate-500 hover:text-slate-700'}`}
-                                >
-                                    Bulan Ini
-                                </button>
-                                <button
-                                    onClick={() => setPeriod('LAST_MONTH')}
-                                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${period === 'LAST_MONTH' ? 'bg-white dark:bg-slate-700 shadow text-indigo-600 dark:text-indigo-400' : 'text-slate-500 hover:text-slate-700'}`}
-                                >
-                                    Bulan Lalu
-                                </button>
-                                <button
-                                    onClick={() => setPeriod('CUSTOM')}
-                                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${period === 'CUSTOM' ? 'bg-white dark:bg-slate-700 shadow text-indigo-600 dark:text-indigo-400' : 'text-slate-500 hover:text-slate-700'}`}
-                                >
-                                    Custom
-                                </button>
-                            </div>
-
-                            {period === 'CUSTOM' && (
-                                <div className="flex items-center gap-2 animate-fade-in">
-                                    <input
-                                        type="date"
-                                        value={customStart}
-                                        onChange={(e) => setCustomStart(e.target.value)}
-                                        className="bg-white dark:bg-slate-800 border-none rounded-xl text-xs px-3 py-2 outline-none ring-1 ring-slate-200 dark:ring-slate-700 focus:ring-indigo-500"
-                                    />
-                                    <span className="text-slate-400">-</span>
-                                    <input
-                                        type="date"
-                                        value={customEnd}
-                                        onChange={(e) => setCustomEnd(e.target.value)}
-                                        className="bg-white dark:bg-slate-800 border-none rounded-xl text-xs px-3 py-2 outline-none ring-1 ring-slate-200 dark:ring-slate-700 focus:ring-indigo-500"
-                                    />
-                                </div>
-                            )}
-                        </div>
-
                         {!hasProfile && (
-                            <p className="text-xs text-amber-500 mb-4 flex items-center justify-center gap-1">
+                            <p className="text-xs text-amber-500 flex items-center justify-center gap-1">
                                 <AlertTriangle className="w-3 h-3" /> Isi Profil Finansial di Pengaturan untuk hasil lebih akurat
                             </p>
                         )}
-                        <button
-                            onClick={handleGenerate}
-                            disabled={isLoading}
-                            className="inline-flex items-center px-8 py-3.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-2xl font-bold hover:shadow-lg hover:shadow-purple-500/30 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
-                        >
-                            {isLoading ? (
-                                <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Menganalisis...</>
-                            ) : (
-                                <><Sparkles className="w-5 h-5 mr-2" /> Generate Insights</>
-                            )}
-                        </button>
 
                         {/* Info cards */}
-                        {!isLoading && (
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-8">
-                                {[
-                                    { icon: '💰', label: 'Cashflow Analysis' },
-                                    { icon: '🎯', label: 'Goal Forecasting' },
-                                    { icon: '🛡️', label: 'Dana Darurat' },
-                                    { icon: '📊', label: 'Spending Alerts' },
-                                ].map((item) => (
-                                    <div key={item.label} className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-center">
-                                        <div className="text-2xl mb-1">{item.icon}</div>
-                                        <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{item.label}</div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-8">
+                            {[
+                                { icon: '💰', label: 'Cashflow Analysis' },
+                                { icon: '🎯', label: 'Goal Forecasting' },
+                                { icon: '🛡️', label: 'Dana Darurat' },
+                                { icon: '📊', label: 'Spending Alerts' },
+                            ].map((item) => (
+                                <div key={item.label} className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-center">
+                                    <div className="text-2xl mb-1">{item.icon}</div>
+                                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{item.label}</div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 )}
 
@@ -307,18 +320,6 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                 {/* ═══════════════════════════════════════════════ */}
                 {insight && sc && (
                     <>
-                        {/* Re-generate button */}
-                        <div className="flex justify-end">
-                            <button
-                                onClick={handleGenerate}
-                                disabled={isLoading}
-                                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl text-sm font-bold hover:shadow-lg transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
-                            >
-                                {isLoading ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Sparkles className="w-4 h-4 mr-1" />}
-                                Refresh Analysis
-                            </button>
-                        </div>
-
                         {/* ── 1. HEALTH SCORE ── */}
                         <div className={`glass-card p-8 rounded-[2rem] animate-pop-in bg-gradient-to-br ${sc.bgFrom}/5 ${sc.bgTo}/5`}>
                             <div className="flex flex-col md:flex-row items-center gap-6">
@@ -403,7 +404,37 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                             </div>
                         </div>
 
-                        {/* ── 3. GOAL PROJECTIONS ── */}
+                        {/* ── 3. NET WORTH SNAPSHOT ── */}
+                        {insight.netWorthSnapshot && (
+                            <div className="glass-card p-6 rounded-[2rem] animate-fade-in-up" style={{ animationDelay: '250ms' }}>
+                                <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center mb-4">
+                                    <span className="text-xl mr-2">💎</span> Net Worth
+                                </h3>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                                    <div className="p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl text-center">
+                                        <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Saldo Dompet</p>
+                                        <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">{formatShortIDR(insight.netWorthSnapshot.totalWallet)}</p>
+                                    </div>
+                                    <div className="p-3 bg-blue-50 dark:bg-blue-900/10 rounded-xl text-center">
+                                        <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Total Aset</p>
+                                        <p className="text-sm font-bold text-blue-600 dark:text-blue-400">{formatShortIDR(insight.netWorthSnapshot.totalAssets)}</p>
+                                    </div>
+                                    <div className="p-3 bg-red-50 dark:bg-red-900/10 rounded-xl text-center">
+                                        <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Total Hutang</p>
+                                        <p className="text-sm font-bold text-red-600 dark:text-red-400">{formatShortIDR(insight.netWorthSnapshot.totalDebt)}</p>
+                                    </div>
+                                    <div className={`p-3 rounded-xl text-center ${insight.netWorthSnapshot.netWorth >= 0 ? 'bg-indigo-50 dark:bg-indigo-900/10' : 'bg-red-50 dark:bg-red-900/10'}`}>
+                                        <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Net Worth</p>
+                                        <p className={`text-sm font-bold ${insight.netWorthSnapshot.netWorth >= 0 ? 'text-indigo-600 dark:text-indigo-400' : 'text-red-600 dark:text-red-400'}`}>{formatShortIDR(insight.netWorthSnapshot.netWorth)}</p>
+                                    </div>
+                                </div>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl leading-relaxed">
+                                    {insight.netWorthSnapshot.verdict}
+                                </p>
+                            </div>
+                        )}
+
+                        {/* ── 4. GOAL PROJECTIONS ── */}
                         <div className="glass-card p-6 rounded-[2rem] animate-fade-in-up" style={{ animationDelay: '300ms' }}>
                             <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center mb-4">
                                 <Target className="w-5 h-5 mr-2 text-violet-500" /> Proyeksi Goal
@@ -460,7 +491,42 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                             )}
                         </div>
 
-                        {/* ── 4. SPENDING ALERTS ── */}
+                        {/* ── 5. BUDGET COMPLIANCE ── */}
+                        {insight.budgetCompliance && insight.budgetCompliance.length > 0 && (
+                            <div className="glass-card p-6 rounded-[2rem] animate-fade-in-up" style={{ animationDelay: '420ms' }}>
+                                <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center mb-4">
+                                    <span className="text-xl mr-2">📋</span> Budget Compliance
+                                </h3>
+                                <div className="space-y-3">
+                                    {insight.budgetCompliance.map((b) => (
+                                        <div key={b.category}>
+                                            <div className="flex items-center justify-between mb-1">
+                                                <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{b.category}</span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-xs text-slate-500">{formatShortIDR(b.spent)} / {formatShortIDR(b.limit)}</span>
+                                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${b.status === 'OVER' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
+                                                        b.status === 'WARNING' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
+                                                            'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                                                        }`}>{b.status === 'OVER' ? '🔴 OVER' : b.status === 'WARNING' ? '⚠️ Hampir' : '✅ Aman'}</span>
+                                                </div>
+                                            </div>
+                                            <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                                <div
+                                                    className={`h-full rounded-full transition-all duration-700 ${b.status === 'OVER' ? 'bg-red-500' :
+                                                        b.status === 'WARNING' ? 'bg-amber-500' :
+                                                            'bg-emerald-500'
+                                                        }`}
+                                                    style={{ width: `${Math.min(100, b.usagePercent)}%` }}
+                                                />
+                                            </div>
+                                            <p className="text-[10px] text-slate-400 mt-0.5">{b.usagePercent.toFixed(1)}% terpakai</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* ── 6. SPENDING ALERTS ── */}
                         <div className="glass-card p-6 rounded-[2rem] animate-fade-in-up" style={{ animationDelay: '400ms' }}>
                             <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center mb-4">
                                 <AlertTriangle className="w-5 h-5 mr-2 text-amber-500" /> Spending Alerts

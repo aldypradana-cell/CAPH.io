@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Asset;
+use App\Models\Budget;
+use App\Models\Debt;
+use App\Models\RecurringTransaction;
 use App\Models\Transaction;
 use App\Models\FinancialInsight;
+use App\Models\Wallet;
 use App\Services\GeminiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -40,11 +45,11 @@ class InsightsController extends Controller
     public function generate(Request $request)
     {
         $user = $request->user();
-        
+
         // Determine Analysis Period (Default: Current Month)
         $startDate = $request->input('startDate') ? Carbon::parse($request->input('startDate')) : Carbon::now()->startOfMonth();
         $endDate = $request->input('endDate') ? Carbon::parse($request->input('endDate')) : Carbon::now()->endOfMonth();
-        
+
         // 1. Transaction Detail for Selected Period
         $selectedPeriodTx = Transaction::forUser($user->id)
             ->inDateRange($startDate->format('Y-m-d'), $endDate->format('Y-m-d'))
@@ -64,19 +69,16 @@ class InsightsController extends Controller
         })->join("\n");
 
         // 2. Benchmarking (Up to 6 Months History, excluding selected period if possible)
-        // We look back 6 months from the START of the selected period
         $benchmarkStart = $startDate->copy()->subMonths(6);
-        $benchmarkEnd = $startDate->copy()->subDay(); // Up to yesterday of start date
+        $benchmarkEnd = $startDate->copy()->subDay();
 
-        // If user just started, this might be empty. That's fine.
         $sixMonthSummary = '';
         $availableMonths = 0;
 
         for ($i = 5; $i >= 0; $i--) {
             $monthStart = $startDate->copy()->subMonths($i + 1)->startOfMonth();
             $monthEnd = $startDate->copy()->subMonths($i + 1)->endOfMonth();
-             
-            // Skip if benchmark month is in future relative to now (impossible but safe check)
+
             if ($monthStart->isFuture()) continue;
 
             $monthData = Transaction::forUser($user->id)
@@ -85,20 +87,18 @@ class InsightsController extends Controller
                 ->groupBy('type')
                 ->pluck('total', 'type');
 
-            if ($monthData->isEmpty()) continue; // Skip empty months for average calculation? 
-            // Better to include 0 if user existed but didn't spend? 
-            // For now, let's look for active months to avoid skewing average with 0s from before registration.
+            if ($monthData->isEmpty()) continue;
             $availableMonths++;
 
             $income = (float) ($monthData['INCOME'] ?? 0);
             $expense = (float) ($monthData['EXPENSE'] ?? 0);
             $rate = $income > 0 ? round((($income - $expense) / $income) * 100, 1) : 0;
 
-            $sixMonthSummary .= "{$monthStart->translatedFormat('M Y')}: Income Rp" . number_format($income, 0, ',', '.') . 
-                ", Expense Rp" . number_format($expense, 0, ',', '.') . 
+            $sixMonthSummary .= "{$monthStart->translatedFormat('M Y')}: Income Rp" . number_format($income, 0, ',', '.') .
+                ", Expense Rp" . number_format($expense, 0, ',', '.') .
                 ", Savings Rate {$rate}%\n";
         }
-        
+
         if ($availableMonths === 0) {
             $sixMonthSummary = "Belum ada data historis (Pengguna Baru). Gunakan data periode ini sebagai baseline awal.";
         }
@@ -120,7 +120,6 @@ class InsightsController extends Controller
         })->join("\n");
 
         // 4. Category Averages (Benchmark)
-        // Dynamic: If only 2 months history, divide by 2.
         $categoryAverages = '';
         if ($availableMonths > 0) {
             $categoryAveragesRaw = Transaction::forUser($user->id)
@@ -130,22 +129,96 @@ class InsightsController extends Controller
                 ->groupBy('category')
                 ->having('total_hist', '>', 0)
                 ->get();
-            
+
             $categoryAverages = $categoryAveragesRaw->map(function ($c) use ($availableMonths) {
                 $avg = $c->total_hist / $availableMonths;
                 return "- {$c->category}: Rata-rata Rp" . number_format($avg, 0, ',', '.') . "/bulan (Basis {$availableMonths} bln)";
             })->join("\n");
         } else {
-             $categoryAverages = "Belum ada data historis.";
+            $categoryAverages = "Belum ada data historis.";
         }
+
+        // ─────────────────────────────────────────────
+        // 5. NEW: Wallet Balances (Net Position)
+        // ─────────────────────────────────────────────
+        $wallets = Wallet::where('user_id', $user->id)->get();
+        $totalWalletBalance = $wallets->sum('balance');
+        $walletText = $wallets->isEmpty()
+            ? "Tidak ada dompet tercatat."
+            : $wallets->map(fn($w) => "- {$w->name} ({$w->type}): Rp" . number_format($w->balance, 0, ',', '.'))->join("\n");
+        $walletText .= "\nTotal Saldo: Rp" . number_format($totalWalletBalance, 0, ',', '.');
+
+        // ─────────────────────────────────────────────
+        // 6. NEW: Active Debts & Receivables
+        // ─────────────────────────────────────────────
+        $debts = Debt::where('user_id', $user->id)->where('is_paid', false)->orderBy('due_date')->get();
+        $totalDebt = $debts->where('type', 'HUTANG')->sum('amount');
+        $totalReceivable = $debts->where('type', 'PIUTANG')->sum('amount');
+        $debtText = $debts->isEmpty()
+            ? "Tidak ada utang/piutang aktif."
+            : $debts->map(function ($d) {
+                $due = $d->due_date ? $d->due_date->format('Y-m-d') : 'tanpa jatuh tempo';
+                return "- [{$d->type}] {$d->person}: Rp" . number_format($d->amount, 0, ',', '.') . " (jatuh tempo: {$due}) - {$d->description}";
+            })->join("\n");
+        $debtText .= "\nTotal Hutang: Rp" . number_format($totalDebt, 0, ',', '.') . ", Total Piutang: Rp" . number_format($totalReceivable, 0, ',', '.');
+
+        // ─────────────────────────────────────────────
+        // 7. NEW: Active Recurring Transactions (monthly commitment)
+        // ─────────────────────────────────────────────
+        $recurringTx = RecurringTransaction::where('user_id', $user->id)->where('is_active', true)->get();
+        $frequencyMap = ['DAILY' => 30, 'WEEKLY' => 4.33, 'MONTHLY' => 1, 'YEARLY' => 1 / 12];
+        $totalMonthlyCommitment = $recurringTx->sum(function ($r) use ($frequencyMap) {
+            return $r->amount * ($frequencyMap[$r->frequency] ?? 1);
+        });
+        $recurringText = $recurringTx->isEmpty()
+            ? "Tidak ada tagihan/pemasukan rutin aktif."
+            : $recurringTx->map(function ($r) {
+                return "- {$r->name} ({$r->type}, {$r->frequency}): Rp" . number_format($r->amount, 0, ',', '.') . " per periode";
+            })->join("\n");
+        $recurringText .= "\nEstimasi total komitmen rutin per bulan: Rp" . number_format($totalMonthlyCommitment, 0, ',', '.');
+
+        // ─────────────────────────────────────────────
+        // 8. NEW: Budget vs Realization for selected period
+        // ─────────────────────────────────────────────
+        $budgets = Budget::where('user_id', $user->id)->get();
+        $budgetText = "Tidak ada budget yang ditetapkan.";
+        if ($budgets->isNotEmpty()) {
+            $budgetLines = $budgets->map(function ($b) use ($user, $startDate, $endDate) {
+                $spent = Transaction::forUser($user->id)
+                    ->inDateRange($startDate->format('Y-m-d'), $endDate->format('Y-m-d'))
+                    ->where('type', 'EXPENSE')
+                    ->where('category', $b->category)
+                    ->sum('amount');
+                $pct = $b->limit > 0 ? round(($spent / $b->limit) * 100, 1) : 0;
+                $status = $pct >= 100 ? 'OVER BUDGET' : ($pct >= 80 ? 'HAMPIR HABIS' : 'AMAN');
+                return "- {$b->category}: Budget Rp" . number_format($b->limit, 0, ',', '.') . ", Realisasi Rp" . number_format($spent, 0, ',', '.') . " ({$pct}%) - {$status}";
+            });
+            $budgetText = $budgetLines->join("\n");
+        }
+
+        // ─────────────────────────────────────────────
+        // 9. NEW: Assets
+        // ─────────────────────────────────────────────
+        $assets = Asset::where('user_id', $user->id)->get();
+        $totalAssetValue = $assets->sum('value');
+        $assetText = $assets->isEmpty()
+            ? "Tidak ada aset tercatat."
+            : $assets->map(fn($a) => "- {$a->name} ({$a->type}): Rp" . number_format($a->value, 0, ',', '.'))->join("\n");
+        $assetText .= "\nTotal Nilai Aset: Rp" . number_format($totalAssetValue, 0, ',', '.');
 
         // Build context
         $contextData = [
-            'currentMonthDetail' => $periodDetail,
-            'sixMonthSummary' => $sixMonthSummary,
-            'topCategories' => $topCategoriesText ?: 'Belum ada data pengeluaran.',
-            'categoryAverages' => $categoryAverages,
-            'periodLabel' => $startDate->translatedFormat('d M') . ' - ' . $endDate->translatedFormat('d M Y'),
+            'todayContext'          => "Hari ini: " . Carbon::now()->translatedFormat('d F Y') . ". Periode yang dianalisis: " . $startDate->translatedFormat('d M Y') . " s/d " . $endDate->translatedFormat('d M Y') . ".",
+            'currentMonthDetail'   => $periodDetail,
+            'sixMonthSummary'      => $sixMonthSummary,
+            'topCategories'        => $topCategoriesText ?: 'Belum ada data pengeluaran.',
+            'categoryAverages'     => $categoryAverages,
+            'periodLabel'          => $startDate->translatedFormat('d M') . ' - ' . $endDate->translatedFormat('d M Y'),
+            'walletBalances'       => $walletText,
+            'debtsReceivables'     => $debtText,
+            'recurringCommitments' => $recurringText,
+            'budgetVsRealization'  => $budgetText,
+            'assets'               => $assetText,
         ];
 
         try {
@@ -158,8 +231,8 @@ class InsightsController extends Controller
             ]);
 
             return response()->json([
-                'success' => true,
-                'insight' => $insight,
+                'success'  => true,
+                'insight'  => $insight,
                 'saved_at' => $storedInsight->created_at,
             ]);
         } catch (\Exception $e) {
@@ -177,11 +250,11 @@ class InsightsController extends Controller
     {
         $validated = $request->validate([
             'maritalStatus' => 'required|in:SINGLE,MARRIED',
-            'dependents' => 'required|integer|min:0',
-            'occupation' => 'required|in:STABLE,PRIVATE,FREELANCE',
-            'goals' => 'nullable|array',
-            'goals.*.name' => 'required|string',
-            'goals.*.amount' => 'required|numeric|min:0',
+            'dependents'    => 'required|integer|min:0',
+            'occupation'    => 'required|in:STABLE,PRIVATE,FREELANCE',
+            'goals'         => 'nullable|array',
+            'goals.*.name'     => 'required|string',
+            'goals.*.amount'   => 'required|numeric|min:0',
             'goals.*.deadline' => 'required|string',
         ]);
 

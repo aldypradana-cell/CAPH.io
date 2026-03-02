@@ -10,6 +10,7 @@ use Gemini\Enums\ResponseMimeType;
 use Gemini\Data\Schema;
 use Gemini\Enums\DataType;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 class GeminiService
 {
@@ -62,7 +63,7 @@ Kembalikan array objek JSON dengan properti:
             return json_decode($text, true) ?? [];
 
         } catch (\Exception $e) {
-            \Log::error('Gemini AI parsing error: ' . $e->getMessage());
+            Log::error('Gemini AI parsing error: ' . $e->getMessage());
             throw new \Exception('Gagal memproses input dengan AI. Silakan coba lagi.');
         }
     }
@@ -101,34 +102,59 @@ Kembalikan array objek JSON dengan properti:
                 $profileContext = "Status: {$maritalStatus}, Tanggungan: {$dependents}, Pekerjaan: {$occupation}\nGoals:\n{$goals}";
             }
 
-            $prompt = "Kamu adalah AI Financial Planner. Analisis data keuangan berikut dan kembalikan HANYA JSON valid (tanpa markdown, tanpa backtick, tanpa penjelasan di luar JSON).
+            $prompt = "Kamu adalah AI Financial Planner kelas dunia. Analisis data keuangan berikut dan kembalikan HANYA JSON valid (tanpa markdown, tanpa backtick, tanpa penjelasan di luar JSON).
+
+=== KONTEKS WAKTU ===
+{$contextData['todayContext']}
 
 === PROFIL PENGGUNA ===
 {$profileContext}
 
-=== TRANSAKSI BULAN INI (Detail) ===
+=== POSISI KEUANGAN SAAT INI ===
+-- Saldo Dompet --
+{$contextData['walletBalances']}
+
+-- Aset --
+{$contextData['assets']}
+
+-- Utang & Piutang Aktif --
+{$contextData['debtsReceivables']}
+
+-- Tagihan & Komitmen Rutin Bulanan --
+{$contextData['recurringCommitments']}
+
+=== BUDGET vs REALISASI (PERIODE INI) ===
+{$contextData['budgetVsRealization']}
+
+=== TRANSAKSI PERIODE INI (Detail) ===
 {$contextData['currentMonthDetail']}
 
 === RINGKASAN 6 BULAN TERAKHIR ===
 {$contextData['sixMonthSummary']}
 
-=== TOP KATEGORI BULAN INI ===
+=== TOP KATEGORI PENGELUARAN PERIODE INI ===
 {$contextData['topCategories']}
 
 === RATA-RATA PER KATEGORI (6 BULAN TERAKHIR) ===
 {$contextData['categoryAverages']}
 
-=== TUGAS ===
-Analisis semua data di atas dan kembalikan JSON dengan struktur PERSIS seperti ini:
+=== INSTRUKSI ANALISIS ===
+Gunakan semua data di atas untuk:
+1. Hitung NET WORTH = (Total Saldo Dompet + Total Nilai Aset) - Total Hutang Aktif.
+2. Evaluasi TEKANAN UTANG: bandingkan total hutang dengan pemasukan bulanan (debt-to-income ratio).
+3. Pertimbangkan KOMITMEN RUTIN BULANAN saat menghitung surplus riil yang tersedia.
+4. Identifikasi kategori budget yang OVER atau HAMPIR HABIS dan berikan saran spesifik.
+5. Bandingkan pengeluaran bulan ini dengan rata-rata 6 bulan untuk Spending Alerts.
 
+=== OUTPUT JSON (WAJIB PERSIS STRUKTUR INI) ===
 {
   \"healthScore\": <number 0-100>,
   \"healthLabel\": <string, contoh: \"Cukup Sehat\">,
   \"sentiment\": <\"EXCELLENT\" | \"GOOD\" | \"CAUTIOUS\" | \"WARNING\" | \"CRITICAL\">,
-  \"summary\": <string, ringkasan 1-2 kalimat dalam Bahasa Indonesia>,
+  \"summary\": <string, ringkasan 2-3 kalimat kontekstual dalam Bahasa Indonesia>,
   \"cashflow\": {
-    \"income\": <number total pemasukan bulan ini>,
-    \"expense\": <number total pengeluaran bulan ini>,
+    \"income\": <number total pemasukan periode ini>,
+    \"expense\": <number total pengeluaran periode ini>,
     \"surplus\": <number selisih>,
     \"savingsRate\": <number persentase>,
     \"verdict\": <string analisis singkat>
@@ -139,6 +165,22 @@ Analisis semua data di atas dan kembalikan JSON dengan struktur PERSIS seperti i
     \"idealAmount\": <number total dana darurat ideal>,
     \"verdict\": <string analisis & saran>
   },
+  \"netWorthSnapshot\": {
+    \"totalWallet\": <number total saldo semua dompet>,
+    \"totalAssets\": <number total nilai aset>,
+    \"totalDebt\": <number total hutang aktif (bukan piutang)>,
+    \"netWorth\": <number = totalWallet + totalAssets - totalDebt>,
+    \"verdict\": <string analisis posisi kekayaan bersih, 1-2 kalimat>
+  },
+  \"budgetCompliance\": [
+    {
+      \"category\": <string nama kategori>,
+      \"limit\": <number limit budget>,
+      \"spent\": <number realisasi>,
+      \"usagePercent\": <number persentase terpakai>,
+      \"status\": <\"OK\" | \"WARNING\" | \"OVER\">
+    }
+  ],
   \"goalProjections\": [
     {
       \"name\": <string nama goal>,
@@ -146,7 +188,7 @@ Analisis semua data di atas dan kembalikan JSON dengan struktur PERSIS seperti i
       \"deadline\": <string>,
       \"monthsRemaining\": <number>,
       \"requiredMonthly\": <number tabungan per bulan yang diperlukan>,
-      \"currentSurplus\": <number surplus saat ini>,
+      \"currentSurplus\": <number surplus saat ini (setelah dikurangi komitmen rutin)>,
       \"status\": <\"ON_TRACK\" | \"DELAYED\" | \"AT_RISK\">,
       \"projectedDate\": <string estimasi kapan tercapai>,
       \"verdict\": <string penjelasan singkat>
@@ -164,7 +206,7 @@ Analisis semua data di atas dan kembalikan JSON dengan struktur PERSIS seperti i
   ],
   \"actionItems\": [
     {
-      \"priority\": <number 1-3>,
+      \"priority\": <number 1-5>,
       \"title\": <string>,
       \"description\": <string>,
       \"impact\": <\"HIGH\" | \"MEDIUM\" | \"LOW\">,
@@ -174,11 +216,12 @@ Analisis semua data di atas dan kembalikan JSON dengan struktur PERSIS seperti i
 }
 
 PENTING:
-- Semua angka dalam Rupiah (tanpa simbol Rp, tanpa titik pemisah ribuan, hanya angka).
-- SEMUA teks dalam Bahasa Indonesia.
+- Semua angka dalam Rupiah (angka murni tanpa simbol Rp, tanpa titik pemisah ribuan).
+- SEMUA teks verdict, summary, advice, description dalam Bahasa Indonesia.
 - Jika tidak cukup data untuk suatu field, beri estimasi terbaik.
-- Jika user belum punya goal, kembalikan goalProjections sebagai array kosong [].
-- actionItems HARUS ada minimal 3 item, apapun kondisinya.
+- Jika user tidak punya goal, kembalikan goalProjections sebagai array kosong [].
+- Jika tidak ada budget yang ditetapkan, kembalikan budgetCompliance sebagai array kosong [].
+- actionItems HARUS ada minimal 3 item (maksimal 5), berdasarkan seluruh data yang ada.
 - JSON HARUS valid. Jangan tambahkan komentar atau teks di luar JSON.";
 
             $apiKey = env('GEMINI_API_KEY');
@@ -220,21 +263,21 @@ PENTING:
             $response = file_get_contents($url, false, $context);
 
             if ($response === false) {
-                 \Log::error('Gemini connection failed for insights');
+                 Log::error('Gemini connection failed for insights');
                  throw new \Exception('Gagal menghubungkan ke server AI.');
             }
 
             $data = json_decode($response, true);
             
             if (isset($data['error'])) {
-                 \Log::error('Gemini API Error (Insights): ' . json_encode($data['error']));
+                 Log::error('Gemini API Error (Insights): ' . json_encode($data['error']));
                  throw new \Exception('AI Error: ' . ($data['error']['message'] ?? 'Unknown'));
             }
 
             $text = $data['candidates'][0]['content']['parts'][0]['text'] ?? null;
             
             if (!$text) {
-                \Log::warning('Gemini empty insight response: ' . $response);
+                Log::warning('Gemini empty insight response: ' . $response);
                 throw new \Exception('AI tidak memberikan respons.');
             }
 
@@ -247,14 +290,14 @@ PENTING:
             $parsed = json_decode($text, true);
             
             if (!$parsed || !isset($parsed['healthScore'])) {
-                \Log::warning('Gemini invalid JSON insight: ' . $text);
+                Log::warning('Gemini invalid JSON insight: ' . $text);
                 throw new \Exception('AI mengembalikan format yang tidak valid.');
             }
 
             return $parsed;
 
         } catch (\Exception $e) {
-            \Log::error('Gemini AI insight exception: ' . $e->getMessage());
+            Log::error('Gemini AI insight exception: ' . $e->getMessage());
             throw $e;
         }
     }
