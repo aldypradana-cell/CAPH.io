@@ -58,6 +58,7 @@ class MasterDataController extends Controller
             'type' => 'required|in:INCOME,EXPENSE',
             'icon' => 'required|string',
             'color' => 'required|string',
+            'budget_rule' => 'nullable|string|in:NEEDS,WANTS,SAVINGS,INVESTMENTS',
         ]);
 
         $category = Category::create([
@@ -65,6 +66,7 @@ class MasterDataController extends Controller
             'type' => $validated['type'],
             'icon' => $validated['icon'],
             'color' => $validated['color'],
+            'budget_rule' => $validated['budget_rule'] ?? null,
             'user_id' => null,
         ]);
 
@@ -85,6 +87,7 @@ class MasterDataController extends Controller
             'type' => 'required|in:INCOME,EXPENSE',
             'icon' => 'required|string',
             'color' => 'required|string',
+            'budget_rule' => 'nullable|string|in:NEEDS,WANTS,SAVINGS,INVESTMENTS',
         ]);
 
         $category->update($validated);

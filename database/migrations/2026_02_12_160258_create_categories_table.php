@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->enum('type', ['INCOME', 'EXPENSE', 'TRANSFER']);
             $table->boolean('is_default')->default(false);
+            $table->string('budget_rule')->nullable();
             $table->timestamps();
         });
     }

@@ -45,34 +45,42 @@ class DatabaseSeeder extends Seeder
         // Create Default Categories (System Categories)
         $defaultCategories = [
             // Income
-            ['name' => 'Gaji', 'type' => 'INCOME', 'is_default' => true],
-            ['name' => 'Bonus', 'type' => 'INCOME', 'is_default' => true],
-            ['name' => 'Investasi', 'type' => 'INCOME', 'is_default' => true],
-            ['name' => 'Lainnya', 'type' => 'INCOME', 'is_default' => true],
-            
+            ['name' => 'Gaji',              'type' => 'INCOME',    'budget_rule' => null, 'is_default' => true],
+            ['name' => 'Bonus',             'type' => 'INCOME',    'budget_rule' => null, 'is_default' => true],
+            ['name' => 'Hasil Investasi',   'type' => 'INCOME',    'budget_rule' => null, 'is_default' => true],
+            ['name' => 'Freelance',         'type' => 'INCOME',    'budget_rule' => null, 'is_default' => true],
+            ['name' => 'Hadiah / THR',      'type' => 'INCOME',    'budget_rule' => null, 'is_default' => true],
+            ['name' => 'Lainnya',           'type' => 'INCOME',    'budget_rule' => null, 'is_default' => true],
+
             // Expense
-            ['name' => 'Makanan', 'type' => 'EXPENSE', 'is_default' => true],
-            ['name' => 'Transportasi', 'type' => 'EXPENSE', 'is_default' => true],
-            ['name' => 'Belanja', 'type' => 'EXPENSE', 'is_default' => true],
-            ['name' => 'Tagihan', 'type' => 'EXPENSE', 'is_default' => true],
-            ['name' => 'Hiburan', 'type' => 'EXPENSE', 'is_default' => true],
-            ['name' => 'Kesehatan', 'type' => 'EXPENSE', 'is_default' => true],
-            ['name' => 'Pendidikan', 'type' => 'EXPENSE', 'is_default' => true],
-            ['name' => 'Lainnya', 'type' => 'EXPENSE', 'is_default' => true],
-            
+            ['name' => 'Makanan & Minuman', 'type' => 'EXPENSE',   'budget_rule' => 'NEEDS',       'is_default' => true],
+            ['name' => 'Transportasi',      'type' => 'EXPENSE',   'budget_rule' => 'NEEDS',       'is_default' => true],
+            ['name' => 'Belanja Kebutuhan', 'type' => 'EXPENSE',   'budget_rule' => 'NEEDS',       'is_default' => true],
+            ['name' => 'Belanja Gaya Hidup','type' => 'EXPENSE',   'budget_rule' => 'WANTS',       'is_default' => true],
+            ['name' => 'Tagihan & Utilitas','type' => 'EXPENSE',   'budget_rule' => 'NEEDS',       'is_default' => true],
+            ['name' => 'Komunikasi',        'type' => 'EXPENSE',   'budget_rule' => 'NEEDS',       'is_default' => true],
+            ['name' => 'Kesehatan',         'type' => 'EXPENSE',   'budget_rule' => 'NEEDS',       'is_default' => true],
+            ['name' => 'Pendidikan',        'type' => 'EXPENSE',   'budget_rule' => 'NEEDS',       'is_default' => true],
+            ['name' => 'Hiburan',           'type' => 'EXPENSE',   'budget_rule' => 'WANTS',       'is_default' => true],
+            ['name' => 'Perawatan Diri',    'type' => 'EXPENSE',   'budget_rule' => 'WANTS',       'is_default' => true],
+            ['name' => 'Cicilan & Utang',   'type' => 'EXPENSE',   'budget_rule' => 'INVESTMENTS', 'is_default' => true],
+            ['name' => 'Sedekah',           'type' => 'EXPENSE',   'budget_rule' => 'INVESTMENTS', 'is_default' => true],
+            ['name' => 'Lainnya',           'type' => 'EXPENSE',   'budget_rule' => null,          'is_default' => true],
+
             // Transfer
-            ['name' => 'Transfer Antar Dompet', 'type' => 'TRANSFER', 'is_default' => true],
-            ['name' => 'Top Up E-Wallet', 'type' => 'TRANSFER', 'is_default' => true],
-            ['name' => 'Tarik Tunai', 'type' => 'TRANSFER', 'is_default' => true],
-            ['name' => 'Lainnya', 'type' => 'TRANSFER', 'is_default' => true],
+            ['name' => 'Transfer Antar Dompet', 'type' => 'TRANSFER', 'budget_rule' => null, 'is_default' => true],
+            ['name' => 'Top Up E-Wallet',       'type' => 'TRANSFER', 'budget_rule' => null, 'is_default' => true],
+            ['name' => 'Tarik Tunai',           'type' => 'TRANSFER', 'budget_rule' => null, 'is_default' => true],
+            ['name' => 'Lainnya',               'type' => 'TRANSFER', 'budget_rule' => null, 'is_default' => true],
         ];
 
         foreach ($defaultCategories as $category) {
             Category::create([
-                'user_id' => null, // System category
-                'name' => $category['name'],
-                'type' => $category['type'],
-                'is_default' => $category['is_default'],
+                'user_id'     => null,
+                'name'        => $category['name'],
+                'type'        => $category['type'],
+                'budget_rule' => $category['budget_rule'],
+                'is_default'  => $category['is_default'],
             ]);
         }
     }

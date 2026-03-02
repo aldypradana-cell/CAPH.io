@@ -27,11 +27,11 @@ interface Category {
     type: string;
 }
 
-const MASTER_LABELS: Record<string, { label: string; icon: any; gradient: string; bgLight: string }> = {
-    NEEDS: { label: 'Kebutuhan Pokok', icon: ShieldCheck, gradient: 'from-blue-500 to-cyan-500', bgLight: 'bg-blue-50 dark:bg-blue-900/20' },
-    WANTS: { label: 'Keinginan', icon: TrendingUp, gradient: 'from-orange-500 to-amber-500', bgLight: 'bg-orange-50 dark:bg-orange-900/20' },
-    SAVINGS: { label: 'Tabungan', icon: PiggyBank, gradient: 'from-emerald-500 to-teal-500', bgLight: 'bg-emerald-50 dark:bg-emerald-900/20' },
-    INVESTMENTS: { label: 'Investasi', icon: Wallet, gradient: 'from-purple-500 to-violet-500', bgLight: 'bg-purple-50 dark:bg-purple-900/20' },
+const MASTER_LABELS: Record<string, { label: string; desc: string; icon: any; gradient: string; bgLight: string }> = {
+    NEEDS: { label: 'Kebutuhan Pokok', desc: 'Makan, transportasi, sewa, tagihan wajib', icon: ShieldCheck, gradient: 'from-blue-500 to-cyan-500', bgLight: 'bg-blue-50 dark:bg-blue-900/20' },
+    WANTS: { label: 'Keinginan', desc: 'Hiburan, gaya hidup, hobi, langganan', icon: TrendingUp, gradient: 'from-orange-500 to-amber-500', bgLight: 'bg-orange-50 dark:bg-orange-900/20' },
+    SAVINGS: { label: 'Tabungan & Investasi', desc: 'Dana darurat, tabungan, investasi masa depan', icon: PiggyBank, gradient: 'from-emerald-500 to-teal-500', bgLight: 'bg-emerald-50 dark:bg-emerald-900/20' },
+    INVESTMENTS: { label: 'Investasi / Sosial', desc: 'Cicilan utang, investasi lanjutan, atau zakat & donasi', icon: Wallet, gradient: 'from-purple-500 to-violet-500', bgLight: 'bg-purple-50 dark:bg-purple-900/20' },
 };
 
 const TEMPLATE_OPTIONS = [
@@ -39,19 +39,25 @@ const TEMPLATE_OPTIONS = [
         key: '50-30-20',
         title: '50 / 30 / 20',
         desc: 'Kebutuhan 50%, Keinginan 30%, Tabungan 20%',
+        cocokUntuk: 'Pemula atau gaji menengah yang ingin aturan simpel',
         splits: { NEEDS: 50, WANTS: 30, SAVINGS: 20 },
+        categoryLabels: {} as Record<string, string>,
     },
     {
         key: '40-30-20-10',
         title: '40 / 30 / 20 / 10',
-        desc: 'Kebutuhan 40%, Keinginan 30%, Tabungan 20%, Investasi 10%',
+        desc: 'Kebutuhan 40%, Kewajiban 30%, Tabungan 20%, Sosial 10%',
+        cocokUntuk: 'Yang punya cicilan aktif atau rutin berzakat & berdonasi',
         splits: { NEEDS: 40, WANTS: 30, SAVINGS: 20, INVESTMENTS: 10 },
+        categoryLabels: { WANTS: 'Cicilan & Kewajiban', INVESTMENTS: 'Sosial & Kebaikan' } as Record<string, string>,
     },
     {
         key: '70-20-10',
         title: '70 / 20 / 10',
-        desc: 'Kebutuhan 70%, Tabungan 20%, Investasi 10%',
+        desc: 'Biaya Hidup 70%, Tabungan 20%, Utang/Sosial 10%',
+        cocokUntuk: 'Yang ingin fleksibel di pengeluaran sehari-hari',
         splits: { NEEDS: 70, SAVINGS: 20, INVESTMENTS: 10 },
+        categoryLabels: { NEEDS: 'Biaya Hidup', INVESTMENTS: 'Utang / Sosial' } as Record<string, string>,
     },
 ];
 
@@ -418,16 +424,37 @@ export default function BudgetsIndex({ auth, budgets, categories }: PageProps<{ 
                                                         <h4 className="font-bold text-slate-800 dark:text-white">{opt.title}</h4>
                                                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{opt.desc}</p>
                                                     </div>
-                                                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedTemplate === opt.key ? 'border-amber-500 bg-amber-500' : 'border-slate-300 dark:border-slate-600'}`}>
+                                                    <div className={`w-5 h-5 rounded-full border-2 flex shrink-0 items-center justify-center ${selectedTemplate === opt.key ? 'border-amber-500 bg-amber-500' : 'border-slate-300 dark:border-slate-600'}`}>
                                                         {selectedTemplate === opt.key && <div className="w-2 h-2 bg-white rounded-full" />}
                                                     </div>
                                                 </div>
+
+                                                {/* "Cocok untuk siapa?" badge */}
+                                                <div className="flex items-center gap-1.5 mt-2">
+                                                    <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-0.5 rounded-full">💡 {opt.cocokUntuk}</span>
+                                                </div>
+
                                                 {/* Visual percentage bar */}
                                                 <div className="flex gap-1 mt-3 h-2 rounded-full overflow-hidden">
                                                     {Object.entries(opt.splits).map(([rule, pct]) => {
                                                         const meta = MASTER_LABELS[rule];
+                                                        const displayLabel = opt.categoryLabels[rule] || meta?.label || rule;
                                                         return (
-                                                            <div key={rule} className={`bg-gradient-to-r ${meta?.gradient || 'from-slate-400 to-slate-500'} rounded-full`} style={{ width: `${pct}%` }} title={`${meta?.label}: ${pct}%`} />
+                                                            <div key={rule} className={`bg-gradient-to-r ${meta?.gradient || 'from-slate-400 to-slate-500'} rounded-full`} style={{ width: `${pct}%` }} title={`${displayLabel}: ${pct}%`} />
+                                                        );
+                                                    })}
+                                                </div>
+
+                                                {/* Category chips */}
+                                                <div className="flex flex-wrap gap-1.5 mt-2.5">
+                                                    {Object.entries(opt.splits).map(([rule, pct]) => {
+                                                        const meta = MASTER_LABELS[rule];
+                                                        const displayLabel = opt.categoryLabels[rule] || meta?.label || rule;
+                                                        return (
+                                                            <span key={rule} className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full ${meta?.bgLight || 'bg-slate-100 dark:bg-slate-800'} text-slate-600 dark:text-slate-300`}>
+                                                                <span>{displayLabel}</span>
+                                                                <span className="opacity-60">{pct}%</span>
+                                                            </span>
                                                         );
                                                     })}
                                                 </div>
@@ -467,25 +494,35 @@ export default function BudgetsIndex({ auth, budgets, categories }: PageProps<{ 
                                     </button>
 
                                     {/* Preview */}
-                                    {autoIncome && (
-                                        <div className="glass-card rounded-2xl p-4 space-y-2">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Preview Alokasi</p>
-                                            {Object.entries(selectedTemplateSplits).map(([rule, pct]) => {
-                                                const meta = MASTER_LABELS[rule];
-                                                const income = parseFloat(autoIncome.replace(/\./g, '')) || 0;
-                                                const amount = Math.round(income * (pct as number) / 100);
-                                                return (
-                                                    <div key={rule} className="flex items-center justify-between">
-                                                        <div className="flex items-center gap-2">
-                                                            <div className={`w-2.5 h-2.5 rounded-full bg-gradient-to-r ${meta?.gradient}`} />
-                                                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{meta?.label} ({pct as number}%)</span>
+                                    {autoIncome && (() => {
+                                        const activeTemplate = TEMPLATE_OPTIONS.find(t => t.key === selectedTemplate);
+                                        return (
+                                            <div className="glass-card rounded-2xl p-4 space-y-3">
+                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Preview Alokasi</p>
+                                                {Object.entries(selectedTemplateSplits).map(([rule, pct]) => {
+                                                    const meta = MASTER_LABELS[rule];
+                                                    const Icon = meta?.icon;
+                                                    const income = parseFloat(autoIncome.replace(/\./g, '')) || 0;
+                                                    const amount = Math.round(income * (pct as number) / 100);
+                                                    const displayLabel = activeTemplate?.categoryLabels?.[rule] || meta?.label || rule;
+                                                    return (
+                                                        <div key={rule} className="flex items-center gap-3">
+                                                            <div className={`w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br ${meta?.gradient} text-white shadow-sm shrink-0`}>
+                                                                {Icon && <Icon className="w-4 h-4" />}
+                                                            </div>
+                                                            <div className="flex-1 min-w-0">
+                                                                <div className="flex items-baseline justify-between gap-2">
+                                                                    <span className="text-sm font-bold text-slate-800 dark:text-white truncate">{displayLabel} <span className="text-xs font-normal text-slate-400">({pct as number}%)</span></span>
+                                                                    <span className="text-sm font-bold text-slate-800 dark:text-white shrink-0">{formatIDR(amount)}</span>
+                                                                </div>
+                                                                <p className="text-[10px] text-slate-400 truncate mt-0.5">{meta?.desc}</p>
+                                                            </div>
                                                         </div>
-                                                        <span className="text-sm font-bold text-slate-800 dark:text-white">{formatIDR(amount)}</span>
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    )}
+                                                    );
+                                                })}
+                                            </div>
+                                        );
+                                    })()}
 
                                     <div className="flex gap-3 pt-2">
                                         <button type="button" onClick={() => setAutoStep(1)} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors active:scale-95">← Kembali</button>

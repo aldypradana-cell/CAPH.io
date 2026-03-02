@@ -12,7 +12,15 @@ interface Category {
     type: 'INCOME' | 'EXPENSE';
     icon: string;
     color: string;
+    budget_rule?: string | null;
 }
+
+const BUDGET_RULE_LABELS: Record<string, { label: string; color: string }> = {
+    NEEDS:       { label: 'Kebutuhan',        color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' },
+    WANTS:       { label: 'Keinginan',        color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' },
+    SAVINGS:     { label: 'Tabungan',         color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' },
+    INVESTMENTS: { label: 'Cicilan & Sosial', color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' },
+};
 
 export default function MasterTab({ categories }: { categories: Category[] }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,7 +35,8 @@ export default function MasterTab({ categories }: { categories: Category[] }) {
         name: '',
         type: 'EXPENSE',
         icon: 'Tags',
-        color: 'bg-blue-500'
+        color: 'bg-blue-500',
+        budget_rule: null as string | null
     });
 
     const openModal = (category: Category | null = null) => {
@@ -37,11 +46,13 @@ export default function MasterTab({ categories }: { categories: Category[] }) {
                 name: category.name,
                 type: category.type as any,
                 icon: category.icon,
-                color: category.color
+                color: category.color,
+                budget_rule: category.budget_rule || null
             });
         } else {
             reset();
             setData('type', 'EXPENSE'); // Default
+            setData('budget_rule', null);
         }
         clearErrors();
         setIsModalOpen(true);
@@ -114,9 +125,16 @@ export default function MasterTab({ categories }: { categories: Category[] }) {
                                     </div>
                                     <div>
                                         <p className="font-bold text-slate-800 dark:text-white">{cat.name}</p>
-                                        <p className={`text-[10px] font-bold px-2 py-0.5 rounded-full w-fit mt-1 ${cat.type === 'INCOME' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
-                                            {cat.type}
-                                        </p>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <p className={`text-[10px] font-bold px-2 py-0.5 rounded-full w-fit ${cat.type === 'INCOME' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
+                                                {cat.type}
+                                            </p>
+                                            {cat.budget_rule && BUDGET_RULE_LABELS[cat.budget_rule] && (
+                                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${BUDGET_RULE_LABELS[cat.budget_rule].color}`}>
+                                                    {BUDGET_RULE_LABELS[cat.budget_rule].label}
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -166,14 +184,37 @@ export default function MasterTab({ categories }: { categories: Category[] }) {
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Tipe</label>
                                     <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl">
-                                        <button type="button" onClick={() => setData('type', 'INCOME')} className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${data.type === 'INCOME' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/30' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}>
+                                        <button type="button" onClick={() => { setData('type', 'INCOME'); setData('budget_rule', null); }} className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${data.type === 'INCOME' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/30' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}>
                                             <TrendingUp className="w-3.5 h-3.5" /> Pemasukan
                                         </button>
                                         <button type="button" onClick={() => setData('type', 'EXPENSE')} className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${data.type === 'EXPENSE' ? 'bg-red-600 text-white shadow-lg shadow-red-500/30' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}>
                                             <TrendingDown className="w-3.5 h-3.5" /> Pengeluaran
                                         </button>
                                     </div>
+                                    {errors.type && <p className="text-xs text-red-500 mt-1 ml-1">{errors.type}</p>}
                                 </div>
+
+                                {data.type === 'EXPENSE' && (
+                                    <div className="animate-fade-in-up">
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Kelompok Budget (Opsional)</label>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {Object.entries(BUDGET_RULE_LABELS).map(([key, { label, color }]) => (
+                                                <button
+                                                    key={key}
+                                                    type="button"
+                                                    onClick={() => setData('budget_rule', data.budget_rule === key ? null : key)}
+                                                    className={`py-2 px-3 rounded-xl text-xs font-bold transition-all border ${data.budget_rule === key
+                                                            ? `${color} border-transparent shadow-sm scale-105`
+                                                            : 'border-slate-200 dark:border-slate-700 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+                                                        }`}
+                                                >
+                                                    {label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        {errors.budget_rule && <p className="text-xs text-red-500 mt-1 ml-1">{errors.budget_rule}</p>}
+                                    </div>
+                                )}
 
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Warna</label>

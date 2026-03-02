@@ -17,10 +17,10 @@ interface Category {
 }
 
 const BUDGET_RULE_LABELS: Record<string, { label: string; color: string }> = {
-    NEEDS: { label: 'Kebutuhan', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' },
-    WANTS: { label: 'Keinginan', color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' },
-    SAVINGS: { label: 'Tabungan', color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' },
-    INVESTMENTS: { label: 'Investasi', color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' },
+    NEEDS:       { label: 'Kebutuhan',        color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' },
+    WANTS:       { label: 'Keinginan',        color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' },
+    SAVINGS:     { label: 'Tabungan',         color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' },
+    INVESTMENTS: { label: 'Cicilan & Sosial', color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' },
 };
 
 export default function CategoriesIndex({ auth, categories }: PageProps<{ categories: Category[] }>) {
