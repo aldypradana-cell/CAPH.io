@@ -23,143 +23,132 @@ export default function Register() {
     return (
         <>
             <Head title="Daftar - CAPH.io" />
-            <div className="min-h-screen flex bg-slate-950 relative overflow-hidden">
-                {/* Background */}
-                <div className="absolute inset-0">
-                    <div className="absolute top-1/3 -left-32 w-96 h-96 bg-violet-600/20 rounded-full blur-3xl animate-pulse" />
-                    <div className="absolute bottom-1/3 -right-32 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+            <div className="min-h-screen flex items-center justify-center bg-slate-950 relative overflow-hidden px-4">
+                {/* Animated Mesh Gradient Background */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="login-orb-1 absolute -top-40 -left-40 w-[700px] h-[700px] rounded-full bg-indigo-700/30 blur-[120px]" />
+                    <div className="login-orb-2 absolute top-1/2 -right-40 w-[600px] h-[600px] rounded-full bg-violet-600/25 blur-[100px]" />
+                    <div className="login-orb-3 absolute -bottom-40 left-1/3 w-[600px] h-[600px] rounded-full bg-fuchsia-500/15 blur-[120px]" />
+                    <div className="absolute inset-0"
+                        style={{
+                            backgroundImage: `linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)`,
+                            backgroundSize: '60px 60px'
+                        }}
+                    />
                 </div>
 
-                {/* Left Panel */}
-                <div className="hidden lg:flex lg:w-1/2 relative items-center justify-center p-12">
-                    <div className="relative z-10 max-w-md">
-                        <div className="flex items-center space-x-3 mb-8">
-                            <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-2xl flex items-center justify-center text-white shadow-2xl shadow-indigo-500/40">
-                                <Wallet className="w-8 h-8" />
-                            </div>
-                            <div>
-                                <h1 className="text-3xl font-bold text-white leading-none">CAPH.io</h1>
-                                <span className="text-xs font-bold text-indigo-400 tracking-widest uppercase">AI Powered</span>
-                            </div>
+                {/* Container Centered */}
+                <div className="w-full max-w-[420px] relative z-10 flex flex-col items-center">
+                    
+                    {/* Logo & Headline */}
+                    <div className="flex flex-col items-center text-center mb-8">
+                        <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-2xl flex items-center justify-center text-white shadow-2xl shadow-indigo-500/40 mb-5 relative group">
+                            <div className="absolute inset-0 rounded-2xl bg-white/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <Wallet className="w-8 h-8 relative z-10" />
                         </div>
-                        <h2 className="text-4xl font-bold text-white mb-4 leading-tight">
-                            Mulai Perjalanan <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-violet-400">Finansial</span> Anda
-                        </h2>
-                        <p className="text-lg text-slate-400 mb-8">
-                            Daftar gratis dan nikmati fitur pencatatan keuangan cerdas berbasis AI.
+                        <h1 className="text-3xl font-bold tracking-tight text-white mb-1">CAPH.io</h1>
+                        <p className="text-sm font-medium tracking-[0.2em] text-indigo-400 uppercase">
+                            Capital And Personal Hub
                         </p>
-                        <div className="space-y-4">
-                            {[
-                                { emoji: '✨', text: 'Gratis selamanya — tanpa biaya tersembunyi' },
-                                { emoji: '🔒', text: 'Data Anda aman dan terenkripsi' },
-                                { emoji: '⚡', text: 'Setup dalam 30 detik, langsung pakai' },
-                            ].map((f, i) => (
-                                <div key={i} className="flex items-center gap-3 text-slate-300">
-                                    <span className="text-xl">{f.emoji}</span>
-                                    <span className="text-sm">{f.text}</span>
+                    </div>
+
+                    {/* Form Card with Deep Glassmorphism & Inner Glow */}
+                    <div className="w-full bg-slate-900/60 backdrop-blur-2xl rounded-3xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] relative overflow-hidden p-8">
+                        {/* Shimmer/Glow Inner Border Effect */}
+                        <div className="absolute inset-0 rounded-3xl pointer-events-none shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]"></div>
+                        <div className="absolute top-0 inset-x-0 h-px w-1/2 mx-auto bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent"></div>
+
+                        <div className="text-center mb-8">
+                            <h2 className="text-2xl font-bold text-white tracking-tight">Buat Akun Baru</h2>
+                            <p className="text-slate-400 text-sm mt-2 font-medium">Isi data di bawah untuk memulai perjalanan finansial Anda.</p>
+                        </div>
+
+                        <form onSubmit={submit} className="space-y-4">
+                            <div>
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1 cursor-pointer" htmlFor="name">Nama Lengkap</label>
+                                <input
+                                    id="name"
+                                    type="text"
+                                    value={data.name}
+                                    autoComplete="name"
+                                    autoFocus
+                                    onChange={(e) => setData('name', e.target.value)}
+                                    placeholder="John Doe"
+                                    className="w-full px-4 py-3 bg-slate-950/50 border border-slate-700/50 rounded-2xl text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-slate-900/80 transition-all font-medium shadow-inner"
+                                />
+                                {errors.name && <p className="mt-1.5 text-xs font-medium text-red-400 ml-1">{errors.name}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1 cursor-pointer" htmlFor="email">Email</label>
+                                <input
+                                    id="email"
+                                    type="email"
+                                    value={data.email}
+                                    autoComplete="username"
+                                    onChange={(e) => setData('email', e.target.value)}
+                                    placeholder="nama@email.com"
+                                    className="w-full px-4 py-3 bg-slate-950/50 border border-slate-700/50 rounded-2xl text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-slate-900/80 transition-all font-medium shadow-inner"
+                                />
+                                {errors.email && <p className="mt-1.5 text-xs font-medium text-red-400 ml-1">{errors.email}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1 cursor-pointer" htmlFor="password">Kata Sandi</label>
+                                <div className="relative">
+                                    <input
+                                        id="password"
+                                        type={showPassword ? 'text' : 'password'}
+                                        value={data.password}
+                                        autoComplete="new-password"
+                                        onChange={(e) => setData('password', e.target.value)}
+                                        placeholder="Min. 8 karakter"
+                                        className="w-full px-4 py-3 pr-12 bg-slate-950/50 border border-slate-700/50 rounded-2xl text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-slate-900/80 transition-all font-medium shadow-inner tracking-widest"
+                                    />
+                                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors p-1 rounded-md hover:bg-slate-800">
+                                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                    </button>
                                 </div>
-                            ))}
+                                {errors.password && <p className="mt-1.5 text-xs font-medium text-red-400 ml-1">{errors.password}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1 cursor-pointer" htmlFor="password_confirmation">Konfirmasi Kata Sandi</label>
+                                <input
+                                    id="password_confirmation"
+                                    type="password"
+                                    value={data.password_confirmation}
+                                    autoComplete="new-password"
+                                    onChange={(e) => setData('password_confirmation', e.target.value)}
+                                    placeholder="Ulangi kata sandi"
+                                    className="w-full px-4 py-3 bg-slate-950/50 border border-slate-700/50 rounded-2xl text-white placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-slate-900/80 transition-all font-medium shadow-inner tracking-widest"
+                                />
+                                {errors.password_confirmation && <p className="mt-1.5 text-xs font-medium text-red-400 ml-1">{errors.password_confirmation}</p>}
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={processing}
+                                className="w-full mt-4 py-3.5 bg-white text-slate-900 rounded-2xl font-bold hover:bg-indigo-50 transition-all shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 relative overflow-hidden group"
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-100 to-transparent -translate-x-[100%] group-hover:animate-[shimmer_1.5s_infinite]"></div>
+                                <span className="relative z-10">{processing ? 'Mendaftar...' : 'Daftar Sekarang →'}</span>
+                            </button>
+                        </form>
+
+                        <div className="mt-8 text-center pt-6 border-t border-slate-700/50">
+                            <p className="text-sm font-medium text-slate-400">
+                                Sudah punya akun?{' '}
+                                <Link href={route('login')} className="font-bold text-white hover:text-indigo-300 transition-colors">
+                                    Masuk di sini
+                                </Link>
+                            </p>
                         </div>
                     </div>
-                </div>
-
-                {/* Right Panel */}
-                <div className="w-full lg:w-1/2 flex items-center justify-center p-6 relative z-10">
-                    <div className="w-full max-w-md">
-                        {/* Mobile Logo */}
-                        <div className="lg:hidden flex items-center justify-center space-x-3 mb-8">
-                            <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-2xl flex items-center justify-center text-white shadow-xl">
-                                <Wallet className="w-7 h-7" />
-                            </div>
-                            <div>
-                                <h1 className="text-2xl font-bold text-white leading-none">CAPH.io</h1>
-                                <span className="text-[10px] font-bold text-indigo-400 tracking-widest uppercase">AI Powered</span>
-                            </div>
-                        </div>
-
-                        <div className="bg-slate-900/80 backdrop-blur-xl rounded-3xl border border-slate-800 shadow-2xl p-8">
-                            <div className="mb-8">
-                                <h2 className="text-2xl font-bold text-white">Buat Akun Baru 🚀</h2>
-                                <p className="text-slate-400 text-sm mt-1">Isi data di bawah untuk memulai</p>
-                            </div>
-
-                            <form onSubmit={submit} className="space-y-5">
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-300 mb-2">Nama Lengkap</label>
-                                    <input
-                                        type="text"
-                                        value={data.name}
-                                        autoComplete="name"
-                                        autoFocus
-                                        onChange={(e) => setData('name', e.target.value)}
-                                        placeholder="John Doe"
-                                        className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                                    />
-                                    {errors.name && <p className="mt-1.5 text-sm text-red-400">{errors.name}</p>}
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-300 mb-2">Email</label>
-                                    <input
-                                        type="email"
-                                        value={data.email}
-                                        autoComplete="username"
-                                        onChange={(e) => setData('email', e.target.value)}
-                                        placeholder="nama@email.com"
-                                        className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                                    />
-                                    {errors.email && <p className="mt-1.5 text-sm text-red-400">{errors.email}</p>}
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-300 mb-2">Password</label>
-                                    <div className="relative">
-                                        <input
-                                            type={showPassword ? 'text' : 'password'}
-                                            value={data.password}
-                                            autoComplete="new-password"
-                                            onChange={(e) => setData('password', e.target.value)}
-                                            placeholder="Min. 8 karakter"
-                                            className="w-full px-4 py-3 pr-12 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                                        />
-                                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300">
-                                            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                                        </button>
-                                    </div>
-                                    {errors.password && <p className="mt-1.5 text-sm text-red-400">{errors.password}</p>}
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-300 mb-2">Konfirmasi Password</label>
-                                    <input
-                                        type="password"
-                                        value={data.password_confirmation}
-                                        autoComplete="new-password"
-                                        onChange={(e) => setData('password_confirmation', e.target.value)}
-                                        placeholder="Ulangi password"
-                                        className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                                    />
-                                    {errors.password_confirmation && <p className="mt-1.5 text-sm text-red-400">{errors.password_confirmation}</p>}
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    disabled={processing}
-                                    className="w-full py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-xl font-bold hover:from-indigo-700 hover:to-violet-700 transition-all shadow-xl shadow-indigo-500/30 disabled:opacity-50 active:scale-[0.98]"
-                                >
-                                    {processing ? 'Mendaftar...' : 'Daftar Sekarang'}
-                                </button>
-                            </form>
-
-                            <div className="mt-6 text-center">
-                                <p className="text-sm text-slate-400">
-                                    Sudah punya akun?{' '}
-                                    <Link href={route('login')} className="font-bold text-indigo-400 hover:text-indigo-300 transition-colors">
-                                        Masuk
-                                    </Link>
-                                </p>
-                            </div>
-                        </div>
+                    
+                    {/* Minimal Footer */}
+                    <div className="mt-8 text-center text-xs font-medium text-slate-600">
+                        &copy; {new Date().getFullYear()} FinTrack • Selalu Aman & Terenkripsi
                     </div>
                 </div>
             </div>
