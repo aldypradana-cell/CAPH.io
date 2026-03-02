@@ -36,6 +36,7 @@ export interface BudgetProgress {
     limit: number;
     spent: number;
     percentage: number;
+    is_master?: boolean;
 }
 
 export interface CategoryData {

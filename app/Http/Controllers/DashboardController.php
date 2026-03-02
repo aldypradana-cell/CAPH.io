@@ -103,10 +103,19 @@ class DashboardController extends Controller
                 'percentage' => $totalExpense > 0 ? round(($item->total / $totalExpense) * 100, 1) : 0,
             ]);
 
-        // Budget progress (Keep existing logic or optimize)
+        // Budget progress — using same is_master logic as BudgetController
         $budgets = Budget::where('user_id', $user->id)->get();
-        // ... (reuse existing budget logic, it queries inside loop but it's okay for < 20 budgets)
-        $budgetProgress = $budgets->map(function ($budget) use ($user) {
+
+        // Build rule → category names lookup for master budgets
+        $ruleCategoryNames = [];
+        $allUserCategories = Category::userCategories($user->id)
+            ->whereNotNull('budget_rule')
+            ->get();
+        foreach ($allUserCategories as $cat) {
+            $ruleCategoryNames[$cat->budget_rule][] = $cat->name;
+        }
+
+        $budgetProgress = $budgets->map(function ($budget) use ($user, $ruleCategoryNames) {
              $now = Carbon::now();
              $start = $now->copy()->startOfMonth()->format('Y-m-d');
              $end = $now->copy()->endOfMonth()->format('Y-m-d');
@@ -119,11 +128,24 @@ class DashboardController extends Controller
                  $end = $now->copy()->endOfYear()->format('Y-m-d');
              }
 
-            $spent = Transaction::forUser($user->id)
-                ->where('type', 'EXPENSE')
-                ->where('category', $budget->category)
-                ->inDateRange($start, $end)
-                ->sum('amount');
+            if ($budget->is_master) {
+                // Master budget: SUM all transactions whose category is mapped to this rule
+                $mappedCategories = $ruleCategoryNames[$budget->category] ?? [];
+                $spent = 0;
+                if (!empty($mappedCategories)) {
+                    $spent = Transaction::forUser($user->id)
+                        ->where('type', 'EXPENSE')
+                        ->whereIn('category', $mappedCategories)
+                        ->inDateRange($start, $end)
+                        ->sum('amount');
+                }
+            } else {
+                $spent = Transaction::forUser($user->id)
+                    ->where('type', 'EXPENSE')
+                    ->where('category', $budget->category)
+                    ->inDateRange($start, $end)
+                    ->sum('amount');
+            }
 
             return [
                 'id' => $budget->id,
@@ -131,6 +153,7 @@ class DashboardController extends Controller
                 'limit' => $budget->limit,
                 'spent' => (float) $spent,
                 'percentage' => $budget->limit > 0 ? min(100, round(($spent / $budget->limit) * 100)) : 0,
+                'is_master' => (bool) $budget->is_master,
             ];
         });
 
