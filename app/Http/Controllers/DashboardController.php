@@ -84,14 +84,14 @@ class DashboardController extends Controller
             ->map(fn($item) => ['name' => $item->name, 'value' => (float) $item->value]);
 
         // --- Top 5 Expense Tags (Current Month - FIXED) ---
-        $topTags = \DB::table('transaction_tag')
+        $topTags = \Illuminate\Support\Facades\DB::table('transaction_tag')
             ->join('transactions', 'transactions.id', '=', 'transaction_tag.transaction_id')
             ->join('tags', 'tags.id', '=', 'transaction_tag.tag_id')
             ->where('transactions.user_id', $user->id)
             ->where('transactions.type', 'EXPENSE')
             ->whereNull('transactions.deleted_at')
             ->whereBetween('transactions.date', [$fixedStartDate, $fixedEndDate])
-            ->select('tags.name', 'tags.color', \DB::raw('SUM(transactions.amount) as total'))
+            ->select('tags.name', 'tags.color', \Illuminate\Support\Facades\DB::raw('SUM(transactions.amount) as total'))
             ->groupBy('tags.name', 'tags.color')
             ->orderByDesc('total')
             ->limit(5)

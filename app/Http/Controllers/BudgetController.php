@@ -104,7 +104,7 @@ class BudgetController extends Controller
             ->where('period', $validated['period'])
             ->first();
 
-        if ($budget) {
+        if ($budget instanceof Budget) {
             $budget->limit = $validated['limit'];
             $budget->frequency = $validated['frequency'];
             $budget->is_master = false;
@@ -201,7 +201,7 @@ class BudgetController extends Controller
 
             $limit = round($income * $percentage / 100);
 
-            if ($budget) {
+            if ($budget instanceof Budget) {
                 $budget->limit = $limit;
                 $budget->frequency = 'MONTHLY';
                 $budget->is_master = true;
