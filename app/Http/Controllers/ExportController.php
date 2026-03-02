@@ -6,13 +6,30 @@ namespace App\Http\Controllers;
 
 use App\Exports\TransactionsExport;
 use App\Models\Transaction;
+use App\Models\Wallet;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ExportController extends Controller
 {
+    /**
+     * Tampilkan halaman Export Web App.
+     */
+    public function index(Request $request)
+    {
+        $wallets = Wallet::where('user_id', $request->user()->id)
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
+
+        return Inertia::render('Export/Index', [
+            'wallets' => $wallets,
+        ]);
+    }
+
     /**
      * Preview summary for the export page (AJAX).
      * Optimized: uses SQL aggregation instead of loading all rows into memory.
