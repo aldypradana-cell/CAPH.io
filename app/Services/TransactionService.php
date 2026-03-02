@@ -17,7 +17,8 @@ class TransactionService
     public function createTransactions(array $transactionsData, int $userId, int $walletId)
     {
         return DB::transaction(function () use ($transactionsData, $userId, $walletId) {
-            $wallet = Wallet::findOrFail($walletId);
+            // Pessimistic lock: cegah race condition saldo dompet
+            $wallet = Wallet::where('id', $walletId)->lockForUpdate()->firstOrFail();
             $newTransactions = [];
 
             foreach ($transactionsData as $data) {
@@ -35,20 +36,22 @@ class TransactionService
                 // Update Wallet Balance
                 if ($data['type'] === 'INCOME') {
                     $wallet->increment('balance', $data['amount']);
-                }
-                elseif ($data['type'] === 'EXPENSE') {
+                    $wallet->refresh(); // pastikan saldo terbaru
+                } elseif ($data['type'] === 'EXPENSE') {
+                    $wallet->refresh();
                     if ($wallet->balance < $data['amount']) {
                         throw new \Exception("Saldo dompet \"{$wallet->name}\" tidak cukup. Saldo: Rp" . number_format($wallet->balance, 0, ',', '.') . ", Dibutuhkan: Rp" . number_format($data['amount'], 0, ',', '.'));
                     }
                     $wallet->decrement('balance', $data['amount']);
                     $this->checkBudget($transaction);
-                }
-                elseif ($data['type'] === 'TRANSFER' && isset($data['to_wallet_id'])) {
+                } elseif ($data['type'] === 'TRANSFER' && isset($data['to_wallet_id'])) {
+                    $wallet->refresh();
                     if ($wallet->balance < $data['amount']) {
                         throw new \Exception("Saldo dompet \"{$wallet->name}\" tidak cukup untuk transfer. Saldo: Rp" . number_format($wallet->balance, 0, ',', '.') . ", Dibutuhkan: Rp" . number_format($data['amount'], 0, ',', '.'));
                     }
                     $wallet->decrement('balance', $data['amount']);
-                    Wallet::where('id', $data['to_wallet_id'])->increment('balance', $data['amount']);
+                    // Lock dompet tujuan sebelum menambah saldo
+                    Wallet::where('id', $data['to_wallet_id'])->lockForUpdate()->firstOrFail()->increment('balance', $data['amount']);
                 }
 
                 $newTransactions[] = $transaction;
@@ -61,16 +64,15 @@ class TransactionService
     public function updateTransaction(Transaction $transaction, array $data)
     {
         return DB::transaction(function () use ($transaction, $data) {
-            // 1. Revert old balance
+            // 1. Lock & revert old balance with pessimistic lock
+            $oldWallet = Wallet::where('id', $transaction->wallet_id)->lockForUpdate()->firstOrFail();
             if ($transaction->type === 'INCOME') {
-                $transaction->wallet->decrement('balance', $transaction->amount);
-            }
-            elseif ($transaction->type === 'EXPENSE') {
-                $transaction->wallet->increment('balance', $transaction->amount);
-            }
-            elseif ($transaction->type === 'TRANSFER' && $transaction->to_wallet_id) {
-                $transaction->wallet->increment('balance', $transaction->amount);
-                Wallet::where('id', $transaction->to_wallet_id)->decrement('balance', $transaction->amount);
+                $oldWallet->decrement('balance', $transaction->amount);
+            } elseif ($transaction->type === 'EXPENSE') {
+                $oldWallet->increment('balance', $transaction->amount);
+            } elseif ($transaction->type === 'TRANSFER' && $transaction->to_wallet_id) {
+                $oldWallet->increment('balance', $transaction->amount);
+                Wallet::where('id', $transaction->to_wallet_id)->lockForUpdate()->firstOrFail()->decrement('balance', $transaction->amount);
             }
 
             // 2. Update Transaction
@@ -84,24 +86,22 @@ class TransactionService
                 'date' => $data['date'],
             ]);
 
-            // 3. Apply new balance
-            $wallet = Wallet::findOrFail($data['wallet_id']);
+            // 3. Lock & apply new balance
+            $wallet = Wallet::where('id', $data['wallet_id'])->lockForUpdate()->firstOrFail();
             if ($data['type'] === 'INCOME') {
                 $wallet->increment('balance', $data['amount']);
-            }
-            elseif ($data['type'] === 'EXPENSE') {
+            } elseif ($data['type'] === 'EXPENSE') {
                 if ($wallet->balance < $data['amount']) {
                     throw new \Exception("Saldo dompet \"{$wallet->name}\" tidak cukup. Saldo: Rp" . number_format($wallet->balance, 0, ',', '.') . ", Dibutuhkan: Rp" . number_format($data['amount'], 0, ',', '.'));
                 }
                 $wallet->decrement('balance', $data['amount']);
                 $this->checkBudget($transaction);
-            }
-            elseif ($data['type'] === 'TRANSFER' && isset($data['to_wallet_id'])) {
+            } elseif ($data['type'] === 'TRANSFER' && isset($data['to_wallet_id'])) {
                 if ($wallet->balance < $data['amount']) {
                     throw new \Exception("Saldo dompet \"{$wallet->name}\" tidak cukup untuk transfer. Saldo: Rp" . number_format($wallet->balance, 0, ',', '.') . ", Dibutuhkan: Rp" . number_format($data['amount'], 0, ',', '.'));
                 }
                 $wallet->decrement('balance', $data['amount']);
-                Wallet::where('id', $data['to_wallet_id'])->increment('balance', $data['amount']);
+                Wallet::where('id', $data['to_wallet_id'])->lockForUpdate()->firstOrFail()->increment('balance', $data['amount']);
             }
 
             return $transaction;
@@ -111,18 +111,17 @@ class TransactionService
     public function deleteTransaction(Transaction $transaction)
     {
         return DB::transaction(function () use ($transaction) {
-            $wallet = $transaction->wallet;
+            // Pessimistic lock: cegah race condition saat revert saldo
+            $wallet = Wallet::where('id', $transaction->wallet_id)->lockForUpdate()->firstOrFail();
 
             // Revert Balance
             if ($transaction->type === 'INCOME') {
                 $wallet->decrement('balance', $transaction->amount);
-            }
-            elseif ($transaction->type === 'EXPENSE') {
+            } elseif ($transaction->type === 'EXPENSE') {
                 $wallet->increment('balance', $transaction->amount);
-            }
-            elseif ($transaction->type === 'TRANSFER' && $transaction->to_wallet_id) {
+            } elseif ($transaction->type === 'TRANSFER' && $transaction->to_wallet_id) {
                 $wallet->increment('balance', $transaction->amount);
-                Wallet::where('id', $transaction->to_wallet_id)->decrement('balance', $transaction->amount);
+                Wallet::where('id', $transaction->to_wallet_id)->lockForUpdate()->firstOrFail()->decrement('balance', $transaction->amount);
             }
 
             $transaction->delete();

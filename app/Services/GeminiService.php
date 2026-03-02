@@ -63,7 +63,12 @@ Kembalikan array objek JSON dengan properti:
             return json_decode($text, true) ?? [];
 
         } catch (\Exception $e) {
-            Log::error('Gemini AI parsing error: ' . $e->getMessage());
+            $msg = $e->getMessage();
+            Log::error('Gemini AI parsing error: ' . $msg);
+            // Deteksi jenis error agar pesan lebih informatif
+            if (str_contains($msg, 'timed out') || str_contains($msg, 'Connection timed out')) {
+                throw new \Exception('Koneksi ke AI timeout. Silakan coba lagi dalam beberapa detik.');
+            }
             throw new \Exception('Gagal memproses input dengan AI. Silakan coba lagi.');
         }
     }
@@ -248,7 +253,7 @@ PENTING:
                     'method'  => 'POST',
                     'content' => json_encode($payload),
                     'ignore_errors' => true,
-                    'timeout' => 90
+                    'timeout' => 25, // Turunkan dari 90 detik agar server tidak hang terlalu lama
                 ],
                 'ssl' => [
                     'verify_peer' => false,
@@ -263,8 +268,13 @@ PENTING:
             $response = file_get_contents($url, false, $context);
 
             if ($response === false) {
-                 Log::error('Gemini connection failed for insights');
-                 throw new \Exception('Gagal menghubungkan ke server AI.');
+                $lastError = error_get_last();
+                $errMsg = $lastError['message'] ?? 'Unknown network error';
+                Log::error('Gemini connection failed for insights: ' . $errMsg);
+                if (str_contains($errMsg, 'timed out') || str_contains($errMsg, 'Connection timed out')) {
+                    throw new \Exception('Koneksi ke AI timeout setelah 25 detik. Coba lagi nanti.');
+                }
+                throw new \Exception('Gagal menghubungkan ke server AI. Periksa koneksi internet Anda.');
             }
 
             $data = json_decode($response, true);

@@ -43,8 +43,10 @@ export default function SmartEntryIndex({ auth, wallets, categories }: PageProps
         setIsParsing(true);
         setError(null);
         try {
-            // Using axios instead of fetch to handle CSRF and cookies automatically
-            const response = await window.axios.post(route('smart-entry.parse'), { input });
+            // Gunakan timeout 30 detik agar UI tidak gantung jika AI sedang sibuk
+            const response = await window.axios.post(route('smart-entry.parse'), { input }, {
+                timeout: 30000,
+            });
 
             const result = response.data;
             if (result.success) {
@@ -55,7 +57,16 @@ export default function SmartEntryIndex({ auth, wallets, categories }: PageProps
             }
         } catch (e: any) {
             console.error(e);
-            setError(e.response?.data?.message || 'Terjadi kesalahan. Silakan coba lagi.');
+            // Deteksi timeout secara spesifik agar pesan error lebih membantu
+            if (e.code === 'ECONNABORTED' || e.message?.includes('timeout')) {
+                setError('⏱️ Koneksi ke AI timeout. AI sedang sibuk atau internet lambat. Silakan coba lagi.');
+            } else if (e.response?.status === 422) {
+                setError(e.response.data?.errors?.message?.[0] || e.response.data?.message || 'Input tidak valid.');
+            } else if (e.response?.status === 429) {
+                setError('⚡ Terlalu banyak permintaan. Mohon tunggu sebentar sebelum mencoba lagi.');
+            } else {
+                setError(e.response?.data?.message || 'Terjadi kesalahan. Silakan coba lagi.');
+            }
         } finally {
             setIsParsing(false);
         }
