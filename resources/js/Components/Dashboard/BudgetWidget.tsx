@@ -24,17 +24,21 @@ const getBudgetColor = (pct: number) => {
     return 'bg-emerald-500';
 };
 
-const getBudgetColorGradient = (pct: number) => {
-    if (pct >= 90) return 'from-red-500 to-rose-600';
-    if (pct >= 70) return 'from-amber-500 to-orange-600';
-    return 'from-emerald-500 to-teal-600';
+/** Fallback labels when template_label is not provided */
+const FALLBACK_LABELS: Record<string, { label: string; emoji: string }> = {
+    NEEDS:        { label: 'Kebutuhan',           emoji: '🏠' },
+    WANTS:        { label: 'Keinginan',           emoji: '🎯' },
+    SAVINGS:      { label: 'Tabungan & Investasi',emoji: '💰' },
+    DEBT:         { label: 'Cicilan & Utang',     emoji: '🏦' },
+    SOCIAL:       { label: 'Sosial',              emoji: '🤝' },
+    LIVING:       { label: 'Biaya Hidup',         emoji: '🏠' },
+    SAVINGS_PLUS: { label: 'Tabungan & Kewajiban',emoji: '💰' },
+    OBLIGATIONS:  { label: 'Kewajiban & Sosial',  emoji: '📋' },
 };
 
-const MASTER_LABELS: Record<string, { label: string; emoji: string }> = {
-    NEEDS: { label: 'Kebutuhan', emoji: '🏠' },
-    WANTS: { label: 'Keinginan', emoji: '🎯' },
-    SAVINGS: { label: 'Tabungan', emoji: '💰' },
-    INVESTMENTS: { label: 'Investasi', emoji: '📈' },
+const SLOT_EMOJI: Record<string, string> = {
+    NEEDS: '🏠', WANTS: '🎯', SAVINGS: '💰', DEBT: '🏦', SOCIAL: '🤝',
+    LIVING: '🏠', SAVINGS_PLUS: '💰', OBLIGATIONS: '📋',
 };
 
 export default function BudgetWidget({
@@ -77,7 +81,8 @@ export default function BudgetWidget({
                         </div>
                         <div className="grid grid-cols-2 gap-2">
                             {masterBudgets.map((b) => {
-                                const meta = MASTER_LABELS[b.category] || { label: b.category, emoji: '📊' };
+                                const displayLabel = b.template_label || FALLBACK_LABELS[b.category]?.label || b.category;
+                                const emoji = SLOT_EMOJI[b.category] || '📊';
                                 const r = 18, stroke = 4;
                                 const circ = 2 * Math.PI * r;
                                 const offset = circ - (b.percentage / 100) * circ;
@@ -97,7 +102,7 @@ export default function BudgetWidget({
                                                 </text>
                                             </svg>
                                             <div className="min-w-0">
-                                                <p className="text-[10px] font-bold text-slate-700 dark:text-slate-200 truncate">{meta.emoji} {meta.label}</p>
+                                                <p className="text-[10px] font-bold text-slate-700 dark:text-slate-200 truncate">{emoji} {displayLabel}</p>
                                                 <p className="text-[9px] text-slate-400 truncate">{formatShortIDR(b.spent)} / {formatShortIDR(b.limit)}</p>
                                             </div>
                                         </div>

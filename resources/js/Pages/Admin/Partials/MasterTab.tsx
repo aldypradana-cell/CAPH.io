@@ -15,12 +15,14 @@ interface Category {
     budget_rule?: string | null;
 }
 
-const BUDGET_RULE_LABELS: Record<string, { label: string; color: string }> = {
-    NEEDS:       { label: 'Kebutuhan',        color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' },
-    WANTS:       { label: 'Keinginan',        color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' },
-    SAVINGS:     { label: 'Tabungan',         color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' },
-    INVESTMENTS: { label: 'Cicilan & Sosial', color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' },
+const BUDGET_RULE_LABELS: Record<string, { label: string; desc: string; color: string; dot: string }> = {
+    NEEDS:   { label: 'Kebutuhan',          desc: 'Makan, tagihan, transport', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',       dot: 'bg-blue-500' },
+    WANTS:   { label: 'Keinginan',          desc: 'Hiburan, gaya hidup',       color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400', dot: 'bg-orange-500' },
+    SAVINGS: { label: 'Tabungan & Inv.',    desc: 'Tabungan, investasi',       color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400', dot: 'bg-emerald-500' },
+    DEBT:    { label: 'Cicilan & Utang',    desc: 'KPR, kredit, pinjaman',     color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',           dot: 'bg-red-500' },
+    SOCIAL:  { label: 'Sosial',             desc: 'Sedekah, zakat, donasi',    color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400', dot: 'bg-purple-500' },
 };
+
 
 export default function MasterTab({ categories }: { categories: Category[] }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -196,19 +198,22 @@ export default function MasterTab({ categories }: { categories: Category[] }) {
 
                                 {data.type === 'EXPENSE' && (
                                     <div className="animate-fade-in-up">
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Kelompok Budget (Opsional)</label>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            {Object.entries(BUDGET_RULE_LABELS).map(([key, { label, color }]) => (
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2 ml-1">Kelompok Budget (Opsional)</label>
+                                        <div className="flex flex-wrap gap-2">
+                                            {Object.entries(BUDGET_RULE_LABELS).map(([key, { label, desc, color, dot }]) => (
                                                 <button
                                                     key={key}
                                                     type="button"
                                                     onClick={() => setData('budget_rule', data.budget_rule === key ? null : key)}
-                                                    className={`py-2 px-3 rounded-xl text-xs font-bold transition-all border ${data.budget_rule === key
+                                                    className={`flex items-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all border ${
+                                                        data.budget_rule === key
                                                             ? `${color} border-transparent shadow-sm scale-105`
-                                                            : 'border-slate-200 dark:border-slate-700 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
-                                                        }`}
+                                                            : 'border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-500'
+                                                    }`}
+                                                    title={desc}
                                                 >
-                                                    {label}
+                                                    <span className={`w-2 h-2 rounded-full shrink-0 ${dot}`} />
+                                                    <span>{label}</span>
                                                 </button>
                                             ))}
                                         </div>

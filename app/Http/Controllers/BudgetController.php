@@ -11,11 +11,85 @@ use Inertia\Inertia;
 
 class BudgetController extends Controller
 {
+    /**
+     * Slot key → array of budget_rule values that should be aggregated
+     */
+    private const SLOT_TO_RULES = [
+        'NEEDS'        => ['NEEDS'],
+        'WANTS'        => ['WANTS'],
+        'SAVINGS'      => ['SAVINGS'],
+        'DEBT'         => ['DEBT'],
+        'SOCIAL'       => ['SOCIAL'],
+        'LIVING'       => ['NEEDS', 'WANTS'],              // 70-20-10
+        'SAVINGS_PLUS' => ['SAVINGS', 'DEBT', 'SOCIAL'],   // 50-30-20
+        'OBLIGATIONS'  => ['DEBT', 'SOCIAL'],              // 70-20-10
+    ];
+
+    /**
+     * Template definitions: slot key → percentage
+     */
+    private const TEMPLATES = [
+        '50-30-20' => [
+            'NEEDS'        => 50,
+            'WANTS'        => 30,
+            'SAVINGS_PLUS' => 20,
+        ],
+        '40-30-20-10' => [
+            'NEEDS'   => 40,
+            'DEBT'    => 30,
+            'SAVINGS' => 20,
+            'SOCIAL'  => 10,
+        ],
+        '70-20-10' => [
+            'LIVING'      => 70,
+            'SAVINGS'     => 20,
+            'OBLIGATIONS' => 10,
+        ],
+    ];
+
+    /**
+     * Labels per slot per template
+     */
+    private const TEMPLATE_LABELS = [
+        '50-30-20' => [
+            'NEEDS'        => 'Kebutuhan',
+            'WANTS'        => 'Keinginan',
+            'SAVINGS_PLUS' => 'Tabungan & Kewajiban',
+        ],
+        '40-30-20-10' => [
+            'NEEDS'   => 'Kebutuhan',
+            'DEBT'    => 'Cicilan & Kewajiban',
+            'SAVINGS' => 'Tabungan & Investasi',
+            'SOCIAL'  => 'Sosial & Kebaikan',
+        ],
+        '70-20-10' => [
+            'LIVING'      => 'Biaya Hidup',
+            'SAVINGS'     => 'Tabungan & Investasi',
+            'OBLIGATIONS' => 'Kewajiban & Sosial',
+        ],
+    ];
+
+    /**
+     * Detect active template from the combination of master budget slot keys
+     */
+    private static function detectTemplate(array $masterSlots): ?string
+    {
+        foreach (self::TEMPLATES as $key => $slots) {
+            $templateSlots = array_keys($slots);
+            sort($templateSlots);
+            $current = $masterSlots;
+            sort($current);
+            if ($templateSlots === $current) {
+                return $key;
+            }
+        }
+        return null;
+    }
+
     public function index(Request $request)
     {
         $user = $request->user();
         
-        // No eager loading — use direct SQL aggregation per budget instead
         $budgets = Budget::where('user_id', $user->id)->get();
 
         // Build a lookup: rule => [category_name_1, category_name_2, ...]
@@ -27,10 +101,13 @@ class BudgetController extends Controller
             $ruleCategoryNames[$cat->budget_rule][] = $cat->name;
         }
 
-        $budgetsWithProgress = $budgets->map(function ($budget) use ($user, $ruleCategoryNames) {
+        // Detect active template
+        $masterSlots = $budgets->where('is_master', true)->pluck('category')->toArray();
+        $activeTemplate = self::detectTemplate($masterSlots);
+        $labels = $activeTemplate ? (self::TEMPLATE_LABELS[$activeTemplate] ?? []) : [];
+
+        $budgetsWithProgress = $budgets->map(function ($budget) use ($user, $ruleCategoryNames, $labels) {
             $now = Carbon::now();
-            $start = null;
-            $end = null;
 
             if ($budget->period === 'WEEKLY') {
                 $start = $now->copy()->startOfWeek()->format('Y-m-d');
@@ -39,14 +116,17 @@ class BudgetController extends Controller
                 $start = $now->copy()->startOfYear()->format('Y-m-d');
                 $end = $now->copy()->endOfYear()->format('Y-m-d');
             } else {
-                // Default to MONTHLY
                 $start = $now->copy()->startOfMonth()->format('Y-m-d');
                 $end = $now->copy()->endOfMonth()->format('Y-m-d');
             }
 
             if ($budget->is_master) {
-                // Master budget: SUM all transactions whose category is mapped to this rule
-                $mappedCategories = $ruleCategoryNames[$budget->category] ?? [];
+                // Use SLOT_TO_RULES to find which budget_rules this slot aggregates
+                $rules = self::SLOT_TO_RULES[$budget->category] ?? [$budget->category];
+                $mappedCategories = collect($rules)
+                    ->flatMap(fn($rule) => $ruleCategoryNames[$rule] ?? [])
+                    ->toArray();
+                
                 $spent = 0;
                 if (!empty($mappedCategories)) {
                     $spent = Transaction::where('user_id', $user->id)
@@ -56,7 +136,6 @@ class BudgetController extends Controller
                         ->sum('amount');
                 }
             } else {
-                // Regular budget: SUM by exact category name (existing logic)
                 $spent = Transaction::where('user_id', $user->id)
                     ->where('type', 'EXPENSE')
                     ->where('category', $budget->category)
@@ -74,6 +153,7 @@ class BudgetController extends Controller
                 'spent' => (float) $spent,
                 'remaining' => max(0, $budget->limit - $spent),
                 'percentage' => $budget->limit > 0 ? min(100, round(($spent / $budget->limit) * 100)) : 0,
+                'template_label' => $labels[$budget->category] ?? null,
             ];
         });
 
@@ -85,6 +165,7 @@ class BudgetController extends Controller
         return Inertia::render('Budgets/Index', [
             'budgets' => $budgetsWithProgress,
             'categories' => $categories,
+            'activeTemplate' => $activeTemplate,
         ]);
     }
 
@@ -97,7 +178,6 @@ class BudgetController extends Controller
             'frequency' => 'required|in:WEEKLY,MONTHLY,YEARLY',
         ]);
 
-        // Manually find existing budget (including soft-deleted) to avoid UniqueConstraintViolation
         $budget = Budget::withTrashed()
             ->where('user_id', $request->user()->id)
             ->where('category', $validated['category'])
@@ -167,35 +247,13 @@ class BudgetController extends Controller
 
         $income = $validated['income'];
         $template = $validated['template'];
-
-        // Define template allocations
-        $templates = [
-            '50-30-20' => [
-                'NEEDS'   => 50,
-                'WANTS'   => 30,
-                'SAVINGS' => 20,
-            ],
-            '40-30-20-10' => [
-                'NEEDS'       => 40,
-                'WANTS'       => 30,
-                'SAVINGS'     => 20,
-                'INVESTMENTS' => 10,
-            ],
-            '70-20-10' => [
-                'NEEDS'   => 70,
-                'SAVINGS' => 20,
-                'INVESTMENTS' => 10,
-            ],
-        ];
-
-        $allocations = $templates[$template];
+        $allocations = self::TEMPLATES[$template];
         $userId = $request->user()->id;
 
-        foreach ($allocations as $rule => $percentage) {
-            // Manually find existing budget (including soft-deleted) to avoid UniqueConstraintViolation
+        foreach ($allocations as $slot => $percentage) {
             $budget = Budget::withTrashed()
                 ->where('user_id', $userId)
-                ->where('category', $rule)
+                ->where('category', $slot)
                 ->where('period', 'MONTHLY')
                 ->first();
 
@@ -212,7 +270,7 @@ class BudgetController extends Controller
             } else {
                 Budget::create([
                     'user_id'   => $userId,
-                    'category'  => $rule,
+                    'category'  => $slot,
                     'period'    => 'MONTHLY',
                     'limit'     => $limit,
                     'frequency' => 'MONTHLY',

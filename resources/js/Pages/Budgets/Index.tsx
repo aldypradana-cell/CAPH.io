@@ -16,6 +16,7 @@ interface Budget {
     spent: number;
     remaining: number;
     percentage: number;
+    template_label?: string | null;
 }
 
 const formatIDR = (amount: number) =>
@@ -28,40 +29,44 @@ interface Category {
 }
 
 const MASTER_LABELS: Record<string, { label: string; desc: string; icon: any; gradient: string; bgLight: string }> = {
-    NEEDS: { label: 'Kebutuhan Pokok', desc: 'Makan, transportasi, sewa, tagihan wajib', icon: ShieldCheck, gradient: 'from-blue-500 to-cyan-500', bgLight: 'bg-blue-50 dark:bg-blue-900/20' },
-    WANTS: { label: 'Keinginan', desc: 'Hiburan, gaya hidup, hobi, langganan', icon: TrendingUp, gradient: 'from-orange-500 to-amber-500', bgLight: 'bg-orange-50 dark:bg-orange-900/20' },
-    SAVINGS: { label: 'Tabungan & Investasi', desc: 'Dana darurat, tabungan, investasi masa depan', icon: PiggyBank, gradient: 'from-emerald-500 to-teal-500', bgLight: 'bg-emerald-50 dark:bg-emerald-900/20' },
-    INVESTMENTS: { label: 'Investasi / Sosial', desc: 'Cicilan utang, investasi lanjutan, atau zakat & donasi', icon: Wallet, gradient: 'from-purple-500 to-violet-500', bgLight: 'bg-purple-50 dark:bg-purple-900/20' },
+    NEEDS:        { label: 'Kebutuhan',            desc: 'Makan, transportasi, sewa, tagihan wajib',         icon: ShieldCheck, gradient: 'from-blue-500 to-cyan-500',      bgLight: 'bg-blue-50 dark:bg-blue-900/20' },
+    WANTS:        { label: 'Keinginan',            desc: 'Hiburan, gaya hidup, hobi, langganan',              icon: TrendingUp,  gradient: 'from-orange-500 to-amber-500',    bgLight: 'bg-orange-50 dark:bg-orange-900/20' },
+    SAVINGS:      { label: 'Tabungan & Investasi', desc: 'Dana darurat, tabungan, investasi masa depan',      icon: PiggyBank,   gradient: 'from-emerald-500 to-teal-500',    bgLight: 'bg-emerald-50 dark:bg-emerald-900/20' },
+    DEBT:         { label: 'Cicilan & Utang',      desc: 'KPR, kredit motor, pinjaman bank',                  icon: Wallet,      gradient: 'from-red-500 to-rose-500',        bgLight: 'bg-red-50 dark:bg-red-900/20' },
+    SOCIAL:       { label: 'Sosial & Kebaikan',    desc: 'Sedekah, zakat, donasi',                            icon: Wallet,      gradient: 'from-purple-500 to-violet-500',   bgLight: 'bg-purple-50 dark:bg-purple-900/20' },
+    LIVING:       { label: 'Biaya Hidup',          desc: 'Kebutuhan pokok + keinginan sehari-hari',           icon: ShieldCheck, gradient: 'from-blue-500 to-indigo-500',     bgLight: 'bg-blue-50 dark:bg-blue-900/20' },
+    SAVINGS_PLUS: { label: 'Tabungan & Kewajiban', desc: 'Tabungan, cicilan, dan sosial digabung',            icon: PiggyBank,   gradient: 'from-emerald-500 to-cyan-500',    bgLight: 'bg-emerald-50 dark:bg-emerald-900/20' },
+    OBLIGATIONS:  { label: 'Kewajiban & Sosial',   desc: 'Cicilan utang + sedekah & donasi',                  icon: Wallet,      gradient: 'from-purple-500 to-pink-500',     bgLight: 'bg-purple-50 dark:bg-purple-900/20' },
 };
 
 const TEMPLATE_OPTIONS = [
     {
         key: '50-30-20',
         title: '50 / 30 / 20',
-        desc: 'Kebutuhan 50%, Keinginan 30%, Tabungan 20%',
+        desc: 'Kebutuhan 50%, Keinginan 30%, Tabungan & Kewajiban 20%',
         cocokUntuk: 'Pemula atau gaji menengah yang ingin aturan simpel',
-        splits: { NEEDS: 50, WANTS: 30, SAVINGS: 20 },
+        splits: { NEEDS: 50, WANTS: 30, SAVINGS_PLUS: 20 },
         categoryLabels: {} as Record<string, string>,
     },
     {
         key: '40-30-20-10',
         title: '40 / 30 / 20 / 10',
-        desc: 'Kebutuhan 40%, Kewajiban 30%, Tabungan 20%, Sosial 10%',
+        desc: 'Kebutuhan 40%, Cicilan 30%, Tabungan 20%, Sosial 10%',
         cocokUntuk: 'Yang punya cicilan aktif atau rutin berzakat & berdonasi',
-        splits: { NEEDS: 40, WANTS: 30, SAVINGS: 20, INVESTMENTS: 10 },
-        categoryLabels: { WANTS: 'Cicilan & Kewajiban', INVESTMENTS: 'Sosial & Kebaikan' } as Record<string, string>,
+        splits: { NEEDS: 40, DEBT: 30, SAVINGS: 20, SOCIAL: 10 },
+        categoryLabels: { DEBT: 'Cicilan & Kewajiban', SOCIAL: 'Sosial & Kebaikan' } as Record<string, string>,
     },
     {
         key: '70-20-10',
         title: '70 / 20 / 10',
-        desc: 'Biaya Hidup 70%, Tabungan 20%, Utang/Sosial 10%',
+        desc: 'Biaya Hidup 70%, Tabungan 20%, Kewajiban & Sosial 10%',
         cocokUntuk: 'Yang ingin fleksibel di pengeluaran sehari-hari',
-        splits: { NEEDS: 70, SAVINGS: 20, INVESTMENTS: 10 },
-        categoryLabels: { NEEDS: 'Biaya Hidup', INVESTMENTS: 'Utang / Sosial' } as Record<string, string>,
+        splits: { LIVING: 70, SAVINGS: 20, OBLIGATIONS: 10 },
+        categoryLabels: { LIVING: 'Biaya Hidup', OBLIGATIONS: 'Kewajiban & Sosial' } as Record<string, string>,
     },
 ];
 
-export default function BudgetsIndex({ auth, budgets, categories }: PageProps<{ budgets: Budget[], categories: Category[] }>) {
+export default function BudgetsIndex({ auth, budgets, categories, activeTemplate }: PageProps<{ budgets: Budget[], categories: Category[], activeTemplate: string | null }>) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
     const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -185,6 +190,9 @@ export default function BudgetsIndex({ auth, budgets, categories }: PageProps<{ 
                         <div className="flex items-center gap-2">
                             <Sparkles className="w-5 h-5 text-indigo-500" />
                             <h2 className="text-sm font-bold text-slate-600 dark:text-slate-300 uppercase tracking-widest">Auto-Budget</h2>
+                            {activeTemplate && (
+                                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2.5 py-0.5 rounded-full">Aturan {activeTemplate}</span>
+                            )}
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                             {masterBudgets.map((mb, idx) => {
@@ -202,7 +210,7 @@ export default function BudgetsIndex({ auth, budgets, categories }: PageProps<{ 
                                                     <Icon className="w-5 h-5" />
                                                 </div>
                                                 <div>
-                                                    <h3 className="font-bold text-slate-800 dark:text-white text-sm">{meta.label}</h3>
+                                                    <h3 className="font-bold text-slate-800 dark:text-white text-sm">{mb.template_label || meta.label}</h3>
                                                     <p className="text-[10px] text-slate-400">Bulanan</p>
                                                 </div>
                                             </div>

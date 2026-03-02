@@ -58,7 +58,7 @@ class MasterDataController extends Controller
             'type' => 'required|in:INCOME,EXPENSE',
             'icon' => 'required|string',
             'color' => 'required|string',
-            'budget_rule' => 'nullable|string|in:NEEDS,WANTS,SAVINGS,INVESTMENTS',
+            'budget_rule' => 'nullable|string|in:NEEDS,WANTS,SAVINGS,DEBT,SOCIAL',
         ]);
 
         $category = Category::create([
@@ -87,7 +87,7 @@ class MasterDataController extends Controller
             'type' => 'required|in:INCOME,EXPENSE',
             'icon' => 'required|string',
             'color' => 'required|string',
-            'budget_rule' => 'nullable|string|in:NEEDS,WANTS,SAVINGS,INVESTMENTS',
+            'budget_rule' => 'nullable|string|in:NEEDS,WANTS,SAVINGS,DEBT,SOCIAL',
         ]);
 
         $category->update($validated);

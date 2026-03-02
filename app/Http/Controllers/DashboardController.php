@@ -103,7 +103,7 @@ class DashboardController extends Controller
                 'percentage' => $totalExpense > 0 ? round(($item->total / $totalExpense) * 100, 1) : 0,
             ]);
 
-        // Budget progress — using same is_master logic as BudgetController
+        // Budget progress — using SLOT_TO_RULES from BudgetController
         $budgets = Budget::where('user_id', $user->id)->get();
 
         // Build rule → category names lookup for master budgets
@@ -115,7 +115,43 @@ class DashboardController extends Controller
             $ruleCategoryNames[$cat->budget_rule][] = $cat->name;
         }
 
-        $budgetProgress = $budgets->map(function ($budget) use ($user, $ruleCategoryNames) {
+        // Slot → rules mapping (mirrors BudgetController::SLOT_TO_RULES)
+        $slotToRules = [
+            'NEEDS'        => ['NEEDS'],
+            'WANTS'        => ['WANTS'],
+            'SAVINGS'      => ['SAVINGS'],
+            'DEBT'         => ['DEBT'],
+            'SOCIAL'       => ['SOCIAL'],
+            'LIVING'       => ['NEEDS', 'WANTS'],
+            'SAVINGS_PLUS' => ['SAVINGS', 'DEBT', 'SOCIAL'],
+            'OBLIGATIONS'  => ['DEBT', 'SOCIAL'],
+        ];
+
+        // Template labels
+        $templateLabelsMap = [
+            '50-30-20'    => ['NEEDS' => 'Kebutuhan', 'WANTS' => 'Keinginan', 'SAVINGS_PLUS' => 'Tabungan & Kewajiban'],
+            '40-30-20-10' => ['NEEDS' => 'Kebutuhan', 'DEBT' => 'Cicilan & Kewajiban', 'SAVINGS' => 'Tabungan & Investasi', 'SOCIAL' => 'Sosial & Kebaikan'],
+            '70-20-10'    => ['LIVING' => 'Biaya Hidup', 'SAVINGS' => 'Tabungan & Investasi', 'OBLIGATIONS' => 'Kewajiban & Sosial'],
+        ];
+
+        // Template definitions for detection
+        $templateDefs = [
+            '50-30-20'    => ['NEEDS', 'WANTS', 'SAVINGS_PLUS'],
+            '40-30-20-10' => ['NEEDS', 'DEBT', 'SAVINGS', 'SOCIAL'],
+            '70-20-10'    => ['LIVING', 'SAVINGS', 'OBLIGATIONS'],
+        ];
+
+        $masterSlots = $budgets->where('is_master', true)->pluck('category')->toArray();
+        sort($masterSlots);
+        $activeTemplate = null;
+        foreach ($templateDefs as $tKey => $tSlots) {
+            $sorted = $tSlots;
+            sort($sorted);
+            if ($sorted === $masterSlots) { $activeTemplate = $tKey; break; }
+        }
+        $labels = $activeTemplate ? ($templateLabelsMap[$activeTemplate] ?? []) : [];
+
+        $budgetProgress = $budgets->map(function ($budget) use ($user, $ruleCategoryNames, $slotToRules, $labels) {
              $now = Carbon::now();
              $start = $now->copy()->startOfMonth()->format('Y-m-d');
              $end = $now->copy()->endOfMonth()->format('Y-m-d');
@@ -129,8 +165,11 @@ class DashboardController extends Controller
              }
 
             if ($budget->is_master) {
-                // Master budget: SUM all transactions whose category is mapped to this rule
-                $mappedCategories = $ruleCategoryNames[$budget->category] ?? [];
+                $rules = $slotToRules[$budget->category] ?? [$budget->category];
+                $mappedCategories = collect($rules)
+                    ->flatMap(fn($rule) => $ruleCategoryNames[$rule] ?? [])
+                    ->toArray();
+                
                 $spent = 0;
                 if (!empty($mappedCategories)) {
                     $spent = Transaction::forUser($user->id)
@@ -154,6 +193,7 @@ class DashboardController extends Controller
                 'spent' => (float) $spent,
                 'percentage' => $budget->limit > 0 ? min(100, round(($spent / $budget->limit) * 100)) : 0,
                 'is_master' => (bool) $budget->is_master,
+                'template_label' => $labels[$budget->category] ?? null,
             ];
         });
 

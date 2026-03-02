@@ -37,6 +37,7 @@ export interface BudgetProgress {
     spent: number;
     percentage: number;
     is_master?: boolean;
+    template_label?: string | null;
 }
 
 export interface CategoryData {

@@ -28,7 +28,7 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'type' => 'required|in:INCOME,EXPENSE,TRANSFER',
-            'budget_rule' => 'nullable|in:NEEDS,WANTS,SAVINGS,INVESTMENTS',
+            'budget_rule' => 'nullable|in:NEEDS,WANTS,SAVINGS,DEBT,SOCIAL',
         ]);
 
         Category::create([
@@ -52,7 +52,7 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'type' => 'required|in:INCOME,EXPENSE,TRANSFER',
-            'budget_rule' => 'nullable|in:NEEDS,WANTS,SAVINGS,INVESTMENTS',
+            'budget_rule' => 'nullable|in:NEEDS,WANTS,SAVINGS,DEBT,SOCIAL',
         ]);
 
         $category->update([
