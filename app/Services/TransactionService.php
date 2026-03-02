@@ -133,12 +133,12 @@ class TransactionService
     {
         $user = $transaction->user;
         // Find all budgets for this category (could be Weekly AND Monthly)
-        $budgets = \App\Models\Budget::where('user_id', $user->id)
+        $budgets = Budget::where('user_id', $user->id)
             ->where('category', $transaction->category)
             ->get();
 
         foreach ($budgets as $budget) {
-            $date = \Illuminate\Support\Carbon::parse($transaction->date);
+            $date = Carbon::parse($transaction->date);
             $start = null;
             $end = null;
 
@@ -176,7 +176,7 @@ class TransactionService
                 // Let's just notify. The BudgetExceeded class reads $budget->percentage.
                 // If we want to distinguish period in message, we should update BudgetExceeded.
                 // For now, let's just trigger it.
-                $user->notify(new \App\Notifications\BudgetExceeded($budget, $transaction));
+                $user->notify(new BudgetExceeded($budget, $transaction));
             }
         }
     }
