@@ -49,6 +49,28 @@ class DebtController extends Controller
             $item->next_run_date <= now();
         })->values();
 
+        // Fetch Installments
+        $installments = \App\Models\Installment::where('user_id', $user->id)
+            ->with(['wallet', 'payments'])
+            ->orderByRaw('is_completed ASC')
+            ->orderBy('due_day')
+            ->get()
+            ->map(function ($inst) {
+                return [
+                    ...$inst->toArray(),
+                    'remaining_amount'     => $inst->remaining_amount,
+                    'progress_percentage'  => $inst->progress_percentage,
+                    'remaining_tenor'      => $inst->remaining_tenor,
+                ];
+            });
+
+        $installmentSummary = [
+            'totalRemaining'    => $installments->where('is_completed', false)->sum('remaining_amount'),
+            'monthlyDue'        => $installments->where('is_completed', false)->sum('monthly_amount'),
+            'activeCount'       => $installments->where('is_completed', false)->count(),
+            'completedCount'    => $installments->where('is_completed', true)->count(),
+        ];
+
         return Inertia::render('Debts/Index', [
             'debts' => $debts,
             'recurring' => $recurring,
@@ -56,6 +78,8 @@ class DebtController extends Controller
             'wallets' => \App\Models\Wallet::where('user_id', $user->id)->get(['id', 'name', 'balance']),
             'categories' => \App\Models\Category::userCategories($user->id)->get(['id', 'name', 'type']),
             'summary' => $summary,
+            'installments' => $installments,
+            'installmentSummary' => $installmentSummary,
             'filters' => $request->only(['type', 'status']),
         ]);
     }

@@ -5,9 +5,10 @@ import { useState, FormEventHandler, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
     Plus, X, HandCoins, AlertTriangle, Trash2, Edit2, Check, Calendar,
-    TrendingUp, TrendingDown, Receipt, Repeat, Wallet, Clock, CheckCircle, ArrowRight
+    TrendingUp, TrendingDown, Receipt, Repeat, Wallet, Clock, CheckCircle, ArrowRight, CreditCard
 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
+import InstallmentTab from './Partials/InstallmentTab';
 
 // --- Types ---
 interface RecurringTransaction {
@@ -63,6 +64,8 @@ interface Props extends PageProps {
     wallets: Wallet[];
     categories: Category[];
     summary: Summary;
+    installments: any[];
+    installmentSummary: any;
     filters: any;
 }
 
@@ -74,8 +77,8 @@ const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
 };
 
-export default function DebtsIndex({ auth, debts, recurring, dueRecurring, wallets, categories, summary, filters }: Props) {
-    const [activeTab, setActiveTab] = useState<'RECURRING' | 'DEBT'>('RECURRING');
+export default function DebtsIndex({ auth, debts, recurring, dueRecurring, wallets, categories, summary, installments, installmentSummary, filters }: Props) {
+    const [activeTab, setActiveTab] = useState<'RECURRING' | 'INSTALLMENT' | 'DEBT'>('RECURRING');
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -120,13 +123,18 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
         date: new Date().toISOString().split('T')[0],
     });
 
-    // --- DEBT HANDLERS ---
-    const handleDebtAmountChange = (val: string) => {
+    // --- AMOUNT FORMATTER ---
+    const formatInputAmount = (val: string) => {
         const rawValue = val.replace(/\D/g, '');
-        if (!rawValue) { debtForm.setData('amount', ''); return; }
-        debtForm.setData('amount', parseInt(rawValue).toLocaleString('id-ID'));
+        if (!rawValue) return '';
+        return parseInt(rawValue).toLocaleString('id-ID');
     };
     const parseAmount = (val: string) => parseFloat(val.replace(/\./g, '')) || 0;
+
+    // --- DEBT HANDLERS ---
+    const handleDebtAmountChange = (val: string) => {
+        debtForm.setData('amount', formatInputAmount(val));
+    };
 
     const handleDebtSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -186,7 +194,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
             setEditingRecurring(item);
             recurringForm.setData({
                 name: item.name,
-                amount: item.amount.toString(),
+                amount: item.amount.toLocaleString('id-ID'),
                 wallet_id: item.wallet_id.toString(),
                 type: item.type,
                 category: item.category,
@@ -210,12 +218,13 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
 
     const handleRecurringSubmit: FormEventHandler = (e) => {
         e.preventDefault();
+        const payload = { ...recurringForm.data, amount: parseAmount(recurringForm.data.amount as string).toString() };
         if (editingRecurring) {
-            recurringForm.put(route('recurring.update', editingRecurring.id), {
+            router.put(route('recurring.update', editingRecurring.id), payload, {
                 onSuccess: () => setIsRecurringModalOpen(false),
             });
         } else {
-            recurringForm.post(route('recurring.store'), {
+            router.post(route('recurring.store'), payload, {
                 onSuccess: () => setIsRecurringModalOpen(false),
             });
         }
@@ -233,7 +242,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
     const openProcessModal = (item: RecurringTransaction) => {
         setSelectedProcessRecurring(item);
         processForm.setData({
-            amount: item.amount.toString(),
+            amount: item.amount.toLocaleString('id-ID'),
             wallet_id: item.wallet_id.toString(),
             date: new Date().toISOString().split('T')[0],
         });
@@ -243,7 +252,8 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
     const handleProcessSubmit: FormEventHandler = (e) => {
         e.preventDefault();
         if (!selectedProcessRecurring) return;
-        processForm.post(route('recurring.process', selectedProcessRecurring.id), {
+        const payload = { ...processForm.data, amount: parseAmount(processForm.data.amount as string).toString() };
+        router.post(route('recurring.process', selectedProcessRecurring.id), payload, {
             onSuccess: () => setIsProcessModalOpen(false),
         });
     };
@@ -299,7 +309,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                 <div className="flex space-x-2 bg-slate-100 dark:bg-slate-800/50 p-1.5 rounded-2xl w-fit mx-auto lg:mx-0">
                     <button
                         onClick={() => setActiveTab('RECURRING')}
-                        className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${activeTab === 'RECURRING'
+                        className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${activeTab === 'RECURRING'
                             ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm scale-105'
                             : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
                             }`}
@@ -307,8 +317,17 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                         <Repeat className="w-4 h-4" /> Rutin & Langganan
                     </button>
                     <button
+                        onClick={() => setActiveTab('INSTALLMENT')}
+                        className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${activeTab === 'INSTALLMENT'
+                            ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm scale-105'
+                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                            }`}
+                    >
+                        <CreditCard className="w-4 h-4" /> Cicilan
+                    </button>
+                    <button
                         onClick={() => setActiveTab('DEBT')}
-                        className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${activeTab === 'DEBT'
+                        className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${activeTab === 'DEBT'
                             ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm scale-105'
                             : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
                             }`}
@@ -316,6 +335,11 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                         <HandCoins className="w-4 h-4" /> Hutang & Piutang
                     </button>
                 </div>
+
+                {/* TAB CONTENT: INSTALLMENT */}
+                {activeTab === 'INSTALLMENT' && (
+                    <InstallmentTab installments={installments} wallets={wallets} summary={installmentSummary} />
+                )}
 
                 {/* TAB CONTENT: RECURRING */}
                 {activeTab === 'RECURRING' && (
@@ -541,7 +565,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                             <form onSubmit={handleRecurringSubmit} className="space-y-4">
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Jumlah (Estimasi Rp)</label>
-                                    <input type="number" value={recurringForm.data.amount} onChange={(e) => recurringForm.setData('amount', e.target.value)} className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-2xl text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 text-center" placeholder="0" required />
+                                    <input type="text" inputMode="numeric" value={recurringForm.data.amount} onChange={(e) => recurringForm.setData('amount', formatInputAmount(e.target.value))} className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-2xl text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 text-center" placeholder="0" required />
                                 </div>
 
                                 <div>
@@ -638,7 +662,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                                 <p className="text-sm text-gray-600 dark:text-gray-400 bg-slate-100 dark:bg-slate-800 p-3 rounded-xl mb-4">Silakan konfirmasi nominal aktual dan dompet pembayaran.</p>
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Nominal Aktual (Rp)</label>
-                                    <input type="number" value={processForm.data.amount} onChange={(e) => processForm.setData('amount', e.target.value)} className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-2xl text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 text-center" required />
+                                    <input type="text" inputMode="numeric" value={processForm.data.amount} onChange={(e) => processForm.setData('amount', formatInputAmount(e.target.value))} className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-2xl text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 text-center" required />
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Bayar Menggunakan</label>

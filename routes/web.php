@@ -65,6 +65,11 @@ Route::middleware(['auth'])->group(function () {
             ->only(['index', 'store', 'update', 'destroy']);
         Route::post('/debts/{debt}/toggle-paid', [DebtController::class , 'togglePaid'])->name('debts.toggle-paid');
 
+        // Installments (Cicilan)
+        Route::resource('installments', \App\Http\Controllers\InstallmentController::class)
+            ->only(['store', 'update', 'destroy']);
+        Route::post('/installments/{installment}/pay', [\App\Http\Controllers\InstallmentController::class, 'pay'])->name('installments.pay');
+
         // Notifications API
         Route::get('/api/notifications', [NotificationController::class , 'index'])->name('notifications.index');
         Route::post('/api/notifications/{id}/read', [NotificationController::class , 'markAsRead'])->name('notifications.read');
