@@ -97,17 +97,31 @@ class BudgetController extends Controller
             'frequency' => 'required|in:WEEKLY,MONTHLY,YEARLY',
         ]);
 
-        Budget::updateOrCreate(
-            [
+        // Manually find existing budget (including soft-deleted) to avoid UniqueConstraintViolation
+        $budget = Budget::withTrashed()
+            ->where('user_id', $request->user()->id)
+            ->where('category', $validated['category'])
+            ->where('period', $validated['period'])
+            ->first();
+
+        if ($budget) {
+            $budget->limit = $validated['limit'];
+            $budget->frequency = $validated['frequency'];
+            $budget->is_master = false;
+            if ($budget->trashed()) {
+                $budget->restore();
+            }
+            $budget->save();
+        } else {
+            Budget::create([
                 'user_id' => $request->user()->id,
                 'category' => $validated['category'],
                 'period' => $validated['period'],
-                'frequency' => $validated['frequency'],
-            ],
-            [
                 'limit' => $validated['limit'],
-            ]
-        );
+                'frequency' => $validated['frequency'],
+                'is_master' => false,
+            ]);
+        }
 
         return redirect()->back()->with('success', 'Anggaran berhasil ditambahkan');
     }
@@ -178,18 +192,33 @@ class BudgetController extends Controller
         $userId = $request->user()->id;
 
         foreach ($allocations as $rule => $percentage) {
-            Budget::updateOrCreate(
-                [
+            // Manually find existing budget (including soft-deleted) to avoid UniqueConstraintViolation
+            $budget = Budget::withTrashed()
+                ->where('user_id', $userId)
+                ->where('category', $rule)
+                ->where('period', 'MONTHLY')
+                ->first();
+
+            $limit = round($income * $percentage / 100);
+
+            if ($budget) {
+                $budget->limit = $limit;
+                $budget->frequency = 'MONTHLY';
+                $budget->is_master = true;
+                if ($budget->trashed()) {
+                    $budget->restore();
+                }
+                $budget->save();
+            } else {
+                Budget::create([
                     'user_id'   => $userId,
                     'category'  => $rule,
-                    'is_master' => true,
-                ],
-                [
-                    'limit'     => round($income * $percentage / 100),
                     'period'    => 'MONTHLY',
+                    'limit'     => $limit,
                     'frequency' => 'MONTHLY',
-                ]
-            );
+                    'is_master' => true,
+                ]);
+            }
         }
 
         // Clean up master budgets that are no longer in the selected template
