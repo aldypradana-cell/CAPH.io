@@ -1,7 +1,8 @@
 import AppLayout from '@/Layouts/AppLayout';
 import { PageProps } from '@/types';
 import { Head, useForm, usePage, Link } from '@inertiajs/react';
-import { FormEventHandler, useRef, useState } from 'react';
+import { FormEventHandler, useRef, useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { User, Lock, Trash2, Shield, Mail, AlertTriangle, X, Eye, EyeOff, Check } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -62,6 +63,11 @@ export default function Edit({
             onFinish: () => deleteForm.reset(),
         });
     };
+
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const inputClass = "w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 transition-all";
 
@@ -203,7 +209,7 @@ export default function Edit({
             </div>
 
             {/* Delete Confirmation Modal */}
-            {confirmingDeletion && (
+            {confirmingDeletion && mounted && createPortal(
                 <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setConfirmingDeletion(false)} />
                     <div className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-[2rem] shadow-2xl animate-pop-in border border-slate-100 dark:border-slate-800 overflow-hidden">
@@ -235,7 +241,8 @@ export default function Edit({
                             </div>
                         </form>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </>
     );

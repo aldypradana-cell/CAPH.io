@@ -2,7 +2,8 @@ import { router } from '@inertiajs/react';
 import {
     Shield, ShieldOff, Trash2, Search, Users, AlertTriangle, UserCheck, UserX
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import toast from 'react-hot-toast';
 
 interface User {
@@ -20,6 +21,11 @@ export default function UsersTab({ users, filters }: { users: { data: User[] }, 
     const [search, setSearch] = useState(filters?.search || '');
     const [deleteId, setDeleteId] = useState<number | null>(null);
     const [deleteUser, setDeleteUser] = useState<User | null>(null);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -111,7 +117,7 @@ export default function UsersTab({ users, filters }: { users: { data: User[] }, 
             </div>
 
             {/* Delete Modal */}
-            {deleteId && deleteUser && (
+            {deleteId && deleteUser && mounted && createPortal(
                 <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setDeleteId(null)} />
                     <div className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-2xl animate-pop-in border border-slate-100 dark:border-slate-800">
@@ -125,7 +131,8 @@ export default function UsersTab({ users, filters }: { users: { data: User[] }, 
                             <button onClick={() => { router.delete(route('admin.users.destroy', deleteId), { onSuccess: () => toast.success('User dihapus!') }); setDeleteId(null); }} className="flex-1 py-3 rounded-xl font-bold text-white bg-red-600 shadow-lg shadow-red-500/30">Ya, Hapus</button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     );

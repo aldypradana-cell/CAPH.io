@@ -1,7 +1,8 @@
 import AppLayout from '@/Layouts/AppLayout';
 import { Head, useForm, router } from '@inertiajs/react';
 import { PageProps } from '@/types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
     Plus, Trash2, X, Wallet as WalletIcon, CreditCard, Banknote,
     Edit2, AlertTriangle
@@ -22,6 +23,11 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingWallet, setEditingWallet] = useState<Wallet | null>(null);
     const [deleteId, setDeleteId] = useState<number | null>(null);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const { data, setData, post, put, processing, reset } = useForm({
         name: '',
@@ -184,7 +190,7 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
             </div>
 
             {/* Delete Confirmation Modal */}
-            {deleteId && (
+            {deleteId && mounted && createPortal(
                 <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setDeleteId(null)} />
                     <div className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-2xl animate-pop-in border border-slate-100 dark:border-slate-800">
@@ -198,11 +204,12 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                             <button onClick={confirmDelete} className="flex-1 py-3 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 shadow-lg shadow-red-500/30 transition-colors">Ya, Hapus</button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
             {/* Add/Edit Modal */}
-            {isModalOpen && (
+            {isModalOpen && mounted && createPortal(
                 <div className="fixed inset-0 z-[999] flex items-end sm:items-center justify-center p-0 sm:p-6 pb-16 lg:pb-0 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
                     <div className="relative w-full max-w-md glass-card rounded-t-[2rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-pop-in">
@@ -244,7 +251,8 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                             </form>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </>
     );

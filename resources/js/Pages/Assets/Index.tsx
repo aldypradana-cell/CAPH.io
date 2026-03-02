@@ -1,7 +1,8 @@
 import AppLayout from '@/Layouts/AppLayout';
 import { Head, useForm, router } from '@inertiajs/react';
 import { PageProps } from '@/types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
     Plus, X, Gem, Trash2, Edit2, AlertTriangle, Home, Car, TrendingUp, Coins
 } from 'lucide-react';
@@ -27,6 +28,11 @@ export default function AssetsIndex({ auth, assets, summary }: PageProps<{ asset
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
     const [deleteId, setDeleteId] = useState<number | null>(null);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const { data, setData, post, put, processing, reset } = useForm({
         name: '',
@@ -146,7 +152,7 @@ export default function AssetsIndex({ auth, assets, summary }: PageProps<{ asset
             </div>
 
             {/* Delete Modal */}
-            {deleteId && (
+            {deleteId && mounted && createPortal(
                 <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setDeleteId(null)} />
                     <div className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-2xl animate-pop-in border border-slate-100 dark:border-slate-800">
@@ -157,11 +163,12 @@ export default function AssetsIndex({ auth, assets, summary }: PageProps<{ asset
                             <button onClick={() => { router.delete(route('assets.destroy', deleteId), { onSuccess: () => toast.success('Dihapus!') }); setDeleteId(null); }} className="flex-1 py-3 rounded-xl font-bold text-white bg-red-600 shadow-lg shadow-red-500/30">Ya, Hapus</button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
             {/* Add/Edit Modal */}
-            {isModalOpen && (
+            {isModalOpen && mounted && createPortal(
                 <div className="fixed inset-0 z-[999] flex items-end sm:items-center justify-center p-0 sm:p-6 pb-16 lg:pb-0 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
                     <div className="relative w-full max-w-md glass-card rounded-t-[2rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-pop-in">
@@ -195,7 +202,8 @@ export default function AssetsIndex({ auth, assets, summary }: PageProps<{ asset
                             </form>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </>
     );

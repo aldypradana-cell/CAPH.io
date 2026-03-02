@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useForm, router } from '@inertiajs/react'; // Ensure router is imported for Inertia v1 or useForm's post
 import { X, TrendingDown, TrendingUp, ArrowRightLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -18,6 +19,11 @@ export default function AddTransactionModal({
 }: AddTransactionModalProps) {
     const [inputType, setInputType] = useState<'EXPENSE' | 'INCOME' | 'TRANSFER'>('EXPENSE');
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // We use inertia useForm for easy submission handling
     const { data, setData, post: inertiaPost, processing, reset } = useForm({
@@ -66,9 +72,9 @@ export default function AddTransactionModal({
         });
     };
 
-    if (!isOpen) return null;
+    if (!isOpen || !mounted) return null;
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 animate-fade-in">
             <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity" onClick={onClose} />
             <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-pop-in">
@@ -188,6 +194,7 @@ export default function AddTransactionModal({
                     </form>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }

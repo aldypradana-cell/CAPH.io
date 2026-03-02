@@ -2,6 +2,7 @@ import AppLayout from '@/Layouts/AppLayout';
 import { Head, useForm, router } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import {
     Plus, Pencil, Trash2, X, Search, Filter, Download, ArrowDownUp,
     TrendingUp, TrendingDown, ArrowRightLeft, AlertTriangle, Calendar, Hash
@@ -62,6 +63,11 @@ export default function TransactionsIndex({
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
     const [deleteId, setDeleteId] = useState<number | null>(null);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
     const [searchTerm, setSearchTerm] = useState(filters?.search || '');
     const [filterType, setFilterType] = useState(filters?.type || '');
     const [startDate, setStartDate] = useState(filters?.start_date || '');
@@ -404,7 +410,7 @@ export default function TransactionsIndex({
             </div>
 
             {/* Delete Confirmation Modal */}
-            {deleteId && (
+            {deleteId && mounted && createPortal(
                 <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setDeleteId(null)} />
                     <div className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-2xl animate-pop-in border border-slate-100 dark:border-slate-800">
@@ -431,15 +437,16 @@ export default function TransactionsIndex({
                             }} className="flex-1 py-3 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 shadow-lg shadow-red-500/30 transition-colors">Ya, Hapus</button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
             {/* Add/Edit Modal */}
-            {isModalOpen && (
+            {isModalOpen && mounted && createPortal(
                 <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity" onClick={() => setIsModalOpen(false)} />
 
-                    <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-pop-in mt-96">
+                    <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-pop-in">
                         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 z-10" />
 
                         <div className="p-5 pb-0 shrink-0">
@@ -548,7 +555,8 @@ export default function TransactionsIndex({
                             </form>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </>
     );

@@ -1,7 +1,8 @@
 import AppLayout from '@/Layouts/AppLayout';
 import { Head, useForm, router } from '@inertiajs/react';
 import { PageProps } from '@/types';
-import { useState, FormEventHandler } from 'react';
+import { useState, FormEventHandler, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
     Plus, X, HandCoins, AlertTriangle, Trash2, Edit2, Check, Calendar,
     TrendingUp, TrendingDown, Receipt, Repeat, Wallet, Clock, CheckCircle, ArrowRight
@@ -75,6 +76,11 @@ const formatDate = (dateString: string) => {
 
 export default function DebtsIndex({ auth, debts, recurring, dueRecurring, wallets, categories, summary, filters }: Props) {
     const [activeTab, setActiveTab] = useState<'RECURRING' | 'DEBT'>('RECURRING');
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // --- DEBT STATES & FORM ---
     const [isDebtModalOpen, setIsDebtModalOpen] = useState(false);
@@ -433,7 +439,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
             {/* --- MODALS --- */}
 
             {/* DELETE DEBT MODAL */}
-            {deleteDebtId && (
+            {deleteDebtId && mounted && createPortal(
                 <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setDeleteDebtId(null)} />
                     <div className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-2xl animate-pop-in border border-slate-100 dark:border-slate-800">
@@ -444,14 +450,15 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                             <button onClick={() => { router.delete(route('debts.destroy', deleteDebtId), { onSuccess: () => toast.success('Dihapus!') }); setDeleteDebtId(null); }} className="flex-1 py-3 rounded-xl font-bold text-white bg-red-600 shadow-lg shadow-red-500/30">Ya, Hapus</button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
             {/* ADD/EDIT DEBT MODAL */}
-            {isDebtModalOpen && (
+            {isDebtModalOpen && mounted && createPortal(
                 <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity" onClick={() => setIsDebtModalOpen(false)} />
-                    <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-pop-in mt-40">
+                    <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-pop-in">
                         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-red-500 to-pink-500 z-10" />
 
                         <div className="p-5 pb-0 shrink-0">
@@ -507,15 +514,16 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                             </form>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
             {/* RECURRING MODAL (CREATE/EDIT) */}
-            {isRecurringModalOpen && (
+            {isRecurringModalOpen && mounted && createPortal(
                 <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity" onClick={() => setIsRecurringModalOpen(false)} />
 
-                    <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-pop-in mt-64">
+                    <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-pop-in">
                         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 z-10" />
 
                         <div className="p-5 pb-0 shrink-0">
@@ -605,14 +613,15 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                             </form>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
             {/* PROCESS PAYMENT MODAL */}
-            {isProcessModalOpen && (
+            {isProcessModalOpen && mounted && createPortal(
                 <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity" onClick={() => setIsProcessModalOpen(false)} />
-                    <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-pop-in mt-64">
+                    <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-pop-in">
                         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-orange-500 to-amber-500 z-10" />
 
                         <div className="p-5 pb-0 shrink-0">
@@ -649,7 +658,8 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                             </form>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </>
     );

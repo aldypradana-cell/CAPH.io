@@ -1,7 +1,8 @@
 import AppLayout from '@/Layouts/AppLayout';
 import { Head, useForm, router } from '@inertiajs/react';
 import { PageProps } from '@/types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Plus, X, Target, AlertTriangle, Trash2, Edit2 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -29,6 +30,11 @@ export default function BudgetsIndex({ auth, budgets, categories }: PageProps<{ 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
     const [deleteId, setDeleteId] = useState<number | null>(null);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const { data, setData, post, put, processing, reset } = useForm({
         category: '',
@@ -155,7 +161,7 @@ export default function BudgetsIndex({ auth, budgets, categories }: PageProps<{ 
             </div>
 
             {/* Delete Modal */}
-            {deleteId && (
+            {deleteId && mounted && createPortal(
                 <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setDeleteId(null)} />
                     <div className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-2xl animate-pop-in border border-slate-100 dark:border-slate-800">
@@ -176,11 +182,12 @@ export default function BudgetsIndex({ auth, budgets, categories }: PageProps<{ 
                             }} className="flex-1 py-3 rounded-xl font-bold text-white bg-red-600 shadow-lg shadow-red-500/30 transition-colors">Ya, Hapus</button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
             {/* Add/Edit Modal */}
-            {isModalOpen && (
+            {isModalOpen && mounted && createPortal(
                 <div className="fixed inset-0 z-[999] flex items-end sm:items-center justify-center p-0 sm:p-6 pb-16 lg:pb-0 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
                     <div className="relative w-full max-w-md glass-card rounded-t-[2rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-pop-in">
@@ -225,7 +232,8 @@ export default function BudgetsIndex({ auth, budgets, categories }: PageProps<{ 
                             </form>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </>
     );

@@ -1,15 +1,10 @@
 import { router, useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
     Tags, Plus, Edit2, Trash2,
-    TrendingUp, TrendingDown, Database
+    TrendingUp, TrendingDown, Database, X
 } from 'lucide-react';
-import Modal from '@/Components/Modal';
-import InputLabel from '@/Components/InputLabel';
-import TextInput from '@/Components/TextInput';
-import InputError from '@/Components/InputError';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 
 interface Category {
     id: number;
@@ -22,6 +17,11 @@ interface Category {
 export default function MasterTab({ categories }: { categories: Category[] }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const { data, setData, post, put, delete: destroy, processing, errors, reset, clearErrors } = useForm({
         name: '',
@@ -146,79 +146,54 @@ export default function MasterTab({ categories }: { categories: Category[] }) {
             </div>
 
             {/* Modal */}
-            <Modal show={isModalOpen} onClose={closeModal}>
-                <div className="p-6">
-                    <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4">
-                        {editingCategory ? 'Edit Kategori' : 'Tambah Kategori Baru'}
-                    </h3>
-
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div>
-                            <InputLabel htmlFor="name" value="Nama Kategori" />
-                            <TextInput
-                                id="name"
-                                value={data.name}
-                                onChange={(e) => setData('name', e.target.value)}
-                                className="mt-1 block w-full"
-                                placeholder="Contoh: Makanan, Gaji"
-                            />
-                            <InputError message={errors.name} className="mt-2" />
+            {isModalOpen && mounted && createPortal(
+                <div className="fixed inset-0 z-[999] flex items-end sm:items-center justify-center p-0 sm:p-6 pb-16 lg:pb-0 animate-fade-in">
+                    <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity" onClick={closeModal} />
+                    <div className="relative w-full max-w-md glass-card rounded-t-[2rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-pop-in">
+                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 z-10" />
+                        <div className="p-5 pb-0 shrink-0 flex justify-between items-center">
+                            <h3 className="text-lg font-bold text-slate-800 dark:text-white">{editingCategory ? 'Edit Kategori' : 'Tambah Kategori Baru'}</h3>
+                            <button type="button" onClick={closeModal} className="text-slate-400 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"><X className="w-5 h-5" /></button>
                         </div>
+                        <div className="p-5 pt-4 overflow-y-auto scrollbar-hide">
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Nama Kategori</label>
+                                    <input type="text" required value={data.name} onChange={(e) => setData('name', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="Contoh: Makanan, Gaji" />
+                                    {errors.name && <p className="text-xs text-red-500 mt-1 ml-1">{errors.name}</p>}
+                                </div>
 
-                        <div>
-                            <InputLabel htmlFor="type" value="Tipe" />
-                            <div className="grid grid-cols-2 gap-4 mt-1">
-                                <button
-                                    type="button"
-                                    onClick={() => setData('type', 'INCOME')}
-                                    className={`p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${data.type === 'INCOME'
-                                        ? 'border-emerald-500 bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20'
-                                        : 'border-slate-200 dark:border-slate-700 text-slate-500'
-                                        }`}
-                                >
-                                    <TrendingUp className="w-4 h-4" /> Pemasukan
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setData('type', 'EXPENSE')}
-                                    className={`p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${data.type === 'EXPENSE'
-                                        ? 'border-red-500 bg-red-50 text-red-600 dark:bg-red-900/20'
-                                        : 'border-slate-200 dark:border-slate-700 text-slate-500'
-                                        }`}
-                                >
-                                    <TrendingDown className="w-4 h-4" /> Pengeluaran
-                                </button>
-                            </div>
-                        </div>
+                                <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Tipe</label>
+                                    <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl">
+                                        <button type="button" onClick={() => setData('type', 'INCOME')} className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${data.type === 'INCOME' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/30' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}>
+                                            <TrendingUp className="w-3.5 h-3.5" /> Pemasukan
+                                        </button>
+                                        <button type="button" onClick={() => setData('type', 'EXPENSE')} className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${data.type === 'EXPENSE' ? 'bg-red-600 text-white shadow-lg shadow-red-500/30' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}>
+                                            <TrendingDown className="w-3.5 h-3.5" /> Pengeluaran
+                                        </button>
+                                    </div>
+                                </div>
 
-                        <div>
-                            <InputLabel htmlFor="color" value="Warna" />
-                            <select
-                                value={data.color}
-                                onChange={(e) => setData('color', e.target.value)}
-                                className="w-full mt-1 border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                            >
-                                <option value="bg-blue-500">Blue</option>
-                                <option value="bg-emerald-500">Emerald</option>
-                                <option value="bg-red-500">Red</option>
-                                <option value="bg-amber-500">Amber</option>
-                                <option value="bg-violet-500">Violet</option>
-                                <option value="bg-pink-500">Pink</option>
-                                <option value="bg-cyan-500">Cyan</option>
-                            </select>
-                        </div>
+                                <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Warna</label>
+                                    <div className="grid grid-cols-7 gap-2 mt-1">
+                                        {['bg-blue-500', 'bg-emerald-500', 'bg-red-500', 'bg-amber-500', 'bg-violet-500', 'bg-pink-500', 'bg-cyan-500'].map(color => (
+                                            <button key={color} type="button" onClick={() => setData('color', color)} className={`w-full aspect-square rounded-xl ${color} shadow-sm transition-all focus:outline-none ${data.color === color ? 'ring-2 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 ring-indigo-500 scale-110' : 'hover:scale-105 opacity-70 hover:opacity-100'}`} />
+                                        ))}
+                                    </div>
+                                </div>
 
-                        <div className="flex justify-end gap-3 mt-6">
-                            <SecondaryButton onClick={closeModal} disabled={processing}>
-                                Batal
-                            </SecondaryButton>
-                            <PrimaryButton disabled={processing}>
-                                {processing ? 'Menyimpan...' : 'Simpan'}
-                            </PrimaryButton>
+                                <div className="flex space-x-3 pt-4">
+                                    <button type="button" onClick={closeModal} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors active:scale-95">Batal</button>
+                                    <button type="submit" disabled={processing} className="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-indigo-500/30 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50">{processing ? '...' : (editingCategory ? 'Simpan' : 'Tambah')}</button>
+                                </div>
+                            </form>
                         </div>
-                    </form>
-                </div>
-            </Modal>
+                    </div>
+                </div>,
+                document.body
+            )}
         </div>
     );
 }
