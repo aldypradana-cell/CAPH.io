@@ -1,0 +1,22 @@
+{
+  "name": "FinTrack (CAPH.io)",
+  "short_name": "FinTrack",
+  "description": "Aplikasi pencatatan keuangan pintar bertenaga AI.",
+  "start_url": "/?pwa=1",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
