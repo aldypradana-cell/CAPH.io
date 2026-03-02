@@ -28,6 +28,7 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'type' => 'required|in:INCOME,EXPENSE,TRANSFER',
+            'budget_rule' => 'nullable|in:NEEDS,WANTS,SAVINGS,INVESTMENTS',
         ]);
 
         Category::create([
@@ -35,6 +36,7 @@ class CategoryController extends Controller
             'name' => $validated['name'],
             'type' => $validated['type'],
             'is_default' => false,
+            'budget_rule' => $validated['type'] === 'EXPENSE' ? ($validated['budget_rule'] ?? null) : null,
         ]);
 
         return redirect()->back()->with('success', 'Kategori berhasil ditambahkan');
@@ -50,9 +52,14 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'type' => 'required|in:INCOME,EXPENSE,TRANSFER',
+            'budget_rule' => 'nullable|in:NEEDS,WANTS,SAVINGS,INVESTMENTS',
         ]);
 
-        $category->update($validated);
+        $category->update([
+            'name' => $validated['name'],
+            'type' => $validated['type'],
+            'budget_rule' => $validated['type'] === 'EXPENSE' ? ($validated['budget_rule'] ?? null) : null,
+        ]);
 
         return redirect()->back()->with('success', 'Kategori berhasil diupdate');
     }

@@ -55,6 +55,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/api/dashboard/recurring', [RecurringTransactionController::class , 'dashboardWidget'])->name('api.dashboard.recurring');
 
         // Budgets
+        Route::post('/budgets/auto-generate', [BudgetController::class , 'autoGenerate'])->name('budgets.auto-generate');
+        Route::get('/budgets/last-month-income', [BudgetController::class , 'getLastMonthIncome'])->name('budgets.last-month-income');
         Route::resource('budgets', BudgetController::class)
             ->only(['index', 'store', 'update', 'destroy']);
 

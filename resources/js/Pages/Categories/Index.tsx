@@ -13,7 +13,15 @@ interface Category {
     name: string;
     type: string;
     is_default: boolean;
+    budget_rule: string | null;
 }
+
+const BUDGET_RULE_LABELS: Record<string, { label: string; color: string }> = {
+    NEEDS: { label: 'Kebutuhan', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' },
+    WANTS: { label: 'Keinginan', color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' },
+    SAVINGS: { label: 'Tabungan', color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' },
+    INVESTMENTS: { label: 'Investasi', color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' },
+};
 
 export default function CategoriesIndex({ auth, categories }: PageProps<{ categories: Category[] }>) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -29,6 +37,7 @@ export default function CategoriesIndex({ auth, categories }: PageProps<{ catego
     const { data, setData, post, put, processing, reset } = useForm({
         name: '',
         type: 'EXPENSE',
+        budget_rule: '' as string,
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -46,7 +55,7 @@ export default function CategoriesIndex({ auth, categories }: PageProps<{ catego
 
     const handleEdit = (c: Category) => {
         setEditingCategory(c);
-        setData({ name: c.name, type: c.type });
+        setData({ name: c.name, type: c.type, budget_rule: c.budget_rule || '' });
         setIsModalOpen(true);
     };
 
@@ -94,6 +103,11 @@ export default function CategoriesIndex({ auth, categories }: PageProps<{ catego
                                             {c.type === 'INCOME' ? 'Masuk' : 'Keluar'}
                                         </span>
                                         {c.is_default && <span className="text-[10px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">Default</span>}
+                                        {c.budget_rule && BUDGET_RULE_LABELS[c.budget_rule] && (
+                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${BUDGET_RULE_LABELS[c.budget_rule].color}`}>
+                                                {BUDGET_RULE_LABELS[c.budget_rule].label}
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -151,6 +165,27 @@ export default function CategoriesIndex({ auth, categories }: PageProps<{ catego
                                         ))}
                                     </div>
                                 </div>
+                                {data.type === 'EXPENSE' && (
+                                    <div>
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Kelompok Budget</label>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {Object.entries(BUDGET_RULE_LABELS).map(([key, { label, color }]) => (
+                                                <button
+                                                    key={key}
+                                                    type="button"
+                                                    onClick={() => setData('budget_rule', data.budget_rule === key ? '' : key)}
+                                                    className={`py-2 px-3 rounded-xl text-xs font-bold transition-all border ${data.budget_rule === key
+                                                            ? `${color} border-transparent shadow-sm scale-105`
+                                                            : 'border-slate-200 dark:border-slate-700 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+                                                        }`}
+                                                >
+                                                    {label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <p className="text-[9px] text-slate-400 mt-1 ml-1">Opsional — untuk fitur Auto Budget</p>
+                                    </div>
+                                )}
                                 <div className="flex space-x-3 pt-4">
                                     <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors active:scale-95">Batal</button>
                                     <button type="submit" disabled={processing} className="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-indigo-500/30 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50">{processing ? '...' : 'Simpan'}</button>

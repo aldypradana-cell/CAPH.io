@@ -16,12 +16,14 @@ class Budget extends Model
         'limit',
         'period',
         'frequency',
+        'is_master',
     ];
 
     protected function casts(): array
     {
         return [
             'limit' => 'decimal:2',
+            'is_master' => 'boolean',
         ];
     }
 

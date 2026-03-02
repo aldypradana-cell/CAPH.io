@@ -14,6 +14,7 @@ class Category extends Model
         'name',
         'type',
         'is_default',
+        'budget_rule',
     ];
 
     protected function casts(): array
@@ -38,7 +39,7 @@ class Category extends Model
     {
         return $query->where(function ($q) use ($userId) {
             $q->where('is_default', true)
-              ->orWhere('user_id', $userId);
+                ->orWhere('user_id', $userId);
         });
     }
 
