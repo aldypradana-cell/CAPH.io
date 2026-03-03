@@ -256,8 +256,8 @@ PENTING:
                     'timeout' => 25, // Turunkan dari 90 detik agar server tidak hang terlalu lama
                 ],
                 'ssl' => [
-                    'verify_peer' => false,
-                    'verify_peer_name' => false,
+                    'verify_peer' => true,
+                    'verify_peer_name' => true,
                 ],
                 'socket' => [
                     'bindto' => '0:0'

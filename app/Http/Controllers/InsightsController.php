@@ -152,8 +152,8 @@ class InsightsController extends Controller
         // 6. NEW: Active Debts & Receivables
         // ─────────────────────────────────────────────
         $debts = Debt::where('user_id', $user->id)->where('is_paid', false)->orderBy('due_date')->get();
-        $totalDebt = $debts->where('type', 'HUTANG')->sum('amount');
-        $totalReceivable = $debts->where('type', 'PIUTANG')->sum('amount');
+        $totalDebt = $debts->where('type', 'DEBT')->sum('amount');
+        $totalReceivable = $debts->where('type', 'RECEIVABLE')->sum('amount');
         $debtText = $debts->isEmpty()
             ? "Tidak ada utang/piutang aktif."
             : $debts->map(function ($d) {
@@ -183,12 +183,16 @@ class InsightsController extends Controller
         $budgets = Budget::where('user_id', $user->id)->get();
         $budgetText = "Tidak ada budget yang ditetapkan.";
         if ($budgets->isNotEmpty()) {
-            $budgetLines = $budgets->map(function ($b) use ($user, $startDate, $endDate) {
-                $spent = Transaction::forUser($user->id)
-                    ->inDateRange($startDate->format('Y-m-d'), $endDate->format('Y-m-d'))
-                    ->where('type', 'EXPENSE')
-                    ->where('category', $b->category)
-                    ->sum('amount');
+            // Fix N+1 query: Aggregate all expenses for the selected period once
+            $budgetExpenses = Transaction::forUser($user->id)
+                ->inDateRange($startDate->format('Y-m-d'), $endDate->format('Y-m-d'))
+                ->where('type', 'EXPENSE')
+                ->selectRaw('category, SUM(amount) as total')
+                ->groupBy('category')
+                ->pluck('total', 'category');
+
+            $budgetLines = $budgets->map(function ($b) use ($budgetExpenses) {
+                $spent = (float) ($budgetExpenses[$b->category] ?? 0);
                 $pct = $b->limit > 0 ? round(($spent / $b->limit) * 100, 1) : 0;
                 $status = $pct >= 100 ? 'OVER BUDGET' : ($pct >= 80 ? 'HAMPIR HABIS' : 'AMAN');
                 return "- {$b->category}: Budget Rp" . number_format($b->limit, 0, ',', '.') . ", Realisasi Rp" . number_format($spent, 0, ',', '.') . " ({$pct}%) - {$status}";
