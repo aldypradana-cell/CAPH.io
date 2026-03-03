@@ -46,7 +46,7 @@ class AssetController extends Controller
 
     public function update(Request $request, Asset $asset)
     {
-        if ($asset->user_id !== $request->user()->id) {
+        if ($request->user()->cannot('update', $asset)) {
             abort(403);
         }
 
@@ -63,7 +63,7 @@ class AssetController extends Controller
 
     public function destroy(Request $request, Asset $asset)
     {
-        if ($asset->user_id !== $request->user()->id) {
+        if ($request->user()->cannot('delete', $asset)) {
             abort(403);
         }
 

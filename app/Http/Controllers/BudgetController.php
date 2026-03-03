@@ -208,7 +208,7 @@ class BudgetController extends Controller
 
     public function update(Request $request, Budget $budget)
     {
-        if ($budget->user_id !== $request->user()->id) {
+        if ($request->user()->cannot('update', $budget)) {
             abort(403);
         }
 
@@ -226,7 +226,7 @@ class BudgetController extends Controller
 
     public function destroy(Request $request, Budget $budget)
     {
-        if ($budget->user_id !== $request->user()->id) {
+        if ($request->user()->cannot('delete', $budget)) {
             abort(403);
         }
 

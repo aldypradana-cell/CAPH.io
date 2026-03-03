@@ -43,8 +43,7 @@ class WalletController extends Controller
 
     public function update(Request $request, Wallet $wallet)
     {
-        // Authorization check
-        if ($wallet->user_id !== $request->user()->id) {
+        if ($request->user()->cannot('update', $wallet)) {
             abort(403);
         }
         
@@ -61,8 +60,7 @@ class WalletController extends Controller
 
     public function destroy(Request $request, Wallet $wallet)
     {
-        // Authorization check
-        if ($wallet->user_id !== $request->user()->id) {
+        if ($request->user()->cannot('delete', $wallet)) {
             abort(403);
         }
         

@@ -126,7 +126,7 @@ class DebtController extends Controller
 
     public function update(Request $request, Debt $debt)
     {
-        if ($debt->user_id !== $request->user()->id) {
+        if ($request->user()->cannot('update', $debt)) {
             abort(403);
         }
 
@@ -146,7 +146,7 @@ class DebtController extends Controller
 
     public function destroy(Request $request, Debt $debt)
     {
-        if ($debt->user_id !== $request->user()->id) {
+        if ($request->user()->cannot('delete', $debt)) {
             abort(403);
         }
 
@@ -162,7 +162,7 @@ class DebtController extends Controller
      */
     public function pay(Request $request, Debt $debt)
     {
-        if ($debt->user_id !== $request->user()->id) abort(403);
+        if ($request->user()->cannot('update', $debt)) abort(403);
 
         $validated = $request->validate([
             'wallet_id' => 'required|exists:wallets,id',

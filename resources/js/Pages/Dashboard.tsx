@@ -20,6 +20,7 @@ import RecentTransactionsWidget from '@/Components/Dashboard/RecentTransactionsW
 import TopTagsWidget from '@/Components/Dashboard/TopTagsWidget';
 import AddTransactionModal from '@/Components/Dashboard/AddTransactionModal';
 import NetWorthCard from '@/Components/Dashboard/NetWorthCard';
+import ErrorBoundary from '@/Components/ErrorBoundary';
 
 // Types
 import {
@@ -249,35 +250,49 @@ export default function Dashboard({
                             margin={[24, 24]}
                         >
                             <div key="trendChart">
-                                <TrendChart
-                                    data={trendData}
-                                    filters={filters}
-                                    activeFilter={activeFilter}
-                                    onFilterChange={handleFilterChange}
-                                    onDateChange={handleDateChange}
-                                />
+                                <ErrorBoundary title="Widget Trend">
+                                    <TrendChart
+                                        data={trendData}
+                                        filters={filters}
+                                        activeFilter={activeFilter}
+                                        onFilterChange={handleFilterChange}
+                                        onDateChange={handleDateChange}
+                                    />
+                                </ErrorBoundary>
                             </div>
                             <div key="pieChart">
-                                <DistributionPieChart
-                                    data={pieData}
-                                    filters={filters}
-                                    onDateChange={handlePieDateChange}
-                                />
+                                <ErrorBoundary title="Widget Distribusi">
+                                    <DistributionPieChart
+                                        data={pieData}
+                                        filters={filters}
+                                        onDateChange={handlePieDateChange}
+                                    />
+                                </ErrorBoundary>
                             </div>
                             <div key="budget">
-                                <BudgetWidget budgets={budgetProgress} />
+                                <ErrorBoundary title="Widget Budget">
+                                    <BudgetWidget budgets={budgetProgress} />
+                                </ErrorBoundary>
                             </div>
                             <div key="recurring">
-                                <RecurringWidget transactions={recurringTransactions} />
+                                <ErrorBoundary title="Widget Langganan">
+                                    <RecurringWidget transactions={recurringTransactions} />
+                                </ErrorBoundary>
                             </div>
                             <div key="transactions">
-                                <RecentTransactionsWidget transactions={recentTransactions} />
+                                <ErrorBoundary title="Widget Transaksi">
+                                    <RecentTransactionsWidget transactions={recentTransactions} />
+                                </ErrorBoundary>
                             </div>
                             <div key="bills">
-                                <UpcomingBillsWidget bills={upcomingBills} />
+                                <ErrorBoundary title="Widget Tagihan">
+                                    <UpcomingBillsWidget bills={upcomingBills} />
+                                </ErrorBoundary>
                             </div>
                             <div key="tags">
-                                <TopTagsWidget tags={topTags} />
+                                <ErrorBoundary title="Widget Top Tags">
+                                    <TopTagsWidget tags={topTags} />
+                                </ErrorBoundary>
                             </div>
                         </ResponsiveGridLayout>
                     )}

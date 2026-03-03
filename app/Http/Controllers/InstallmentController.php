@@ -42,7 +42,7 @@ class InstallmentController extends Controller
 
     public function update(Request $request, Installment $installment)
     {
-        if ($installment->user_id !== $request->user()->id) {
+        if ($request->user()->cannot('update', $installment)) {
             abort(403);
         }
 
@@ -70,7 +70,7 @@ class InstallmentController extends Controller
 
     public function destroy(Request $request, Installment $installment)
     {
-        if ($installment->user_id !== $request->user()->id) {
+        if ($request->user()->cannot('delete', $installment)) {
             abort(403);
         }
 
@@ -84,7 +84,7 @@ class InstallmentController extends Controller
      */
     public function pay(Request $request, Installment $installment)
     {
-        if ($installment->user_id !== $request->user()->id) {
+        if ($request->user()->cannot('update', $installment)) {
             abort(403);
         }
 

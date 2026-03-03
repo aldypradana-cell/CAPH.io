@@ -158,7 +158,7 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                                         </p>
                                     </div>
                                     {/* Action buttons on hover */}
-                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div className="relative z-20 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <button onClick={() => handleEdit(wallet)} className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors" title="Edit">
                                             <Edit2 className="w-4 h-4" />
                                         </button>
@@ -169,7 +169,7 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                                 </div>
 
                                 {/* Mastercard-style circles */}
-                                <div className="absolute bottom-4 right-4 flex opacity-20 group-hover:opacity-30 transition-opacity">
+                                <div className="absolute bottom-4 right-4 flex opacity-20 group-hover:opacity-30 transition-opacity pointer-events-none">
                                     <div className="w-6 h-6 rounded-full bg-red-400" />
                                     <div className="w-6 h-6 rounded-full bg-orange-400 -ml-2" />
                                 </div>

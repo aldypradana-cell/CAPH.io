@@ -57,12 +57,6 @@ class TransactionController extends Controller
         $transactions = $query->paginate(20)->withQueryString();
 
         $wallets = Wallet::where('user_id', $user->id)->get();
-        // Ensure 'Biaya Admin' category exists for this user
-        Category::firstOrCreate(
-            ['user_id' => $user->id, 'name' => 'Biaya Admin', 'type' => 'EXPENSE'],
-            ['is_default' => false]
-        );
-
         $categories = Category::userCategories($user->id)->get();
         $userTags = Tag::where('user_id', $user->id)->orderBy('name')->get();
 
@@ -116,7 +110,7 @@ class TransactionController extends Controller
     public function update(Request $request, Transaction $transaction)
     {
         // Authorization check
-        if ($transaction->user_id !== $request->user()->id) {
+        if ($request->user()->cannot('update', $transaction)) {
             abort(403);
         }
 
@@ -151,7 +145,7 @@ class TransactionController extends Controller
     public function destroy(Request $request, Transaction $transaction)
     {
         // Authorization check
-        if ($transaction->user_id !== $request->user()->id) {
+        if ($request->user()->cannot('delete', $transaction)) {
             abort(403);
         }
 

@@ -49,7 +49,7 @@ class RecurringTransactionController extends Controller
 
     public function update(Request $request, RecurringTransaction $recurring)
     {
-        if ($recurring->user_id !== $request->user()->id) {
+        if ($request->user()->cannot('update', $recurring)) {
             abort(403);
         }
 
@@ -76,7 +76,7 @@ class RecurringTransactionController extends Controller
 
     public function destroy(Request $request, RecurringTransaction $recurring)
     {
-        if ($recurring->user_id !== $request->user()->id) {
+        if ($request->user()->cannot('delete', $recurring)) {
             abort(403);
         }
 
@@ -106,7 +106,7 @@ class RecurringTransactionController extends Controller
      */
     public function process(Request $request, RecurringTransaction $recurring)
     {
-        if ($recurring->user_id !== $request->user()->id) {
+        if ($request->user()->cannot('update', $recurring)) {
             abort(403);
         }
 

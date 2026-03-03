@@ -247,47 +247,23 @@ PENTING:
                 ]
             ];
 
-            $options = [
-                'http' => [
-                    'header'  => "Content-type: application/json\r\n",
-                    'method'  => 'POST',
-                    'content' => json_encode($payload),
-                    'ignore_errors' => true,
-                    'timeout' => 25, // Turunkan dari 90 detik agar server tidak hang terlalu lama
-                ],
-                'ssl' => [
-                    'verify_peer' => true,
-                    'verify_peer_name' => true,
-                ],
-                'socket' => [
-                    'bindto' => '0:0'
-                ]
-            ];
+            $response = \Illuminate\Support\Facades\Http::timeout(25)
+                ->acceptJson()
+                ->post($url, $payload);
 
-            $context  = stream_context_create($options);
-            $response = file_get_contents($url, false, $context);
-
-            if ($response === false) {
-                $lastError = error_get_last();
-                $errMsg = $lastError['message'] ?? 'Unknown network error';
-                Log::error('Gemini connection failed for insights: ' . $errMsg);
-                if (str_contains($errMsg, 'timed out') || str_contains($errMsg, 'Connection timed out')) {
-                    throw new \Exception('Koneksi ke AI timeout setelah 25 detik. Coba lagi nanti.');
-                }
-                throw new \Exception('Gagal menghubungkan ke server AI. Periksa koneksi internet Anda.');
+            if ($response->failed()) {
+                $errorBody = $response->json('error');
+                $errMsg = $errorBody['message'] ?? ('HTTP ' . $response->status());
+                Log::error('Gemini API Error (Insights): ' . json_encode($errorBody));
+                throw new \Exception('AI Error: ' . $errMsg);
             }
 
-            $data = json_decode($response, true);
-            
-            if (isset($data['error'])) {
-                 Log::error('Gemini API Error (Insights): ' . json_encode($data['error']));
-                 throw new \Exception('AI Error: ' . ($data['error']['message'] ?? 'Unknown'));
-            }
+            $data = $response->json();
 
             $text = $data['candidates'][0]['content']['parts'][0]['text'] ?? null;
-            
+
             if (!$text) {
-                Log::warning('Gemini empty insight response: ' . $response);
+                Log::warning('Gemini empty insight response: ' . $response->body());
                 throw new \Exception('AI tidak memberikan respons.');
             }
 
@@ -298,7 +274,7 @@ PENTING:
             $text = trim($text);
 
             $parsed = json_decode($text, true);
-            
+
             if (!$parsed || !isset($parsed['healthScore'])) {
                 Log::warning('Gemini invalid JSON insight: ' . $text);
                 throw new \Exception('AI mengembalikan format yang tidak valid.');
