@@ -230,7 +230,7 @@ export default function Settings() {
                                             <div className="p-2 bg-emerald-500/20 rounded-lg text-emerald-300"><Target className="w-4 h-4" /></div>
                                             <div>
                                                 <p className="font-bold text-sm">{goal.name}</p>
-                                                <p className="text-xs text-indigo-200">Target: Rp {goal.amount.toLocaleString('id-ID')} <span className="mx-1">•</span> {goal.deadline}</p>
+                                                <p className="text-xs text-indigo-200">Target: Rp {Number(goal.amount).toLocaleString('id-ID')} <span className="mx-1">•</span> {goal.deadline}</p>
                                             </div>
                                         </div>
                                         <button onClick={() => { setGoals(prev => prev.filter(g => g.id !== goal.id)); setProfileDirty(true); toast.success('Target dihapus — jangan lupa Simpan!'); }} className="p-2 text-white/50 hover:text-red-400 hover:bg-white/10 rounded-lg transition-colors">

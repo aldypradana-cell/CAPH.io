@@ -113,7 +113,7 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
 
     const handleEdit = (b: Budget) => {
         setEditingBudget(b);
-        setData({ category: b.category, limit: b.limit.toLocaleString('id-ID'), period: b.period, frequency: b.frequency });
+        setData({ category: b.category, limit: Number(b.limit).toLocaleString('id-ID'), period: b.period, frequency: b.frequency });
         setIsModalOpen(true);
     };
 

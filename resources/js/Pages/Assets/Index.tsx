@@ -64,7 +64,7 @@ export default function AssetsIndex({ auth, assets, summary }: PageProps<{ asset
 
     const handleEdit = (a: Asset) => {
         setEditingAsset(a);
-        setData({ name: a.name, type: a.type, value: a.value.toLocaleString('id-ID'), description: a.description || '' });
+        setData({ name: a.name, type: a.type, value: Number(a.value).toLocaleString('id-ID'), description: a.description || '' });
         setIsModalOpen(true);
     };
 

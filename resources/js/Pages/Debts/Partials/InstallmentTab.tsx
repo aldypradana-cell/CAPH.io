@@ -138,7 +138,7 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
             setEditingItem(item);
             form.setData({
                 name: item.name, type: item.type, interest_type: item.interest_type,
-                total_amount: item.total_amount.toLocaleString('id-ID'), monthly_amount: item.monthly_amount.toLocaleString('id-ID'),
+                total_amount: Number(item.total_amount).toLocaleString('id-ID'), monthly_amount: Number(item.monthly_amount).toLocaleString('id-ID'),
                 total_tenor: item.total_tenor.toString(), paid_tenor: item.paid_tenor.toString(),
                 interest_rate: item.interest_rate?.toString() || '', fixed_tenor: item.fixed_tenor?.toString() || '',
                 due_day: item.due_day.toString(), start_date: item.start_date.split('T')[0],
@@ -171,7 +171,7 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
         setPayingItem(item);
         const isFloatingNow = item.interest_type === 'FLOATING' || (item.interest_type === 'MIXED' && item.fixed_tenor && item.paid_tenor >= item.fixed_tenor);
         payForm.setData({
-            amount: isFloatingNow ? '' : item.monthly_amount.toLocaleString('id-ID'),
+            amount: isFloatingNow ? '' : Number(item.monthly_amount).toLocaleString('id-ID'),
             wallet_id: item.wallet_id?.toString() || '',
             paid_at: new Date().toISOString().split('T')[0],
             notes: '',

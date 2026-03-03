@@ -66,7 +66,7 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
 
     const handleEdit = (wallet: Wallet) => {
         setEditingWallet(wallet);
-        setData({ name: wallet.name, type: wallet.type as any, balance: wallet.balance.toLocaleString('id-ID') });
+        setData({ name: wallet.name, type: wallet.type as any, balance: Number(wallet.balance).toLocaleString('id-ID') });
         setIsModalOpen(true);
     };
 

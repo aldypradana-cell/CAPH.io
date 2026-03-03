@@ -156,7 +156,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
             debtForm.setData({
                 type: d.type,
                 person: d.person,
-                amount: d.amount.toLocaleString('id-ID'),
+                amount: Number(d.amount).toLocaleString('id-ID'),
                 description: d.description || '',
                 due_date: d.due_date || ''
             });
@@ -194,7 +194,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
             setEditingRecurring(item);
             recurringForm.setData({
                 name: item.name,
-                amount: item.amount.toLocaleString('id-ID'),
+                amount: Number(item.amount).toLocaleString('id-ID'),
                 wallet_id: item.wallet_id.toString(),
                 type: item.type,
                 category: item.category,
@@ -242,7 +242,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
     const openProcessModal = (item: RecurringTransaction) => {
         setSelectedProcessRecurring(item);
         processForm.setData({
-            amount: item.amount.toLocaleString('id-ID'),
+            amount: Number(item.amount).toLocaleString('id-ID'),
             wallet_id: item.wallet_id.toString(),
             date: new Date().toISOString().split('T')[0],
         });

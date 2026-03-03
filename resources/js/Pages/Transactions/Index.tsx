@@ -148,7 +148,7 @@ export default function TransactionsIndex({
             to_wallet_id: transaction.to_wallet?.id.toString() || '',
             date: transaction.date,
             description: transaction.description,
-            amount: transaction.amount.toLocaleString('id-ID'),
+            amount: Number(transaction.amount).toLocaleString('id-ID'),
             type: transaction.type,
             category: transaction.category,
             tags: transaction.tags?.map(t => t.name) || [],
