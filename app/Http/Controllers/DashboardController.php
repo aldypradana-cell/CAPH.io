@@ -7,6 +7,7 @@ use App\Models\Wallet;
 use App\Models\Asset;
 use App\Models\Category;
 use App\Models\Debt;
+use App\Models\Installment;
 use App\Models\Budget;
 use App\Models\Tag;
 use Illuminate\Http\Request;
@@ -67,8 +68,18 @@ class DashboardController extends Controller
             ->sum('amount');
             
         $totalAssetsValue = (float) Asset::where('user_id', $user->id)->sum('value');
+
+        // Sum up total remaining amounts of active installments
+        $activeInstallments = Installment::where('user_id', $user->id)
+            ->where('is_completed', false)
+            ->get();
         
-        $netWorth = ($balance + $totalReceivables + $totalAssetsValue) - $totalDebts;
+        $totalInstallmentDebts = 0;
+        foreach ($activeInstallments as $installment) {
+            $totalInstallmentDebts += $installment->remaining_amount;
+        }
+        
+        $netWorth = ($balance + $totalReceivables + $totalAssetsValue) - ($totalDebts + $totalInstallmentDebts);
 
         // --- Server-Side Aggregation for Trend Chart ---
         $trendData = $this->aggregateTrendData($user->id, $startDate, $endDate, $mode, $trendCategory);
