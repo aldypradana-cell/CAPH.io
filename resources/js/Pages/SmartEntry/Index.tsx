@@ -3,7 +3,7 @@ import { Head, useForm } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { useState, useEffect } from 'react';
 import {
-    Zap, Sparkles, Check, X, Loader2, TrendingUp, TrendingDown, Hash
+    Zap, Sparkles, Check, X, Loader2, TrendingUp, TrendingDown, Hash, Mic, MicOff
 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -23,6 +23,7 @@ const formatIDR = (amount: number) =>
 
 export default function SmartEntryIndex({ auth, wallets, categories }: PageProps<{ wallets: Wallet[], categories: Category[] }>) {
     const [input, setInput] = useState('');
+    const [isListening, setIsListening] = useState(false);
     const [parsedTransactions, setParsedTransactions] = useState<ParsedTransaction[]>([]);
     const [isParsing, setIsParsing] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -87,6 +88,55 @@ export default function SmartEntryIndex({ auth, wallets, categories }: PageProps
         });
     };
 
+    const toggleListening = () => {
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            toast.error('Browser Anda tidak mendukung fitur input suara.');
+            return;
+        }
+
+        const SpeechRecognition: any = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+
+        recognition.lang = 'id-ID';
+        recognition.continuous = true;
+        recognition.interimResults = true;
+
+        if (isListening) {
+            setIsListening(false);
+            recognition.stop();
+            return;
+        }
+
+        setIsListening(true);
+        recognition.start();
+
+        recognition.onresult = (event: any) => {
+            let currentTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    currentTranscript += event.results[i][0].transcript;
+                }
+            }
+            if (currentTranscript) {
+                setInput((prev) => prev + (prev.trim() ? ' ' : '') + currentTranscript);
+            }
+        };
+
+        recognition.onerror = (event: any) => {
+            console.error('Speech recognition error', event.error);
+            if (event.error === 'not-allowed') {
+                toast.error('Izin microphone ditolak.');
+            } else if (event.error !== 'aborted') {
+                toast.error('Terjadi kesalahan pada input suara.');
+            }
+            setIsListening(false);
+        };
+
+        recognition.onend = () => {
+            setIsListening(false);
+        };
+    };
+
     return (
         <>
             <Head title="Input AI" />
@@ -118,7 +168,20 @@ export default function SmartEntryIndex({ auth, wallets, categories }: PageProps
                         <span className="text-[10px] text-slate-400 flex items-center gap-1">
                             <Sparkles className="w-3 h-3 text-indigo-500" /> Powered by Gemini
                         </span>
-                        <button
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={toggleListening}
+                                type="button"
+                                className={`flex items-center justify-center w-10 h-10 rounded-2xl transition-all shadow-sm ${
+                                    isListening 
+                                        ? 'bg-red-500 text-white animate-pulse shadow-red-500/30' 
+                                        : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-300'
+                                }`}
+                                title={isListening ? "Hentikan mendengarkan" : "Ketik pakai suara"}
+                            >
+                                {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                            </button>
+                            <button
                             onClick={handleParse}
                             disabled={isParsing || !input.trim()}
                             className="flex items-center px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
@@ -129,6 +192,7 @@ export default function SmartEntryIndex({ auth, wallets, categories }: PageProps
                                 <><Zap className="w-4 h-4 mr-2" /> Analisis</>
                             )}
                         </button>
+                        </div>
                     </div>
                 </div>
 
