@@ -27,6 +27,14 @@ interface RecurringTransaction {
     wallet: { id: number; name: string };
 }
 
+interface DebtPaymentRecord {
+    id: number;
+    amount: number;
+    date: string;
+    notes: string | null;
+    wallet_name: string;
+}
+
 interface Debt {
     id: number;
     type: 'DEBT' | 'RECEIVABLE' | 'BILL';
@@ -35,6 +43,10 @@ interface Debt {
     description?: string;
     due_date?: string;
     is_paid: boolean;
+    paid_amount: number;
+    remaining_amount: number;
+    progress_percentage: number;
+    payments: DebtPaymentRecord[];
 }
 
 interface Wallet {
@@ -89,6 +101,8 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
     const [isDebtModalOpen, setIsDebtModalOpen] = useState(false);
     const [editingDebt, setEditingDebt] = useState<Debt | null>(null);
     const [deleteDebtId, setDeleteDebtId] = useState<number | null>(null);
+    const [payingDebt, setPayingDebt] = useState<Debt | null>(null);
+    const [expandedDebtId, setExpandedDebtId] = useState<number | null>(null);
 
     const debtForm = useForm({
         type: 'DEBT' as string,
@@ -97,6 +111,14 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
         description: '',
         due_date: '',
     });
+
+    const paymentForm = useForm({
+        wallet_id: '',
+        amount: '',
+        date: new Date().toISOString().split('T')[0],
+        notes: '',
+    });
+
 
     // --- RECURRING STATES & FORM ---
     const [isRecurringModalOpen, setIsRecurringModalOpen] = useState(false);
@@ -173,11 +195,27 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
         setIsDebtModalOpen(true);
     };
 
-    const handleTogglePaid = (d: Debt) => {
-        router.put(route('debts.update', d.id), { ...d, is_paid: !d.is_paid, amount: d.amount.toString() }, {
-            onSuccess: () => toast.success(d.is_paid ? 'Ditandai belum lunas' : 'Ditandai lunas!')
+
+
+    const openPayModal = (d: Debt) => {
+        setPayingDebt(d);
+        paymentForm.setData({
+            wallet_id: '',
+            amount: Number(d.remaining_amount ?? d.amount).toLocaleString('id-ID'),
+            date: new Date().toISOString().split('T')[0],
+            notes: '',
         });
     };
+
+    const handlePaySubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!payingDebt) return;
+        const payload = { ...paymentForm.data, amount: parseAmount(paymentForm.data.amount) };
+        router.post(route('debts.pay', payingDebt.id), payload, {
+            onSuccess: () => { setPayingDebt(null); toast.success('Pembayaran berhasil!'); },
+        });
+    };
+
 
     const getDebtTypeConfig = (type: string) => {
         switch (type) {
@@ -422,31 +460,81 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                             {debts.data.length > 0 ? debts.data.map((d) => {
                                 const config = getDebtTypeConfig(d.type);
                                 const isOverdue = d.due_date && new Date(d.due_date) < new Date() && !d.is_paid;
+                                const hasCicilan = (d.paid_amount ?? 0) > 0 && !d.is_paid;
+                                const isExpanded = expandedDebtId === d.id;
                                 return (
-                                    <div key={d.id} className={`glass-card rounded-2xl p-4 flex items-center justify-between group hover:shadow-lg transition-all duration-300 ${d.is_paid ? 'opacity-60' : ''}`}>
-                                        <div className="flex items-center gap-4 flex-1 min-w-0">
-                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${config.color} text-white shadow-sm shrink-0`}>
-                                                <config.icon className="w-4 h-4" />
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center gap-2 flex-wrap">
-                                                    <p className={`text-sm font-bold text-slate-800 dark:text-white ${d.is_paid ? 'line-through' : ''}`}>{d.person}</p>
-                                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${config.badge}`}>{config.label}</span>
-                                                    {isOverdue && <span className="text-[10px] font-bold text-red-600 bg-red-100 dark:bg-red-900/30 px-2 py-0.5 rounded-full flex items-center gap-0.5"><AlertTriangle className="w-3 h-3" /> Jatuh Tempo</span>}
-                                                    {d.is_paid && <span className="text-[10px] font-bold text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full flex items-center gap-0.5"><Check className="w-3 h-3" /> Lunas</span>}
+                                    <div key={d.id} className={`glass-card rounded-2xl overflow-hidden group hover:shadow-lg transition-all duration-300 ${d.is_paid ? 'opacity-60' : ''}`}>
+                                        <div className="p-4 flex items-center justify-between">
+                                            <div className="flex items-center gap-4 flex-1 min-w-0">
+                                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${config.color} text-white shadow-sm shrink-0`}>
+                                                    <config.icon className="w-4 h-4" />
                                                 </div>
-                                                {d.description && <p className="text-[10px] text-slate-400 truncate mt-0.5">{d.description}</p>}
-                                                {d.due_date && <p className="text-[10px] text-slate-400 flex items-center gap-1 mt-0.5"><Calendar className="w-3 h-3" /> {formatDate(d.due_date)}</p>}
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <p className={`text-sm font-bold text-slate-800 dark:text-white ${d.is_paid ? 'line-through' : ''}`}>{d.person}</p>
+                                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${config.badge}`}>{config.label}</span>
+                                                        {isOverdue && <span className="text-[10px] font-bold text-red-600 bg-red-100 dark:bg-red-900/30 px-2 py-0.5 rounded-full flex items-center gap-0.5"><AlertTriangle className="w-3 h-3" /> Jatuh Tempo</span>}
+                                                        {d.is_paid && <span className="text-[10px] font-bold text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full flex items-center gap-0.5"><Check className="w-3 h-3" /> Lunas</span>}
+                                                    </div>
+                                                    {d.description && <p className="text-[10px] text-slate-400 truncate mt-0.5">{d.description}</p>}
+                                                    {d.due_date && <p className="text-[10px] text-slate-400 flex items-center gap-1 mt-0.5"><Calendar className="w-3 h-3" /> {formatDate(d.due_date)}</p>}
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2 shrink-0">
+                                                <div className="text-right">
+                                                    <p className="text-base font-bold text-slate-800 dark:text-white">{formatIDR(d.amount)}</p>
+                                                    {hasCicilan && <p className="text-[10px] text-slate-400">Sisa {formatIDR(d.remaining_amount)}</p>}
+                                                </div>
+                                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    {!d.is_paid && (
+                                                        <button onClick={() => openPayModal(d)} className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 transition-all hover:scale-110 text-xs font-bold" title="Bayar/Cicil">
+                                                            <CheckCircle className="w-4 h-4" />
+                                                        </button>
+                                                    )}
+                                                    <button onClick={() => openDebtModal(d)} className="p-2 text-slate-300 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-all hover:scale-110"><Edit2 className="w-4 h-4" /></button>
+                                                    <button onClick={() => setDeleteDebtId(d.id)} className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all hover:scale-110"><Trash2 className="w-4 h-4" /></button>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-3 shrink-0">
-                                            <span className="text-base font-bold text-slate-800 dark:text-white">{formatIDR(d.amount)}</span>
-                                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button onClick={() => handleTogglePaid(d)} className={`p-2 rounded-lg transition-all hover:scale-110 ${d.is_paid ? 'text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/30' : 'text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/30'}`} title={d.is_paid ? 'Belum lunas' : 'Tandai lunas'}><Check className="w-4 h-4" /></button>
-                                                <button onClick={() => openDebtModal(d)} className="p-2 text-slate-300 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-all hover:scale-110"><Edit2 className="w-4 h-4" /></button>
-                                                <button onClick={() => setDeleteDebtId(d.id)} className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all hover:scale-110"><Trash2 className="w-4 h-4" /></button>
+
+                                        {/* Progress Bar */}
+                                        {!d.is_paid && (d.paid_amount ?? 0) > 0 && (
+                                            <div className="px-4 pb-3">
+                                                <div className="flex justify-between text-[10px] text-slate-400 mb-1">
+                                                    <span>Terbayar {formatIDR(d.paid_amount)}</span>
+                                                    <span>{d.progress_percentage}%</span>
+                                                </div>
+                                                <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                                    <div
+                                                        className="h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full transition-all duration-700"
+                                                        style={{ width: `${d.progress_percentage}%` }}
+                                                    />
+                                                </div>
                                             </div>
-                                        </div>
+                                        )}
+
+                                        {/* Payment History (expandable) */}
+                                        {d.payments && d.payments.length > 0 && (
+                                            <div className="border-t border-slate-100 dark:border-slate-800">
+                                                <button
+                                                    onClick={() => setExpandedDebtId(isExpanded ? null : d.id)}
+                                                    className="w-full text-left px-4 py-2 text-[10px] font-bold text-slate-400 hover:text-indigo-500 flex items-center justify-between transition-colors"
+                                                >
+                                                    <span>Riwayat Cicilan ({d.payments.length}x)</span>
+                                                    <span>{isExpanded ? '▲' : '▼'}</span>
+                                                </button>
+                                                {isExpanded && (
+                                                    <div className="px-4 pb-3 space-y-1.5">
+                                                        {d.payments.map(p => (
+                                                            <div key={p.id} className="flex justify-between items-center text-xs text-slate-500">
+                                                                <span>{formatDate(p.date)} • {p.wallet_name}{p.notes ? ` — ${p.notes}` : ''}</span>
+                                                                <span className="font-bold text-slate-700 dark:text-slate-300">{formatIDR(p.amount)}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                 );
                             }) : (
@@ -461,6 +549,64 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
             </div>
 
             {/* --- MODALS --- */}
+
+            {/* PAYMENT MODAL (Bayar / Cicil) */}
+            {payingDebt && mounted && createPortal(
+                <div className="fixed inset-0 z-[1001] flex items-center justify-center p-4 animate-fade-in">
+                    <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setPayingDebt(null)} />
+                    <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-pop-in">
+                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 to-violet-500 z-10" />
+                        <div className="p-5 pb-0 shrink-0">
+                            <div className="flex justify-between items-center mb-1">
+                                <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                                    {payingDebt.type === 'RECEIVABLE' ? 'Terima Piutang' : 'Bayar Utang'}
+                                </h2>
+                                <button onClick={() => setPayingDebt(null)} className="text-slate-400 hover:text-slate-600 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"><X className="w-5 h-5" /></button>
+                            </div>
+                            <p className="text-xs text-slate-400 mb-4">{payingDebt.person} • Total {formatIDR(payingDebt.amount)} • Sisa {formatIDR(payingDebt.remaining_amount)}</p>
+                        </div>
+                        <div className="p-5 pt-0 overflow-y-auto scrollbar-hide">
+                            <form onSubmit={handlePaySubmit} className="space-y-4">
+                                <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Nominal Bayar (Rp)</label>
+                                    <input
+                                        type="text" inputMode="numeric" autoFocus
+                                        value={paymentForm.data.amount}
+                                        onChange={e => paymentForm.setData('amount', formatInputAmount(e.target.value))}
+                                        className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-2xl text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 text-center"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">{payingDebt.type === 'RECEIVABLE' ? 'Masuk ke Dompet' : 'Dompet Pembayaran'}</label>
+                                    <select value={paymentForm.data.wallet_id} onChange={e => paymentForm.setData('wallet_id', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required>
+                                        <option value="">Pilih Dompet</option>
+                                        {wallets.map(w => <option key={w.id} value={w.id}>{w.name} ({formatIDR(w.balance)})</option>)}
+                                    </select>
+                                </div>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Tanggal</label>
+                                        <input type="date" value={paymentForm.data.date} onChange={e => paymentForm.setData('date', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required />
+                                    </div>
+                                    <div>
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Catatan (Opsional)</label>
+                                        <input type="text" value={paymentForm.data.notes} onChange={e => paymentForm.setData('notes', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="Via transfer..." />
+                                    </div>
+                                </div>
+                                <div className="flex space-x-3 pt-2">
+                                    <button type="button" onClick={() => setPayingDebt(null)} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors active:scale-95">Batal</button>
+                                    <button type="submit" disabled={paymentForm.processing} className="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-indigo-500/30 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50">
+                                        {paymentForm.processing ? 'Memproses...' : 'Konfirmasi Bayar'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
+
 
             {/* DELETE DEBT MODAL */}
             {deleteDebtId && mounted && createPortal(

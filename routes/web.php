@@ -64,6 +64,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('debts', DebtController::class)
             ->only(['index', 'store', 'update', 'destroy']);
         Route::post('/debts/{debt}/toggle-paid', [DebtController::class , 'togglePaid'])->name('debts.toggle-paid');
+        Route::post('/debts/{debt}/pay', [DebtController::class, 'pay'])->name('debts.pay');
 
         // Installments (Cicilan)
         Route::resource('installments', \App\Http\Controllers\InstallmentController::class)

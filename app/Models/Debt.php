@@ -23,7 +23,7 @@ class Debt extends Model
     protected function casts(): array
     {
         return [
-            'amount' => 'decimal:2',
+            'amount'  => 'decimal:2',
             'due_date' => 'date',
             'is_paid' => 'boolean',
         ];
@@ -35,6 +35,30 @@ class Debt extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(DebtPayment::class)->orderBy('date', 'asc');
+    }
+
+    /**
+     * Computed Properties
+     */
+    public function getPaidAmountAttribute(): float
+    {
+        return (float) $this->payments->sum('amount');
+    }
+
+    public function getRemainingAmountAttribute(): float
+    {
+        return max(0, (float) $this->amount - $this->paid_amount);
+    }
+
+    public function getProgressPercentageAttribute(): int
+    {
+        if ((float) $this->amount <= 0) return 0;
+        return min(100, (int) round(($this->paid_amount / (float) $this->amount) * 100));
     }
 
     /**
@@ -52,3 +76,4 @@ class Debt extends Model
                      ->orderBy('due_date');
     }
 }
+

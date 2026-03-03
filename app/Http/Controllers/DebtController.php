@@ -3,7 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Debt;
+use App\Models\DebtPayment;
+use App\Models\Wallet;
+use App\Models\Transaction;
+use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class DebtController extends Controller
@@ -13,6 +18,7 @@ class DebtController extends Controller
         $user = $request->user();
 
         $query = Debt::where('user_id', $user->id)
+            ->with(['payments.wallet'])
             ->orderByRaw('is_paid ASC')
             ->orderBy('due_date');
 
@@ -24,16 +30,30 @@ class DebtController extends Controller
             $query->where('is_paid', $request->status === 'paid');
         }
 
+        // Debts paginated and mapped with computed properties
         $debts = $query->paginate(20);
+        $debts->getCollection()->transform(function ($debt) {
+            return array_merge($debt->toArray(), [
+                'paid_amount'         => $debt->paid_amount,
+                'remaining_amount'    => $debt->remaining_amount,
+                'progress_percentage' => $debt->progress_percentage,
+                'payments'            => $debt->payments->map(fn($p) => [
+                    'id'          => $p->id,
+                    'amount'      => (float) $p->amount,
+                    'date'        => $p->date->format('Y-m-d'),
+                    'notes'       => $p->notes,
+                    'wallet_name' => $p->wallet->name ?? '-',
+                ]),
+            ]);
+        });
 
-        // Summary
-        $allDebts = Debt::where('user_id', $user->id)->get();
+        $allDebts = Debt::where('user_id', $user->id)->with('payments')->get();
         $summary = [
-            'totalDebt' => $allDebts->where('type', 'DEBT')->where('is_paid', false)->sum('amount'),
-            'totalReceivable' => $allDebts->where('type', 'RECEIVABLE')->where('is_paid', false)->sum('amount'),
-            'totalBill' => $allDebts->where('type', 'BILL')->where('is_paid', false)->sum('amount'),
-            'paidCount' => $allDebts->where('is_paid', true)->count(),
-            'unpaidCount' => $allDebts->where('is_paid', false)->count(),
+            'totalDebt'       => $allDebts->where('type', 'DEBT')->where('is_paid', false)->sum('remaining_amount'),
+            'totalReceivable' => $allDebts->where('type', 'RECEIVABLE')->where('is_paid', false)->sum('remaining_amount'),
+            'totalBill'       => $allDebts->where('type', 'BILL')->where('is_paid', false)->sum('remaining_amount'),
+            'paidCount'       => $allDebts->where('is_paid', true)->count(),
+            'unpaidCount'     => $allDebts->where('is_paid', false)->count(),
         ];
 
         // Fetch Recurring Transactions
@@ -135,19 +155,79 @@ class DebtController extends Controller
         return redirect()->back()->with('success', 'Hutang/Piutang berhasil dihapus');
     }
 
+
+
     /**
-     * Toggle paid status of a debt
+     * Bayar / Cicil Utang — memotong saldo dompet & mencatat transaksi
      */
-    public function togglePaid(Request $request, Debt $debt)
+    public function pay(Request $request, Debt $debt)
     {
-        if ($debt->user_id !== $request->user()->id) {
-            abort(403);
-        }
+        if ($debt->user_id !== $request->user()->id) abort(403);
 
-        $debt->update(['is_paid' => !$debt->is_paid]);
+        $validated = $request->validate([
+            'wallet_id' => 'required|exists:wallets,id',
+            'amount'    => 'required|numeric|min:1',
+            'date'      => 'required|date',
+            'notes'     => 'nullable|string|max:255',
+        ]);
 
-        return redirect()->back()->with('success',
-            $debt->is_paid ? 'Ditandai sudah dibayar' : 'Ditandai belum dibayar'
-        );
+        $payAmount = (float) $validated['amount'];
+        $userId    = $request->user()->id;
+
+        DB::transaction(function () use ($debt, $validated, $payAmount, $userId) {
+            $wallet = Wallet::where('id', $validated['wallet_id'])
+                ->where('user_id', $userId)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            // Determine transaction type and category based on debt type
+            if ($debt->type === 'RECEIVABLE') {
+                // Piutang dibayar: uang masuk ke dompet kita
+                $txType    = 'INCOME';
+                $txCategory = 'Terima Piutang';
+                $wallet->increment('balance', $payAmount);
+            } else {
+                // Utang / Bill dibayar: uang keluar dari dompet kita
+                $txType    = 'EXPENSE';
+                $txCategory = 'Bayar Utang';
+                $wallet->decrement('balance', $payAmount);
+            }
+
+            // Ensure category exists for this user
+            Category::firstOrCreate(
+                ['user_id' => $userId, 'name' => $txCategory, 'type' => $txType],
+                ['is_default' => false]
+            );
+
+            // Create transaction record
+            $transaction = Transaction::create([
+                'user_id'     => $userId,
+                'wallet_id'   => $wallet->id,
+                'amount'      => $payAmount,
+                'type'        => $txType,
+                'category'    => $txCategory,
+                'description' => ($debt->type === 'RECEIVABLE' ? 'Piutang dari ' : 'Bayar utang ke ') . $debt->person,
+                'date'        => $validated['date'],
+            ]);
+
+            // Record the payment
+            DebtPayment::create([
+                'debt_id'        => $debt->id,
+                'user_id'        => $userId,
+                'wallet_id'      => $wallet->id,
+                'transaction_id' => $transaction->id,
+                'amount'         => $payAmount,
+                'date'           => $validated['date'],
+                'notes'          => $validated['notes'] ?? null,
+            ]);
+
+            // Check if debt is now fully paid
+            $totalPaid = $debt->fresh()->payments->sum('amount');
+            if ($totalPaid >= (float) $debt->amount) {
+                $debt->update(['is_paid' => true]);
+            }
+        });
+
+        return redirect()->back()->with('success', 'Pembayaran berhasil dicatat!');
     }
 }
