@@ -1,0 +1,48 @@
+=====================================================================
+            PANDUAN UPDATE CAPH.IO - HOSTINGER
+=====================================================================
+
+LANGKAH 1: BUILD & PACK (Lokal - PC Anda)
+-----------------------------------------
+1. Buka folder proyek CAPH.io di Windows Explorer.
+2. Klik dua kali file 'deploy.bat'.
+3. Tunggu sampai muncul tulisan "SELESAI!".
+4. File 'update.zip' versi terbaru sudah siap di folder proyek Anda.
+
+LANGKAH 2: UPLOAD & EXTRACT (Server - Hostinger)
+------------------------------------------------
+1. Buka File Manager Hostinger.
+2. Upload file 'update.zip' ke folder utama (tempat folder 'caph' berada).
+3. Klik kanan 'update.zip' -> Extract -> Pilih folder tujuan 'caph'.
+   (Biarkan dia menimpa file lama).
+
+LANGKAH 3: SINKRONISASI TAMPILAN (SSH Hostinger)
+------------------------------------------------
+Masuk ke terminal SSH Hostinger dan jalankan satu per satu:
+
+cd domains/caph.io/caph
+rm -rf ../public_html/build
+cp -r public/build ../public_html/
+rm -f ../public_html/hot
+
+LANGKAH 4: JALANKAN MIGRASI (SSH Hostinger)
+-------------------------------------------
+Jika ada perubahan struktur database, jalankan:
+
+php artisan migrate --force
+
+LANGKAH 5: BERSIHKAN CACHE (SSH Hostinger)
+------------------------------------------
+Agar fitur dan kategori baru langsung aktif, jalankan:
+
+php artisan optimize:clear
+
+LANGKAH 6: REFRESH BROWSER (PC Anda)
+------------------------------------
+1. Buka website caph.io.
+2. Tekan CTRL + SHIFT + R (Hard Reload) pada browser Anda.
+
+=====================================================================
+TIPS: Jika web "Error 500", pastikan file 'public_html/index.php' 
+jalurnya sudah mengarah ke folder 'caph'.
+=====================================================================
