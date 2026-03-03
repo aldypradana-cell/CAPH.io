@@ -204,6 +204,12 @@ class DashboardController extends Controller
             ->get();
         
         // Get user categories for standard inputs
+        // Ensure 'Biaya Admin' category exists for this user
+        Category::firstOrCreate(
+            ['user_id' => $user->id, 'name' => 'Biaya Admin', 'type' => 'EXPENSE'],
+            ['is_default' => false]
+        );
+
         $categories = Category::userCategories($user->id)->get();
         $userTags = Tag::where('user_id', $user->id)->orderBy('name')->get();
 
