@@ -38,12 +38,31 @@ class TransactionService
                     $wallet->increment('balance', $data['amount']);
                     $wallet->refresh(); // pastikan saldo terbaru
                 } elseif ($data['type'] === 'EXPENSE') {
+                    $adminFee = floatval($data['admin_fee'] ?? 0);
+                    $totalExpense = $data['amount'] + $adminFee;
+
                     $wallet->refresh();
-                    if ($wallet->balance < $data['amount']) {
-                        throw new \Exception("Saldo dompet \"{$wallet->name}\" tidak cukup. Saldo: Rp" . number_format($wallet->balance, 0, ',', '.') . ", Dibutuhkan: Rp" . number_format($data['amount'], 0, ',', '.'));
+                    if ($wallet->balance < $totalExpense) {
+                        throw new \Exception("Saldo dompet \"{$wallet->name}\" tidak cukup. Saldo: Rp" . number_format($wallet->balance, 0, ',', '.') . ", Dibutuhkan: Rp" . number_format($totalExpense, 0, ',', '.'));
                     }
                     $wallet->decrement('balance', $data['amount']);
                     $this->checkBudget($transaction);
+
+                    // Create separate admin fee expense transaction if present
+                    if ($adminFee > 0) {
+                        $wallet->decrement('balance', $adminFee);
+                        $feeTransaction = Transaction::create([
+                            'user_id' => $userId,
+                            'wallet_id' => $walletId,
+                            'to_wallet_id' => null,
+                            'amount' => $adminFee,
+                            'type' => 'EXPENSE',
+                            'category' => 'Biaya Admin',
+                            'description' => 'Biaya admin - ' . $data['description'],
+                            'date' => $data['date'],
+                        ]);
+                        $newTransactions[] = $feeTransaction;
+                    }
                 } elseif ($data['type'] === 'TRANSFER' && isset($data['to_wallet_id'])) {
                     $adminFee = floatval($data['admin_fee'] ?? 0);
                     $adminFeeFrom = $data['admin_fee_from'] ?? 'sender';

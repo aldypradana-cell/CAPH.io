@@ -102,8 +102,8 @@ export default function TransactionsIndex({
     }, [searchTerm]);
 
     const [inputType, setInputType] = useState<'EXPENSE' | 'INCOME' | 'TRANSFER'>('EXPENSE');
-
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [showAdminFee, setShowAdminFee] = useState(false);
 
     const { data, setData, post, put, processing, reset } = useForm({
         wallet_id: '',
@@ -316,7 +316,7 @@ export default function TransactionsIndex({
 
                         {/* Add Button */}
                         <button
-                            onClick={() => { setEditingTransaction(null); reset(); setSelectedTags([]); setInputType('EXPENSE'); setData(d => ({ ...d, admin_fee: '', admin_fee_from: 'sender' })); setIsModalOpen(true); }}
+                            onClick={() => { setEditingTransaction(null); reset(); setSelectedTags([]); setInputType('EXPENSE'); setShowAdminFee(false); setData(d => ({ ...d, admin_fee: '', admin_fee_from: 'sender' })); setIsModalOpen(true); }}
                             className="flex items-center px-5 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95"
                         >
                             <Plus className="w-4 h-4 mr-2" /> Transaksi Baru
@@ -481,10 +481,13 @@ export default function TransactionsIndex({
                                         type="button"
                                         onClick={() => {
                                             setInputType(type);
+                                            setShowAdminFee(false);
                                             setData(d => ({
                                                 ...d,
                                                 type,
-                                                category: ''
+                                                category: '',
+                                                admin_fee: '',
+                                                admin_fee_from: 'sender' as 'sender' | 'receiver',
                                             }));
                                         }}
                                         className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 ${inputType === type
@@ -517,7 +520,6 @@ export default function TransactionsIndex({
                                 </div>
 
                                 {inputType === 'TRANSFER' && (
-                                    <>
                                     <div>
                                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Ke Dompet</label>
                                         <select value={data.to_wallet_id} onChange={(e) => setData('to_wallet_id', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required>
@@ -525,53 +527,80 @@ export default function TransactionsIndex({
                                             {wallets.filter(w => w.id.toString() !== data.wallet_id).map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
                                         </select>
                                     </div>
+                                )}
 
-                                    {/* Admin Fee Fields */}
-                                    <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-2xl space-y-3">
-                                        <div>
-                                            <label className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest block mb-1 ml-1">Biaya Admin (Opsional)</label>
-                                            <input type="text" value={data.admin_fee} onChange={(e) => handleAdminFeeChange(e.target.value)} className="w-full px-4 py-2.5 border border-amber-200 dark:border-amber-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-amber-500 outline-none font-bold text-slate-900 dark:text-white bg-white dark:bg-slate-900/50" placeholder="0 (Kosongkan jika gratis)" />
-                                        </div>
-
-                                        {data.admin_fee && parseAmount(data.admin_fee) > 0 && (
-                                            <>
-                                                <div className="flex gap-2">
-                                                    <button type="button" onClick={() => setData('admin_fee_from', 'sender')}
-                                                        className={`flex-1 py-2 px-3 rounded-xl text-[11px] font-bold transition-all border ${
-                                                            data.admin_fee_from === 'sender'
-                                                                ? 'bg-amber-500 text-white border-amber-500 shadow-lg shadow-amber-500/30'
-                                                                : 'border-amber-200 dark:border-amber-700 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/30'
-                                                        }`}>
-                                                        Potong Pengirim
-                                                    </button>
-                                                    <button type="button" onClick={() => setData('admin_fee_from', 'receiver')}
-                                                        className={`flex-1 py-2 px-3 rounded-xl text-[11px] font-bold transition-all border ${
-                                                            data.admin_fee_from === 'receiver'
-                                                                ? 'bg-amber-500 text-white border-amber-500 shadow-lg shadow-amber-500/30'
-                                                                : 'border-amber-200 dark:border-amber-700 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/30'
-                                                        }`}>
-                                                        Potong Penerima
+                                {/* Admin Fee Toggle — tampil untuk EXPENSE dan TRANSFER */}
+                                {(inputType === 'EXPENSE' || inputType === 'TRANSFER') && (
+                                    <div>
+                                        {!showAdminFee ? (
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowAdminFee(true)}
+                                                className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 transition-colors py-1 px-2 rounded-xl hover:bg-amber-50 dark:hover:bg-amber-900/20"
+                                            >
+                                                <span className="text-base leading-none">+</span> Tambah Biaya Admin
+                                            </button>
+                                        ) : (
+                                            <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-2xl space-y-3 animate-fade-in">
+                                                <div className="flex items-center justify-between">
+                                                    <label className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">Biaya Admin</label>
+                                                    <button type="button" onClick={() => { setShowAdminFee(false); setData(d => ({ ...d, admin_fee: '', admin_fee_from: 'sender' })); }}
+                                                        className="text-amber-400 hover:text-amber-600 text-xs px-1.5 py-0.5 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors">
+                                                        ✕ Batal
                                                     </button>
                                                 </div>
+                                                <input
+                                                    type="text"
+                                                    value={data.admin_fee}
+                                                    onChange={(e) => handleAdminFeeChange(e.target.value)}
+                                                    className="w-full px-4 py-2.5 border border-amber-200 dark:border-amber-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-amber-500 outline-none font-bold text-slate-900 dark:text-white bg-white dark:bg-slate-900/50"
+                                                    placeholder="Masukkan biaya admin (Rp)"
+                                                    autoFocus
+                                                />
+
+                                                {/* Sender/Receiver Toggle — hanya untuk TRANSFER */}
+                                                {inputType === 'TRANSFER' && data.admin_fee && parseAmount(data.admin_fee) > 0 && (
+                                                    <div className="flex gap-2">
+                                                        <button type="button" onClick={() => setData('admin_fee_from', 'sender')}
+                                                            className={`flex-1 py-2 px-3 rounded-xl text-[11px] font-bold transition-all border ${
+                                                                data.admin_fee_from === 'sender'
+                                                                    ? 'bg-amber-500 text-white border-amber-500 shadow-md shadow-amber-500/30'
+                                                                    : 'border-amber-200 dark:border-amber-700 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/30'
+                                                            }`}>
+                                                            Potong Pengirim
+                                                        </button>
+                                                        <button type="button" onClick={() => setData('admin_fee_from', 'receiver')}
+                                                            className={`flex-1 py-2 px-3 rounded-xl text-[11px] font-bold transition-all border ${
+                                                                data.admin_fee_from === 'receiver'
+                                                                    ? 'bg-amber-500 text-white border-amber-500 shadow-md shadow-amber-500/30'
+                                                                    : 'border-amber-200 dark:border-amber-700 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/30'
+                                                            }`}>
+                                                            Potong Penerima
+                                                        </button>
+                                                    </div>
+                                                )}
 
                                                 {/* Summary */}
-                                                <div className="text-[11px] font-medium text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/30 rounded-xl px-3 py-2 space-y-0.5">
-                                                    {data.admin_fee_from === 'sender' ? (
-                                                        <>
-                                                            <p>💳 {wallets.find(w => w.id.toString() === data.wallet_id)?.name || 'Pengirim'} akan terpotong <strong>Rp {(parseAmount(data.amount) + parseAmount(data.admin_fee)).toLocaleString('id-ID')}</strong></p>
-                                                            <p>💰 {wallets.find(w => w.id.toString() === data.to_wallet_id)?.name || 'Penerima'} akan menerima <strong>Rp {parseAmount(data.amount).toLocaleString('id-ID')}</strong></p>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <p>💳 {wallets.find(w => w.id.toString() === data.wallet_id)?.name || 'Pengirim'} akan terpotong <strong>Rp {parseAmount(data.amount).toLocaleString('id-ID')}</strong></p>
-                                                            <p>💰 {wallets.find(w => w.id.toString() === data.to_wallet_id)?.name || 'Penerima'} akan menerima <strong>Rp {(parseAmount(data.amount) - parseAmount(data.admin_fee)).toLocaleString('id-ID')}</strong></p>
-                                                        </>
-                                                    )}
-                                                </div>
-                                            </>
+                                                {data.admin_fee && parseAmount(data.admin_fee) > 0 && (
+                                                    <div className="text-[11px] font-medium text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/30 rounded-xl px-3 py-2 space-y-0.5">
+                                                        {inputType === 'EXPENSE' ? (
+                                                            <p>💳 {wallets.find(w => w.id.toString() === data.wallet_id)?.name || 'Dompet'} akan terpotong total <strong>Rp {(parseAmount(data.amount) + parseAmount(data.admin_fee)).toLocaleString('id-ID')}</strong></p>
+                                                        ) : data.admin_fee_from === 'sender' ? (
+                                                            <>
+                                                                <p>💳 {wallets.find(w => w.id.toString() === data.wallet_id)?.name || 'Pengirim'} terpotong <strong>Rp {(parseAmount(data.amount) + parseAmount(data.admin_fee)).toLocaleString('id-ID')}</strong></p>
+                                                                <p>💰 {wallets.find(w => w.id.toString() === data.to_wallet_id)?.name || 'Penerima'} menerima <strong>Rp {parseAmount(data.amount).toLocaleString('id-ID')}</strong></p>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <p>💳 {wallets.find(w => w.id.toString() === data.wallet_id)?.name || 'Pengirim'} terpotong <strong>Rp {parseAmount(data.amount).toLocaleString('id-ID')}</strong></p>
+                                                                <p>💰 {wallets.find(w => w.id.toString() === data.to_wallet_id)?.name || 'Penerima'} menerima <strong>Rp {(parseAmount(data.amount) - parseAmount(data.admin_fee)).toLocaleString('id-ID')}</strong></p>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
                                         )}
                                     </div>
-                                    </>
                                 )}
 
                                 <div className="grid grid-cols-2 gap-3">
