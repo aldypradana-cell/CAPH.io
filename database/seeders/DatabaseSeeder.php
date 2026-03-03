@@ -65,6 +65,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Perawatan Diri',    'type' => 'EXPENSE',   'budget_rule' => 'WANTS',       'is_default' => true],
             ['name' => 'Cicilan & Utang',   'type' => 'EXPENSE',   'budget_rule' => 'DEBT',        'is_default' => true],
             ['name' => 'Sedekah',           'type' => 'EXPENSE',   'budget_rule' => 'SOCIAL',      'is_default' => true],
+            ['name' => 'Biaya Admin',       'type' => 'EXPENSE',   'budget_rule' => null,          'is_default' => true],
             ['name' => 'Lainnya',           'type' => 'EXPENSE',   'budget_rule' => null,          'is_default' => true],
 
             // Transfer

@@ -45,13 +45,50 @@ class TransactionService
                     $wallet->decrement('balance', $data['amount']);
                     $this->checkBudget($transaction);
                 } elseif ($data['type'] === 'TRANSFER' && isset($data['to_wallet_id'])) {
+                    $adminFee = floatval($data['admin_fee'] ?? 0);
+                    $adminFeeFrom = $data['admin_fee_from'] ?? 'sender';
+
+                    // Calculate total deduction from sender
+                    $senderTotal = $data['amount'] + ($adminFeeFrom === 'sender' ? $adminFee : 0);
+
                     $wallet->refresh();
-                    if ($wallet->balance < $data['amount']) {
-                        throw new \Exception("Saldo dompet \"{$wallet->name}\" tidak cukup untuk transfer. Saldo: Rp" . number_format($wallet->balance, 0, ',', '.') . ", Dibutuhkan: Rp" . number_format($data['amount'], 0, ',', '.'));
+                    if ($wallet->balance < $senderTotal) {
+                        throw new \Exception("Saldo dompet \"{$wallet->name}\" tidak cukup untuk transfer. Saldo: Rp" . number_format($wallet->balance, 0, ',', '.') . ", Dibutuhkan: Rp" . number_format($senderTotal, 0, ',', '.'));
                     }
                     $wallet->decrement('balance', $data['amount']);
-                    // Lock dompet tujuan sebelum menambah saldo
-                    Wallet::where('id', $data['to_wallet_id'])->lockForUpdate()->firstOrFail()->increment('balance', $data['amount']);
+
+                    // Lock & credit receiver wallet
+                    $receiverWallet = Wallet::where('id', $data['to_wallet_id'])->lockForUpdate()->firstOrFail();
+                    $receiverWallet->increment('balance', $data['amount']);
+
+                    // Handle admin fee if present
+                    if ($adminFee > 0) {
+                        if ($adminFeeFrom === 'sender') {
+                            // Deduct admin fee from sender wallet
+                            $wallet->decrement('balance', $adminFee);
+                        } else {
+                            // Deduct admin fee from receiver wallet
+                            $receiverWallet->refresh();
+                            if ($receiverWallet->balance < $adminFee) {
+                                throw new \Exception("Saldo dompet \"{$receiverWallet->name}\" tidak cukup untuk biaya admin. Saldo: Rp" . number_format($receiverWallet->balance, 0, ',', '.') . ", Biaya: Rp" . number_format($adminFee, 0, ',', '.'));
+                            }
+                            $receiverWallet->decrement('balance', $adminFee);
+                        }
+
+                        // Create separate EXPENSE transaction for admin fee
+                        $feeWalletId = $adminFeeFrom === 'sender' ? $walletId : $data['to_wallet_id'];
+                        $feeTransaction = Transaction::create([
+                            'user_id' => $userId,
+                            'wallet_id' => $feeWalletId,
+                            'to_wallet_id' => null,
+                            'amount' => $adminFee,
+                            'type' => 'EXPENSE',
+                            'category' => 'Biaya Admin',
+                            'description' => 'Biaya admin transfer ke ' . $receiverWallet->name,
+                            'date' => $data['date'],
+                        ]);
+                        $newTransactions[] = $feeTransaction;
+                    }
                 }
 
                 $newTransactions[] = $transaction;

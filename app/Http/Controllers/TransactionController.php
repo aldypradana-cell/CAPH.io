@@ -83,6 +83,8 @@ class TransactionController extends Controller
             'category' => 'required|string',
             'tags' => 'nullable|array',
             'tags.*' => 'string|max:50',
+            'admin_fee' => 'nullable|numeric|min:0',
+            'admin_fee_from' => 'nullable|in:sender,receiver',
         ]);
 
         try {
