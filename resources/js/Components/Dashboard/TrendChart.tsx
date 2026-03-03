@@ -10,8 +10,9 @@ interface TrendChartProps {
     activeFilter: string;
     onFilterChange: (filter: string) => void;
     onDateChange: (field: 'start' | 'end', value: string) => void;
-    className?: string; // Allow passing styles/classes for grid layout
-    style?: React.CSSProperties; // Allow passing styles directly
+    isLoading?: boolean;
+    className?: string;
+    style?: React.CSSProperties;
     onMouseDown?: React.MouseEventHandler;
     onMouseUp?: React.MouseEventHandler;
     onTouchEnd?: React.TouchEventHandler;
@@ -54,7 +55,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export default function TrendChart({
-    data, filters, activeFilter, onFilterChange, onDateChange,
+    data, filters, activeFilter, onFilterChange, onDateChange, isLoading,
     className, style, onMouseDown, onMouseUp, onTouchEnd
 }: TrendChartProps) {
     return (
@@ -105,6 +106,16 @@ export default function TrendChart({
                 </div>
             </div>
             <div className="flex-1 w-full min-h-0">
+                {isLoading ? (
+                    <div className="flex items-end justify-center gap-3 h-full px-8 pb-8">
+                        {[40, 65, 50, 80, 35, 60, 70, 45].map((h, i) => (
+                            <div key={i} className="flex-1 flex gap-1">
+                                <div className="flex-1 bg-emerald-100 dark:bg-emerald-900/30 rounded-t-md animate-pulse" style={{ height: `${h}%`, animationDelay: `${i * 100}ms` }} />
+                                <div className="flex-1 bg-red-100 dark:bg-red-900/30 rounded-t-md animate-pulse" style={{ height: `${h * 0.7}%`, animationDelay: `${i * 100 + 50}ms` }} />
+                            </div>
+                        ))}
+                    </div>
+                ) : (
                 <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                         <defs>
@@ -129,6 +140,7 @@ export default function TrendChart({
                         <Bar dataKey="Pengeluaran" fill="url(#colorExpense)" radius={[6, 6, 0, 0]} maxBarSize={40} animationDuration={1000} />
                     </BarChart>
                 </ResponsiveContainer>
+                )}
             </div>
         </div>
     );

@@ -53,6 +53,8 @@ Route::middleware(['auth'])->group(function () {
             ->only(['store', 'update', 'destroy']);
         Route::post('/recurring/{recurring}/process', [RecurringTransactionController::class , 'process'])->name('recurring.process');
         Route::get('/api/dashboard/recurring', [RecurringTransactionController::class , 'dashboardWidget'])->name('api.dashboard.recurring');
+        Route::get('/api/dashboard/trend', [DashboardController::class , 'trendApi'])->name('api.dashboard.trend');
+        Route::get('/api/dashboard/pie', [DashboardController::class , 'pieApi'])->name('api.dashboard.pie');
 
         // Budgets
         Route::post('/budgets/auto-generate', [BudgetController::class , 'autoGenerate'])->name('budgets.auto-generate');

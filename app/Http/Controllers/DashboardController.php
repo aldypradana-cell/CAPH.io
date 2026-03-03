@@ -81,18 +81,8 @@ class DashboardController extends Controller
         
         $netWorth = ($balance + $totalReceivables + $totalAssetsValue) - ($totalDebts + $totalInstallmentDebts);
 
-        // --- Server-Side Aggregation for Trend Chart ---
-        $trendData = $this->aggregateTrendData($user->id, $startDate, $endDate, $mode, $trendCategory);
-
-        // --- Aggregation for Pie Chart (Expense by Category) - INDEPENDENT FILTER ---
-        $pieData = Transaction::forUser($user->id)
-            ->inDateRange($pieStartDate, $pieEndDate)
-            ->where('type', 'EXPENSE')
-            ->selectRaw('category as name, SUM(amount) as value')
-            ->groupBy('category')
-            ->orderByDesc('value')
-            ->get()
-            ->map(fn($item) => ['name' => $item->name, 'value' => (float) $item->value]);
+        // NOTE: trendData and pieData are now loaded lazily via trendApi() and pieApi()
+        // to reduce initial page load time. Frontend fetches them via axios after render.
 
         // --- Top 5 Expense Tags (Current Month - FIXED) ---
         $topTags = \Illuminate\Support\Facades\DB::table('transaction_tag')
@@ -162,18 +152,35 @@ class DashboardController extends Controller
         }
         $labels = $activeTemplate ? ($templateLabelsMap[$activeTemplate] ?? []) : [];
 
-        $budgetProgress = $budgets->map(function ($budget) use ($user, $ruleCategoryNames, $slotToRules, $labels) {
-             $now = Carbon::now();
-             $start = $now->copy()->startOfMonth()->format('Y-m-d');
-             $end = $now->copy()->endOfMonth()->format('Y-m-d');
-             
-             if ($budget->period === 'WEEKLY') {
-                 $start = $now->copy()->startOfWeek()->format('Y-m-d');
-                 $end = $now->copy()->endOfWeek()->format('Y-m-d');
-             } elseif ($budget->period === 'YEARLY') {
-                 $start = $now->copy()->startOfYear()->format('Y-m-d');
-                 $end = $now->copy()->endOfYear()->format('Y-m-d');
-             }
+        // --- FIX N+1: Pre-compute expense totals per period (max 3 queries) ---
+        $now = Carbon::now();
+        $periodRanges = [
+            'WEEKLY'  => [$now->copy()->startOfWeek()->format('Y-m-d'), $now->copy()->endOfWeek()->format('Y-m-d')],
+            'MONTHLY' => [$now->copy()->startOfMonth()->format('Y-m-d'), $now->copy()->endOfMonth()->format('Y-m-d')],
+            'YEARLY'  => [$now->copy()->startOfYear()->format('Y-m-d'), $now->copy()->endOfYear()->format('Y-m-d')],
+        ];
+
+        $usedPeriods = $budgets->pluck('period')->unique()->toArray();
+        // Default to MONTHLY if no period field (legacy budgets)
+        if (empty($usedPeriods)) {
+            $usedPeriods = ['MONTHLY'];
+        }
+        $expenseByPeriod = [];
+
+        foreach ($usedPeriods as $period) {
+            $range = $periodRanges[$period] ?? $periodRanges['MONTHLY'];
+            $expenseByPeriod[$period] = Transaction::forUser($user->id)
+                ->where('type', 'EXPENSE')
+                ->inDateRange($range[0], $range[1])
+                ->selectRaw('category, SUM(amount) as total')
+                ->groupBy('category')
+                ->pluck('total', 'category')
+                ->toArray();
+        }
+
+        $budgetProgress = $budgets->map(function ($budget) use ($expenseByPeriod, $ruleCategoryNames, $slotToRules, $labels) {
+            $period = $budget->period ?? 'MONTHLY';
+            $categoryExpenses = $expenseByPeriod[$period] ?? ($expenseByPeriod['MONTHLY'] ?? []);
 
             if ($budget->is_master) {
                 $rules = $slotToRules[$budget->category] ?? [$budget->category];
@@ -182,26 +189,18 @@ class DashboardController extends Controller
                     ->toArray();
                 
                 $spent = 0;
-                if (!empty($mappedCategories)) {
-                    $spent = Transaction::forUser($user->id)
-                        ->where('type', 'EXPENSE')
-                        ->whereIn('category', $mappedCategories)
-                        ->inDateRange($start, $end)
-                        ->sum('amount');
+                foreach ($mappedCategories as $cat) {
+                    $spent += (float) ($categoryExpenses[$cat] ?? 0);
                 }
             } else {
-                $spent = Transaction::forUser($user->id)
-                    ->where('type', 'EXPENSE')
-                    ->where('category', $budget->category)
-                    ->inDateRange($start, $end)
-                    ->sum('amount');
+                $spent = (float) ($categoryExpenses[$budget->category] ?? 0);
             }
 
             return [
                 'id' => $budget->id,
                 'category' => $budget->category,
                 'limit' => $budget->limit,
-                'spent' => (float) $spent,
+                'spent' => $spent,
                 'percentage' => $budget->limit > 0 ? min(100, round(($spent / $budget->limit) * 100)) : 0,
                 'is_master' => (bool) $budget->is_master,
                 'template_label' => $labels[$budget->category] ?? null,
@@ -226,8 +225,8 @@ class DashboardController extends Controller
                 'transactionCount' => $transactionCount,
                 'netWorth' => $netWorth,
             ],
-            'trendData' => $trendData,
-            'pieData' => $pieData, // Replaces expenseByCategory
+            'trendData' => [], // Lazy-loaded via /api/dashboard/trend
+            'pieData' => [],   // Lazy-loaded via /api/dashboard/pie
             'budgetProgress' => $budgetProgress,
             'recentTransactions' => $recentTransactions,
             'wallets' => $wallets,
@@ -243,6 +242,46 @@ class DashboardController extends Controller
                 'pieStartDate' => $pieStartDate,
                 'pieEndDate' => $pieEndDate,
             ]
+        ]);
+    }
+
+    /**
+     * API endpoint: Lazy-load trend chart data.
+     */
+    public function trendApi(Request $request)
+    {
+        $user = $request->user();
+        $startDate = $request->input('startDate', now()->startOfMonth()->format('Y-m-d'));
+        $endDate = $request->input('endDate', now()->endOfMonth()->format('Y-m-d'));
+        $mode = $request->input('mode', 'DAILY');
+        $trendCategory = $request->input('trendCategory', 'ALL');
+
+        return response()->json([
+            'trendData' => $this->aggregateTrendData($user->id, $startDate, $endDate, $mode, $trendCategory),
+            'filters' => compact('startDate', 'endDate', 'mode', 'trendCategory'),
+        ]);
+    }
+
+    /**
+     * API endpoint: Lazy-load pie chart data.
+     */
+    public function pieApi(Request $request)
+    {
+        $user = $request->user();
+        $pieStartDate = $request->input('pieStartDate', now()->startOfMonth()->format('Y-m-d'));
+        $pieEndDate = $request->input('pieEndDate', now()->endOfMonth()->format('Y-m-d'));
+
+        $pieData = Transaction::forUser($user->id)
+            ->inDateRange($pieStartDate, $pieEndDate)
+            ->where('type', 'EXPENSE')
+            ->selectRaw('category as name, SUM(amount) as value')
+            ->groupBy('category')
+            ->orderByDesc('value')
+            ->get()
+            ->map(fn($item) => ['name' => $item->name, 'value' => (float) $item->value]);
+
+        return response()->json([
+            'pieData' => $pieData,
         ]);
     }
 

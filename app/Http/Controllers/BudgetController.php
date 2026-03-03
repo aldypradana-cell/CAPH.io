@@ -106,41 +106,45 @@ class BudgetController extends Controller
         $activeTemplate = self::detectTemplate($masterSlots);
         $labels = $activeTemplate ? (self::TEMPLATE_LABELS[$activeTemplate] ?? []) : [];
 
-        $budgetsWithProgress = $budgets->map(function ($budget) use ($user, $ruleCategoryNames, $labels) {
-            $now = Carbon::now();
+        // --- FIX N+1: Pre-compute expense totals per period (max 3 queries) ---
+        $now = Carbon::now();
+        $periodRanges = [
+            'WEEKLY'  => [$now->copy()->startOfWeek()->format('Y-m-d'), $now->copy()->endOfWeek()->format('Y-m-d')],
+            'MONTHLY' => [$now->copy()->startOfMonth()->format('Y-m-d'), $now->copy()->endOfMonth()->format('Y-m-d')],
+            'YEARLY'  => [$now->copy()->startOfYear()->format('Y-m-d'), $now->copy()->endOfYear()->format('Y-m-d')],
+        ];
 
-            if ($budget->period === 'WEEKLY') {
-                $start = $now->copy()->startOfWeek()->format('Y-m-d');
-                $end = $now->copy()->endOfWeek()->format('Y-m-d');
-            } elseif ($budget->period === 'YEARLY') {
-                $start = $now->copy()->startOfYear()->format('Y-m-d');
-                $end = $now->copy()->endOfYear()->format('Y-m-d');
-            } else {
-                $start = $now->copy()->startOfMonth()->format('Y-m-d');
-                $end = $now->copy()->endOfMonth()->format('Y-m-d');
-            }
+        // Only query for periods that actually exist in user's budgets
+        $usedPeriods = $budgets->pluck('period')->unique()->toArray();
+        $expenseByPeriod = []; // period => [category => total]
+
+        foreach ($usedPeriods as $period) {
+            $range = $periodRanges[$period] ?? $periodRanges['MONTHLY'];
+            $expenseByPeriod[$period] = Transaction::where('user_id', $user->id)
+                ->where('type', 'EXPENSE')
+                ->whereBetween('date', $range)
+                ->selectRaw('category, SUM(amount) as total')
+                ->groupBy('category')
+                ->pluck('total', 'category')
+                ->toArray();
+        }
+
+        $budgetsWithProgress = $budgets->map(function ($budget) use ($ruleCategoryNames, $labels, $expenseByPeriod) {
+            $categoryExpenses = $expenseByPeriod[$budget->period] ?? [];
 
             if ($budget->is_master) {
-                // Use SLOT_TO_RULES to find which budget_rules this slot aggregates
+                // Aggregate spent from all mapped categories for this master slot
                 $rules = self::SLOT_TO_RULES[$budget->category] ?? [$budget->category];
                 $mappedCategories = collect($rules)
                     ->flatMap(fn($rule) => $ruleCategoryNames[$rule] ?? [])
                     ->toArray();
                 
                 $spent = 0;
-                if (!empty($mappedCategories)) {
-                    $spent = Transaction::where('user_id', $user->id)
-                        ->where('type', 'EXPENSE')
-                        ->whereIn('category', $mappedCategories)
-                        ->whereBetween('date', [$start, $end])
-                        ->sum('amount');
+                foreach ($mappedCategories as $cat) {
+                    $spent += (float) ($categoryExpenses[$cat] ?? 0);
                 }
             } else {
-                $spent = Transaction::where('user_id', $user->id)
-                    ->where('type', 'EXPENSE')
-                    ->where('category', $budget->category)
-                    ->whereBetween('date', [$start, $end])
-                    ->sum('amount');
+                $spent = (float) ($categoryExpenses[$budget->category] ?? 0);
             }
 
             return [
@@ -150,7 +154,7 @@ class BudgetController extends Controller
                 'period' => $budget->period,
                 'frequency' => $budget->frequency,
                 'is_master' => (bool) $budget->is_master,
-                'spent' => (float) $spent,
+                'spent' => $spent,
                 'remaining' => max(0, $budget->limit - $spent),
                 'percentage' => $budget->limit > 0 ? min(100, round(($spent / $budget->limit) * 100)) : 0,
                 'template_label' => $labels[$budget->category] ?? null,

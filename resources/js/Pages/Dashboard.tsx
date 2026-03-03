@@ -1,5 +1,5 @@
 import AppLayout from '@/Layouts/AppLayout';
-import { Head, Link, router } from '@inertiajs/react'; // Added router
+import { Head, Link } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -45,7 +45,7 @@ const ResizeHandle = React.forwardRef<HTMLDivElement, any>(({ handleAxis, ...pro
 });
 
 export default function Dashboard({
-    auth, stats, trendData, pieData, budgetProgress, recentTransactions, wallets, upcomingBills, topTags, categories, userTags, filters
+    auth, stats, trendData: initialTrendData, pieData: initialPieData, budgetProgress, recentTransactions, wallets, upcomingBills, topTags, categories, userTags, filters
 }: PageProps<{
     stats: Stats;
     trendData: ChartData[];
@@ -62,8 +62,15 @@ export default function Dashboard({
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [recurringTransactions, setRecurringTransactions] = useState<RecurringTransaction[]>([]);
 
+    // --- LAZY-LOADED CHART STATE ---
+    const [trendData, setTrendData] = useState<ChartData[]>(initialTrendData || []);
+    const [pieData, setPieData] = useState<PieData[]>(initialPieData || []);
+    const [isTrendLoading, setIsTrendLoading] = useState(true);
+    const [isPieLoading, setIsPieLoading] = useState(true);
+
     // --- QUERY STATE ---
     const [activeFilter, setActiveFilter] = useState<string>(filters.mode || 'DAILY');
+    const [currentFilters, setCurrentFilters] = useState(filters);
 
     // Fetch recurring transactions 
     useEffect(() => {
@@ -72,18 +79,47 @@ export default function Dashboard({
             .catch(err => console.error('Failed to fetch recurring transactions:', err));
     }, []);
 
+    // Lazy-load trend data on mount and when filters change
+    const fetchTrendData = (params: Record<string, any>) => {
+        setIsTrendLoading(true);
+        axios.get('/api/dashboard/trend', { params })
+            .then(res => {
+                setTrendData(res.data.trendData || []);
+                setCurrentFilters(prev => ({ ...prev, ...res.data.filters }));
+            })
+            .catch(err => console.error('Failed to fetch trend data:', err))
+            .finally(() => setIsTrendLoading(false));
+    };
+
+    // Lazy-load pie data on mount and when filters change
+    const fetchPieData = (params: Record<string, any>) => {
+        setIsPieLoading(true);
+        axios.get('/api/dashboard/pie', { params })
+            .then(res => {
+                setPieData(res.data.pieData || []);
+            })
+            .catch(err => console.error('Failed to fetch pie data:', err))
+            .finally(() => setIsPieLoading(false));
+    };
+
+    // Initial fetch on mount
+    useEffect(() => {
+        fetchTrendData({
+            startDate: filters.startDate,
+            endDate: filters.endDate,
+            mode: filters.mode,
+            trendCategory: filters.trendCategory,
+        });
+        fetchPieData({
+            pieStartDate: filters.pieStartDate,
+            pieEndDate: filters.pieEndDate,
+        });
+    }, []);
+
     // Helper for formatting local date strings
     const getLocalDateString = (date: Date = new Date()) => {
         const offset = date.getTimezoneOffset() * 60000;
         return new Date(date.getTime() - offset).toISOString().split('T')[0];
-    };
-
-    const updateParams = (newParams: Record<string, any>) => {
-        router.get(route('dashboard'), { ...filters, ...newParams }, {
-            preserveState: true,
-            preserveScroll: true,
-            only: ['stats', 'trendData', 'pieData', 'filters']
-        });
     };
 
     const handleFilterChange = (filter: string) => {
@@ -116,30 +152,35 @@ export default function Dashboard({
             mode = 'YEARLY';
         }
 
-        updateParams({
+        const params = {
             startDate: getLocalDateString(start),
             endDate: getLocalDateString(end),
-            mode
-        });
+            mode,
+            trendCategory: currentFilters.trendCategory || 'ALL',
+        };
+        setCurrentFilters(prev => ({ ...prev, ...params }));
+        fetchTrendData(params);
     };
 
     const handleDateChange = (field: 'start' | 'end', value: string) => {
-        updateParams({
-            [field === 'start' ? 'startDate' : 'endDate']: value,
-            mode: 'DAILY' // Custom range implies detailed view
-        });
         setActiveFilter('CUSTOM');
+        const params = {
+            startDate: field === 'start' ? value : (currentFilters.startDate || ''),
+            endDate: field === 'end' ? value : (currentFilters.endDate || ''),
+            mode: 'DAILY',
+            trendCategory: currentFilters.trendCategory || 'ALL',
+        };
+        setCurrentFilters(prev => ({ ...prev, ...params }));
+        fetchTrendData(params);
     };
 
     const handlePieDateChange = (field: 'start' | 'end', value: string) => {
-        router.get(route('dashboard'), {
-            ...filters,
-            [field === 'start' ? 'pieStartDate' : 'pieEndDate']: value
-        }, {
-            preserveState: true,
-            preserveScroll: true,
-            only: ['pieData', 'filters']
-        });
+        const params = {
+            pieStartDate: field === 'start' ? value : (currentFilters.pieStartDate || ''),
+            pieEndDate: field === 'end' ? value : (currentFilters.pieEndDate || ''),
+        };
+        setCurrentFilters(prev => ({ ...prev, ...params }));
+        fetchPieData(params);
     };
 
     // --- GRID LAYOUT STATE ---
@@ -253,10 +294,11 @@ export default function Dashboard({
                                 <ErrorBoundary title="Widget Trend">
                                     <TrendChart
                                         data={trendData}
-                                        filters={filters}
+                                        filters={currentFilters}
                                         activeFilter={activeFilter}
                                         onFilterChange={handleFilterChange}
                                         onDateChange={handleDateChange}
+                                        isLoading={isTrendLoading}
                                     />
                                 </ErrorBoundary>
                             </div>
@@ -264,8 +306,9 @@ export default function Dashboard({
                                 <ErrorBoundary title="Widget Distribusi">
                                     <DistributionPieChart
                                         data={pieData}
-                                        filters={filters}
+                                        filters={currentFilters}
                                         onDateChange={handlePieDateChange}
+                                        isLoading={isPieLoading}
                                     />
                                 </ErrorBoundary>
                             </div>
