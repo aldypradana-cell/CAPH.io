@@ -131,14 +131,18 @@ function HealthGauge({ score, sentiment }: { score: number; sentiment: string })
 }
 
 // ── Main Component ───────────────────────────────────
-export default function InsightsIndex({ auth, transactionCount, hasProfile, latestInsight }: PageProps<{
+export default function InsightsIndex({ auth, transactionCount, hasProfile, latestInsight, aiQuota: initialAiQuota }: PageProps<{
     transactionCount: number;
     hasProfile: boolean;
     latestInsight?: { id: number; content: InsightData; created_at: string } | null;
+    aiQuota?: { used: number; limit: number; resetsAt: string };
 }>) {
     const [isLoading, setIsLoading] = useState(false);
     const [insight, setInsight] = useState<InsightData | null>(latestInsight ? latestInsight.content : null);
     const [lastUpdated, setLastUpdated] = useState<string | null>(latestInsight ? latestInsight.created_at : null);
+    const [aiQuota, setAiQuota] = useState(initialAiQuota);
+
+    const isQuotaExceeded = aiQuota ? aiQuota.used >= aiQuota.limit : false;
 
     // Period Filter State
     const [period, setPeriod] = useState<'THIS_MONTH' | 'LAST_MONTH' | 'CUSTOM'>('THIS_MONTH');
@@ -181,12 +185,17 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                 setInsight(result.insight);
                 setLastUpdated(new Date().toISOString());
                 toast.success('Analisis selesai & tersimpan!');
+                if (result.quota) setAiQuota(result.quota);
             } else {
                 toast.error(result.message || 'Gagal menghasilkan analisis');
+                if (result.quota) setAiQuota(result.quota);
             }
         } catch (e: any) {
             console.error('Insight Error:', e);
             toast.error(e.response?.data?.message || 'Terjadi kesalahan');
+            if (e.response?.status === 429 && e.response?.data?.used !== undefined) {
+                setAiQuota({ used: e.response.data.used, limit: e.response.data.limit, resetsAt: e.response.data.resetsAt });
+            }
         } finally {
             setIsLoading(false);
         }
@@ -263,13 +272,24 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                 />
                             </div>
                         )}
-                        <button
-                            onClick={handleGenerate}
-                            disabled={isLoading}
-                            className="ml-auto inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl text-xs font-bold hover:shadow-lg hover:shadow-purple-500/30 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 shrink-0"
-                        >
-                            {isLoading ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />Menganalisis...</> : <><Sparkles className="w-3.5 h-3.5 mr-1.5" />{insight ? 'Refresh Analysis' : 'Generate Insights'}</>}
-                        </button>
+                        <div className="ml-auto flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto mt-4 sm:mt-0">
+                            {aiQuota && (
+                                <span className={`text-[10px] font-bold px-2 py-1 rounded-full flex flex-col items-center justify-center text-center ${isQuotaExceeded ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
+                                    {isQuotaExceeded ? (
+                                        <>🔴 Kuota Habis<span className="font-medium text-[8px] opacity-80">Reset: {new Date(aiQuota.resetsAt).toLocaleDateString('id-ID', { weekday: 'long' })}</span></>
+                                    ) : (
+                                        <>{aiQuota.used}/{aiQuota.limit} minggu ini</>
+                                    )}
+                                </span>
+                            )}
+                            <button
+                                onClick={handleGenerate}
+                                disabled={isLoading || isQuotaExceeded}
+                                className={`w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-xs font-bold transition-all transition-transform ${isQuotaExceeded ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg hover:shadow-purple-500/30 hover:scale-105 active:scale-95 disabled:opacity-50'}`}
+                            >
+                                {isLoading ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />Menganalisis...</> : <><Sparkles className="w-3.5 h-3.5 mr-1.5" />{insight ? 'Refresh Analysis' : 'Generate Insights'}</>}
+                            </button>
+                        </div>
                     </div>
                 </div>
 

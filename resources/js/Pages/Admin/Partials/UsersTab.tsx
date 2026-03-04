@@ -1,6 +1,6 @@
-import { router } from '@inertiajs/react';
+import { router, useForm } from '@inertiajs/react';
 import {
-    Shield, ShieldOff, Trash2, Search, Users, AlertTriangle, UserCheck, UserX
+    Shield, ShieldOff, Trash2, Search, Users, AlertTriangle, UserCheck, UserX, Zap, Activity
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
@@ -15,12 +15,17 @@ interface User {
     transactions_count: number;
     wallets_count: number;
     created_at: string;
+    smart_entry_limit: number;
+    insight_limit: number;
+    smart_entry_used_today: number;
+    insight_used_this_week: number;
 }
 
 export default function UsersTab({ users, filters }: { users: { data: User[] }, filters: any }) {
     const [search, setSearch] = useState(filters?.search || '');
     const [deleteId, setDeleteId] = useState<number | null>(null);
     const [deleteUser, setDeleteUser] = useState<User | null>(null);
+    const [editQuotaUser, setEditQuotaUser] = useState<User | null>(null);
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -42,6 +47,30 @@ export default function UsersTab({ users, filters }: { users: { data: User[] }, 
     const handleDelete = (user: User) => {
         setDeleteUser(user);
         setDeleteId(user.id);
+    };
+
+    const { data: quotaData, setData: setQuotaData, patch: patchQuota, processing: processingQuota, reset: resetQuota } = useForm({
+        smart_entry_limit: 5,
+        insight_limit: 1,
+    });
+
+    const handleEditQuota = (user: User) => {
+        setEditQuotaUser(user);
+        setQuotaData({
+            smart_entry_limit: user.smart_entry_limit ?? 5,
+            insight_limit: user.insight_limit ?? 1,
+        });
+    };
+
+    const submitQuota = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!editQuotaUser) return;
+        patchQuota(route('admin.users.update-quota', editQuotaUser.id), {
+            onSuccess: () => {
+                toast.success('Kuota AI berhasil diperbarui!');
+                setEditQuotaUser(null);
+            }
+        });
     };
 
     return (
@@ -89,7 +118,13 @@ export default function UsersTab({ users, filters }: { users: { data: User[] }, 
 
                         {/* Actions */}
                         {user.role !== 'ADMIN' && (
-                            <div className="flex items-center gap-2 mt-3 sm:mt-0 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                            <div className="flex items-center gap-2 mt-3 sm:mt-0 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity shrink-0 flex-wrap">
+                                <button
+                                    onClick={() => handleEditQuota(user)}
+                                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-indigo-700 bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400 transition-all hover:scale-105 active:scale-95 hover:shadow-lg hover:shadow-indigo-500/20"
+                                >
+                                    <Zap className="w-3.5 h-3.5" /> Kuota AI
+                                </button>
                                 <button
                                     onClick={() => handleSuspend(user)}
                                     className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all hover:scale-105 active:scale-95 ${user.status === 'ACTIVE'
@@ -130,6 +165,77 @@ export default function UsersTab({ users, filters }: { users: { data: User[] }, 
                             <button onClick={() => setDeleteId(null)} className="flex-1 py-3 rounded-xl font-bold text-slate-600 bg-slate-100 dark:bg-slate-800 dark:text-slate-300">Batal</button>
                             <button onClick={() => { router.delete(route('admin.users.destroy', deleteId), { onSuccess: () => toast.success('User dihapus!') }); setDeleteId(null); }} className="flex-1 py-3 rounded-xl font-bold text-white bg-red-600 shadow-lg shadow-red-500/30">Ya, Hapus</button>
                         </div>
+                    </div>
+                </div>,
+                document.body
+            )}
+
+            {/* Quota Modal */}
+            {editQuotaUser && mounted && createPortal(
+                <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 animate-fade-in">
+                    <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => !processingQuota && setEditQuotaUser(null)} />
+                    <div className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-2xl animate-pop-in border border-slate-100 dark:border-slate-800">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white">
+                                <Zap className="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-slate-800 dark:text-white">Kuota AI Pengguna</h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">{editQuotaUser.name} ({editQuotaUser.email})</p>
+                            </div>
+                        </div>
+
+                        {/* Usage Stats Display */}
+                        <div className="grid grid-cols-2 gap-3 mb-6">
+                            <div className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide flex items-center gap-1 mb-1">
+                                    <Activity className="w-3 h-3 text-indigo-500" /> Penggunaan Hari Ini
+                                </p>
+                                <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
+                                    {editQuotaUser.smart_entry_used_today} <span className="text-xs text-slate-400 font-medium">Smart Entry</span>
+                                </p>
+                            </div>
+                            <div className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide flex items-center gap-1 mb-1">
+                                    <Activity className="w-3 h-3 text-purple-500" /> Penggunaan Minggu Ini
+                                </p>
+                                <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
+                                    {editQuotaUser.insight_used_this_week} <span className="text-xs text-slate-400 font-medium">AI Insight</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <form onSubmit={submitQuota} className="space-y-4">
+                            <div>
+                                <label className="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-1">Limit Smart Entry Per Hari</label>
+                                <input 
+                                    type="number" 
+                                    min="1" max="100" required
+                                    value={quotaData.smart_entry_limit}
+                                    onChange={e => setQuotaData('smart_entry_limit', parseInt(e.target.value) || 0)}
+                                    className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700/50 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50"
+                                />
+                                <p className="text-[10px] text-slate-400 mt-1">Standar: 5</p>
+                            </div>
+                            <div>
+                                <label className="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-1">Limit AI Insight Per Minggu</label>
+                                <input 
+                                    type="number" 
+                                    min="0" max="10" required
+                                    value={quotaData.insight_limit}
+                                    onChange={e => setQuotaData('insight_limit', parseInt(e.target.value) || 0)}
+                                    className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700/50 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50"
+                                />
+                                <p className="text-[10px] text-slate-400 mt-1">Standar: 1</p>
+                            </div>
+
+                            <div className="flex gap-3 pt-4">
+                                <button type="button" onClick={() => setEditQuotaUser(null)} disabled={processingQuota} className="flex-1 py-3 rounded-xl font-bold text-slate-600 bg-slate-100 dark:bg-slate-800 dark:text-slate-300 disabled:opacity-50">Batal</button>
+                                <button type="submit" disabled={processingQuota} className="flex-1 py-3 rounded-xl font-bold text-white bg-indigo-600 shadow-lg shadow-indigo-500/30 disabled:opacity-50 flex justify-center items-center">
+                                    {processingQuota ? 'Menyimpan...' : 'Simpan Kuota'}
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>,
                 document.body

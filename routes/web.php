@@ -37,7 +37,7 @@ Route::middleware(['auth'])->group(function () {
         ->only(['index', 'store', 'update', 'destroy']);
 
     // Smart Entry (AI) - Rate limited to prevent API quota abuse
-    Route::middleware('throttle:10,1')->group(function () {
+    Route::middleware('throttle:ai-global')->group(function () {
             Route::get('/smart-entry', [SmartEntryController::class , 'index'])->name('smart-entry.index');
             Route::post('/smart-entry/parse', [SmartEntryController::class , 'parse'])->name('smart-entry.parse');
             Route::post('/smart-entry/confirm', [SmartEntryController::class , 'confirm'])->name('smart-entry.confirm');
@@ -86,7 +86,7 @@ Route::middleware(['auth'])->group(function () {
             ->only(['index', 'store', 'update', 'destroy']);
 
         // Financial Insights (AI) - Rate limited
-        Route::middleware('throttle:5,1')->group(function () {
+        Route::middleware('throttle:ai-global')->group(function () {
             Route::get('/insights', [InsightsController::class , 'index'])->name('insights.index');
             Route::post('/insights/generate', [InsightsController::class , 'generate'])->name('insights.generate');
             Route::post('/insights/profile', [InsightsController::class , 'updateProfile'])->name('insights.profile');
@@ -121,6 +121,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/users/{user}/suspend', [UserManagementController::class , 'suspend'])->name('users.suspend');
             Route::delete('/users/{user}', [UserManagementController::class , 'destroy'])->name('users.destroy');
             Route::get('/logs', [SystemLogController::class , 'index'])->name('logs.index');
+            Route::patch('/users/{user}/quota', [UserManagementController::class, 'updateQuota'])->name('users.update-quota');
 
             // Admin Transactions
             Route::get('/transactions', [AdminTransactionController::class , 'index'])->name('transactions.index');

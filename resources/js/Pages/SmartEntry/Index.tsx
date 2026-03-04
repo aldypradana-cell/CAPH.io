@@ -21,13 +21,20 @@ interface ParsedTransaction {
 const formatIDR = (amount: number) =>
     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
 
-export default function SmartEntryIndex({ auth, wallets, categories }: PageProps<{ wallets: Wallet[], categories: Category[] }>) {
+export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: initialAiQuota }: PageProps<{ 
+    wallets: Wallet[], 
+    categories: Category[],
+    aiQuota?: { used: number, limit: number, resetsAt: string }
+}>) {
     const [input, setInput] = useState('');
     const [isListening, setIsListening] = useState(false);
     const [parsedTransactions, setParsedTransactions] = useState<ParsedTransaction[]>([]);
     const [isParsing, setIsParsing] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [selectedWallet, setSelectedWallet] = useState(wallets.length > 0 ? wallets[0].id.toString() : '');
+    const [aiQuota, setAiQuota] = useState(initialAiQuota);
+
+    const isQuotaExceeded = aiQuota ? aiQuota.used >= aiQuota.limit : false;
 
     const { data, setData, post, processing } = useForm({
         transactions: [] as ParsedTransaction[],
@@ -53,8 +60,10 @@ export default function SmartEntryIndex({ auth, wallets, categories }: PageProps
             if (result.success) {
                 setParsedTransactions(result.transactions);
                 toast.success(`${result.transactions.length} transaksi terdeteksi!`);
+                if (result.quota) setAiQuota(result.quota);
             } else {
                 setError(result.message || 'Gagal memproses input');
+                if (result.quota) setAiQuota(result.quota);
             }
         } catch (e: any) {
             console.error(e);
@@ -64,7 +73,10 @@ export default function SmartEntryIndex({ auth, wallets, categories }: PageProps
             } else if (e.response?.status === 422) {
                 setError(e.response.data?.errors?.message?.[0] || e.response.data?.message || 'Input tidak valid.');
             } else if (e.response?.status === 429) {
-                setError('⚡ Terlalu banyak permintaan. Mohon tunggu sebentar sebelum mencoba lagi.');
+                setError(e.response?.data?.message || '⚡ Terlalu banyak permintaan. Mohon tunggu sebentar sebelum mencoba lagi.');
+                if (e.response?.data?.used !== undefined) {
+                    setAiQuota({ used: e.response.data.used, limit: e.response.data.limit, resetsAt: e.response.data.resetsAt });
+                }
             } else {
                 setError(e.response?.data?.message || 'Terjadi kesalahan. Silakan coba lagi.');
             }
@@ -165,9 +177,20 @@ export default function SmartEntryIndex({ auth, wallets, categories }: PageProps
                         className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 resize-none"
                     />
                     <div className="flex items-center justify-between mt-3">
-                        <span className="text-[10px] text-slate-400 flex items-center gap-1">
-                            <Sparkles className="w-3 h-3 text-indigo-500" /> Powered by Gemini
-                        </span>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+                            <span className="text-[10px] text-slate-400 flex items-center gap-1 font-bold">
+                                <Sparkles className="w-3 h-3 text-indigo-500" /> Powered by Gemini
+                            </span>
+                            {aiQuota && (
+                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${isQuotaExceeded ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
+                                    {isQuotaExceeded ? (
+                                        <>🔴 Kuota Habis · Reset besok pukul 00:00</>
+                                    ) : (
+                                        <>{aiQuota.used}/{aiQuota.limit} dipakai hari ini</>
+                                    )}
+                                </span>
+                            )}
+                        </div>
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={toggleListening}
@@ -182,16 +205,16 @@ export default function SmartEntryIndex({ auth, wallets, categories }: PageProps
                                 {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
                             </button>
                             <button
-                            onClick={handleParse}
-                            disabled={isParsing || !input.trim()}
-                            className="flex items-center px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                        >
-                            {isParsing ? (
-                                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Memproses...</>
-                            ) : (
-                                <><Zap className="w-4 h-4 mr-2" /> Analisis</>
-                            )}
-                        </button>
+                                onClick={handleParse}
+                                disabled={isParsing || !input.trim() || isQuotaExceeded}
+                                className={`flex items-center px-5 py-2.5 rounded-2xl text-sm font-bold transition-all transition-transform ${isQuotaExceeded ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:shadow-lg hover:shadow-indigo-500/30 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100'}`}
+                            >
+                                {isParsing ? (
+                                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Memproses...</>
+                                ) : (
+                                    <><Zap className="w-4 h-4 mr-2" /> Analisis</>
+                                )}
+                            </button>
                         </div>
                     </div>
                 </div>

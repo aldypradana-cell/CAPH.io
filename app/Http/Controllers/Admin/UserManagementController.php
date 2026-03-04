@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\SystemLog;
+use App\Models\AiUsageLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 
 class UserManagementController extends Controller
@@ -31,11 +33,20 @@ class UserManagementController extends Controller
             $query->where('status', $request->status);
         }
 
-        $users = $query->orderBy('created_at', 'desc')->paginate(20);
+        $today = Carbon::today();
+        $week  = Carbon::now()->startOfWeek(Carbon::MONDAY);
+
+        $users = $query->orderBy('created_at', 'desc')->paginate(20)->through(function ($user) use ($today, $week) {
+            $user->smart_entry_used_today = AiUsageLog::where('user_id', $user->id)
+                ->where('feature', 'smart_entry')->where('used_at', '>=', $today)->count();
+            $user->insight_used_this_week = AiUsageLog::where('user_id', $user->id)
+                ->where('feature', 'ai_insight')->where('used_at', '>=', $week)->count();
+            return $user;
+        });
 
         return Inertia::render('Admin/Dashboard', [
-            'tab' => 'users',
-            'users' => $users,
+            'tab'     => 'users',
+            'users'   => $users,
             'filters' => $request->only(['search', 'role', 'status']),
         ]);
     }
@@ -69,6 +80,36 @@ class UserManagementController extends Controller
         return redirect()->back()->with('success',
             $newStatus === 'SUSPENDED' ? 'User berhasil ditangguhkan' : 'User berhasil diaktifkan kembali'
         );
+    }
+
+    /**
+     * Update per-user AI quota limits
+     */
+    public function updateQuota(Request $request, User $user)
+    {
+        if ($user->role === 'ADMIN') {
+            return response()->json(['error' => 'Tidak bisa mengubah kuota admin.'], 403);
+        }
+
+        $validated = $request->validate([
+            'smart_entry_limit' => 'required|integer|min:1|max:100',
+            'insight_limit'     => 'required|integer|min:0|max:10',
+        ]);
+
+        $user->update($validated);
+
+        SystemLog::create([
+            'admin_id' => $request->user()->id,
+            'action'   => 'UPDATE_AI_QUOTA',
+            'target'   => "User #{$user->id} ({$user->email})",
+            'details'  => [
+                'user_id'           => $user->id,
+                'smart_entry_limit' => $validated['smart_entry_limit'],
+                'insight_limit'     => $validated['insight_limit'],
+            ],
+        ]);
+
+        return redirect()->back()->with('success', 'Kuota AI berhasil diperbarui.');
     }
 
     /**
@@ -106,6 +147,7 @@ class UserManagementController extends Controller
         \App\Models\Asset::where('user_id', $user->id)->delete();
         \App\Models\FinancialInsight::where('user_id', $user->id)->delete();
         \App\Models\Tag::where('user_id', $user->id)->delete();
+        AiUsageLog::where('user_id', $user->id)->delete();
 
         $user->delete();
 

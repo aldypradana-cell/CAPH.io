@@ -11,6 +11,7 @@ use App\Models\FinancialInsight;
 use App\Models\Category;
 use App\Models\Installment;
 use App\Models\Wallet;
+use App\Models\AiUsageLog;
 use App\Enums\DebtType;
 use App\Services\GeminiService;
 use App\Services\BudgetTemplate;
@@ -36,10 +37,24 @@ class InsightsController extends Controller
             ->inDateRange($now->copy()->startOfMonth()->format('Y-m-d'), $now->copy()->endOfMonth()->format('Y-m-d'))
             ->count();
 
+        // Calculate weekly usage for AI Insight
+        $weekStart = Carbon::now()->startOfWeek(Carbon::MONDAY);
+        $usedThisWeek = AiUsageLog::where('user_id', $user->id)
+            ->where('feature', 'ai_insight')
+            ->where('used_at', '>=', $weekStart)
+            ->count();
+
+        $nextMonday = Carbon::now()->next(Carbon::MONDAY)->startOfDay();
+
         return Inertia::render('Insights/Index', [
             'transactionCount' => $transactionCount,
-            'hasProfile' => !empty($user->financial_profile),
-            'latestInsight' => FinancialInsight::where('user_id', $user->id)->latest()->first(),
+            'hasProfile'       => !empty($user->financial_profile),
+            'latestInsight'    => FinancialInsight::where('user_id', $user->id)->latest()->first(),
+            'aiQuota'          => [
+                'used'     => $usedThisWeek,
+                'limit'    => $user->insight_limit,
+                'resetsAt' => $nextMonday->toIso8601String(),
+            ],
         ]);
     }
 
@@ -49,6 +64,26 @@ class InsightsController extends Controller
     public function generate(Request $request)
     {
         $user = $request->user();
+
+        // Check per-user weekly quota
+        $weekStart = Carbon::now()->startOfWeek(Carbon::MONDAY);
+        $usedThisWeek = AiUsageLog::where('user_id', $user->id)
+            ->where('feature', 'ai_insight')
+            ->where('used_at', '>=', $weekStart)
+            ->count();
+
+        $nextMonday = Carbon::now()->next(Carbon::MONDAY)->startOfDay();
+
+        if ($usedThisWeek >= $user->insight_limit) {
+            return response()->json([
+                'success'  => false,
+                'quota'    => true,
+                'message'  => 'Kuota AI Insight Anda minggu ini sudah habis.',
+                'used'     => $usedThisWeek,
+                'limit'    => $user->insight_limit,
+                'resetsAt' => $nextMonday->toIso8601String(),
+            ], 429);
+        }
 
         // Determine Analysis Period (Default: Current Month)
         $startDate = $request->input('startDate') ? Carbon::parse($request->input('startDate')) : Carbon::now()->startOfMonth();
@@ -329,10 +364,22 @@ class InsightsController extends Controller
                 'content' => $insight,
             ]);
 
+            // Log AI usage for quota tracking
+            AiUsageLog::create([
+                'user_id' => $user->id,
+                'feature' => 'ai_insight',
+                'used_at' => now(),
+            ]);
+
             return response()->json([
                 'success'  => true,
                 'insight'  => $insight,
                 'saved_at' => $storedInsight->created_at,
+                'quota'    => [
+                    'used'     => $usedThisWeek + 1,
+                    'limit'    => $user->insight_limit,
+                    'resetsAt' => $nextMonday->toIso8601String(),
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([

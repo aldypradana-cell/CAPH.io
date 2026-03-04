@@ -2,9 +2,12 @@
 
 namespace App\Providers;
 
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Http\Request;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,6 +25,26 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Vite::prefetch(concurrency: 3);
+
+        // Global AI Rate Limiter (safety net for all users combined)
+        // To change limits, update AI_GLOBAL_RPM and AI_GLOBAL_RPD in .env
+        // then run: php artisan optimize:clear
+        RateLimiter::for('ai-global', function (Request $request) {
+            return [
+                Limit::perMinute((int) env('AI_GLOBAL_RPM', 5))->response(function () {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Server sedang sibuk. Silakan coba lagi dalam 1 menit.',
+                    ], 429);
+                }),
+                Limit::perDay((int) env('AI_GLOBAL_RPD', 20))->response(function () {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Batas penggunaan AI harian telah tercapai. Coba lagi besok.',
+                    ], 429);
+                }),
+            ];
+        });
 
         // Prevent lazy loading in non-production to catch N+1 queries early.
         // In production, log violations instead of throwing exceptions to avoid breaking the app.
