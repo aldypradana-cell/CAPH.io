@@ -247,7 +247,7 @@ PENTING:
                 ]
             ];
 
-            $response = \Illuminate\Support\Facades\Http::timeout(25)
+            $response = \Illuminate\Support\Facades\Http::timeout(60)
                 ->acceptJson()
                 ->post($url, $payload);
 
