@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use App\Enums\TransactionType;
+use App\Enums\DebtType;
 use Inertia\Inertia;
 
 class DebtController extends Controller
@@ -57,9 +58,9 @@ class DebtController extends Controller
             ->groupBy('type');
 
         $summary = [
-            'totalDebt'       => $summaryRaw->get('DEBT', collect())->sum(fn($d) => max(0, (float) $d->amount - (float) ($d->payments_sum_amount ?? 0))),
-            'totalReceivable' => $summaryRaw->get('RECEIVABLE', collect())->sum(fn($d) => max(0, (float) $d->amount - (float) ($d->payments_sum_amount ?? 0))),
-            'totalBill'       => $summaryRaw->get('BILL', collect())->sum(fn($d) => max(0, (float) $d->amount - (float) ($d->payments_sum_amount ?? 0))),
+            'totalDebt'       => $summaryRaw->get(DebtType::DEBT->value, collect())->sum(fn($d) => max(0, (float) $d->amount - (float) ($d->payments_sum_amount ?? 0))),
+            'totalReceivable' => $summaryRaw->get(DebtType::RECEIVABLE->value, collect())->sum(fn($d) => max(0, (float) $d->amount - (float) ($d->payments_sum_amount ?? 0))),
+            'totalBill'       => $summaryRaw->get(DebtType::BILL->value, collect())->sum(fn($d) => max(0, (float) $d->amount - (float) ($d->payments_sum_amount ?? 0))),
             'paidCount'       => Debt::where('user_id', $user->id)->where('is_paid', true)->count(),
             'unpaidCount'     => $summaryRaw->flatten()->count(),
         ];
@@ -115,7 +116,7 @@ class DebtController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'type' => 'required|in:DEBT,RECEIVABLE,BILL',
+            'type' => ['required', Rule::enum(DebtType::class)],
             'person' => 'required|string|max:255',
             'amount' => 'required|numeric|min:1',
             'description' => 'nullable|string|max:500',
@@ -139,7 +140,7 @@ class DebtController extends Controller
         }
 
         $validated = $request->validate([
-            'type' => 'required|in:DEBT,RECEIVABLE,BILL',
+            'type' => ['required', Rule::enum(DebtType::class)],
             'person' => 'required|string|max:255',
             'amount' => 'required|numeric|min:1',
             'description' => 'nullable|string|max:500',
@@ -189,7 +190,7 @@ class DebtController extends Controller
                 ->firstOrFail();
 
             // Determine transaction type and category based on debt type
-            if ($debt->type === 'RECEIVABLE') {
+            if ($debt->type === DebtType::RECEIVABLE->value) {
                 // Piutang dibayar: uang masuk ke dompet kita
                 $txType    = TransactionType::INCOME->value;
                 $txCategory = 'Terima Piutang';
@@ -214,7 +215,7 @@ class DebtController extends Controller
                 'amount'      => $payAmount,
                 'type'        => $txType,
                 'category'    => $txCategory,
-                'description' => ($debt->type === 'RECEIVABLE' ? 'Piutang dari ' : 'Bayar utang ke ') . $debt->person,
+                'description' => ($debt->type === DebtType::RECEIVABLE->value ? 'Piutang dari ' : 'Bayar utang ke ') . $debt->person,
                 'date'        => $validated['date'],
             ]);
 

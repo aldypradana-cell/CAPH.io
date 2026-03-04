@@ -7,8 +7,10 @@ use App\Models\InstallmentPayment;
 use App\Models\Transaction;
 use App\Models\Wallet;
 use App\Enums\TransactionType;
+use App\Enums\InterestType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class InstallmentController extends Controller
 {
@@ -17,7 +19,7 @@ class InstallmentController extends Controller
         $validated = $request->validate([
             'name'           => 'required|string|max:255',
             'type'           => 'required|in:PROPERTY,VEHICLE,LOAN,GADGET,OTHER',
-            'interest_type'  => 'required|in:FLAT,FLOATING,MIXED,NONE',
+            'interest_type'  => ['required', Rule::enum(InterestType::class)],
             'total_amount'   => 'required|numeric|min:0',
             'monthly_amount' => 'required|numeric|min:1',
             'total_tenor'    => 'required|integer|min:1',
@@ -51,7 +53,7 @@ class InstallmentController extends Controller
         $validated = $request->validate([
             'name'           => 'required|string|max:255',
             'type'           => 'required|in:PROPERTY,VEHICLE,LOAN,GADGET,OTHER',
-            'interest_type'  => 'required|in:FLAT,FLOATING,MIXED,NONE',
+            'interest_type'  => ['required', Rule::enum(InterestType::class)],
             'total_amount'   => 'required|numeric|min:0',
             'monthly_amount' => 'required|numeric|min:1',
             'total_tenor'    => 'required|integer|min:1',

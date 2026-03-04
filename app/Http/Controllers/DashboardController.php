@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Transaction;
 use App\Models\Wallet;
 use App\Models\Asset;
+use App\Enums\DebtType;
 use App\Models\Category;
 use App\Models\Debt;
 use App\Models\Installment;
@@ -64,10 +65,10 @@ class DashboardController extends Controller
             ->get()
             ->groupBy('type');
             
-        $totalReceivables = $debtStats->get('RECEIVABLE', collect())
+        $totalReceivables = $debtStats->get(DebtType::RECEIVABLE->value, collect())
             ->sum(fn($d) => max(0, (float) $d->amount - (float) ($d->payments_sum_amount ?? 0)));
             
-        $totalDebts = $debtStats->get('DEBT', collect())
+        $totalDebts = $debtStats->get(DebtType::DEBT->value, collect())
             ->sum(fn($d) => max(0, (float) $d->amount - (float) ($d->payments_sum_amount ?? 0)));
             
         $totalAssetsValue = (float) Asset::where('user_id', $user->id)->sum('value');

@@ -11,6 +11,7 @@ use App\Models\FinancialInsight;
 use App\Models\Category;
 use App\Models\Installment;
 use App\Models\Wallet;
+use App\Enums\DebtType;
 use App\Services\GeminiService;
 use App\Services\BudgetTemplate;
 use Illuminate\Http\Request;
@@ -207,8 +208,8 @@ class InsightsController extends Controller
         // 6. NEW: Active Debts, Receivables & Installments
         // ─────────────────────────────────────────────
         $debts = Debt::where('user_id', $user->id)->where('is_paid', false)->orderBy('due_date')->get();
-        $totalDebt = $debts->where('type', 'DEBT')->sum('amount');
-        $totalReceivable = $debts->where('type', 'RECEIVABLE')->sum('amount');
+        $totalDebt = $debts->where('type', DebtType::DEBT->value)->sum('amount');
+        $totalReceivable = $debts->where('type', DebtType::RECEIVABLE->value)->sum('amount');
         $debtText = $debts->isEmpty()
             ? "Tidak ada utang/piutang aktif."
             : $debts->map(function ($d) {
