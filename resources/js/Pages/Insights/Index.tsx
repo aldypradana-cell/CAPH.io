@@ -483,6 +483,10 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                                         style={{ width: `${Math.max(5, progress)}%` }}
                                                     />
                                                 </div>
+                                                <div className="flex items-center justify-between text-[10px] text-slate-500 bg-slate-50 dark:bg-slate-800/50 px-3 py-1.5 rounded-lg mb-2">
+                                                    <span>Sisa Waktu: <strong className="text-slate-700 dark:text-slate-200">{goal.monthsRemaining} bln</strong></span>
+                                                    <span>Surplus Anda: <strong className="text-slate-700 dark:text-slate-200">{formatShortIDR(goal.currentSurplus)}/bln</strong></span>
+                                                </div>
                                                 <div className="grid grid-cols-3 gap-2 text-center mb-2">
                                                     <div>
                                                         <p className="text-[10px] text-slate-400 font-bold">Deadline</p>
