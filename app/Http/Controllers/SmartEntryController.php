@@ -66,7 +66,7 @@ class SmartEntryController extends Controller
         $validated = $request->validate([
             'transactions' => 'required|array|min:1',
             'transactions.*.description' => 'required|string',
-            'transactions.*.amount' => 'required|numeric|min:0',
+            'transactions.*.amount' => 'required|numeric|min:1',
             'transactions.*.type' => 'required|in:INCOME,EXPENSE',
             'transactions.*.category' => 'required|string',
             'transactions.*.date' => 'required|date',

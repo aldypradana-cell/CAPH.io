@@ -110,7 +110,7 @@ class DebtController extends Controller
         $validated = $request->validate([
             'type' => 'required|in:DEBT,RECEIVABLE,BILL',
             'person' => 'required|string|max:255',
-            'amount' => 'required|numeric|min:0',
+            'amount' => 'required|numeric|min:1',
             'description' => 'nullable|string|max:500',
             'due_date' => 'nullable|date',
             'is_paid' => 'boolean',
@@ -134,7 +134,7 @@ class DebtController extends Controller
         $validated = $request->validate([
             'type' => 'required|in:DEBT,RECEIVABLE,BILL',
             'person' => 'required|string|max:255',
-            'amount' => 'required|numeric|min:0',
+            'amount' => 'required|numeric|min:1',
             'description' => 'nullable|string|max:500',
             'due_date' => 'nullable|date',
             'is_paid' => 'boolean',

@@ -28,7 +28,7 @@ class RecurringTransactionController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'amount' => 'required|numeric|min:0',
+            'amount' => 'required|numeric|min:1',
             'wallet_id' => ['required', Rule::exists('wallets', 'id')->where('user_id', $userId)],
             'type' => 'required|in:INCOME,EXPENSE,TRANSFER',
             'category' => 'required|string',
@@ -57,7 +57,7 @@ class RecurringTransactionController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'amount' => 'required|numeric|min:0',
+            'amount' => 'required|numeric|min:1',
             'wallet_id' => ['required', Rule::exists('wallets', 'id')->where('user_id', $userId)],
             'type' => 'required|in:INCOME,EXPENSE,TRANSFER',
             'category' => 'required|string',
@@ -112,7 +112,7 @@ class RecurringTransactionController extends Controller
 
         // Validate override values (user might change amount or wallet at the last minute)
         $validated = $request->validate([
-            'amount' => 'required|numeric|min:0',
+            'amount' => 'required|numeric|min:1',
             'wallet_id' => ['required', Rule::exists('wallets', 'id')->where('user_id', $request->user()->id)],
             'date' => 'required|date', // Allow user to set the actual payment date
         ]);
