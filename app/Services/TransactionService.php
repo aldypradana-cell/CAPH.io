@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\Transaction;
 use App\Models\Wallet;
+use App\Models\Debt;
+use App\Models\DebtPayment;
 use App\Enums\TransactionType;
 use Illuminate\Support\Facades\DB;
 use App\Models\Budget;
@@ -161,6 +163,23 @@ class TransactionService
                 Wallet::where('id', $data['to_wallet_id'])->lockForUpdate()->firstOrFail()->increment('balance', $data['amount']);
             }
 
+            // Sync with DebtPayment if this transaction belongs to one
+            $debtPayment = DebtPayment::where('transaction_id', $transaction->id)->first();
+            if ($debtPayment) {
+                // Update payment record
+                $debtPayment->update([
+                    'amount' => $data['amount'],
+                    'date'   => $data['date'],
+                ]);
+                
+                // Recalculate debt is_paid status
+                $debt = $debtPayment->debt;
+                if ($debt) {
+                    $totalPaid = $debt->payments()->sum('amount');
+                    $debt->update(['is_paid' => $totalPaid >= (float) $debt->amount]);
+                }
+            }
+
             return $transaction;
         });
     }
@@ -179,6 +198,19 @@ class TransactionService
             } elseif ($transaction->type === TransactionType::TRANSFER->value && $transaction->to_wallet_id) {
                 $wallet->increment('balance', $transaction->amount);
                 Wallet::where('id', $transaction->to_wallet_id)->lockForUpdate()->firstOrFail()->decrement('balance', $transaction->amount);
+            }
+
+            // Sync with DebtPayment BEFORE deleting the transaction
+            $debtPayment = DebtPayment::where('transaction_id', $transaction->id)->first();
+            if ($debtPayment) {
+                $debt = current([$debtPayment->debt]); // Keep a reference
+                $debtPayment->delete(); // Delete the payment first
+                
+                // Recalculate debt is_paid status
+                if ($debt) {
+                    $totalPaid = $debt->payments()->sum('amount');
+                    $debt->update(['is_paid' => $totalPaid >= (float) $debt->amount]);
+                }
             }
 
             $transaction->delete();

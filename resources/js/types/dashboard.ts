@@ -54,7 +54,7 @@ export interface Debt {
     amount: number;
     due_date: string;
     description?: string;
-    remainingAmount?: number; // Added based on possible usage
+    remaining_amount?: number;
 }
 
 export interface RecurringTransaction {

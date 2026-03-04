@@ -58,15 +58,17 @@ class DashboardController extends Controller
         $transactionCount = Transaction::forUser($user->id)->inDateRange($fixedStartDate, $fixedEndDate)->count();
         
         // --- Net Worth Calculation ---
-        $totalReceivables = (float) Debt::where('user_id', $user->id)
-            ->where('type', 'RECEIVABLE')
+        $debtStats = Debt::where('user_id', $user->id)
             ->where('is_paid', false)
-            ->sum('amount');
+            ->withSum('payments', 'amount')
+            ->get()
+            ->groupBy('type');
             
-        $totalDebts = (float) Debt::where('user_id', $user->id)
-            ->where('type', 'DEBT')
-            ->where('is_paid', false)
-            ->sum('amount');
+        $totalReceivables = $debtStats->get('RECEIVABLE', collect())
+            ->sum(fn($d) => max(0, (float) $d->amount - (float) ($d->payments_sum_amount ?? 0)));
+            
+        $totalDebts = $debtStats->get('DEBT', collect())
+            ->sum(fn($d) => max(0, (float) $d->amount - (float) ($d->payments_sum_amount ?? 0)));
             
         $totalAssetsValue = (float) Asset::where('user_id', $user->id)->sum('value');
 
@@ -180,11 +182,21 @@ class DashboardController extends Controller
             ];
         });
 
-        // Get upcoming bills
+        // Get upcoming bills and append computed properties
         $upcomingBills = Debt::where('user_id', $user->id)
             ->upcoming()
+            ->with('payments')
             ->take(5)
-            ->get();
+            ->get()
+            ->map(function ($debt) {
+                // Must convert to array and append computed properties manually
+                // as Inertia won't serialize the accessors otherwise.
+                return [
+                    ...$debt->toArray(),
+                    'remaining_amount' => $debt->remaining_amount,
+                    'progress_percentage' => $debt->progress_percentage
+                ];
+            });
         
         $categories = Category::userCategories($user->id)->get();
         $userTags = Tag::where('user_id', $user->id)->orderBy('name')->get();

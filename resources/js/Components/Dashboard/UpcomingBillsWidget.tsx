@@ -79,7 +79,7 @@ export default function UpcomingBillsWidget({
                                             isReceivable ? 'text-emerald-600 dark:text-emerald-400' :
                                                 'text-amber-600 dark:text-amber-400'
                                             }`}>
-                                            {formatShortIDR(bill.amount)}
+                                            {formatShortIDR(bill.remaining_amount ?? bill.amount)}
                                         </p>
                                     </div>
                                 </div>
