@@ -8,6 +8,7 @@ use App\Models\Transaction;
 use App\Models\Wallet;
 use App\Enums\TransactionType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class InstallmentController extends Controller
 {
@@ -98,37 +99,39 @@ class InstallmentController extends Controller
 
         $nextTenor = $installment->paid_tenor + 1;
 
-        // Create payment record
-        InstallmentPayment::create([
-            'installment_id' => $installment->id,
-            'tenor_number'   => $nextTenor,
-            'amount'         => $validated['amount'],
-            'paid_at'        => $validated['paid_at'],
-            'wallet_id'      => $validated['wallet_id'],
-            'notes'          => $validated['notes'] ?? null,
-        ]);
+        DB::transaction(function () use ($installment, $validated, $nextTenor, $request) {
+            // Create payment record
+            InstallmentPayment::create([
+                'installment_id' => $installment->id,
+                'tenor_number'   => $nextTenor,
+                'amount'         => $validated['amount'],
+                'paid_at'        => $validated['paid_at'],
+                'wallet_id'      => $validated['wallet_id'],
+                'notes'          => $validated['notes'] ?? null,
+            ]);
 
-        // Update installment progress
-        $installment->paid_tenor = $nextTenor;
-        if ($nextTenor >= $installment->total_tenor) {
-            $installment->is_completed = true;
-        }
-        $installment->save();
+            // Update installment progress
+            $installment->paid_tenor = $nextTenor;
+            if ($nextTenor >= $installment->total_tenor) {
+                $installment->is_completed = true;
+            }
+            $installment->save();
 
-        // Deduct wallet balance
-        $wallet = Wallet::findOrFail($validated['wallet_id']);
-        $wallet->decrement('balance', $validated['amount']);
+            // Deduct wallet balance (with pessimistic lock for safety)
+            $wallet = Wallet::where('id', $validated['wallet_id'])->lockForUpdate()->firstOrFail();
+            $wallet->decrement('balance', $validated['amount']);
 
-        // Create transaction record
-        Transaction::create([
-            'user_id'     => $request->user()->id,
-            'wallet_id'   => $validated['wallet_id'],
-            'category'    => 'Cicilan & Utang',
-            'type'        => TransactionType::EXPENSE->value,
-            'amount'      => $validated['amount'],
-            'description' => "{$installment->name} — Angsuran ke-{$nextTenor}/{$installment->total_tenor}",
-            'date'        => $validated['paid_at'],
-        ]);
+            // Create transaction record
+            Transaction::create([
+                'user_id'     => $request->user()->id,
+                'wallet_id'   => $validated['wallet_id'],
+                'category'    => 'Cicilan & Utang',
+                'type'        => TransactionType::EXPENSE->value,
+                'amount'      => $validated['amount'],
+                'description' => "{$installment->name} — Angsuran ke-{$nextTenor}/{$installment->total_tenor}",
+                'date'        => $validated['paid_at'],
+            ]);
+        });
 
         $message = $installment->is_completed
             ? '🎉 Selamat! Cicilan sudah lunas!'
