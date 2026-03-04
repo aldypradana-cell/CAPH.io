@@ -72,7 +72,7 @@ class SmartEntryController extends Controller
             'transactions.*.date' => 'required|date',
             'transactions.*.tags' => 'nullable|array',
             'transactions.*.tags.*' => 'string|max:50',
-            'wallet_id' => 'required|exists:wallets,id',
+            'wallet_id' => ['required', \Illuminate\Validation\Rule::exists('wallets', 'id')->where('user_id', $request->user()->id)],
         ]);
 
         $userId = $request->user()->id;
