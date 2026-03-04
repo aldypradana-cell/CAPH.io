@@ -75,6 +75,11 @@ class BackupController extends Controller
             return response()->json(['message' => 'Format file backup tidak dikenali. Gunakan file dari CAPH.io.'], 422);
         }
 
+        // Validate Ownership
+        if (isset($data['meta']['exported_by']) && $data['meta']['exported_by'] !== $user->email) {
+            return response()->json(['message' => 'File backup ini milik pengguna lain (' . $data['meta']['exported_by'] . ') dan tidak dapat dipulihkan ke akun Anda.'], 403);
+        }
+
         DB::beginTransaction();
 
         try {
