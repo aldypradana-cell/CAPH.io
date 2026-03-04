@@ -65,26 +65,29 @@ class DebtController extends Controller
             'unpaidCount'     => $summaryRaw->flatten()->count(),
         ];
 
-        // Fetch Recurring Transactions
+        // Fetch Recurring Transactions (Paginated)
         $recurring = \App\Models\RecurringTransaction::where('user_id', $user->id)
             ->with(['wallet'])
             ->orderBy('next_run_date', 'asc')
-            ->get();
+            ->paginate(15, ['*'], 'recurring_page');
 
         // Separate active recurring items that are due (auto_cut = false)
-        $dueRecurring = $recurring->filter(function ($item) {
-            return $item->is_active &&
-            !$item->auto_cut &&
-            $item->next_run_date <= now();
-        })->values();
+        // Note: For 'due' widget we still get all due active items directly
+        $dueRecurring = \App\Models\RecurringTransaction::where('user_id', $user->id)
+            ->with(['wallet'])
+            ->active()
+            ->due()
+            ->where('auto_cut', false)
+            ->get();
 
-        // Fetch Installments
-        $installments = \App\Models\Installment::where('user_id', $user->id)
+        // Fetch Installments (Paginated)
+        $installmentsQuery = \App\Models\Installment::where('user_id', $user->id)
             ->with(['wallet', 'payments'])
             ->orderByRaw('is_completed ASC')
-            ->orderBy('due_day')
-            ->get()
-            ->map(function ($inst) {
+            ->orderBy('due_day');
+            
+        $installments = $installmentsQuery->paginate(15, ['*'], 'installment_page');
+        $installments->getCollection()->transform(function ($inst) {
                 return [
                     ...$inst->toArray(),
                     'remaining_amount'     => $inst->remaining_amount,
@@ -93,11 +96,13 @@ class DebtController extends Controller
                 ];
             });
 
+        // Summary calculations need to use base query, not paginated subset
+        $baseInstallments = \App\Models\Installment::where('user_id', $user->id)->get();
         $installmentSummary = [
-            'totalRemaining'    => $installments->where('is_completed', false)->sum('remaining_amount'),
-            'monthlyDue'        => $installments->where('is_completed', false)->sum('monthly_amount'),
-            'activeCount'       => $installments->where('is_completed', false)->count(),
-            'completedCount'    => $installments->where('is_completed', true)->count(),
+            'totalRemaining'    => $baseInstallments->where('is_completed', false)->sum('remaining_amount'),
+            'monthlyDue'        => $baseInstallments->where('is_completed', false)->sum('monthly_amount'),
+            'activeCount'       => $baseInstallments->where('is_completed', false)->count(),
+            'completedCount'    => $baseInstallments->where('is_completed', true)->count(),
         ];
 
         return Inertia::render('Debts/Index', [

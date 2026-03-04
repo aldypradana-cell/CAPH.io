@@ -71,12 +71,12 @@ interface Summary {
 
 interface Props extends PageProps {
     debts: { data: Debt[] };
-    recurring: RecurringTransaction[];
+    recurring: { data: RecurringTransaction[] };
     dueRecurring: RecurringTransaction[];
     wallets: Wallet[];
     categories: Category[];
     summary: Summary;
-    installments: any[];
+    installments: { data: any[] };
     installmentSummary: any;
     filters: any;
 }
@@ -388,9 +388,9 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                             </button>
                         </div>
 
-                        {recurring.length > 0 ? (
+                        {recurring.data.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {recurring.map((item) => (
+                                {recurring.data.map((item) => (
                                     <div key={item.id} className="glass-card p-5 rounded-[2rem] hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
                                         <div className={`absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 rounded-full opacity-10 ${item.type === 'EXPENSE' ? 'bg-red-500' : 'bg-emerald-500'}`}></div>
 

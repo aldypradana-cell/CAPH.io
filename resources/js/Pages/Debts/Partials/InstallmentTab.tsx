@@ -57,7 +57,7 @@ interface InstallmentSummary {
 }
 
 interface Props {
-    installments: InstallmentItem[];
+    installments: { data: InstallmentItem[] };
     wallets: WalletItem[];
     summary: InstallmentSummary;
 }
@@ -191,8 +191,8 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
         });
     };
 
-    const active = installments.filter(i => !i.is_completed);
-    const completed = installments.filter(i => i.is_completed);
+    const active = installments.data.filter(i => !i.is_completed);
+    const completed = installments.data.filter(i => i.is_completed);
 
     return (
         <div className="animate-fade-in-up space-y-6">
