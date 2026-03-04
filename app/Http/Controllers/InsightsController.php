@@ -8,8 +8,11 @@ use App\Models\Debt;
 use App\Models\RecurringTransaction;
 use App\Models\Transaction;
 use App\Models\FinancialInsight;
+use App\Models\Category;
+use App\Models\Installment;
 use App\Models\Wallet;
 use App\Services\GeminiService;
+use App\Services\BudgetTemplate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Inertia\Inertia;
@@ -50,23 +53,75 @@ class InsightsController extends Controller
         $startDate = $request->input('startDate') ? Carbon::parse($request->input('startDate')) : Carbon::now()->startOfMonth();
         $endDate = $request->input('endDate') ? Carbon::parse($request->input('endDate')) : Carbon::now()->endOfMonth();
 
-        // 1. Transaction Detail for Selected Period
-        $selectedPeriodTx = Transaction::forUser($user->id)
-            ->inDateRange($startDate->format('Y-m-d'), $endDate->format('Y-m-d'))
-            ->orderBy('date')
-            ->get();
+        // 1. Smart Transaction Analysis for Selected Period
+        $dateFrom = $startDate->format('Y-m-d');
+        $dateTo   = $endDate->format('Y-m-d');
 
-        if ($selectedPeriodTx->isEmpty()) {
+        // Quick check: are there any transactions at all?
+        $txCount = Transaction::forUser($user->id)->inDateRange($dateFrom, $dateTo)->count();
+
+        if ($txCount === 0) {
             return response()->json([
                 'success' => false,
                 'message' => 'Tidak ada transaksi dalam periode ini untuk dianalisis.',
             ], 422);
         }
 
-        // Format detail
-        $periodDetail = $selectedPeriodTx->map(function ($t) {
-            return "{$t->date->format('Y-m-d')}: {$t->type} - {$t->category} - Rp" . number_format($t->amount, 0, ',', '.') . " ({$t->description})";
+        // 1a. Aggregated spending patterns (category + description grouping)
+        //     AI can see: "Kopi Starbucks: 15x, total Rp225.000" → spot habits
+        $spendingPatterns = Transaction::forUser($user->id)
+            ->inDateRange($dateFrom, $dateTo)
+            ->where('type', 'EXPENSE')
+            ->selectRaw('category, description, COUNT(*) as freq, SUM(amount) as total')
+            ->groupBy('category', 'description')
+            ->orderBy('category')
+            ->orderByDesc('total')
+            ->get();
+
+        $spendingText = $spendingPatterns->groupBy('category')->map(function ($items, $category) {
+            $lines = $items->map(function ($item) {
+                return "  - {$item->description}: {$item->freq}x, total Rp" . number_format($item->total, 0, ',', '.');
+            })->join("\n");
+            $catTotal = $items->sum('total');
+            return "{$category} (Total: Rp" . number_format($catTotal, 0, ',', '.') . "):\n{$lines}";
         })->join("\n");
+
+        // 1b. Aggregated income patterns
+        $incomePatterns = Transaction::forUser($user->id)
+            ->inDateRange($dateFrom, $dateTo)
+            ->where('type', 'INCOME')
+            ->selectRaw('category, description, COUNT(*) as freq, SUM(amount) as total')
+            ->groupBy('category', 'description')
+            ->orderByDesc('total')
+            ->get();
+
+        $incomeText = $incomePatterns->isEmpty()
+            ? "Tidak ada pemasukan di periode ini."
+            : $incomePatterns->map(function ($item) {
+                return "- {$item->category} / {$item->description}: {$item->freq}x, total Rp" . number_format($item->total, 0, ',', '.');
+            })->join("\n");
+
+        // 1c. Top 100 largest individual expense transactions (for specific commentary)
+        $topExpenses = Transaction::forUser($user->id)
+            ->with('tags')
+            ->inDateRange($dateFrom, $dateTo)
+            ->where('type', 'EXPENSE')
+            ->orderByDesc('amount')
+            ->limit(100)
+            ->get();
+
+        $topExpensesText = $topExpenses->map(function ($t) {
+            $tagString = $t->tags->isNotEmpty() ? ' [Tags: ' . $t->tags->pluck('name')->join(', ') . ']' : '';
+            return "{$t->date->format('Y-m-d')}: {$t->category} - Rp" . number_format($t->amount, 0, ',', '.') . " ({$t->description}){$tagString}";
+        })->join("\n");
+
+        // Combine into $periodDetail (same key used by contextData)
+        $periodDetail = "=== POLA PENGELUARAN (per kategori & deskripsi) ===\n"
+            . ($spendingText ?: "Tidak ada pengeluaran.") . "\n\n"
+            . "=== PEMASUKAN ===\n"
+            . $incomeText . "\n\n"
+            . "=== TOP " . $topExpenses->count() . " PENGELUARAN TERBESAR ===\n"
+            . ($topExpensesText ?: "Tidak ada pengeluaran.");
 
         // 2. Benchmarking (Up to 6 Months History, excluding selected period if possible)
         $benchmarkStart = $startDate->copy()->subMonths(6);
@@ -149,7 +204,7 @@ class InsightsController extends Controller
         $walletText .= "\nTotal Saldo: Rp" . number_format($totalWalletBalance, 0, ',', '.');
 
         // ─────────────────────────────────────────────
-        // 6. NEW: Active Debts & Receivables
+        // 6. NEW: Active Debts, Receivables & Installments
         // ─────────────────────────────────────────────
         $debts = Debt::where('user_id', $user->id)->where('is_paid', false)->orderBy('due_date')->get();
         $totalDebt = $debts->where('type', 'DEBT')->sum('amount');
@@ -160,7 +215,22 @@ class InsightsController extends Controller
                 $due = $d->due_date ? $d->due_date->format('Y-m-d') : 'tanpa jatuh tempo';
                 return "- [{$d->type}] {$d->person}: Rp" . number_format($d->amount, 0, ',', '.') . " (jatuh tempo: {$due}) - {$d->description}";
             })->join("\n");
-        $debtText .= "\nTotal Hutang: Rp" . number_format($totalDebt, 0, ',', '.') . ", Total Piutang: Rp" . number_format($totalReceivable, 0, ',', '.');
+            
+        // Add Installments
+        $installments = Installment::where('user_id', $user->id)
+            ->whereColumn('paid_tenor', '<', 'total_tenor')
+            ->get();
+            
+        if ($installments->isNotEmpty()) {
+            $debtText .= "\n\nDaftar Cicilan Aktif:\n";
+            $debtText .= $installments->map(function($i) {
+                $sisa = $i->total_tenor - $i->paid_tenor;
+                return "- Cicilan {$i->name}: Sisa {$sisa} bulan x Rp" . number_format($i->monthly_amount, 0, ',', '.') . "/bln";
+            })->join("\n");
+            $totalDebt += $installments->sum(fn($i) => ($i->total_tenor - $i->paid_tenor) * $i->monthly_amount);
+        }
+
+        $debtText .= "\n\nTotal Hutang+Cicilan: Rp" . number_format($totalDebt, 0, ',', '.') . ", Total Piutang: Rp" . number_format($totalReceivable, 0, ',', '.');
 
         // ─────────────────────────────────────────────
         // 7. NEW: Active Recurring Transactions (monthly commitment)
@@ -191,11 +261,35 @@ class InsightsController extends Controller
                 ->groupBy('category')
                 ->pluck('total', 'category');
 
-            $budgetLines = $budgets->map(function ($b) use ($budgetExpenses) {
-                $spent = (float) ($budgetExpenses[$b->category] ?? 0);
-                $pct = $b->limit > 0 ? round(($spent / $b->limit) * 100, 1) : 0;
+            // Need budget_rule mapping to correctly aggregate master budgets
+            $ruleCategoryNames = [];
+            $allUserCategories = Category::userCategories($user->id)
+                ->whereNotNull('budget_rule')
+                ->get();
+            foreach ($allUserCategories as $cat) {
+                $ruleCategoryNames[$cat->budget_rule][] = $cat->name;
+            }
+
+            $budgetLines = $budgets->map(function ($budget) use ($budgetExpenses, $ruleCategoryNames) {
+                $spent = 0;
+                
+                if ($budget->is_master) {
+                    $rules = BudgetTemplate::SLOT_TO_RULES[$budget->category] ?? [$budget->category];
+                    $mappedCategories = collect($rules)
+                        ->flatMap(fn($rule) => $ruleCategoryNames[$rule] ?? [])
+                        ->toArray();
+                        
+                    foreach ($mappedCategories as $catName) {
+                        $spent += (float) ($budgetExpenses[$catName] ?? 0);
+                    }
+                } else {
+                    $spent = (float) ($budgetExpenses[$budget->category] ?? 0);
+                }
+                
+                $pct = $budget->limit > 0 ? round(($spent / $budget->limit) * 100, 1) : 0;
                 $status = $pct >= 100 ? 'OVER BUDGET' : ($pct >= 80 ? 'HAMPIR HABIS' : 'AMAN');
-                return "- {$b->category}: Budget Rp" . number_format($b->limit, 0, ',', '.') . ", Realisasi Rp" . number_format($spent, 0, ',', '.') . " ({$pct}%) - {$status}";
+                $type = $budget->is_master ? '[MASTER]' : '[KATEGORI]';
+                return "- {$type} {$budget->category}: Budget Rp" . number_format($budget->limit, 0, ',', '.') . ", Realisasi Rp" . number_format($spent, 0, ',', '.') . " ({$pct}%) - {$status}";
             });
             $budgetText = $budgetLines->join("\n");
         }
