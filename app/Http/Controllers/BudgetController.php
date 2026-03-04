@@ -178,7 +178,7 @@ class BudgetController extends Controller
         $validated = $request->validate([
             'category' => 'required|string|max:255',
             'limit' => 'required|numeric|min:0',
-            'period' => 'required|string',
+            'period' => 'required|in:WEEKLY,MONTHLY,YEARLY',
             'frequency' => 'required|in:WEEKLY,MONTHLY,YEARLY',
         ]);
 
@@ -219,7 +219,7 @@ class BudgetController extends Controller
         $validated = $request->validate([
             'category' => 'required|string|max:255',
             'limit' => 'required|numeric|min:0',
-            'period' => 'required|string',
+            'period' => 'required|in:WEEKLY,MONTHLY,YEARLY',
             'frequency' => 'required|in:WEEKLY,MONTHLY,YEARLY',
         ]);
 
