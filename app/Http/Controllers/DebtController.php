@@ -49,13 +49,19 @@ class DebtController extends Controller
             ]);
         });
 
-        $allDebts = Debt::where('user_id', $user->id)->with('payments')->get();
+        // Summary: Use SQL aggregation instead of loading all debts + payments into PHP memory
+        $summaryRaw = Debt::where('user_id', $user->id)
+            ->where('is_paid', false)
+            ->withSum('payments', 'amount')
+            ->get()
+            ->groupBy('type');
+
         $summary = [
-            'totalDebt'       => $allDebts->where('type', 'DEBT')->where('is_paid', false)->sum('remaining_amount'),
-            'totalReceivable' => $allDebts->where('type', 'RECEIVABLE')->where('is_paid', false)->sum('remaining_amount'),
-            'totalBill'       => $allDebts->where('type', 'BILL')->where('is_paid', false)->sum('remaining_amount'),
-            'paidCount'       => $allDebts->where('is_paid', true)->count(),
-            'unpaidCount'     => $allDebts->where('is_paid', false)->count(),
+            'totalDebt'       => $summaryRaw->get('DEBT', collect())->sum(fn($d) => max(0, (float) $d->amount - (float) ($d->payments_sum_amount ?? 0))),
+            'totalReceivable' => $summaryRaw->get('RECEIVABLE', collect())->sum(fn($d) => max(0, (float) $d->amount - (float) ($d->payments_sum_amount ?? 0))),
+            'totalBill'       => $summaryRaw->get('BILL', collect())->sum(fn($d) => max(0, (float) $d->amount - (float) ($d->payments_sum_amount ?? 0))),
+            'paidCount'       => Debt::where('user_id', $user->id)->where('is_paid', true)->count(),
+            'unpaidCount'     => $summaryRaw->flatten()->count(),
         ];
 
         // Fetch Recurring Transactions
