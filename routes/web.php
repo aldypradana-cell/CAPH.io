@@ -39,7 +39,7 @@ Route::middleware(['auth'])->group(function () {
     // Smart Entry (AI)
     Route::get('/smart-entry', [SmartEntryController::class, 'index'])->name('smart-entry.index');
     Route::post('/smart-entry/parse', [SmartEntryController::class, 'parse'])
-        ->middleware('throttle:ai-global')
+        ->middleware('throttle:ai-smart-entry-global')
         ->name('smart-entry.parse');
     Route::post('/smart-entry/confirm', [SmartEntryController::class, 'confirm'])->name('smart-entry.confirm');
 
@@ -87,7 +87,7 @@ Route::middleware(['auth'])->group(function () {
         // Financial Insights (AI)
         Route::get('/insights', [InsightsController::class, 'index'])->name('insights.index');
         Route::post('/insights/generate', [InsightsController::class, 'generate'])
-            ->middleware('throttle:ai-global')
+            ->middleware('throttle:ai-insight-global')
             ->name('insights.generate');
         Route::post('/insights/profile', [InsightsController::class, 'updateProfile'])->name('insights.profile');
 

@@ -26,15 +26,14 @@ class AppServiceProvider extends ServiceProvider
     {
         Vite::prefetch(concurrency: 3);
 
-        // Global AI Rate Limiter (safety net for all users combined)
-        // To change limits, update AI_GLOBAL_RPM and AI_GLOBAL_RPD in .env
-        RateLimiter::for('ai-global', function (Request $request) {
+        // Global Smart Entry Rate Limiter
+        RateLimiter::for('ai-smart-entry-global', function (Request $request) {
             if ($request->user() && $request->user()->role === 'ADMIN') {
                 return \Illuminate\Cache\RateLimiting\Limit::none();
             }
 
             return [
-                Limit::perMinute((int) env('AI_GLOBAL_RPM', 5))->response(function (Request $request) {
+                Limit::perMinute((int) env('AI_SMART_ENTRY_RPM', 5))->response(function (Request $request) {
                     $message = 'Server sedang sibuk. Silakan coba lagi dalam 1 menit.';
                     $response = response()->json(['message' => $message], 429);
                     if ($request->hasHeader('X-Inertia')) {
@@ -42,7 +41,33 @@ class AppServiceProvider extends ServiceProvider
                     }
                     return $response;
                 }),
-                Limit::perDay((int) env('AI_GLOBAL_RPD', 20))->response(function (Request $request) {
+                Limit::perDay((int) env('AI_SMART_ENTRY_RPD', 20))->response(function (Request $request) {
+                    $message = 'Batas penggunaan AI harian telah tercapai. Coba lagi besok.';
+                    $response = response()->json(['message' => $message], 429);
+                    if ($request->hasHeader('X-Inertia')) {
+                        $response->header('X-Inertia', 'true');
+                    }
+                    return $response;
+                }),
+            ];
+        });
+
+        // Global AI Insight Rate Limiter
+        RateLimiter::for('ai-insight-global', function (Request $request) {
+            if ($request->user() && $request->user()->role === 'ADMIN') {
+                return \Illuminate\Cache\RateLimiting\Limit::none();
+            }
+
+            return [
+                Limit::perMinute((int) env('AI_INSIGHT_RPM', 2))->response(function (Request $request) {
+                    $message = 'Server sedang sibuk. Silakan coba lagi dalam 1 menit.';
+                    $response = response()->json(['message' => $message], 429);
+                    if ($request->hasHeader('X-Inertia')) {
+                        $response->header('X-Inertia', 'true');
+                    }
+                    return $response;
+                }),
+                Limit::perDay((int) env('AI_INSIGHT_RPD', 10))->response(function (Request $request) {
                     $message = 'Batas penggunaan AI harian telah tercapai. Coba lagi besok.';
                     $response = response()->json(['message' => $message], 429);
                     if ($request->hasHeader('X-Inertia')) {
