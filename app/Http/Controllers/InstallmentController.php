@@ -29,7 +29,7 @@ class InstallmentController extends Controller
             'due_day'        => 'required|integer|min:1|max:31',
             'start_date'     => 'required|date',
             'lender'         => 'required|string|max:255',
-            'wallet_id'      => 'nullable|exists:wallets,id',
+            'wallet_id'      => ['nullable', Rule::exists('wallets', 'id')->where('user_id', $request->user()->id)],
             'notes'          => 'nullable|string|max:1000',
             'auto_debit'     => 'boolean',
         ]);
@@ -62,7 +62,7 @@ class InstallmentController extends Controller
             'due_day'        => 'required|integer|min:1|max:31',
             'start_date'     => 'required|date',
             'lender'         => 'required|string|max:255',
-            'wallet_id'      => 'nullable|exists:wallets,id',
+            'wallet_id'      => ['nullable', Rule::exists('wallets', 'id')->where('user_id', $request->user()->id)],
             'notes'          => 'nullable|string|max:1000',
             'auto_debit'     => 'boolean',
         ]);
@@ -94,7 +94,7 @@ class InstallmentController extends Controller
 
         $validated = $request->validate([
             'amount'    => 'required|numeric|min:0',
-            'wallet_id' => 'required|exists:wallets,id',
+            'wallet_id' => ['required', Rule::exists('wallets', 'id')->where('user_id', $request->user()->id)],
             'paid_at'   => 'required|date',
             'notes'     => 'nullable|string|max:500',
         ]);
