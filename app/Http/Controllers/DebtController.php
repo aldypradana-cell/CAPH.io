@@ -9,6 +9,7 @@ use App\Models\Transaction;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class DebtController extends Controller
@@ -165,7 +166,7 @@ class DebtController extends Controller
         if ($request->user()->cannot('update', $debt)) abort(403);
 
         $validated = $request->validate([
-            'wallet_id' => 'required|exists:wallets,id',
+            'wallet_id' => ['required', Rule::exists('wallets', 'id')->where('user_id', $request->user()->id)],
             'amount'    => 'required|numeric|min:1',
             'date'      => 'required|date',
             'notes'     => 'nullable|string|max:255',
