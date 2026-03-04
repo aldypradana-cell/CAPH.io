@@ -36,7 +36,7 @@ class SmartEntryController extends Controller
     public function parse(Request $request)
     {
         $validated = $request->validate([
-            'input' => 'required|string|min:5',
+            'input' => 'required|string|min:5|max:1000',
         ]);
 
         try {
@@ -64,7 +64,7 @@ class SmartEntryController extends Controller
     public function confirm(Request $request)
     {
         $validated = $request->validate([
-            'transactions' => 'required|array|min:1',
+            'transactions' => 'required|array|min:1|max:20',
             'transactions.*.description' => 'required|string',
             'transactions.*.amount' => 'required|numeric|min:1',
             'transactions.*.type' => 'required|in:INCOME,EXPENSE',
