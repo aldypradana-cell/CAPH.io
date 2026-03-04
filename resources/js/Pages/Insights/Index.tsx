@@ -278,7 +278,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                     {isQuotaExceeded ? (
                                         <>🔴 Kuota Habis<span className="font-medium text-[8px] opacity-80">Reset: {new Date(aiQuota.resetsAt).toLocaleDateString('id-ID', { weekday: 'long' })}</span></>
                                     ) : (
-                                        <>{aiQuota.used}/{aiQuota.limit} minggu ini</>
+                                        <>{aiQuota.limit === 999999 ? '👑 Admin: Tanpa Batas' : `${aiQuota.used}/${aiQuota.limit} minggu ini`}</>
                                     )}
                                 </span>
                             )}

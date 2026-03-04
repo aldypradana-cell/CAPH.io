@@ -52,7 +52,7 @@ class InsightsController extends Controller
             'latestInsight'    => FinancialInsight::where('user_id', $user->id)->latest()->first(),
             'aiQuota'          => [
                 'used'     => $usedThisWeek,
-                'limit'    => $user->insight_limit,
+                'limit'    => $user->role === 'ADMIN' ? 999999 : $user->insight_limit,
                 'resetsAt' => $nextMonday->toIso8601String(),
             ],
         ]);
@@ -74,7 +74,7 @@ class InsightsController extends Controller
 
         $nextMonday = Carbon::now()->next(Carbon::MONDAY)->startOfDay();
 
-        if ($usedThisWeek >= $user->insight_limit) {
+        if ($user->role !== 'ADMIN' && $usedThisWeek >= $user->insight_limit) {
             $response = response()->json([
                 'success'  => false,
                 'quota'    => true,
@@ -382,7 +382,7 @@ class InsightsController extends Controller
                 'saved_at' => $storedInsight->created_at,
                 'quota'    => [
                     'used'     => $usedThisWeek + 1,
-                    'limit'    => $user->insight_limit,
+                    'limit'    => $user->role === 'ADMIN' ? 999999 : $user->insight_limit,
                     'resetsAt' => $nextMonday->toIso8601String(),
                 ],
             ]);

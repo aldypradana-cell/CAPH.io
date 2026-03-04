@@ -40,7 +40,7 @@ class SmartEntryController extends Controller
             'categories' => $categories,
             'aiQuota'    => [
                 'used'     => $usedToday,
-                'limit'    => $user->smart_entry_limit,
+                'limit'    => $user->role === 'ADMIN' ? 999999 : $user->smart_entry_limit,
                 'resetsAt' => Carbon::tomorrow()->startOfDay()->toIso8601String(),
             ],
         ]);
@@ -56,7 +56,7 @@ class SmartEntryController extends Controller
             ->where('used_at', '>=', Carbon::today())
             ->count();
 
-        if ($usedToday >= $user->smart_entry_limit) {
+        if ($user->role !== 'ADMIN' && $usedToday >= $user->smart_entry_limit) {
             $response = response()->json([
                 'success'  => false,
                 'quota'    => true,
@@ -97,7 +97,7 @@ class SmartEntryController extends Controller
                 'transactions' => $parsedTransactions,
                 'quota'        => [
                     'used'     => $usedToday + 1,
-                    'limit'    => $user->smart_entry_limit,
+                    'limit'    => $user->role === 'ADMIN' ? 999999 : $user->smart_entry_limit,
                     'resetsAt' => Carbon::tomorrow()->startOfDay()->toIso8601String(),
                 ],
             ]);

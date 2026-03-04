@@ -186,7 +186,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
                                     {isQuotaExceeded ? (
                                         <>🔴 Kuota Habis · Reset besok pukul 00:00</>
                                     ) : (
-                                        <>{aiQuota.used}/{aiQuota.limit} dipakai hari ini</>
+                                        <>{aiQuota.limit === 999999 ? '👑 Admin: Tanpa Batas' : `${aiQuota.used}/${aiQuota.limit} dipakai hari ini`}</>
                                     )}
                                 </span>
                             )}

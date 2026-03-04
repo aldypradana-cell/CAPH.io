@@ -28,8 +28,11 @@ class AppServiceProvider extends ServiceProvider
 
         // Global AI Rate Limiter (safety net for all users combined)
         // To change limits, update AI_GLOBAL_RPM and AI_GLOBAL_RPD in .env
-        // then run: php artisan optimize:clear
         RateLimiter::for('ai-global', function (Request $request) {
+            if ($request->user() && $request->user()->role === 'ADMIN') {
+                return \Illuminate\Cache\RateLimiting\Limit::none();
+            }
+
             return [
                 Limit::perMinute((int) env('AI_GLOBAL_RPM', 5))->response(function (Request $request) {
                     $message = 'Server sedang sibuk. Silakan coba lagi dalam 1 menit.';
