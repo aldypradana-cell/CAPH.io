@@ -105,6 +105,84 @@ class DebtController extends Controller
             'completedCount'    => $baseInstallments->where('is_completed', true)->count(),
         ];
 
+        // --- Debt Freedom Projection Logic ---
+        $currentDate = now()->startOfMonth();
+        $simDate = clone $currentDate;
+        
+        $simInstallments = $baseInstallments->where('is_completed', false)->map(function($i) {
+            return (object) [
+                'monthly' => (float)$i->monthly_amount,
+                'total' => (float)$i->remaining_amount,
+                'paid_total' => 0
+            ];
+        })->values();
+
+        $simDebts = \App\Models\Debt::where('user_id', $user->id)
+            ->whereIn('type', [\App\Enums\DebtType::DEBT->value, \App\Enums\DebtType::BILL->value])
+            ->where('is_paid', false)
+            ->withSum('payments', 'amount')
+            ->get()
+            ->map(function($d) use ($currentDate) {
+                $rem = max(0, (float)$d->amount - (float)($d->payments_sum_amount ?? 0));
+                // Default to 1 month from now if no due date
+                $dueCarbon = $d->due_date ? \Carbon\Carbon::parse($d->due_date) : clone $currentDate->addMonth();
+                return (object) [
+                    'remaining' => $rem,
+                    'due' => $dueCarbon->format('Y-m')
+                ];
+            });
+
+        $simTotal = $simInstallments->sum('total') + $simDebts->sum('remaining');
+        
+        $monthsIndo = ['Jan' => 'Jan', 'Feb' => 'Feb', 'Mar' => 'Mar', 'Apr' => 'Apr', 'May' => 'Mei', 'Jun' => 'Jun', 'Jul' => 'Jul', 'Aug' => 'Agt', 'Sep' => 'Sep', 'Oct' => 'Okt', 'Nov' => 'Nov', 'Dec' => 'Des'];
+
+        $debtProjection = [];
+        $debtProjection[] = [
+            'month' => $monthsIndo[$simDate->format('M')] . ' ' . $simDate->format('Y'),
+            'remaining' => $simTotal
+        ];
+
+        $monthsLimit = 600; // 50 years max
+        $monthsPassed = 0;
+
+        while ($monthsPassed < $monthsLimit) {
+            $simDate->addMonth();
+            $monthsPassed++;
+            $monthStr = $simDate->format('Y-m');
+            $deduction = 0;
+
+            foreach ($simInstallments as $inst) {
+                if ($inst->paid_total < $inst->total) {
+                    $monthlyPay = min($inst->monthly, $inst->total - $inst->paid_total);
+                    $deduction += $monthlyPay;
+                    $inst->paid_total += $monthlyPay;
+                }
+            }
+            foreach ($simDebts as $debt) {
+                if ($debt->due === $monthStr && $debt->remaining > 0) {
+                    $deduction += $debt->remaining;
+                    $debt->remaining = 0;
+                }
+            }
+
+            $simTotal -= $deduction;
+            if ($simTotal < 0) $simTotal = 0;
+
+            $debtProjection[] = [
+                'month' => $monthsIndo[$simDate->format('M')] . ' ' . $simDate->format('Y'),
+                'remaining' => $simTotal
+            ];
+
+            if ($simTotal <= 0) break;
+        }
+        // If they have no debt to begin with, ensure it shows 0 beautifully
+        if (count($debtProjection) === 1 && $debtProjection[0]['remaining'] == 0) {
+            $debtProjection[] = [
+                'month' => $monthsIndo[$simDate->copy()->addMonth()->format('M')] . ' ' . $simDate->copy()->addMonth()->format('Y'),
+                'remaining' => 0
+            ];
+        }
+
         return Inertia::render('Debts/Index', [
             'debts' => $debts,
             'recurring' => $recurring,
@@ -114,6 +192,7 @@ class DebtController extends Controller
             'summary' => $summary,
             'installments' => $installments,
             'installmentSummary' => $installmentSummary,
+            'debtProjection' => $debtProjection,
             'filters' => $request->only(['type', 'status']),
         ]);
     }

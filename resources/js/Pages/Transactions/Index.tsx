@@ -43,8 +43,103 @@ interface Category {
 const formatIDR = (amount: number) =>
     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
 
+function TransactionHeatmap({ data, month, onDateSelect }: { data: Record<string, { expense: number; income: number }>; month: string; onDateSelect: (date: string) => void }) {
+    if (!month) return null;
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    const [yearStr, monthStr] = month.split('-');
+    const yearNum = parseInt(yearStr);
+    const monthNum = parseInt(monthStr) - 1;
+
+    const daysInMonth = new Date(yearNum, monthNum + 1, 0).getDate();
+    const firstDay = new Date(yearNum, monthNum, 1).getDay();
+    const startDay = firstDay === 0 ? 6 : firstDay - 1;
+
+    const expenseDays = Object.values(data).filter(d => d.expense > 0);
+    const avgExpense = expenseDays.length > 0 ? expenseDays.reduce((acc, curr) => acc + curr.expense, 0) / expenseDays.length : 0;
+
+    const getHeatmapColor = (expense: number, income: number) => {
+        if (expense === 0 && income === 0) return 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400';
+        if (expense === 0 && income > 0) return 'bg-emerald-500 hover:bg-emerald-400 text-white';
+        if (avgExpense === 0) return 'bg-amber-100 dark:bg-amber-900/30 text-amber-600';
+        
+        const ratio = expense / avgExpense;
+        if (ratio < 0.3) return 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-500 hover:bg-indigo-200';
+        if (ratio <= 1.0) return 'bg-amber-200 dark:bg-amber-900/50 text-amber-700 hover:bg-amber-300';
+        return 'bg-red-500 hover:bg-red-400 text-white';
+    };
+
+    const calendarDays = [];
+    const dayNames = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+
+    for (let i = 0; i < startDay; i++) {
+        calendarDays.push(<div key={`empty-${i}`} className="aspect-square opacity-0"></div>);
+    }
+
+    for (let i = 1; i <= daysInMonth; i++) {
+        const dateStr = `${yearStr}-${monthStr}-${i.toString().padStart(2, '0')}`;
+        const dayData = data[dateStr] || { expense: 0, income: 0 };
+        const colorClass = getHeatmapColor(dayData.expense, dayData.income);
+        
+        calendarDays.push(
+            <div key={`cal-${dateStr}`} className="group relative">
+                <button 
+                    onClick={() => { onDateSelect(dateStr); setIsExpanded(false); }}
+                    className={`w-full aspect-square rounded sm:rounded-md flex items-center justify-center text-[10px] font-bold transition-all hover:scale-110 active:scale-95 ${colorClass} ${
+                        new Date().toISOString().split('T')[0] === dateStr ? 'ring-2 ring-offset-1 ring-indigo-500 dark:ring-offset-slate-900' : ''
+                    }`}
+                >
+                    {i}
+                </button>
+                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 w-max max-w-[150px] p-2 bg-slate-900 dark:bg-slate-800 text-white text-[10px] rounded-lg shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
+                    <p className="font-bold mb-1 border-b border-slate-700 pb-1">{i} {new Date(yearNum, monthNum).toLocaleString('id-ID', { month: 'short', year: 'numeric' })}</p>
+                    {dayData.expense > 0 && <p className="text-red-400 flex justify-between gap-2"><span>Keluar:</span> <span>{formatIDR(dayData.expense)}</span></p>}
+                    {dayData.income > 0 && <p className="text-emerald-400 flex justify-between gap-2"><span>Masuk:</span> <span>{formatIDR(dayData.income)}</span></p>}
+                    {dayData.expense === 0 && dayData.income === 0 && <p className="text-slate-400">Tak ada data</p>}
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="relative inline-block z-30 mb-4 lg:mb-0 lg:ml-auto w-auto mt-4 lg:mt-0">
+            <button 
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all shadow-sm"
+            >
+                <Calendar className="w-3.5 h-3.5" />
+                Aktivitas
+            </button>
+
+            {isExpanded && (
+                <>
+                    <div className="fixed inset-0 z-40 lg:hidden" onClick={() => setIsExpanded(false)}></div>
+                    <div className="absolute top-full mt-2 w-64 p-3 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 z-50 animate-pop-in right-0 origin-top-right">
+                        <div className="flex justify-between items-center mb-2">
+                            <h4 className="text-xs font-bold text-slate-800 dark:text-white">{new Date(yearNum, monthNum).toLocaleString('id-ID', { month: 'short', year: 'numeric' })}</h4>
+                        </div>
+                        
+                        <div className="grid grid-cols-7 gap-0.5">
+                            {dayNames.map(name => (
+                                <div key={name} className="text-center text-[9px] font-bold text-slate-400 uppercase pb-1 mb-1 border-b border-slate-100 dark:border-slate-800">{name}</div>
+                            ))}
+                            {calendarDays}
+                        </div>
+
+                        <div className="flex justify-between items-center mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 text-[9px] font-bold text-slate-500">
+                            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm bg-indigo-100 dark:bg-indigo-900/40"></div> Baik</div>
+                            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm bg-amber-200 dark:bg-amber-900/50"></div> Sedang</div>
+                            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm bg-red-500"></div> Boros</div>
+                        </div>
+                    </div>
+                </>
+            )}
+        </div>
+    );
+}
+
 export default function TransactionsIndex({
-    auth, transactions, wallets, categories, filters, userTags
+    auth, transactions, wallets, categories, filters, userTags, heatmapData, heatmapMonth
 }: PageProps<{
     transactions: {
         data: Transaction[];
@@ -59,6 +154,8 @@ export default function TransactionsIndex({
     categories: Category[];
     filters: any;
     userTags: TagData[];
+    heatmapData: Record<string, { expense: number; income: number }>;
+    heatmapMonth: string;
 }>) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
@@ -313,6 +410,22 @@ export default function TransactionsIndex({
                         <button onClick={handleExportCSV} className="p-3 glass-card rounded-2xl text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md transition-all active:scale-95" title="Export CSV">
                             <Download className="w-4 h-4" />
                         </button>
+
+                        {/* Heatmap Calendar Popover */}
+                        <TransactionHeatmap 
+                            data={heatmapData} 
+                            month={heatmapMonth} 
+                            onDateSelect={(date) => {
+                                setStartDate(date);
+                                setEndDate(date);
+                                // Trigger filter immediately
+                                router.get(route('transactions.index'), {
+                                    ...filters,
+                                    start_date: date,
+                                    end_date: date,
+                                }, { preserveState: true });
+                            }} 
+                        />
 
                         {/* Add Button */}
                         <button

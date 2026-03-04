@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import InstallmentTab from './Partials/InstallmentTab';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 // --- Types ---
 interface RecurringTransaction {
@@ -78,7 +79,76 @@ interface Props extends PageProps {
     summary: Summary;
     installments: { data: any[] };
     installmentSummary: any;
+    debtProjection: { month: string; remaining: number }[];
     filters: any;
+}
+
+// --- Components ---
+function DebtFreedomCountdown({ data }: { data: { month: string; remaining: number }[] }) {
+    if (!data || data.length === 0) return null;
+
+    const isFree = data[data.length - 1].remaining === 0;
+    const freedomDate = isFree ? data[data.length - 1].month : 'Belum Terprediksi';
+
+    return (
+        <div className="glass-card rounded-3xl p-4 sm:p-5 overflow-hidden relative group animate-fade-in-up h-full flex flex-col justify-between shadow-sm">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl -mr-8 -mt-8"></div>
+            
+            <div className="relative z-10 flex flex-col sm:flex-row sm:items-end justify-between mb-3 gap-3">
+                <div>
+                    <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 mb-0.5">
+                        <TrendingDown className="w-4 h-4 text-indigo-500" />
+                        Proyeksi Bebas Hutang
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                        Berdasarkan kecepatan pembayaran saat ini
+                    </p>
+                </div>
+                {isFree && (
+                    <div className="bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1.5 rounded-xl border border-emerald-100 dark:border-emerald-800 shrink-0">
+                        <p className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-0.5">Bebas Finansial Pada</p>
+                        <p className="text-sm font-black text-emerald-700 dark:text-emerald-300">{freedomDate}</p>
+                    </div>
+                )}
+            </div>
+
+            <div className="h-[120px] w-full mt-auto">
+                <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={data} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
+                        <defs>
+                            <linearGradient id="colorRemaining" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.4}/>
+                                <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                            </linearGradient>
+                        </defs>
+                        <XAxis 
+                            dataKey="month" 
+                            axisLine={false} 
+                            tickLine={false} 
+                            tick={{ fontSize: 10, fill: '#94a3b8' }}
+                            dy={10}
+                            minTickGap={20}
+                        />
+                        <YAxis hide domain={[0, 'auto']} />
+                        <Tooltip 
+                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', backgroundColor: 'rgba(255, 255, 255, 0.95)' }}
+                            formatter={(value: any) => [new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(Number(value)), 'Sisa Tagihan']}
+                            labelStyle={{ color: '#64748b', fontWeight: 'bold', marginBottom: '4px' }}
+                        />
+                        <Area 
+                            type="monotone" 
+                            dataKey="remaining" 
+                            stroke="#8b5cf6" 
+                            strokeWidth={3}
+                            fillOpacity={1} 
+                            fill="url(#colorRemaining)" 
+                            animationDuration={1500}
+                        />
+                    </AreaChart>
+                </ResponsiveContainer>
+            </div>
+        </div>
+    );
 }
 
 // --- Helpers ---
@@ -89,7 +159,7 @@ const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
 };
 
-export default function DebtsIndex({ auth, debts, recurring, dueRecurring, wallets, categories, summary, installments, installmentSummary, filters }: Props) {
+export default function DebtsIndex({ auth, debts, recurring, dueRecurring, wallets, categories, summary, installments, installmentSummary, debtProjection, filters }: Props) {
     const [activeTab, setActiveTab] = useState<'RECURRING' | 'INSTALLMENT' | 'DEBT'>('RECURRING');
     const [mounted, setMounted] = useState(false);
 
@@ -304,6 +374,36 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
             <Toaster position="top-right" />
 
             <div className="space-y-6 animate-fade-in-up">
+                {/* GLOBAL DASHBOARD WIDGET */}
+                <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
+                    {/* Summary Cards */}
+                    <div className="xl:col-span-1 flex flex-col gap-5">
+                        <div className="glass-card p-5 rounded-[2rem] shadow-sm hover:shadow-xl transition-all duration-300 group flex-1">
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="p-3 bg-gradient-to-br from-red-500 to-rose-600 text-white rounded-2xl shadow-lg">
+                                    <TrendingDown className="w-5 h-5" />
+                                </div>
+                            </div>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Kewajiban (Hutang + Cicilan)</p>
+                            <p className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white">{formatIDR(summary.totalDebt + (installmentSummary?.totalRemaining || 0))}</p>
+                        </div>
+                        <div className="glass-card p-5 rounded-[2rem] shadow-sm hover:shadow-xl transition-all duration-300 group flex-1">
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-2xl shadow-lg">
+                                    <TrendingUp className="w-5 h-5" />
+                                </div>
+                            </div>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Piutang</p>
+                            <p className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white">{formatIDR(summary.totalReceivable)}</p>
+                        </div>
+                    </div>
+                    
+                    {/* Debt Freedom Chart */}
+                    <div className="xl:col-span-2">
+                        <DebtFreedomCountdown data={debtProjection} />
+                    </div>
+                </div>
+
                 {/* DUE BILLS WIDGET */}
                 {dueRecurring.length > 0 && (
                     <div className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/10 rounded-[2rem] p-6 border border-orange-100 dark:border-orange-500/20 shadow-lg shadow-orange-500/5">
@@ -433,23 +533,6 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                 {/* TAB CONTENT: DEBT */}
                 {activeTab === 'DEBT' && (
                     <div className="animate-fade-in-up">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-                            {[
-                                { label: 'Total Hutang', value: summary.totalDebt, color: 'from-red-500 to-rose-600', icon: TrendingDown },
-                                { label: 'Total Piutang', value: summary.totalReceivable, color: 'from-emerald-500 to-teal-600', icon: TrendingUp },
-                            ].map((item, idx) => (
-                                <div key={idx} className="glass-card p-6 rounded-[2rem] hover:shadow-xl transition-all duration-300 group">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <div className={`p-3 bg-gradient-to-br ${item.color} text-white rounded-2xl shadow-lg`}>
-                                            <item.icon className="w-5 h-5" />
-                                        </div>
-                                    </div>
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{item.label}</p>
-                                    <p className="text-2xl font-bold text-slate-800 dark:text-white">{formatIDR(item.value)}</p>
-                                </div>
-                            ))}
-                        </div>
-
                         <div className="flex justify-end mb-4">
                             <button onClick={() => openDebtModal()} className="flex items-center px-5 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95">
                                 <Plus className="w-4 h-4 mr-2" /> Tambah Catatan

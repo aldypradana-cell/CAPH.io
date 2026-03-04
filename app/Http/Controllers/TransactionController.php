@@ -57,6 +57,32 @@ class TransactionController extends Controller
 
         $transactions = $query->paginate(20)->withQueryString();
 
+        // Calculate Heatmap Data for the selected month (or current month)
+        $heatmapStartDate = $request->filled('start_date') ? \Carbon\Carbon::parse($request->start_date)->startOfMonth() : now()->startOfMonth();
+        $heatmapEndDate = $request->filled('start_date') ? \Carbon\Carbon::parse($request->start_date)->endOfMonth() : now()->endOfMonth();
+
+        $heatmapRaw = Transaction::forUser($user->id)
+            ->inDateRange($heatmapStartDate->format('Y-m-d'), $heatmapEndDate->format('Y-m-d'))
+            ->selectRaw('DATE(date) as day_date, type, SUM(amount) as total')
+            ->whereIn('type', ['EXPENSE', 'INCOME'])
+            ->groupBy('day_date', 'type')
+            ->get();
+
+        $heatmapMonth = $heatmapStartDate->format('Y-m');
+        $heatmapData = [];
+        
+        foreach ($heatmapRaw as $row) {
+            $dateStr = $row->day_date; // Assuming it comes back as string from DATE()
+            if (!isset($heatmapData[$dateStr])) {
+                $heatmapData[$dateStr] = ['expense' => 0, 'income' => 0];
+            }
+            if ($row->type === 'EXPENSE') {
+                $heatmapData[$dateStr]['expense'] = (float) $row->total;
+            } elseif ($row->type === 'INCOME') {
+                $heatmapData[$dateStr]['income'] = (float) $row->total;
+            }
+        }
+
         $wallets = Wallet::where('user_id', $user->id)->get();
         $categories = Category::userCategories($user->id)->get();
         $userTags = Tag::where('user_id', $user->id)->orderBy('name')->get();
@@ -67,6 +93,8 @@ class TransactionController extends Controller
             'categories' => $categories,
             'filters' => $request->only(['type', 'start_date', 'end_date', 'tag', 'search']),
             'userTags' => $userTags,
+            'heatmapData' => $heatmapData,
+            'heatmapMonth' => $heatmapMonth,
         ]);
     }
 
