@@ -183,7 +183,7 @@ Gunakan semua data di atas untuk:
       \"limit\": <number limit budget>,
       \"spent\": <number realisasi>,
       \"usagePercent\": <number persentase terpakai>,
-      \"status\": <\"OK\" | \"WARNING\" | \"OVER\">
+      \"status\": <\"OK\" | \"WARNING\" | \"OVER\"> // Wajib: OK (0-79%), WARNING (80-99%), OVER (100%+)
     }
   ],
   \"goalProjections\": [
