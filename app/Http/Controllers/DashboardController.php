@@ -12,6 +12,7 @@ use App\Models\Budget;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use App\Services\BudgetTemplate;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
 
@@ -116,41 +117,13 @@ class DashboardController extends Controller
             $ruleCategoryNames[$cat->budget_rule][] = $cat->name;
         }
 
-        // Slot → rules mapping (mirrors BudgetController::SLOT_TO_RULES)
-        $slotToRules = [
-            'NEEDS'        => ['NEEDS'],
-            'WANTS'        => ['WANTS'],
-            'SAVINGS'      => ['SAVINGS'],
-            'DEBT'         => ['DEBT'],
-            'SOCIAL'       => ['SOCIAL'],
-            'LIVING'       => ['NEEDS', 'WANTS'],
-            'SAVINGS_PLUS' => ['SAVINGS', 'DEBT', 'SOCIAL'],
-            'OBLIGATIONS'  => ['DEBT', 'SOCIAL'],
-        ];
+        // Slot → rules mapping (from shared BudgetTemplate)
+        $slotToRules = BudgetTemplate::SLOT_TO_RULES;
 
-        // Template labels
-        $templateLabelsMap = [
-            '50-30-20'    => ['NEEDS' => 'Kebutuhan', 'WANTS' => 'Keinginan', 'SAVINGS_PLUS' => 'Tabungan & Kewajiban'],
-            '40-30-20-10' => ['NEEDS' => 'Kebutuhan', 'DEBT' => 'Cicilan & Kewajiban', 'SAVINGS' => 'Tabungan & Investasi', 'SOCIAL' => 'Sosial & Kebaikan'],
-            '70-20-10'    => ['LIVING' => 'Biaya Hidup', 'SAVINGS' => 'Tabungan & Investasi', 'OBLIGATIONS' => 'Kewajiban & Sosial'],
-        ];
-
-        // Template definitions for detection
-        $templateDefs = [
-            '50-30-20'    => ['NEEDS', 'WANTS', 'SAVINGS_PLUS'],
-            '40-30-20-10' => ['NEEDS', 'DEBT', 'SAVINGS', 'SOCIAL'],
-            '70-20-10'    => ['LIVING', 'SAVINGS', 'OBLIGATIONS'],
-        ];
-
+        // Detect active template and get labels
         $masterSlots = $budgets->where('is_master', true)->pluck('category')->toArray();
-        sort($masterSlots);
-        $activeTemplate = null;
-        foreach ($templateDefs as $tKey => $tSlots) {
-            $sorted = $tSlots;
-            sort($sorted);
-            if ($sorted === $masterSlots) { $activeTemplate = $tKey; break; }
-        }
-        $labels = $activeTemplate ? ($templateLabelsMap[$activeTemplate] ?? []) : [];
+        $activeTemplate = BudgetTemplate::detectTemplate($masterSlots);
+        $labels = BudgetTemplate::getLabels($activeTemplate);
 
         // --- FIX N+1: Pre-compute expense totals per period (max 3 queries) ---
         $now = Carbon::now();

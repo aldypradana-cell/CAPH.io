@@ -7,85 +7,11 @@ use App\Models\Category;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use App\Services\BudgetTemplate;
 use Inertia\Inertia;
 
 class BudgetController extends Controller
 {
-    /**
-     * Slot key → array of budget_rule values that should be aggregated
-     */
-    private const SLOT_TO_RULES = [
-        'NEEDS'        => ['NEEDS'],
-        'WANTS'        => ['WANTS'],
-        'SAVINGS'      => ['SAVINGS'],
-        'DEBT'         => ['DEBT'],
-        'SOCIAL'       => ['SOCIAL'],
-        'LIVING'       => ['NEEDS', 'WANTS'],              // 70-20-10
-        'SAVINGS_PLUS' => ['SAVINGS', 'DEBT', 'SOCIAL'],   // 50-30-20
-        'OBLIGATIONS'  => ['DEBT', 'SOCIAL'],              // 70-20-10
-    ];
-
-    /**
-     * Template definitions: slot key → percentage
-     */
-    private const TEMPLATES = [
-        '50-30-20' => [
-            'NEEDS'        => 50,
-            'WANTS'        => 30,
-            'SAVINGS_PLUS' => 20,
-        ],
-        '40-30-20-10' => [
-            'NEEDS'   => 40,
-            'DEBT'    => 30,
-            'SAVINGS' => 20,
-            'SOCIAL'  => 10,
-        ],
-        '70-20-10' => [
-            'LIVING'      => 70,
-            'SAVINGS'     => 20,
-            'OBLIGATIONS' => 10,
-        ],
-    ];
-
-    /**
-     * Labels per slot per template
-     */
-    private const TEMPLATE_LABELS = [
-        '50-30-20' => [
-            'NEEDS'        => 'Kebutuhan',
-            'WANTS'        => 'Keinginan',
-            'SAVINGS_PLUS' => 'Tabungan & Kewajiban',
-        ],
-        '40-30-20-10' => [
-            'NEEDS'   => 'Kebutuhan',
-            'DEBT'    => 'Cicilan & Kewajiban',
-            'SAVINGS' => 'Tabungan & Investasi',
-            'SOCIAL'  => 'Sosial & Kebaikan',
-        ],
-        '70-20-10' => [
-            'LIVING'      => 'Biaya Hidup',
-            'SAVINGS'     => 'Tabungan & Investasi',
-            'OBLIGATIONS' => 'Kewajiban & Sosial',
-        ],
-    ];
-
-    /**
-     * Detect active template from the combination of master budget slot keys
-     */
-    private static function detectTemplate(array $masterSlots): ?string
-    {
-        foreach (self::TEMPLATES as $key => $slots) {
-            $templateSlots = array_keys($slots);
-            sort($templateSlots);
-            $current = $masterSlots;
-            sort($current);
-            if ($templateSlots === $current) {
-                return $key;
-            }
-        }
-        return null;
-    }
-
     public function index(Request $request)
     {
         $user = $request->user();
@@ -103,8 +29,8 @@ class BudgetController extends Controller
 
         // Detect active template
         $masterSlots = $budgets->where('is_master', true)->pluck('category')->toArray();
-        $activeTemplate = self::detectTemplate($masterSlots);
-        $labels = $activeTemplate ? (self::TEMPLATE_LABELS[$activeTemplate] ?? []) : [];
+        $activeTemplate = BudgetTemplate::detectTemplate($masterSlots);
+        $labels = BudgetTemplate::getLabels($activeTemplate);
 
         // --- FIX N+1: Pre-compute expense totals per period (max 3 queries) ---
         $now = Carbon::now();
@@ -134,7 +60,7 @@ class BudgetController extends Controller
 
             if ($budget->is_master) {
                 // Aggregate spent from all mapped categories for this master slot
-                $rules = self::SLOT_TO_RULES[$budget->category] ?? [$budget->category];
+                $rules = BudgetTemplate::SLOT_TO_RULES[$budget->category] ?? [$budget->category];
                 $mappedCategories = collect($rules)
                     ->flatMap(fn($rule) => $ruleCategoryNames[$rule] ?? [])
                     ->toArray();
@@ -251,7 +177,7 @@ class BudgetController extends Controller
 
         $income = $validated['income'];
         $template = $validated['template'];
-        $allocations = self::TEMPLATES[$template];
+        $allocations = BudgetTemplate::TEMPLATES[$template];
         $userId = $request->user()->id;
 
         foreach ($allocations as $slot => $percentage) {
