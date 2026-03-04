@@ -96,55 +96,57 @@ class BackupController extends Controller
             // -- Restore wallets (and map old IDs to new IDs) --
             $walletIdMap = [];
             foreach ($data['wallets'] ?? [] as $walletData) {
-                $oldId = $walletData['id'];
-                unset($walletData['id'], $walletData['created_at'], $walletData['updated_at']);
-                $walletData['user_id'] = $user->id;
-                $newWallet = Wallet::create($walletData);
-                $walletIdMap[$oldId] = $newWallet->id;
+                $oldId = $walletData['id'] ?? null;
+                $cleanData = \Illuminate\Support\Arr::only($walletData, ['name', 'type', 'balance']);
+                $cleanData['user_id'] = $user->id;
+                $newWallet = Wallet::create($cleanData);
+                if ($oldId) {
+                    $walletIdMap[$oldId] = $newWallet->id;
+                }
             }
 
             // -- Restore transactions (remap wallet_id) --
             foreach ($data['transactions'] ?? [] as $txData) {
-                unset($txData['id'], $txData['created_at'], $txData['updated_at'], $txData['tags']);
-                $txData['user_id'] = $user->id;
-                $txData['wallet_id'] = $walletIdMap[$txData['wallet_id']] ?? null;
-                Transaction::create($txData);
+                $cleanData = \Illuminate\Support\Arr::only($txData, ['to_wallet_id', 'date', 'description', 'amount', 'type', 'category', 'is_flagged']);
+                $cleanData['user_id'] = $user->id;
+                $cleanData['wallet_id'] = $walletIdMap[$txData['wallet_id'] ?? ''] ?? null;
+                Transaction::create($cleanData);
             }
 
             // -- Restore budgets --
             foreach ($data['budgets'] ?? [] as $budgetData) {
-                unset($budgetData['id'], $budgetData['created_at'], $budgetData['updated_at']);
-                $budgetData['user_id'] = $user->id;
-                Budget::create($budgetData);
+                $cleanData = \Illuminate\Support\Arr::only($budgetData, ['category', 'limit', 'period', 'frequency', 'is_master']);
+                $cleanData['user_id'] = $user->id;
+                Budget::create($cleanData);
             }
 
             // -- Restore debts --
             foreach ($data['debts'] ?? [] as $debtData) {
-                unset($debtData['id'], $debtData['created_at'], $debtData['updated_at']);
-                $debtData['user_id'] = $user->id;
-                Debt::create($debtData);
+                $cleanData = \Illuminate\Support\Arr::only($debtData, ['type', 'person', 'amount', 'description', 'due_date', 'is_paid']);
+                $cleanData['user_id'] = $user->id;
+                Debt::create($cleanData);
             }
 
             // -- Restore recurring transactions (remap wallet_id) --
             foreach ($data['recurring'] ?? [] as $recData) {
-                unset($recData['id'], $recData['created_at'], $recData['updated_at']);
-                $recData['user_id'] = $user->id;
-                $recData['wallet_id'] = $walletIdMap[$recData['wallet_id']] ?? null;
-                RecurringTransaction::create($recData);
+                $cleanData = \Illuminate\Support\Arr::only($recData, ['name', 'amount', 'type', 'category', 'frequency', 'start_date', 'next_run_date', 'auto_cut', 'is_active', 'description']);
+                $cleanData['user_id'] = $user->id;
+                $cleanData['wallet_id'] = $walletIdMap[$recData['wallet_id'] ?? ''] ?? null;
+                RecurringTransaction::create($cleanData);
             }
 
             // -- Restore categories --
             foreach ($data['categories'] ?? [] as $catData) {
-                unset($catData['id'], $catData['created_at'], $catData['updated_at']);
-                $catData['user_id'] = $user->id;
-                Category::create($catData);
+                $cleanData = \Illuminate\Support\Arr::only($catData, ['name', 'type', 'is_default', 'budget_rule']);
+                $cleanData['user_id'] = $user->id;
+                Category::create($cleanData);
             }
 
             // -- Restore assets --
             foreach ($data['assets'] ?? [] as $assetData) {
-                unset($assetData['id'], $assetData['created_at'], $assetData['updated_at']);
-                $assetData['user_id'] = $user->id;
-                Asset::create($assetData);
+                $cleanData = \Illuminate\Support\Arr::only($assetData, ['name', 'value', 'type']);
+                $cleanData['user_id'] = $user->id;
+                Asset::create($cleanData);
             }
 
             DB::commit();
