@@ -10,6 +10,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use App\Enums\TransactionType;
 use Inertia\Inertia;
 
 class DebtController extends Controller
@@ -184,12 +185,12 @@ class DebtController extends Controller
             // Determine transaction type and category based on debt type
             if ($debt->type === 'RECEIVABLE') {
                 // Piutang dibayar: uang masuk ke dompet kita
-                $txType    = 'INCOME';
+                $txType    = TransactionType::INCOME->value;
                 $txCategory = 'Terima Piutang';
                 $wallet->increment('balance', $payAmount);
             } else {
                 // Utang / Bill dibayar: uang keluar dari dompet kita
-                $txType    = 'EXPENSE';
+                $txType    = TransactionType::EXPENSE->value;
                 $txCategory = 'Bayar Utang';
                 $wallet->decrement('balance', $payAmount);
             }

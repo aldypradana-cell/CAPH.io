@@ -6,6 +6,7 @@ use App\Models\Installment;
 use App\Models\InstallmentPayment;
 use App\Models\Transaction;
 use App\Models\Wallet;
+use App\Enums\TransactionType;
 use Illuminate\Http\Request;
 
 class InstallmentController extends Controller
@@ -123,7 +124,7 @@ class InstallmentController extends Controller
             'user_id'     => $request->user()->id,
             'wallet_id'   => $validated['wallet_id'],
             'category'    => 'Cicilan & Utang',
-            'type'        => 'EXPENSE',
+            'type'        => TransactionType::EXPENSE->value,
             'amount'      => $validated['amount'],
             'description' => "{$installment->name} — Angsuran ke-{$nextTenor}/{$installment->total_tenor}",
             'date'        => $validated['paid_at'],

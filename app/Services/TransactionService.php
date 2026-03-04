@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Transaction;
 use App\Models\Wallet;
+use App\Enums\TransactionType;
 use Illuminate\Support\Facades\DB;
 use App\Models\Budget;
 use Illuminate\Support\Carbon;
@@ -34,10 +35,10 @@ class TransactionService
                 ]);
 
                 // Update Wallet Balance
-                if ($data['type'] === 'INCOME') {
+                if ($data['type'] === TransactionType::INCOME->value) {
                     $wallet->increment('balance', $data['amount']);
                     $wallet->refresh(); // pastikan saldo terbaru
-                } elseif ($data['type'] === 'EXPENSE') {
+                } elseif ($data['type'] === TransactionType::EXPENSE->value) {
                     $adminFee = floatval($data['admin_fee'] ?? 0);
                     $totalExpense = $data['amount'] + $adminFee;
 
@@ -56,14 +57,14 @@ class TransactionService
                             'wallet_id' => $walletId,
                             'to_wallet_id' => null,
                             'amount' => $adminFee,
-                            'type' => 'EXPENSE',
+                            'type' => TransactionType::EXPENSE->value,
                             'category' => 'Biaya Admin',
                             'description' => 'Biaya admin - ' . $data['description'],
                             'date' => $data['date'],
                         ]);
                         $newTransactions[] = $feeTransaction;
                     }
-                } elseif ($data['type'] === 'TRANSFER' && isset($data['to_wallet_id'])) {
+                } elseif ($data['type'] === TransactionType::TRANSFER->value && isset($data['to_wallet_id'])) {
                     $adminFee = floatval($data['admin_fee'] ?? 0);
                     $adminFeeFrom = $data['admin_fee_from'] ?? 'sender';
 
@@ -101,7 +102,7 @@ class TransactionService
                             'wallet_id' => $feeWalletId,
                             'to_wallet_id' => null,
                             'amount' => $adminFee,
-                            'type' => 'EXPENSE',
+                            'type' => TransactionType::EXPENSE->value,
                             'category' => 'Biaya Admin',
                             'description' => 'Biaya admin transfer ke ' . $receiverWallet->name,
                             'date' => $data['date'],
@@ -122,11 +123,11 @@ class TransactionService
         return DB::transaction(function () use ($transaction, $data) {
             // 1. Lock & revert old balance with pessimistic lock
             $oldWallet = Wallet::where('id', $transaction->wallet_id)->lockForUpdate()->firstOrFail();
-            if ($transaction->type === 'INCOME') {
+            if ($transaction->type === TransactionType::INCOME->value) {
                 $oldWallet->decrement('balance', $transaction->amount);
-            } elseif ($transaction->type === 'EXPENSE') {
+            } elseif ($transaction->type === TransactionType::EXPENSE->value) {
                 $oldWallet->increment('balance', $transaction->amount);
-            } elseif ($transaction->type === 'TRANSFER' && $transaction->to_wallet_id) {
+            } elseif ($transaction->type === TransactionType::TRANSFER->value && $transaction->to_wallet_id) {
                 $oldWallet->increment('balance', $transaction->amount);
                 Wallet::where('id', $transaction->to_wallet_id)->lockForUpdate()->firstOrFail()->decrement('balance', $transaction->amount);
             }
@@ -144,15 +145,15 @@ class TransactionService
 
             // 3. Lock & apply new balance
             $wallet = Wallet::where('id', $data['wallet_id'])->lockForUpdate()->firstOrFail();
-            if ($data['type'] === 'INCOME') {
+            if ($data['type'] === TransactionType::INCOME->value) {
                 $wallet->increment('balance', $data['amount']);
-            } elseif ($data['type'] === 'EXPENSE') {
+            } elseif ($data['type'] === TransactionType::EXPENSE->value) {
                 if ($wallet->balance < $data['amount']) {
                     throw new \Exception("Saldo dompet \"{$wallet->name}\" tidak cukup. Saldo: Rp" . number_format($wallet->balance, 0, ',', '.') . ", Dibutuhkan: Rp" . number_format($data['amount'], 0, ',', '.'));
                 }
                 $wallet->decrement('balance', $data['amount']);
                 $this->checkBudget($transaction);
-            } elseif ($data['type'] === 'TRANSFER' && isset($data['to_wallet_id'])) {
+            } elseif ($data['type'] === TransactionType::TRANSFER->value && isset($data['to_wallet_id'])) {
                 if ($wallet->balance < $data['amount']) {
                     throw new \Exception("Saldo dompet \"{$wallet->name}\" tidak cukup untuk transfer. Saldo: Rp" . number_format($wallet->balance, 0, ',', '.') . ", Dibutuhkan: Rp" . number_format($data['amount'], 0, ',', '.'));
                 }
@@ -171,11 +172,11 @@ class TransactionService
             $wallet = Wallet::where('id', $transaction->wallet_id)->lockForUpdate()->firstOrFail();
 
             // Revert Balance
-            if ($transaction->type === 'INCOME') {
+            if ($transaction->type === TransactionType::INCOME->value) {
                 $wallet->decrement('balance', $transaction->amount);
-            } elseif ($transaction->type === 'EXPENSE') {
+            } elseif ($transaction->type === TransactionType::EXPENSE->value) {
                 $wallet->increment('balance', $transaction->amount);
-            } elseif ($transaction->type === 'TRANSFER' && $transaction->to_wallet_id) {
+            } elseif ($transaction->type === TransactionType::TRANSFER->value && $transaction->to_wallet_id) {
                 $wallet->increment('balance', $transaction->amount);
                 Wallet::where('id', $transaction->to_wallet_id)->lockForUpdate()->firstOrFail()->decrement('balance', $transaction->amount);
             }
@@ -212,7 +213,7 @@ class TransactionService
             }
 
             $spent = Transaction::where('user_id', $user->id)
-                ->where('type', 'EXPENSE')
+                ->where('type', TransactionType::EXPENSE->value)
                 ->where('category', $transaction->category)
                 ->whereBetween('date', [$start, $end])
                 ->sum('amount');
