@@ -75,7 +75,7 @@ class InsightsController extends Controller
         $nextMonday = Carbon::now()->next(Carbon::MONDAY)->startOfDay();
 
         if ($usedThisWeek >= $user->insight_limit) {
-            return response()->json([
+            $response = response()->json([
                 'success'  => false,
                 'quota'    => true,
                 'message'  => 'Kuota AI Insight Anda minggu ini sudah habis.',
@@ -83,6 +83,11 @@ class InsightsController extends Controller
                 'limit'    => $user->insight_limit,
                 'resetsAt' => $nextMonday->toIso8601String(),
             ], 429);
+
+            if ($request->hasHeader('X-Inertia')) {
+                $response->header('X-Inertia', 'true');
+            }
+            return $response;
         }
 
         // Determine Analysis Period (Default: Current Month)

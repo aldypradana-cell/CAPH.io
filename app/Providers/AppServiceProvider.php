@@ -31,17 +31,21 @@ class AppServiceProvider extends ServiceProvider
         // then run: php artisan optimize:clear
         RateLimiter::for('ai-global', function (Request $request) {
             return [
-                Limit::perMinute((int) env('AI_GLOBAL_RPM', 5))->response(function () {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Server sedang sibuk. Silakan coba lagi dalam 1 menit.',
-                    ], 429);
+                Limit::perMinute((int) env('AI_GLOBAL_RPM', 5))->response(function (Request $request) {
+                    $message = 'Server sedang sibuk. Silakan coba lagi dalam 1 menit.';
+                    $response = response()->json(['message' => $message], 429);
+                    if ($request->hasHeader('X-Inertia')) {
+                        $response->header('X-Inertia', 'true');
+                    }
+                    return $response;
                 }),
-                Limit::perDay((int) env('AI_GLOBAL_RPD', 20))->response(function () {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Batas penggunaan AI harian telah tercapai. Coba lagi besok.',
-                    ], 429);
+                Limit::perDay((int) env('AI_GLOBAL_RPD', 20))->response(function (Request $request) {
+                    $message = 'Batas penggunaan AI harian telah tercapai. Coba lagi besok.';
+                    $response = response()->json(['message' => $message], 429);
+                    if ($request->hasHeader('X-Inertia')) {
+                        $response->header('X-Inertia', 'true');
+                    }
+                    return $response;
                 }),
             ];
         });

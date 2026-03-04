@@ -57,7 +57,7 @@ class SmartEntryController extends Controller
             ->count();
 
         if ($usedToday >= $user->smart_entry_limit) {
-            return response()->json([
+            $response = response()->json([
                 'success'  => false,
                 'quota'    => true,
                 'message'  => 'Kuota Smart Entry Anda hari ini sudah habis.',
@@ -65,6 +65,11 @@ class SmartEntryController extends Controller
                 'limit'    => $user->smart_entry_limit,
                 'resetsAt' => Carbon::tomorrow()->startOfDay()->toIso8601String(),
             ], 429);
+
+            if ($request->hasHeader('X-Inertia')) {
+                $response->header('X-Inertia', 'true');
+            }
+            return $response;
         }
 
         $validated = $request->validate([
