@@ -36,13 +36,12 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('transactions', TransactionController::class)
         ->only(['index', 'store', 'update', 'destroy']);
 
-    // Smart Entry (AI) - Rate limited to prevent API quota abuse
-    Route::middleware('throttle:ai-global')->group(function () {
-            Route::get('/smart-entry', [SmartEntryController::class , 'index'])->name('smart-entry.index');
-            Route::post('/smart-entry/parse', [SmartEntryController::class , 'parse'])->name('smart-entry.parse');
-            Route::post('/smart-entry/confirm', [SmartEntryController::class , 'confirm'])->name('smart-entry.confirm');
-        }
-        );
+    // Smart Entry (AI)
+    Route::get('/smart-entry', [SmartEntryController::class, 'index'])->name('smart-entry.index');
+    Route::post('/smart-entry/parse', [SmartEntryController::class, 'parse'])
+        ->middleware('throttle:ai-global')
+        ->name('smart-entry.parse');
+    Route::post('/smart-entry/confirm', [SmartEntryController::class, 'confirm'])->name('smart-entry.confirm');
 
         // Wallets
         Route::resource('wallets', WalletController::class)
@@ -85,13 +84,12 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('categories', CategoryController::class)
             ->only(['index', 'store', 'update', 'destroy']);
 
-        // Financial Insights (AI) - Rate limited
-        Route::middleware('throttle:ai-global')->group(function () {
-            Route::get('/insights', [InsightsController::class , 'index'])->name('insights.index');
-            Route::post('/insights/generate', [InsightsController::class , 'generate'])->name('insights.generate');
-            Route::post('/insights/profile', [InsightsController::class , 'updateProfile'])->name('insights.profile');
-        }
-        );
+        // Financial Insights (AI)
+        Route::get('/insights', [InsightsController::class, 'index'])->name('insights.index');
+        Route::post('/insights/generate', [InsightsController::class, 'generate'])
+            ->middleware('throttle:ai-global')
+            ->name('insights.generate');
+        Route::post('/insights/profile', [InsightsController::class, 'updateProfile'])->name('insights.profile');
 
         // Profile
         Route::get('/profile', [ProfileController::class , 'edit'])->name('profile.edit');
