@@ -7,8 +7,9 @@ use App\Models\Wallet;
 use App\Models\Category;
 use App\Models\Tag;
 use App\Services\TransactionService;
+use App\Http\Requests\StoreTransactionRequest;
+use App\Http\Requests\UpdateTransactionRequest;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
@@ -69,23 +70,10 @@ class TransactionController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreTransactionRequest $request)
     {
         $userId = $request->user()->id;
-
-        $validated = $request->validate([
-            'wallet_id' => ['required', Rule::exists('wallets', 'id')->where('user_id', $userId)],
-            'to_wallet_id' => ['nullable', Rule::exists('wallets', 'id')->where('user_id', $userId)],
-            'date' => 'required|date',
-            'description' => 'required|string|max:255',
-            'amount' => 'required|numeric|min:1',
-            'type' => 'required|in:INCOME,EXPENSE,TRANSFER',
-            'category' => 'required|string',
-            'tags' => 'nullable|array',
-            'tags.*' => 'string|max:50',
-            'admin_fee' => 'nullable|numeric|min:0',
-            'admin_fee_from' => 'nullable|in:sender,receiver',
-        ]);
+        $validated = $request->validated();
 
         try {
             $transactions = $this->transactionService->createTransactions(
@@ -107,26 +95,10 @@ class TransactionController extends Controller
         }
     }
 
-    public function update(Request $request, Transaction $transaction)
+    public function update(UpdateTransactionRequest $request, Transaction $transaction)
     {
-        // Authorization check
-        if ($request->user()->cannot('update', $transaction)) {
-            abort(403);
-        }
-
         $userId = $request->user()->id;
-
-        $validated = $request->validate([
-            'wallet_id' => ['required', Rule::exists('wallets', 'id')->where('user_id', $userId)],
-            'to_wallet_id' => ['nullable', Rule::exists('wallets', 'id')->where('user_id', $userId)],
-            'date' => 'required|date',
-            'description' => 'required|string|max:255',
-            'amount' => 'required|numeric|min:1',
-            'type' => 'required|in:INCOME,EXPENSE,TRANSFER',
-            'category' => 'required|string',
-            'tags' => 'nullable|array',
-            'tags.*' => 'string|max:50',
-        ]);
+        $validated = $request->validated();
 
         try {
             $this->transactionService->updateTransaction($transaction, $validated);
