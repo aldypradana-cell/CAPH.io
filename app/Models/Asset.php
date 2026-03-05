@@ -12,6 +12,7 @@ class Asset extends Model
     protected $fillable = [
         'user_id',
         'name',
+        'description',
         'value',
         'type',
     ];

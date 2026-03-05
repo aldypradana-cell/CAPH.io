@@ -32,6 +32,7 @@ class AssetController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:1000',
             'value' => 'required|numeric|min:0',
             'type' => 'required|in:GOLD,STOCK,CRYPTO,PROPERTY,VEHICLE,INVESTMENT,OTHER',
         ]);
@@ -52,6 +53,7 @@ class AssetController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:1000',
             'value' => 'required|numeric|min:0',
             'type' => 'required|in:GOLD,STOCK,CRYPTO,PROPERTY,VEHICLE,INVESTMENT,OTHER',
         ]);

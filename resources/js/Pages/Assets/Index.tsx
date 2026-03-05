@@ -24,6 +24,8 @@ interface Summary {
 const formatIDR = (amount: number) =>
     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
 
+import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
+
 export default function AssetsIndex({ auth, assets, summary }: PageProps<{ assets: Asset[]; summary: Summary }>) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
@@ -70,12 +72,35 @@ export default function AssetsIndex({ auth, assets, summary }: PageProps<{ asset
 
     const getTypeConfig = (type: string) => {
         switch (type) {
-            case 'PROPERTY': return { label: 'Properti', color: 'from-blue-500 to-blue-700', icon: Home };
-            case 'VEHICLE': return { label: 'Kendaraan', color: 'from-emerald-500 to-emerald-700', icon: Car };
-            case 'INVESTMENT': return { label: 'Investasi', color: 'from-purple-500 to-purple-700', icon: TrendingUp };
-            case 'OTHER': return { label: 'Lainnya', color: 'from-amber-500 to-amber-700', icon: Coins };
-            default: return { label: type, color: 'from-slate-500 to-slate-700', icon: Gem };
+            case 'PROPERTY': return { label: 'Properti', color: 'from-blue-500 to-blue-700', hex: '#3b82f6', icon: Home };
+            case 'VEHICLE': return { label: 'Kendaraan', color: 'from-emerald-500 to-emerald-700', hex: '#10b981', icon: Car };
+            case 'INVESTMENT': return { label: 'Investasi', color: 'from-purple-500 to-purple-700', hex: '#8b5cf6', icon: TrendingUp };
+            case 'OTHER': return { label: 'Lainnya', color: 'from-amber-500 to-amber-700', hex: '#f59e0b', icon: Coins };
+            default: return { label: type, color: 'from-slate-500 to-slate-700', hex: '#64748b', icon: Gem };
         }
+    };
+
+    // Prepare chart data
+    const chartData = Object.entries(summary.byType)
+        .filter(([_, info]) => info.value > 0)
+        .map(([type, info]) => {
+            const config = getTypeConfig(type);
+            return {
+                name: config.label,
+                value: Number(info.value),
+                color: config.hex
+            };
+        })
+        .sort((a, b) => b.value - a.value);
+
+    // Sort assets by value descending for Bento Grid
+    const sortedAssets = [...assets].sort((a, b) => Number(b.value) - Number(a.value));
+
+    const formatCompactIDR = (value: number) => {
+        if (value >= 1_000_000_000_000) return `Rp ${(value / 1_000_000_000_000).toFixed(2).replace(/\.00$/, '')} Triliun`;
+        if (value >= 1_000_000_000) return `Rp ${(value / 1_000_000_000).toFixed(2).replace(/\.00$/, '')} Miliar`;
+        if (value >= 1_000_000) return `Rp ${(value / 1_000_000).toFixed(2).replace(/\.00$/, '')} Juta`;
+        return formatIDR(value);
     };
 
     return (
@@ -84,68 +109,171 @@ export default function AssetsIndex({ auth, assets, summary }: PageProps<{ asset
             <Toaster position="top-right" />
 
             <div className="space-y-6 animate-fade-in-up">
-                {/* Portfolio Header */}
-                <div className="glass-card p-8 rounded-[2rem] relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-60 h-60 bg-gradient-to-br from-purple-500/10 to-indigo-500/10 rounded-full -translate-y-1/2 translate-x-1/3" />
-                    <Gem className="absolute right-8 top-8 w-16 h-16 text-indigo-500/10" />
-                    <div className="relative z-10">
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Nilai Aset</p>
-                        <h2 className="text-4xl font-bold text-slate-800 dark:text-white">{formatIDR(summary.totalValue)}</h2>
-                        <p className="text-sm text-slate-400 mt-1">{assets.length} aset terdaftar</p>
+                {/* Hero Section - Combined Total & Donut Chart */}
+                <div className="glass-card p-6 md:p-10 rounded-[2rem] relative overflow-hidden flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
+                    {/* Background decorations */}
+                    <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-gradient-to-br from-indigo-500/5 via-purple-500/5 to-transparent rounded-full translate-x-1/3 -translate-y-1/3 blur-3xl" />
+                    <div className="absolute bottom-0 left-0 w-[30rem] h-[30rem] bg-gradient-to-tr from-emerald-500/5 to-transparent rounded-full -translate-x-1/3 translate-y-1/3 blur-2xl" />
 
-                        <div className="flex flex-wrap gap-3 mt-4">
-                            {Object.entries(summary.byType).map(([type, info]) => {
-                                const config = getTypeConfig(type);
-                                return (
-                                    <div key={type} className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800/50 px-3 py-1.5 rounded-full">
-                                        <config.icon className="w-3.5 h-3.5 text-slate-500" />
-                                        <span className="text-[10px] font-bold text-slate-500">{config.label}: {info.count}</span>
-                                    </div>
-                                );
-                            })}
+                    {/* Left: Total Assets */}
+                    <div className="relative z-10 flex-1 w-full text-center lg:text-left flex flex-col lg:justify-center">
+                        <div className="inline-flex items-center justify-center lg:justify-start gap-2 mb-3 lg:mb-4 opacity-80">
+                            <Gem className="w-4 h-4 text-indigo-500" />
+                            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Total Aset</p>
                         </div>
+                        {/* Compact Formatting for extremely large numbers */}
+                        <div className="mb-2 group relative inline-block">
+                            <h2 className="text-5xl sm:text-6xl md:text-7xl font-extrabold bg-gradient-to-br from-slate-900 via-slate-700 to-slate-800 dark:from-white dark:via-slate-200 dark:to-slate-400 bg-clip-text text-transparent break-words tracking-tight leading-tight">
+                                {summary.totalValue >= 1_000_000_000 ? formatCompactIDR(summary.totalValue) : formatIDR(summary.totalValue)}
+                            </h2>
+                            {summary.totalValue >= 1_000_000_000 && (
+                                <div className="absolute top-full left-1/2 lg:left-0 -translate-x-1/2 lg:translate-x-0 mt-2 p-2 bg-slate-800 text-white text-xs rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-xl">
+                                    {formatIDR(summary.totalValue)}
+                                </div>
+                            )}
+                        </div>
+                        
+                        <p className="text-sm md:text-base text-slate-500 font-medium mb-8">
+                            Tersebar di <span className="text-indigo-600 dark:text-indigo-400 font-bold">{assets.length} instrumen aset</span> berbeda
+                        </p>
+                        
+                        <div className="flex justify-center lg:justify-start">
+                            <button onClick={() => { setEditingAsset(null); reset(); setIsModalOpen(true); }} className="w-full sm:w-auto flex items-center justify-center px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-sm font-bold shadow-xl shadow-slate-900/20 dark:shadow-white/10 hover:-translate-y-1 hover:shadow-2xl transition-all active:scale-95 group">
+                                <Plus className="w-5 h-5 mr-3 group-hover:rotate-90 transition-transform duration-300" /> Tambah Instrumen Aset
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Right: Donut Chart Legend */}
+                    <div className="relative z-10 w-full lg:w-[45%] flex flex-col sm:flex-row items-center gap-6 justify-center lg:justify-end bg-white/40 dark:bg-slate-900/40 p-6 rounded-[2rem] border border-white/50 dark:border-slate-800/50 backdrop-blur-md">
+                         {chartData.length > 0 ? (
+                            <>
+                                <div className="w-[180px] h-[180px] shrink-0 relative">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <PieChart>
+                                            <Pie
+                                                data={chartData}
+                                                cx="50%"
+                                                cy="50%"
+                                                innerRadius="75%"
+                                                outerRadius="100%"
+                                                paddingAngle={4}
+                                                dataKey="value"
+                                                stroke="none"
+                                            >
+                                                {chartData.map((entry, index) => (
+                                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                                ))}
+                                            </Pie>
+                                            <RechartsTooltip 
+                                                formatter={(value: number | string | Array<number | string> | undefined) => formatIDR(Number(value || 0))}
+                                                contentStyle={{ borderRadius: '1.5rem', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(10px)', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)', padding: '12px 20px', fontWeight: 'bold' }}
+                                                itemStyle={{ color: '#0f172a', fontSize: '15px' }}
+                                            />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                </div>
+                                <div className="flex-1 w-full grid grid-cols-2 gap-3 sm:gap-4">
+                                     {chartData.slice(0, 4).map((data, idx) => {
+                                         const percentage = summary.totalValue > 0 ? ((data.value / summary.totalValue) * 100).toFixed(1) : '0';
+                                         return (
+                                            <div key={idx} className="flex flex-col gap-1">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: data.color }} />
+                                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider line-clamp-1">{data.name}</span>
+                                                </div>
+                                                <span className="text-lg font-bold text-slate-800 dark:text-white leading-none">{percentage}%</span>
+                                            </div>
+                                         )
+                                     })}
+                                </div>
+                            </>
+                         ) : (
+                             <div className="w-full flex items-center justify-center gap-4 text-slate-400">
+                                 <div className="w-16 h-16 rounded-full border-4 border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center">
+                                     <Gem className="w-6 h-6 text-slate-300 dark:text-slate-600" />
+                                 </div>
+                                 <p className="text-sm font-medium">Data portofolio kosong</p>
+                             </div>
+                         )}
                     </div>
                 </div>
 
-                {/* Add Button */}
-                <div className="flex justify-end">
-                    <button onClick={() => { setEditingAsset(null); reset(); setIsModalOpen(true); }} className="flex items-center px-5 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95">
-                        <Plus className="w-4 h-4 mr-2" /> Tambah Aset
-                    </button>
-                </div>
-
-                {/* Asset Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {assets.length > 0 ? assets.map((a, idx) => {
+                {/* Asset Cards - Dynamic Bento Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                    {sortedAssets.length > 0 ? sortedAssets.map((a, idx) => {
                         const config = getTypeConfig(a.type);
+                        const percentage = summary.totalValue > 0 ? (Number(a.value) / summary.totalValue) * 100 : 0;
+                        
+                        // Dynamic Col Span Logic based on Rank and Total Array Length
+                        let colSpan = 'col-span-1';
+                        let isLargeBento = false;
+                        
+                        if (assets.length === 1) {
+                            colSpan = 'md:col-span-2 lg:col-span-3 xl:col-span-4'; // Fill entire row if only 1 item
+                            isLargeBento = true;
+                        } else if (assets.length === 2) {
+                            colSpan = 'md:col-span-1 lg:col-span-3 xl:col-span-2'; // 50/50 split on large screens
+                            if (idx === 0) isLargeBento = true;
+                        } else {
+                            if (idx === 0) {
+                                colSpan = 'md:col-span-2 lg:col-span-2 xl:col-span-2'; // Top item is always 2-span
+                                isLargeBento = true;
+                            } else if (assets.length % 3 === 2 && idx === assets.length - 1) {
+                                // If the last item is orphaned on a 3-col grid, make it span the remaining space
+                                colSpan = 'md:col-span-1 lg:col-span-2 xl:col-span-1';
+                            }
+                        }
+                        
                         return (
-                            <div key={a.id} className="glass-card rounded-[2rem] overflow-hidden hover:shadow-xl transition-all duration-300 group animate-pop-in" style={{ animationDelay: `${idx * 80}ms` }}>
-                                <div className={`h-2 bg-gradient-to-r ${config.color}`} />
-                                <div className="p-5">
-                                    <div className="flex items-center justify-between mb-3">
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${config.color} text-white flex items-center justify-center shadow-sm`}>
-                                                <config.icon className="w-5 h-5" />
+                            <div key={a.id} className={`glass-card rounded-[2rem] overflow-hidden hover:shadow-2xl transition-all duration-300 group animate-pop-in relative flex flex-col ${colSpan}`} style={{ animationDelay: `${idx * 80}ms` }}>
+                                {/* Subtle Background Wave for Large Bentos */}
+                                {isLargeBento && (
+                                     <div className="absolute -bottom-24 -right-24 w-64 h-64 opacity-5 bg-gradient-to-tl from-current to-transparent rounded-full blur-3xl pointer-events-none" style={{ color: config.hex }} />
+                                )}
+                                
+                                <div className={`absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b ${config.color}`} />
+                                <div className={`p-6 pl-8 flex-1 flex flex-col gap-4 sm:gap-6 ${isLargeBento ? 'sm:flex-row sm:items-center sm:justify-between' : ''}`}>
+                                    
+                                    {/* Component Top/Left: Icon & Name */}
+                                    <div className="flex items-start justify-between w-full sm:w-auto sm:flex-1">
+                                        <div className="flex items-center gap-4">
+                                            <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${config.color} text-white flex items-center justify-center shadow-lg shadow-${config.color.split('-')[1]}-500/20 shrink-0`}>
+                                                <config.icon className="w-6 h-6" />
                                             </div>
                                             <div>
-                                                <h3 className="font-bold text-slate-800 dark:text-white text-sm">{a.name}</h3>
-                                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{config.label}</p>
+                                                <h3 className="font-bold text-slate-800 dark:text-white text-base max-w-[200px] truncate">{a.name}</h3>
+                                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">{config.label}</p>
                                             </div>
                                         </div>
-                                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button onClick={() => handleEdit(a)} className="p-1.5 text-slate-300 hover:text-indigo-600 rounded-lg transition-all"><Edit2 className="w-3.5 h-3.5" /></button>
-                                            <button onClick={() => setDeleteId(a.id)} className="p-1.5 text-slate-300 hover:text-red-500 rounded-lg transition-all"><Trash2 className="w-3.5 h-3.5" /></button>
+                                        
+                                        {/* Mobile Friendly Actions - Positioned absolutely on large bento or relative on small bento */}
+                                        <div className={`flex gap-1 opacity-60 hover:opacity-100 transition-opacity bg-slate-50 dark:bg-slate-800/50 rounded-xl p-1 z-10 ${isLargeBento ? 'absolute top-6 right-6 sm:relative sm:top-0 sm:right-0 ml-4' : ''}`}>
+                                            <button onClick={() => handleEdit(a)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all"><Edit2 className="w-4 h-4" /></button>
+                                            <button onClick={() => setDeleteId(a.id)} className="p-2 text-slate-400 hover:text-red-500 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all"><Trash2 className="w-4 h-4" /></button>
                                         </div>
                                     </div>
-                                    {a.description && <p className="text-xs text-slate-400 mb-3 line-clamp-2">{a.description}</p>}
-                                    <p className="text-xl font-bold text-slate-800 dark:text-white">{formatIDR(a.value)}</p>
+                                    
+                                    {/* Component Bottom/Right: Value & Progress */}
+                                    <div className={`flex shrink-0 flex-col justify-end ${isLargeBento ? 'sm:w-[300px] sm:pr-4' : 'mt-auto pt-2'}`}>
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <div className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-gradient-to-r ${config.color} text-white shadow-sm shadow-${config.color.split('-')[1]}-500/30`}>
+                                                {percentage.toFixed(1)}% PORTFOLIO
+                                            </div>
+                                        </div>
+                                        <p className="font-black text-slate-800 dark:text-white tracking-tight text-3xl truncate" title={formatIDR(a.value)}>
+                                            {formatIDR(a.value)}
+                                        </p>
+                                        {a.description && <p className={`text-slate-500 mt-2 line-clamp-2 text-sm ${isLargeBento && 'hidden sm:block'}`}>{a.description}</p>}
+                                    </div>
                                 </div>
                             </div>
                         );
                     }) : (
-                        <div className="col-span-full glass-card rounded-[2rem] p-16 text-center">
-                            <Gem className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
-                            <p className="text-lg font-bold text-slate-400">Belum ada aset terdaftar</p>
+                        <div className="col-span-full glass-card rounded-[2rem] p-24 text-center">
+                            <Gem className="w-20 h-20 text-slate-200 dark:text-slate-800 mx-auto mb-6" />
+                            <h3 className="text-2xl font-bold text-slate-400 mb-2">Belum Ada Aset Terdaftar</h3>
+                            <p className="text-slate-500">Mulai tambahkan instrumen aset kekayaan Anda untuk memonitor portofolio finansial.</p>
                         </div>
                     )}
                 </div>
