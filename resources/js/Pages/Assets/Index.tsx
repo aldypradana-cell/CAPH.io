@@ -25,8 +25,10 @@ const formatIDR = (amount: number) =>
     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
 
 import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
+import GoldTab from './GoldTab';
 
-export default function AssetsIndex({ auth, assets, summary }: PageProps<{ assets: Asset[]; summary: Summary }>) {
+export default function AssetsIndex({ auth, assets, summary, goldPurchases, goldPriceToday, grandTotalValue }: PageProps<{ assets: Asset[]; summary: Summary; goldPurchases: any[]; goldPriceToday: number; grandTotalValue: number }>) {
+    const [activeTab, setActiveTab] = useState<'assets' | 'gold'>('assets');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
     const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -108,94 +110,146 @@ export default function AssetsIndex({ auth, assets, summary }: PageProps<{ asset
             <Head title="Aset" />
             <Toaster position="top-right" />
 
-            <div className="space-y-6 animate-fade-in-up">
-                {/* Hero Section - Combined Total & Donut Chart */}
-                <div className="glass-card p-6 md:p-10 rounded-[2rem] relative overflow-hidden flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
-                    {/* Background decorations */}
-                    <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-gradient-to-br from-indigo-500/5 via-purple-500/5 to-transparent rounded-full translate-x-1/3 -translate-y-1/3 blur-3xl" />
-                    <div className="absolute bottom-0 left-0 w-[30rem] h-[30rem] bg-gradient-to-tr from-emerald-500/5 to-transparent rounded-full -translate-x-1/3 translate-y-1/3 blur-2xl" />
 
-                    {/* Left: Total Assets */}
-                    <div className="relative z-10 flex-1 w-full text-center lg:text-left flex flex-col lg:justify-center">
-                        <div className="inline-flex items-center justify-center lg:justify-start gap-2 mb-3 lg:mb-4 opacity-80">
-                            <Gem className="w-4 h-4 text-indigo-500" />
-                            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Total Aset</p>
-                        </div>
-                        {/* Compact Formatting for extremely large numbers */}
-                        <div className="mb-2 group relative inline-block">
-                            <h2 className="text-5xl sm:text-6xl md:text-7xl font-extrabold bg-gradient-to-br from-slate-900 via-slate-700 to-slate-800 dark:from-white dark:via-slate-200 dark:to-slate-400 bg-clip-text text-transparent break-words tracking-tight leading-tight">
-                                {summary.totalValue >= 1_000_000_000 ? formatCompactIDR(summary.totalValue) : formatIDR(summary.totalValue)}
-                            </h2>
-                            {summary.totalValue >= 1_000_000_000 && (
-                                <div className="absolute top-full left-1/2 lg:left-0 -translate-x-1/2 lg:translate-x-0 mt-2 p-2 bg-slate-800 text-white text-xs rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-xl">
-                                    {formatIDR(summary.totalValue)}
-                                </div>
-                            )}
+
+            <div className="space-y-6 animate-fade-in-up">
+                
+                {/* GLOBAL HERO SECTION - Combined Total Assets + Gold */}
+                <div className="glass-card p-6 md:p-8 rounded-[2rem] relative overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-6 border-0 ring-1 ring-slate-200/50 dark:ring-slate-700/50 shadow-xl shadow-slate-200/20 dark:shadow-none" style={{ background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(248, 250, 252, 0.8) 100%)' }}>
+                    
+                    {/* Dark mode overlay */}
+                    <div className="absolute inset-0 bg-slate-900/40 hidden dark:block" />
+                    
+                    {/* Background decorations */}
+                    <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-gradient-to-br from-indigo-500/10 via-purple-500/5 to-transparent rounded-full translate-x-1/2 -translate-y-1/2 blur-3xl pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 w-[20rem] h-[20rem] bg-gradient-to-tr from-emerald-500/10 to-transparent rounded-full -translate-x-1/2 translate-y-1/2 blur-2xl z-0 pointer-events-none" />
+
+                    <div className="relative z-10 flex flex-col sm:flex-row items-center gap-5 w-full">
+                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30 shrink-0">
+                            <Gem className="w-8 h-8 text-white" />
                         </div>
                         
-                        <p className="text-sm md:text-base text-slate-500 font-medium mb-8">
-                            Tersebar di <span className="text-indigo-600 dark:text-indigo-400 font-bold">{assets.length} instrumen aset</span> berbeda
-                        </p>
+                        <div className="flex-1 text-center sm:text-left flex flex-col justify-center">
+                            <h2 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Grand Total Aset</h2>
+                            {/* Compact Formatting for extremely large numbers */}
+                            <div className="group relative inline-block">
+                                <h3 className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-br from-slate-900 via-slate-700 to-slate-800 dark:from-white dark:via-slate-200 dark:to-slate-400 bg-clip-text text-transparent tracking-tight leading-tight">
+                                    {grandTotalValue >= 1_000_000_000 ? formatCompactIDR(grandTotalValue) : formatIDR(grandTotalValue)}
+                                </h3>
+                                {grandTotalValue >= 1_000_000_000 && (
+                                    <div className="absolute top-full left-1/2 sm:left-0 -translate-x-1/2 sm:translate-x-0 mt-2 p-2 bg-slate-800 text-white text-xs rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-xl">
+                                        {formatIDR(grandTotalValue)}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="hidden lg:block w-px h-16 bg-slate-200 dark:bg-slate-700/50 mx-4 shrink-0" />
                         
-                        <div className="flex justify-center lg:justify-start">
-                            <button onClick={() => { setEditingAsset(null); reset(); setIsModalOpen(true); }} className="w-full sm:w-auto flex items-center justify-center px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-sm font-bold shadow-xl shadow-slate-900/20 dark:shadow-white/10 hover:-translate-y-1 hover:shadow-2xl transition-all active:scale-95 group">
-                                <Plus className="w-5 h-5 mr-3 group-hover:rotate-90 transition-transform duration-300" /> Tambah Instrumen Aset
-                            </button>
+                        <div className="hidden lg:flex flex-col shrink-0 text-right">
+                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Komposisi</p>
+                             <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                                 Fiat & Properti +<br/>Investasi Emas Antam
+                             </p>
                         </div>
                     </div>
+                </div>
 
-                    {/* Right: Donut Chart Legend */}
-                    <div className="relative z-10 w-full lg:w-[45%] flex flex-col sm:flex-row items-center gap-6 justify-center lg:justify-end bg-white/40 dark:bg-slate-900/40 p-6 rounded-[2rem] border border-white/50 dark:border-slate-800/50 backdrop-blur-md">
-                         {chartData.length > 0 ? (
-                            <>
-                                <div className="w-[180px] h-[180px] shrink-0 relative">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <PieChart>
-                                            <Pie
-                                                data={chartData}
-                                                cx="50%"
-                                                cy="50%"
-                                                innerRadius="75%"
-                                                outerRadius="100%"
-                                                paddingAngle={4}
-                                                dataKey="value"
-                                                stroke="none"
-                                            >
-                                                {chartData.map((entry, index) => (
-                                                    <Cell key={`cell-${index}`} fill={entry.color} />
-                                                ))}
-                                            </Pie>
-                                            <RechartsTooltip 
-                                                formatter={(value: number | string | Array<number | string> | undefined) => formatIDR(Number(value || 0))}
-                                                contentStyle={{ borderRadius: '1.5rem', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(10px)', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)', padding: '12px 20px', fontWeight: 'bold' }}
-                                                itemStyle={{ color: '#0f172a', fontSize: '15px' }}
-                                            />
-                                        </PieChart>
-                                    </ResponsiveContainer>
-                                </div>
-                                <div className="flex-1 w-full grid grid-cols-2 gap-3 sm:gap-4">
-                                     {chartData.slice(0, 4).map((data, idx) => {
-                                         const percentage = summary.totalValue > 0 ? ((data.value / summary.totalValue) * 100).toFixed(1) : '0';
-                                         return (
-                                            <div key={idx} className="flex flex-col gap-1">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: data.color }} />
-                                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider line-clamp-1">{data.name}</span>
+                {/* Premium Tab Selector */}
+                <div className="flex justify-center my-6 relative z-20">
+                    <div className="bg-slate-100 dark:bg-slate-800/80 backdrop-blur-md p-1.5 rounded-2xl flex items-center gap-2 border border-slate-200 shadow-sm dark:border-slate-700/50">
+                        <button 
+                            onClick={() => setActiveTab('assets')}
+                            className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === 'assets' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
+                        >
+                            <Gem className="w-4 h-4" /> Aset Umum
+                        </button>
+                        <button 
+                            onClick={() => setActiveTab('gold')}
+                            className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === 'gold' ? 'bg-white dark:bg-slate-700 text-amber-500 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
+                        >
+                            <Coins className="w-4 h-4" /> Emas Antam
+                        </button>
+                    </div>
+                </div>
+
+                {activeTab === 'assets' ? (
+                    <>
+                        <div className="flex flex-col lg:flex-row gap-6 mb-8">
+                            <div className="w-full flex justify-between items-center sm:hidden px-4 mb-2">
+                                <h3 className="text-xl font-bold text-slate-800 dark:text-white">Aset Tunai & Properti</h3>
+                                <button onClick={() => { setEditingAsset(null); reset(); setIsModalOpen(true); }} className="p-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-indigo-500/30 transition-all hover:-translate-y-1">
+                                    <Plus className="w-5 h-5" />
+                                </button>
+                            </div>
+
+                    {/* Tab 1 Structure - Donut Chart on Left, Add Button aside */}
+                    <div className="hidden sm:flex flex-col lg:flex-row w-full gap-6">
+                        <div className="relative z-10 w-full lg:w-1/2 xl:w-2/5 flex flex-col sm:flex-row items-center gap-6 justify-center bg-white/40 dark:bg-slate-900/40 p-6 rounded-[2rem] border border-white/50 dark:border-slate-800/50 backdrop-blur-md">
+                             {chartData.length > 0 ? (
+                                <>
+                                    <div className="w-[160px] h-[160px] shrink-0 relative">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <PieChart>
+                                                <Pie
+                                                    data={chartData}
+                                                    cx="50%"
+                                                    cy="50%"
+                                                    innerRadius="75%"
+                                                    outerRadius="100%"
+                                                    paddingAngle={4}
+                                                    dataKey="value"
+                                                    stroke="none"
+                                                >
+                                                    {chartData.map((entry, index) => (
+                                                        <Cell key={`cell-${index}`} fill={entry.color} />
+                                                    ))}
+                                                </Pie>
+                                                <RechartsTooltip 
+                                                    formatter={(value: number | string | Array<number | string> | undefined) => formatIDR(Number(value || 0))}
+                                                    contentStyle={{ borderRadius: '1.5rem', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(10px)', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)', padding: '12px 20px', fontWeight: 'bold' }}
+                                                    itemStyle={{ color: '#0f172a', fontSize: '15px' }}
+                                                />
+                                            </PieChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                    <div className="flex-1 w-full grid grid-cols-2 gap-3 sm:gap-4">
+                                         {chartData.slice(0, 4).map((data, idx) => {
+                                             const percentage = summary.totalValue > 0 ? ((data.value / summary.totalValue) * 100).toFixed(1) : '0';
+                                             return (
+                                                <div key={idx} className="flex flex-col gap-1">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: data.color }} />
+                                                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider line-clamp-1">{data.name}</span>
+                                                    </div>
+                                                    <span className="text-[15px] font-bold text-slate-800 dark:text-white leading-none">{percentage}%</span>
                                                 </div>
-                                                <span className="text-lg font-bold text-slate-800 dark:text-white leading-none">{percentage}%</span>
-                                            </div>
-                                         )
-                                     })}
-                                </div>
-                            </>
-                         ) : (
-                             <div className="w-full flex items-center justify-center gap-4 text-slate-400">
-                                 <div className="w-16 h-16 rounded-full border-4 border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center">
-                                     <Gem className="w-6 h-6 text-slate-300 dark:text-slate-600" />
+                                             )
+                                         })}
+                                    </div>
+                                </>
+                             ) : (
+                                 <div className="w-full flex items-center justify-center gap-4 text-slate-400">
+                                     <div className="w-16 h-16 rounded-full border-4 border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center">
+                                         <Gem className="w-6 h-6 text-slate-300 dark:text-slate-600" />
+                                     </div>
+                                     <p className="text-sm font-medium">Data portofolio kosong</p>
                                  </div>
-                                 <p className="text-sm font-medium">Data portofolio kosong</p>
-                             </div>
-                         )}
+                             )}
+                        </div>
+
+                        {/* Add Action Mini Card */}
+                        <div className="relative z-10 w-full lg:flex-1 p-6 md:p-8 rounded-[2rem] border border-white/50 dark:border-slate-800/50 flex flex-col items-center sm:items-start justify-center text-center sm:text-left shadow-sm hover:shadow-lg transition-all" style={{ background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%)' }}>
+                            <div className="w-12 h-12 rounded-xl bg-indigo-500 text-white flex items-center justify-center mb-4 shadow-lg shadow-indigo-500/30">
+                                <Gem className="w-6 h-6" />
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">Kelola Portofolio Aset Umum</h3>
+                            <p className="text-sm text-slate-500 mb-6">Tambahkan instrumen seperti reksadana, saham, deposito, atau properti untuk dipantau secara statis.</p>
+                            
+                            <button onClick={() => { setEditingAsset(null); reset(); setIsModalOpen(true); }} className="px-6 py-3.5 bg-slate-900 border dark:border-none dark:bg-white text-white dark:text-slate-900 rounded-xl text-sm font-bold shadow-xl shadow-slate-900/20 dark:shadow-white/10 hover:-translate-y-1 transition-all active:scale-95 group flex items-center">
+                                <Plus className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform duration-300" /> Tambah Instrumen Baru
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -277,6 +331,10 @@ export default function AssetsIndex({ auth, assets, summary }: PageProps<{ asset
                         </div>
                     )}
                 </div>
+                </>
+                ) : (
+                    <GoldTab purchases={goldPurchases} currentPrice={goldPriceToday} />
+                )}
             </div>
 
             {/* Delete Modal */}

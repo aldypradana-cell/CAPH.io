@@ -7,6 +7,7 @@ use App\Http\Controllers\WalletController;
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\DebtController;
 use App\Http\Controllers\AssetController;
+use App\Http\Controllers\GoldController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\InsightsController;
 use App\Http\Controllers\ProfileController;
@@ -79,6 +80,11 @@ Route::middleware(['auth'])->group(function () {
         // Assets
         Route::resource('assets', AssetController::class)
             ->only(['index', 'store', 'update', 'destroy']);
+
+        // Gold Assets
+        Route::resource('gold', GoldController::class)
+            ->only(['store', 'update', 'destroy']);
+        Route::post('/gold/update-price', [GoldController::class, 'updatePrice'])->name('gold.updatePrice');
 
         // Categories
         Route::resource('categories', CategoryController::class)
