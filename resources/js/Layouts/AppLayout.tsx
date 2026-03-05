@@ -6,7 +6,7 @@ import {
     Target, Gem, CreditCard, Tags, User as UserIcon,
     Settings, FileDown, Bell, HelpCircle, Menu, X,
     ShieldCheck, Check, AlertTriangle, Info, CheckCircle,
-    Sun, Moon, MoreHorizontal, Users, FileText, Database, ArrowRightLeft
+    Sun, Moon, MoreHorizontal, Users, FileText, Database, ArrowRightLeft, Plus
 }
     from 'lucide-react';
 import { User } from '@/types';
@@ -353,17 +353,15 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                 {/* Mobile Bottom Navigation Bar */}
                 < nav className="fixed bottom-0 left-0 right-0 z-40 lg:hidden" >
                     <div className="glass border-t border-slate-200/50 dark:border-slate-700/50 px-2 pt-2 pb-[env(safe-area-inset-bottom,8px)]">
-                        <div className="flex items-center justify-around">
+                        <div className="flex items-center justify-around relative">
                             {[
                                 { href: route('dashboard'), icon: LayoutDashboard, label: 'Home', active: currentRoute === 'dashboard' },
                                 { href: route('transactions.index'), icon: List, label: 'Riwayat', active: currentRoute?.startsWith('transactions') ?? false },
-                                { href: route('smart-entry.index'), icon: Zap, label: 'AI Input', active: currentRoute?.startsWith('smart-entry') ?? false },
-                                { href: route('wallets.index'), icon: CreditCard, label: 'Dompet', active: currentRoute?.startsWith('wallets') ?? false },
                             ].map((item) => (
                                 <Link
                                     key={item.label}
                                     href={item.href}
-                                    className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-300 min-w-[60px] ${item.active
+                                    className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-300 min-w-[50px] ${item.active
                                         ? 'text-indigo-600 dark:text-indigo-400'
                                         : 'text-slate-400 dark:text-slate-500 active:text-indigo-600 dark:active:text-indigo-400'
                                         }`}
@@ -377,13 +375,39 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                     <span className={`text-[10px] font-semibold mt-0.5 ${item.active ? 'font-bold' : ''}`}>{item.label}</span>
                                 </Link>
                             ))}
-                            <button
-                                onClick={() => setIsSidebarOpen(true)}
-                                className="flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-300 min-w-[60px] text-slate-400 dark:text-slate-500 active:text-indigo-600 dark:active:text-indigo-400"
-                            >
-                                <MoreHorizontal className="w-5 h-5" />
-                                <span className="text-[10px] font-semibold mt-0.5">Menu</span>
-                            </button>
+                            
+                            {/* Global Center FAB */}
+                            <div className="relative -top-5 px-2">
+                                <Link
+                                    href={route('transactions.index') + '?action=add'}
+                                    className="flex items-center justify-center w-12 h-12 bg-gradient-to-tr from-indigo-600 to-violet-600 text-white rounded-full shadow-lg shadow-indigo-500/40 hover:scale-110 active:scale-95 transition-all duration-300 ring-4 ring-slate-50 dark:ring-slate-950"
+                                    aria-label="Tambah Transaksi"
+                                >
+                                    <Plus className="w-6 h-6 leading-none" />
+                                </Link>
+                            </div>
+
+                            {[
+                                { href: route('smart-entry.index'), icon: Zap, label: 'Input AI', active: currentRoute?.startsWith('smart-entry') ?? false },
+                                { href: route('wallets.index'), icon: CreditCard, label: 'Dompet', active: currentRoute?.startsWith('wallets') ?? false },
+                            ].map((item) => (
+                                <Link
+                                    key={item.label}
+                                    href={item.href}
+                                    className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-300 min-w-[50px] ${item.active
+                                        ? 'text-indigo-600 dark:text-indigo-400'
+                                        : 'text-slate-400 dark:text-slate-500 active:text-indigo-600 dark:active:text-indigo-400'
+                                        }`}
+                                >
+                                    <div className="relative">
+                                        <item.icon className={`w-5 h-5 transition-transform duration-300 ${item.active ? 'scale-110' : ''}`} />
+                                        {item.active && (
+                                            <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-indigo-600 dark:bg-indigo-400" />
+                                        )}
+                                    </div>
+                                    <span className={`text-[10px] font-semibold mt-0.5 ${item.active ? 'font-bold' : ''}`}>{item.label}</span>
+                                </Link>
+                            ))}
                         </div>
                     </div>
                 </nav >
