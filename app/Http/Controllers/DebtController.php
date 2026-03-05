@@ -107,7 +107,7 @@ class DebtController extends Controller
 
         // --- Debt Freedom Projection Logic ---
         $currentDate = now()->startOfMonth();
-        $simDate = clone $currentDate;
+        $simDate = $currentDate->copy();
         
         $simInstallments = $baseInstallments->where('is_completed', false)->map(function($i) {
             return (object) [
@@ -125,7 +125,7 @@ class DebtController extends Controller
             ->map(function($d) use ($currentDate) {
                 $rem = max(0, (float)$d->amount - (float)($d->payments_sum_amount ?? 0));
                 // Default to 1 month from now if no due date
-                $dueCarbon = $d->due_date ? \Carbon\Carbon::parse($d->due_date) : clone $currentDate->addMonth();
+                $dueCarbon = $d->due_date ? \Carbon\Carbon::parse($d->due_date) : $currentDate->copy()->addMonth();
                 return (object) [
                     'remaining' => $rem,
                     'due' => $dueCarbon->format('Y-m')
@@ -159,7 +159,7 @@ class DebtController extends Controller
                 }
             }
             foreach ($simDebts as $debt) {
-                if ($debt->due === $monthStr && $debt->remaining > 0) {
+                if ($debt->due <= $monthStr && $debt->remaining > 0) {
                     $deduction += $debt->remaining;
                     $debt->remaining = 0;
                 }
