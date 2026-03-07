@@ -18,7 +18,7 @@ import RecurringWidget from '@/Components/Dashboard/RecurringWidget';
 import UpcomingBillsWidget from '@/Components/Dashboard/UpcomingBillsWidget';
 import RecentTransactionsWidget from '@/Components/Dashboard/RecentTransactionsWidget';
 import TopTagsWidget from '@/Components/Dashboard/TopTagsWidget';
-import AddTransactionModal from '@/Components/Dashboard/AddTransactionModal';
+import TransactionFormModal from '@/Components/TransactionFormModal';
 import NetWorthCard from '@/Components/Dashboard/NetWorthCard';
 import ErrorBoundary from '@/Components/ErrorBoundary';
 
@@ -342,7 +342,7 @@ export default function Dashboard({
                 </div>
             </div>
 
-            <AddTransactionModal
+            <TransactionFormModal
                 isOpen={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
                 wallets={wallets}

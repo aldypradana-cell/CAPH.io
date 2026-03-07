@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useForm, router } from '@inertiajs/react';
 import { Plus, Edit2, Trash2, Coins, TrendingUp, AlertCircle, Save } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -47,6 +47,11 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
         wallet_id: '',
     });
 
+    // Sync currentPrice to priceForm whenever it changes from backend
+    useEffect(() => {
+        priceForm.setData('price', currentPrice.toLocaleString('id-ID'));
+    }, [currentPrice]);
+
     const handlePriceSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         const payload = { price: parseFloat(priceForm.data.price.replace(/\D/g, '')) };
@@ -66,10 +71,14 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
 
         if (editingId) {
             router.put(route('gold.update', editingId), payload, {
+                preserveScroll: true,
+                preserveState: true,
                 onSuccess: () => { setIsFormModalOpen(false); form.reset(); setEditingId(null); toast.success('Data diperbarui!'); }
             });
         } else {
             router.post(route('gold.store'), payload, {
+                preserveScroll: true,
+                preserveState: true,
                 onSuccess: () => { setIsFormModalOpen(false); form.reset(); toast.success('Data ditambahkan!'); }
             });
         }
@@ -89,6 +98,8 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
     const handleDelete = (id: number) => {
         if (confirm('Yakin ingin menghapus riwayat ini?')) {
             router.delete(route('gold.destroy', id), {
+                preserveScroll: true,
+                preserveState: true,
                 onSuccess: () => toast.success('Riwayat dihapus')
             });
         }
@@ -291,14 +302,18 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
                                 <div>
                                     <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Bobot / Gram</label>
                                     <input
-                                        type="number"
-                                        step="0.001"
+                                        type="text"
                                         required
                                         value={form.data.grams}
-                                        onChange={(e) => form.setData('grams', e.target.value)}
-                                        className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 text-slate-800 dark:text-white font-medium focus:ring-2 focus:ring-amber-500 transition-all"
-                                        placeholder="Contoh: 5.5"
+                                        onChange={(e) => {
+                                            // Allow only numbers and comma/dot
+                                            const val = e.target.value.replace(/[^0-9.,]/g, '');
+                                            form.setData('grams', val);
+                                        }}
+                                        className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 text-slate-800 dark:text-white font-bold focus:ring-2 focus:ring-amber-500 transition-all font-mono"
+                                        placeholder="Contoh: 1,5"
                                     />
+                                    <p className="text-[10px] text-slate-400 mt-1 ml-1 italic">Gunakan koma (,) atau titik (.) untuk desimal</p>
                                     {form.errors.grams && <span className="text-xs text-rose-500 mt-1">{form.errors.grams}</span>}
                                 </div>
                                 <div>
@@ -311,10 +326,34 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
                                             const val = e.target.value.replace(/\D/g, '');
                                             form.setData('price_per_gram', val ? parseInt(val).toLocaleString('id-ID') : '');
                                         }}
-                                        className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 text-slate-800 dark:text-white font-medium focus:ring-2 focus:ring-amber-500 transition-all font-mono"
+                                        className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 text-slate-800 dark:text-white font-bold focus:ring-2 focus:ring-amber-500 transition-all font-mono"
                                         placeholder="Rp 1.400.000"
                                     />
                                     {form.errors.price_per_gram && <span className="text-xs text-rose-500 mt-1">{form.errors.price_per_gram}</span>}
+                                </div>
+                            </div>
+
+                            {/* Live Calculation Info Box */}
+                            <div className="bg-amber-50 dark:bg-amber-500/5 border border-amber-100 dark:border-amber-500/20 rounded-2xl p-4 space-y-3">
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className="text-slate-600 dark:text-slate-300 font-bold">Total Modal (Uang Keluar):</span>
+                                    <span className="text-amber-600 dark:text-amber-400 font-black">
+                                        {formatIDR(
+                                            (parseFloat(form.data.grams.replace(/,/g, '.')) || 0) * 
+                                            (parseInt(form.data.price_per_gram.replace(/\D/g, '')) || 0)
+                                        )}
+                                    </span>
+                                </div>
+                                
+                                <div className="flex justify-between items-center text-sm border-t border-amber-200/50 dark:border-amber-500/20 pt-3">
+                                    <span className="text-slate-600 dark:text-slate-300 font-bold">Estimasi Nilai Saat Ini:</span>
+                                    <span className="text-emerald-600 dark:text-emerald-400 font-black">
+                                        {formatIDR((parseFloat(form.data.grams.replace(/,/g, '.')) || 0) * currentPrice)}
+                                    </span>
+                                </div>
+
+                                <div className="text-xs text-slate-600 dark:text-slate-400 bg-white/60 dark:bg-slate-900/50 p-3 rounded-xl leading-relaxed mt-2 border border-slate-200/50 dark:border-slate-700/50">
+                                    💡 <strong>Catatan:</strong> Merubah <strong>Harga Beli</strong> saja tidak akan merubah Estimasi Nilai Saat Ini, karena estimasi dihitung berdasarkan <em>Harga Emas Hari Ini</em>.
                                 </div>
                             </div>
                             

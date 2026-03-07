@@ -42,7 +42,24 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
 
     useEffect(() => {
         setMounted(true);
+        
+        // Sync activeTab with URL parameter on load
+        const params = new URLSearchParams(window.location.search);
+        const tab = params.get('tab');
+        if (tab === 'gold' || tab === 'assets') {
+            setActiveTab(tab as 'assets' | 'gold');
+        }
     }, []);
+
+    const handleTabChange = (tab: 'assets' | 'gold') => {
+        setActiveTab(tab);
+        // Concatenate manually to avoid TS argument count issues with Ziggy/Inertia signatures
+        router.visit(route('assets.index') + '?tab=' + tab, {
+            replace: true,
+            preserveState: true,
+            preserveScroll: true
+        });
+    };
 
     const { data, setData, post, put, processing, reset } = useForm({
         name: '',
@@ -54,7 +71,7 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
     const handleAmountChange = (val: string) => {
         const rawValue = val.replace(/\D/g, '');
         if (!rawValue) { setData('value', ''); return; }
-        setData('value', parseInt(rawValue).toLocaleString('id-ID'));
+        setData('value', new Intl.NumberFormat('id-ID').format(parseInt(rawValue)));
     };
     const parseAmount = (val: string) => parseFloat(val.replace(/\./g, '')) || 0;
 
@@ -165,13 +182,13 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
                 <div className="flex justify-center my-6 relative z-20">
                     <div className="bg-slate-100 dark:bg-slate-800/80 backdrop-blur-md p-1.5 rounded-2xl flex items-center gap-2 border border-slate-200 shadow-sm dark:border-slate-700/50">
                         <button 
-                            onClick={() => setActiveTab('assets')}
+                            onClick={() => handleTabChange('assets')}
                             className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === 'assets' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
                         >
                             <Gem className="w-4 h-4" /> Aset Umum
                         </button>
                         <button 
-                            onClick={() => setActiveTab('gold')}
+                            onClick={() => handleTabChange('gold')}
                             className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === 'gold' ? 'bg-white dark:bg-slate-700 text-amber-500 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
                         >
                             <Coins className="w-4 h-4" /> Emas Antam

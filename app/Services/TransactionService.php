@@ -36,6 +36,9 @@ class TransactionService
                     'date' => $data['date'],
                 ]);
 
+                // MAIN transaction MUST be pushed FIRST so tags are applied to it correctly in the Controller!
+                $newTransactions[] = $transaction;
+
                 // Update Wallet Balance
                 if ($data['type'] === TransactionType::INCOME->value) {
                     $wallet->increment('balance', $data['amount']);
@@ -112,8 +115,6 @@ class TransactionService
                         $newTransactions[] = $feeTransaction;
                     }
                 }
-
-                $newTransactions[] = $transaction;
             }
 
             return $newTransactions;

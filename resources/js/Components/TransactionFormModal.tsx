@@ -1,22 +1,35 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { useForm, router } from '@inertiajs/react'; // Ensure router is imported for Inertia v1 or useForm's post
+import { useForm, router } from '@inertiajs/react';
 import { X, TrendingDown, TrendingUp, ArrowRightLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
-import TagInput from '@/Components/TagInput'; // Assuming this exists based on original file
+import TagInput from '@/Components/TagInput';
 import { WalletData, CategoryData, TagData } from '@/types/dashboard';
 
-interface AddTransactionModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    wallets: WalletData[];
-    categories: CategoryData[];
-    userTags: TagData[];
+interface EditableTransaction {
+    id: number;
+    date: string;
+    description: string;
+    amount: number;
+    type: 'INCOME' | 'EXPENSE' | 'TRANSFER';
+    category: string;
+    wallet: { id: number; name: string };
+    to_wallet?: { id: number; name: string };
+    tags?: { id: number; name: string; slug: string; color: string | null }[];
 }
 
-export default function AddTransactionModal({
-    isOpen, onClose, wallets, categories, userTags
-}: AddTransactionModalProps) {
+interface TransactionFormModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    wallets: WalletData[] | { id: number; name: string }[];
+    categories: CategoryData[] | { id: number; name: string; type: string }[];
+    userTags: TagData[] | { id: number; name: string; slug: string; color: string | null }[];
+    editingTransaction?: EditableTransaction | null;
+}
+
+export default function TransactionFormModal({
+    isOpen, onClose, wallets, categories, userTags, editingTransaction = null
+}: TransactionFormModalProps) {
     const [inputType, setInputType] = useState<'EXPENSE' | 'INCOME' | 'TRANSFER'>('EXPENSE');
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [mounted, setMounted] = useState(false);
@@ -26,8 +39,7 @@ export default function AddTransactionModal({
         setMounted(true);
     }, []);
 
-    // We use inertia useForm for easy submission handling
-    const { data, setData, post: inertiaPost, processing, reset } = useForm({
+    const { data, setData, processing, reset } = useForm({
         wallet_id: '',
         to_wallet_id: '',
         date: new Date().toISOString().split('T')[0],
@@ -39,6 +51,26 @@ export default function AddTransactionModal({
         admin_fee: '',
         admin_fee_from: 'sender' as 'sender' | 'receiver',
     });
+
+    // Prefill form when editing
+    useEffect(() => {
+        if (editingTransaction && isOpen) {
+            setInputType(editingTransaction.type);
+            setSelectedTags(editingTransaction.tags?.map(t => t.name) || []);
+            setData({
+                wallet_id: editingTransaction.wallet.id.toString(),
+                to_wallet_id: editingTransaction.to_wallet?.id.toString() || '',
+                date: editingTransaction.date,
+                description: editingTransaction.description,
+                amount: Number(editingTransaction.amount).toLocaleString('id-ID'),
+                type: editingTransaction.type,
+                category: editingTransaction.category,
+                tags: editingTransaction.tags?.map(t => t.name) || [],
+                admin_fee: '',
+                admin_fee_from: 'sender' as 'sender' | 'receiver',
+            });
+        }
+    }, [editingTransaction, isOpen]);
 
     const handleAmountChange = (val: string) => {
         const rawValue = val.replace(/\D/g, '');
@@ -56,12 +88,6 @@ export default function AddTransactionModal({
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // Construct payload manually to ensure type and amount are correct before sending
-        // Note: Inertia useForm's transform could also be used, but manual payload with router.post 
-        // was used in the original file. Let's stick to useForm's post if possible, 
-        // or match the original logic if it used router.post explicitly.
-        // Original used router.post inside handleSubmit. We can do the same to match behavior closely.
-
         const payload = {
             ...data,
             type: inputType,
@@ -71,23 +97,39 @@ export default function AddTransactionModal({
             admin_fee_from: data.admin_fee_from,
         };
 
-        router.post(route('transactions.store'), payload, {
-            preserveState: true,
-            preserveScroll: true,
-            onSuccess: () => {
-                onClose();
-                reset();
-                setSelectedTags([]);
-                toast.success('Transaksi berhasil ditambahkan!');
-            }
-        });
+        const successCallback = () => {
+            handleClose();
+            toast.success(editingTransaction ? 'Diperbarui!' : 'Ditambahkan!');
+        };
+
+        if (editingTransaction) {
+            router.put(route('transactions.update', editingTransaction.id), payload, {
+                preserveState: true,
+                preserveScroll: true,
+                onSuccess: successCallback,
+            });
+        } else {
+            router.post(route('transactions.store'), payload, {
+                preserveState: true,
+                preserveScroll: true,
+                onSuccess: successCallback,
+            });
+        }
+    };
+
+    const handleClose = () => {
+        onClose();
+        reset();
+        setSelectedTags([]);
+        setShowAdminFee(false);
+        setInputType('EXPENSE');
     };
 
     if (!isOpen || !mounted) return null;
 
     return createPortal(
         <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 animate-fade-in">
-            <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity" onClick={onClose} />
+            <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity" onClick={handleClose} />
             <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-pop-in">
                 {/* Gradient top bar */}
                 <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 z-10" />
@@ -95,8 +137,10 @@ export default function AddTransactionModal({
                 {/* Header */}
                 <div className="p-5 pb-0 shrink-0">
                     <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-bold text-slate-800 dark:text-white">Transaksi Baru</h3>
-                        <button onClick={onClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                        <h3 className="text-lg font-bold text-slate-800 dark:text-white">
+                            {editingTransaction ? 'Edit Transaksi' : 'Transaksi Baru'}
+                        </h3>
+                        <button onClick={handleClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
                             <X className="w-5 h-5" />
                         </button>
                     </div>
@@ -139,7 +183,7 @@ export default function AddTransactionModal({
                         {/* Amount First */}
                         <div>
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Jumlah (Rp)</label>
-                            <input type="text" value={data.amount} onChange={(e) => handleAmountChange(e.target.value)} className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-2xl text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 text-center" placeholder="0" autoFocus required />
+                            <input type="tel" value={data.amount} onChange={(e) => handleAmountChange(e.target.value)} className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-2xl text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 text-center" placeholder="0" autoFocus required />
                         </div>
 
                         <div>
@@ -249,8 +293,8 @@ export default function AddTransactionModal({
                                 >
                                     <option value="">Pilih</option>
                                     {categories
-                                        .filter(c => c.type === inputType && c.name !== 'Investasi Emas')
-                                        .map(cat => (
+                                        .filter((c: any) => c.type === inputType && c.name !== 'Investasi Emas')
+                                        .map((cat: any) => (
                                             <option key={cat.id} value={cat.name}>{cat.name}</option>
                                         ))
                                     }
@@ -274,7 +318,7 @@ export default function AddTransactionModal({
                         />
 
                         <div className="flex space-x-3 pt-4">
-                            <button type="button" onClick={onClose} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors active:scale-95">Batal</button>
+                            <button type="button" onClick={handleClose} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors active:scale-95">Batal</button>
                             <button type="submit" disabled={processing} className="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-indigo-500/30 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50">
                                 {processing ? 'Menyimpan...' : 'Simpan'}
                             </button>
