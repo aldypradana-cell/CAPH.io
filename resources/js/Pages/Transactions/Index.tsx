@@ -492,14 +492,18 @@ export default function TransactionsIndex({
                                         {t.type === 'INCOME' ? '+' : '-'}{formatIDR(t.amount)}
                                     </span>
 
-                                    <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                                        <button onClick={() => handleEdit(t)} className="p-3 sm:p-2 text-slate-300 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-all hover:scale-110">
-                                            <Pencil className="w-4 h-4" />
-                                        </button>
-                                        <button onClick={() => setDeleteId(t.id)} className="p-3 sm:p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all hover:scale-110">
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
-                                    </div>
+                                    {t.category !== 'Investasi Emas' ? (
+                                        <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                                            <button onClick={() => handleEdit(t)} className="p-3 sm:p-2 text-slate-300 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-all hover:scale-110">
+                                                <Pencil className="w-4 h-4" />
+                                            </button>
+                                            <button onClick={() => setDeleteId(t.id)} className="p-3 sm:p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all hover:scale-110">
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="text-[10px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800/50 px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700/50">Edit via Menu Aset</div>
+                                    )}
                                 </div>
                             </div>
                         ))
@@ -736,7 +740,7 @@ export default function TransactionsIndex({
                                         >
                                             <option value="">Pilih</option>
                                             {categories
-                                                .filter(c => c.type === inputType)
+                                                .filter(c => c.type === inputType && c.name !== 'Investasi Emas')
                                                 .map(cat => (
                                                     <option key={cat.id} value={cat.name}>{cat.name}</option>
                                                 ))

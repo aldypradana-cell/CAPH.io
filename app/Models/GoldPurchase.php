@@ -11,6 +11,8 @@ class GoldPurchase extends Model
 
     protected $fillable = [
         'user_id',
+        'wallet_id',
+        'transaction_id',
         'grams',
         'price_per_gram',
         'purchased_at',
@@ -29,5 +31,15 @@ class GoldPurchase extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function wallet()
+    {
+        return $this->belongsTo(Wallet::class);
+    }
+
+    public function transaction()
+    {
+        return $this->belongsTo(Transaction::class);
     }
 }

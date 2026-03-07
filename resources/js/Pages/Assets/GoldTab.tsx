@@ -12,9 +12,16 @@ interface GoldPurchase {
     notes: string | null;
 }
 
+interface Wallet {
+    id: number;
+    name: string;
+    balance: number;
+}
+
 interface Props {
     purchases: GoldPurchase[];
     currentPrice: number;
+    wallets: Wallet[];
 }
 
 const formatIDR = (amount: number) =>
@@ -23,7 +30,7 @@ const formatIDR = (amount: number) =>
 const formatGram = (grams: number) => 
     new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 3 }).format(grams);
 
-export default function GoldTab({ purchases, currentPrice }: Props) {
+export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
     const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
     const [editingId, setEditingId] = useState<number | null>(null);
@@ -37,6 +44,7 @@ export default function GoldTab({ purchases, currentPrice }: Props) {
         price_per_gram: '',
         purchased_at: new Date().toISOString().split('T')[0],
         notes: '',
+        wallet_id: '',
     });
 
     const handlePriceSubmit = (e: React.FormEvent) => {
@@ -321,6 +329,24 @@ export default function GoldTab({ purchases, currentPrice }: Props) {
                                 />
                                 {form.errors.purchased_at && <span className="text-xs text-rose-500 mt-1">{form.errors.purchased_at}</span>}
                             </div>
+                            
+                            {!editingId && (
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Sumber Dana (Potong Saldo)</label>
+                                    <select
+                                        required
+                                        value={form.data.wallet_id}
+                                        onChange={(e) => form.setData('wallet_id', e.target.value)}
+                                        className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 text-slate-800 dark:text-white font-medium focus:ring-2 focus:ring-amber-500 transition-all cursor-pointer"
+                                    >
+                                        <option value="" disabled>Pilih dompet sumber dana...</option>
+                                        {wallets.map(w => (
+                                            <option key={w.id} value={w.id}>{w.name} ({formatIDR(w.balance)})</option>
+                                        ))}
+                                    </select>
+                                    {form.errors.wallet_id && <span className="text-xs text-rose-500 mt-1">{form.errors.wallet_id}</span>}
+                                </div>
+                            )}
                             <div>
                                 <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Catatan (Optional)</label>
                                 <input

@@ -27,7 +27,13 @@ const formatIDR = (amount: number) =>
 import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import GoldTab from './GoldTab';
 
-export default function AssetsIndex({ auth, assets, summary, goldPurchases, goldPriceToday, grandTotalValue }: PageProps<{ assets: Asset[]; summary: Summary; goldPurchases: any[]; goldPriceToday: number; grandTotalValue: number }>) {
+interface Wallet {
+    id: number;
+    name: string;
+    balance: number;
+}
+
+export default function AssetsIndex({ auth, assets, summary, goldPurchases, goldPriceToday, grandTotalValue, wallets }: PageProps<{ assets: Asset[]; summary: Summary; goldPurchases: any[]; goldPriceToday: number; grandTotalValue: number; wallets: Wallet[] }>) {
     const [activeTab, setActiveTab] = useState<'assets' | 'gold'>('assets');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
@@ -333,7 +339,7 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
                 </div>
                 </>
                 ) : (
-                    <GoldTab purchases={goldPurchases} currentPrice={goldPriceToday} />
+                    <GoldTab purchases={goldPurchases} currentPrice={goldPriceToday} wallets={wallets} />
                 )}
             </div>
 

@@ -36,12 +36,15 @@ class AssetController extends Controller
         $totalGoldValue = $totalGoldGrams * $goldPriceToday;
         $grandTotalValue = $summary['totalValue'] + $totalGoldValue;
 
+        $wallets = \App\Models\Wallet::where('user_id', $request->user()->id)->get();
+
         return Inertia::render('Assets/Index', [
             'assets' => $assets,
             'summary' => $summary,
             'goldPurchases' => $goldPurchases,
             'goldPriceToday' => $goldPriceToday,
             'grandTotalValue' => $grandTotalValue,
+            'wallets' => $wallets,
         ]);
     }
 

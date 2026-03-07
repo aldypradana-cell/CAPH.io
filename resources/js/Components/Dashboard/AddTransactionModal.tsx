@@ -249,7 +249,7 @@ export default function AddTransactionModal({
                                 >
                                     <option value="">Pilih</option>
                                     {categories
-                                        .filter(c => c.type === inputType)
+                                        .filter(c => c.type === inputType && c.name !== 'Investasi Emas')
                                         .map(cat => (
                                             <option key={cat.id} value={cat.name}>{cat.name}</option>
                                         ))
