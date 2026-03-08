@@ -323,8 +323,8 @@ export default function TransactionFormModal({
                             </div>
                         )}
 
-                        {/* Admin Fee Toggle — tampil untuk EXPENSE dan TRANSFER */}
-                        {(inputType === 'EXPENSE' || inputType === 'TRANSFER') && (
+                        {/* Admin Fee Toggle — tampil untuk EXPENSE dan TRANSFER, tetapi DISEMBUNYIKAN jika PayLater aktif */}
+                        {(inputType === 'EXPENSE' || inputType === 'TRANSFER') && !data.is_paylater && (
                             <div>
                                 {!showAdminFee ? (
                                     <button

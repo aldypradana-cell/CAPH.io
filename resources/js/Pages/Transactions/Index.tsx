@@ -429,8 +429,13 @@ export default function TransactionsIndex({
 
                                 {/* Amount & Actions */}
                                 <div className="flex items-center gap-4 shrink-0">
-                                    <span className={`text-base font-bold ${t.type === 'INCOME' ? 'text-emerald-600 dark:text-emerald-400' : t.type === 'TRANSFER' ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400'}`}>
-                                        {t.type === 'INCOME' ? '+' : '-'}{formatIDR(t.amount)}
+                                    <span className={`text-base font-bold flex items-center gap-1 ${
+                                        t.type === 'INCOME' ? 'text-emerald-600 dark:text-emerald-400' : 
+                                        t.type === 'TRANSFER' ? 'text-blue-600 dark:text-blue-400' : 
+                                        !t.wallet ? 'text-amber-500 dark:text-amber-400' : 'text-red-600 dark:text-red-400'
+                                    }`}>
+                                        {!t.wallet && t.type === 'EXPENSE' && <Clock className="w-4 h-4" />}
+                                        {t.type === 'INCOME' ? '+' : (!t.wallet ? '' : '-')}{formatIDR(t.amount)}
                                     </span>
 
                                     {t.category !== 'Investasi Emas' ? (

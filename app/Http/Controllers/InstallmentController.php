@@ -113,6 +113,17 @@ class InstallmentController extends Controller
         $nextTenor = $installment->paid_tenor + 1;
 
         DB::transaction(function () use ($installment, $validated, $nextTenor, $request) {
+            // Create transaction record
+            $transaction = Transaction::create([
+                'user_id'     => $request->user()->id,
+                'wallet_id'   => $validated['wallet_id'],
+                'category'    => 'Cicilan & Utang',
+                'type'        => TransactionType::EXPENSE->value,
+                'amount'      => $validated['amount'],
+                'description' => "{$installment->name} — Angsuran ke-{$nextTenor}/{$installment->total_tenor}",
+                'date'        => $validated['paid_at'],
+            ]);
+
             // Create payment record
             InstallmentPayment::create([
                 'installment_id' => $installment->id,
@@ -120,6 +131,7 @@ class InstallmentController extends Controller
                 'amount'         => $validated['amount'],
                 'paid_at'        => $validated['paid_at'],
                 'wallet_id'      => $validated['wallet_id'],
+                'transaction_id' => $transaction->id,
                 'notes'          => $validated['notes'] ?? null,
             ]);
 
@@ -133,17 +145,6 @@ class InstallmentController extends Controller
             // Deduct wallet balance (with pessimistic lock for safety)
             $wallet = Wallet::where('id', $validated['wallet_id'])->lockForUpdate()->firstOrFail();
             $wallet->decrement('balance', $validated['amount']);
-
-            // Create transaction record
-            Transaction::create([
-                'user_id'     => $request->user()->id,
-                'wallet_id'   => $validated['wallet_id'],
-                'category'    => 'Cicilan & Utang',
-                'type'        => TransactionType::EXPENSE->value,
-                'amount'      => $validated['amount'],
-                'description' => "{$installment->name} — Angsuran ke-{$nextTenor}/{$installment->total_tenor}",
-                'date'        => $validated['paid_at'],
-            ]);
         });
 
         $message = $installment->is_completed
