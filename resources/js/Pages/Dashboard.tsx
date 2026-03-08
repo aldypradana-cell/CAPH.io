@@ -364,9 +364,9 @@ export default function Dashboard({
 Dashboard.layout = (page: any) => (
     <AppLayout
         header={
-            <div className="flex flex-col">
+            <div className="flex flex-col min-w-0">
                 <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Dashboard Ringkasan</h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">
                     Selamat datang kembali, {page.props.auth.user.name.split(' ')[0]}!
                 </p>
             </div>

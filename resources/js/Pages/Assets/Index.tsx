@@ -420,9 +420,9 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
 
 AssetsIndex.layout = (page: any) => (
     <AppLayout header={
-        <div className="flex flex-col">
+        <div className="flex flex-col min-w-0">
             <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Aset Saya</h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Pantau portofolio aset kekayaan Anda</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">Pantau portofolio aset kekayaan Anda</p>
         </div>
     }>
         {page}

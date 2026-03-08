@@ -206,9 +206,9 @@ export default function CategoriesIndex({ auth, categories }: PageProps<{ catego
 
 CategoriesIndex.layout = (page: any) => (
     <AppLayout header={
-        <div className="flex flex-col">
+        <div className="flex flex-col min-w-0">
             <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Kategori</h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Kelola kategori transaksi</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">Kelola kategori transaksi</p>
         </div>
     }>
         {page}

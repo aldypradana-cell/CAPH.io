@@ -116,6 +116,13 @@ export default function NotificationCenter({ notifications }: {
                         </button>
                     </div>
 
+                    {/* Mobile Only: Mark All Read Action */}
+                    <div className="sm:hidden border-b border-slate-100 dark:border-slate-800 p-3 bg-slate-50/50 dark:bg-slate-800/30 flex justify-end">
+                        <button onClick={handleMarkAllRead} disabled={unreadCount === 0} className="px-4 py-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors disabled:opacity-50 flex items-center w-full justify-center">
+                            <Check className="w-3 h-3 mr-1.5" /> Tandai Semua Dibaca
+                        </button>
+                    </div>
+
                     {/* List */}
                     <div className="divide-y divide-slate-100 dark:divide-slate-800">
                         {filteredNotifications.length === 0 ? (
@@ -210,12 +217,12 @@ const LayoutHeader = (page: any) => {
     // OR: Just hardcode the router visit in the header?
 
     return (
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full">
-            <div>
-                <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2"><Bell className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600 dark:text-indigo-400" /> Pusat Notifikasi</h1>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Anda memiliki <span className="font-bold text-indigo-600 dark:text-indigo-400">{unreadCount}</span> notifikasi baru.</p>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full min-w-0">
+            <div className="min-w-0 flex-1">
+                <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 truncate"><Bell className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600 dark:text-indigo-400 flex-shrink-0" /> <span className="truncate">Pusat Notifikasi</span></h1>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 truncate">Anda memiliki <span className="font-bold text-indigo-600 dark:text-indigo-400">{unreadCount}</span> notifikasi baru.</p>
             </div>
-            <button onClick={() => router.post(route('notifications.readAll'))} disabled={unreadCount === 0} className="px-4 py-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors disabled:opacity-50 flex items-center">
+            <button onClick={() => router.post(route('notifications.readAll'))} disabled={unreadCount === 0} className="hidden sm:flex px-4 py-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors disabled:opacity-50 items-center">
                 <Check className="w-3 h-3 mr-1.5" /> Tandai Semua Dibaca
             </button>
         </div>

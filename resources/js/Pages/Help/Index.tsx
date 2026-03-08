@@ -109,9 +109,9 @@ export default function HelpCenter() {
 
 HelpCenter.layout = (page: any) => (
     <AppLayout header={
-        <div className="flex flex-col">
+        <div className="flex flex-col min-w-0">
             <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Bantuan & FAQ</h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Temukan jawaban dan dapatkan bantuan</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">Temukan jawaban dan dapatkan bantuan</p>
         </div>
     }>
         {page}

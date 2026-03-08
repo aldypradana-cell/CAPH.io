@@ -261,9 +261,9 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
 WalletsIndex.layout = (page: any) => (
     <AppLayout
         header={
-            <div className="flex flex-col">
+            <div className="flex flex-col min-w-0">
                 <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Dompet Saya</h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Kelola sumber dana keuangan Anda</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">Kelola sumber dana keuangan Anda</p>
             </div>
         }
     >

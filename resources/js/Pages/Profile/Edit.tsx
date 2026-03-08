@@ -250,9 +250,9 @@ export default function Edit({
 
 Edit.layout = (page: any) => (
     <AppLayout header={
-        <div className="flex flex-col">
+        <div className="flex flex-col min-w-0">
             <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Profil Saya</h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Kelola informasi akun Anda</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">Kelola informasi akun Anda</p>
         </div>
     }>
         {page}
