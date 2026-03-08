@@ -200,7 +200,8 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
                 </div>
                 
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    {/* Desktop Table */}
+                    <table className="w-full text-left border-collapse hidden md:table">
                         <thead>
                             <tr className="bg-slate-50/50 dark:bg-slate-800/20 border-b border-slate-200 dark:border-slate-700/50">
                                 <th className="p-4 pl-6 lg:pl-8 text-xs font-bold text-slate-400 uppercase tracking-wider">Tanggal</th>
@@ -242,7 +243,7 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
                                             </p>
                                         </td>
                                         <td className="p-4 pr-6 lg:pr-8 text-right whitespace-nowrap">
-                                            <div className="flex justify-end gap-2 opacity-50 group-hover:opacity-100 transition-opacity">
+                                            <div className="flex justify-end gap-2 opacity-100 md:opacity-50 group-hover:opacity-100 transition-opacity">
                                                 <button onClick={() => handleEdit(p)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all"><Edit2 className="w-4 h-4" /></button>
                                                 <button onClick={() => handleDelete(p.id)} className="p-2 text-slate-400 hover:text-rose-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all"><Trash2 className="w-4 h-4" /></button>
                                             </div>
@@ -261,6 +262,62 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
                             )}
                         </tbody>
                     </table>
+
+                    {/* Mobile Card List */}
+                    <div className="md:hidden flex flex-col divide-y divide-slate-100 dark:divide-slate-800/50">
+                        {purchases.length > 0 ? purchases.map((p) => {
+                            const gr = parseFloat(p.grams);
+                            const buyPrice = parseFloat(p.price_per_gram);
+                            const modal = gr * buyPrice;
+                            const nowVal = gr * currentPrice;
+                            const diff = nowVal - modal;
+                            const diffPct = modal > 0 ? (diff / modal) * 100 : 0;
+
+                            return (
+                                <div key={p.id} className="p-5 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                                    <div className="flex justify-between items-start mb-3">
+                                        <div>
+                                            <p className="font-bold text-slate-800 dark:text-white text-sm">{new Date(p.purchased_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                                            {p.notes && <p className="text-xs text-slate-400 mt-0.5 truncate max-w-[200px]">{p.notes}</p>}
+                                        </div>
+                                        <div className="flex gap-1">
+                                            <button onClick={() => handleEdit(p)} className="p-1.5 text-slate-400 hover:text-indigo-600 bg-slate-50 dark:bg-slate-800 rounded-lg transition-all active:scale-95"><Edit2 className="w-4 h-4" /></button>
+                                            <button onClick={() => handleDelete(p.id)} className="p-1.5 text-slate-400 hover:text-rose-500 bg-slate-50 dark:bg-slate-800 rounded-lg transition-all active:scale-95"><Trash2 className="w-4 h-4" /></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-2 gap-4 mb-3 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl">
+                                        <div>
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total Modal</p>
+                                            <p className="text-sm font-black text-slate-800 dark:text-white">{formatIDR(modal)}</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Profit/Loss</p>
+                                            <p className={`text-sm font-bold ${diff >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                                                {diff > 0 ? '+' : ''}{formatIDR(diff)}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center justify-between">
+                                        <span className="inline-flex items-center px-2 py-1 rounded-lg bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-bold">
+                                            {formatGram(gr)} gr
+                                        </span>
+                                        <p className="text-xs font-medium text-slate-500">
+                                            Harga Beli: <span className="font-bold">{formatIDR(buyPrice)}</span>/gr
+                                        </p>
+                                    </div>
+                                </div>
+                            );
+                        }) : (
+                            <div className="p-12 text-center">
+                                <div className="w-16 h-16 rounded-full border-4 border-dashed border-slate-200 dark:border-slate-700 flex items-center justify-center mx-auto mb-4">
+                                    <Coins className="w-6 h-6 text-slate-300 dark:text-slate-600" />
+                                </div>
+                                <p className="text-slate-500 font-medium text-sm">Belum ada riwayat pembelian emas.</p>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 

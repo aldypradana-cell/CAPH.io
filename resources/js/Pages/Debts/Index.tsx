@@ -741,7 +741,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                             <form onSubmit={handleDebtSubmit} className="space-y-4">
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Jumlah (Rp)</label>
-                                    <input type="tel" value={debtForm.data.amount} onChange={(e) => handleDebtAmountChange(e.target.value)} className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-2xl text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 text-center" placeholder="0" autoFocus required />
+                                    <input type="tel" inputMode="numeric" autoComplete="off" value={debtForm.data.amount} onChange={(e) => handleDebtAmountChange(e.target.value)} className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-2xl text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 text-center" placeholder="0" autoFocus required />
                                 </div>
 
                                 <div className="space-y-4">
@@ -794,7 +794,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                             <form onSubmit={handleRecurringSubmit} className="space-y-4">
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Jumlah (Estimasi Rp)</label>
-                                    <input type="tel" value={recurringForm.data.amount} onChange={(e) => recurringForm.setData('amount', formatInputAmount(e.target.value))} className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-2xl text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 text-center" placeholder="0" required />
+                                    <input type="tel" inputMode="numeric" autoComplete="off" value={recurringForm.data.amount} onChange={(e) => recurringForm.setData('amount', formatInputAmount(e.target.value))} className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-2xl text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 text-center" placeholder="0" required />
                                 </div>
 
                                 <div>
@@ -891,7 +891,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                                 <p className="text-sm text-gray-600 dark:text-gray-400 bg-slate-100 dark:bg-slate-800 p-3 rounded-xl mb-4">Silakan konfirmasi nominal aktual dan dompet pembayaran.</p>
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Nominal Aktual (Rp)</label>
-                                    <input type="tel" value={processForm.data.amount} onChange={(e) => processForm.setData('amount', formatInputAmount(e.target.value))} className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-2xl text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 text-center" required />
+                                    <input type="tel" inputMode="numeric" autoComplete="off" value={processForm.data.amount} onChange={(e) => processForm.setData('amount', formatInputAmount(e.target.value))} className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-2xl text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 text-center" required />
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Bayar Menggunakan</label>

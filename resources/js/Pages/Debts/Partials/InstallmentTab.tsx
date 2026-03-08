@@ -503,17 +503,17 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
                                 <div className="grid grid-cols-3 gap-3">
                                     <div>
                                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Total Tenor (bln)</label>
-                                        <input type="number" value={form.data.total_tenor} onChange={e => form.setData('total_tenor', e.target.value)} required min="1"
+                                        <input type="tel" inputMode="numeric" autoComplete="off" value={form.data.total_tenor} onChange={e => form.setData('total_tenor', e.target.value)} required min="1"
                                             className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="60" />
                                     </div>
                                     <div>
                                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Sudah Bayar (bln)</label>
-                                        <input type="number" value={form.data.paid_tenor} onChange={e => form.setData('paid_tenor', e.target.value)} min="0"
+                                        <input type="tel" inputMode="numeric" autoComplete="off" value={form.data.paid_tenor} onChange={e => form.setData('paid_tenor', e.target.value)} min="0"
                                             className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="0" />
                                     </div>
                                     <div>
                                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Tgl Jatuh Tempo</label>
-                                        <input type="number" value={form.data.due_day} onChange={e => form.setData('due_day', e.target.value)} required min="1" max="31"
+                                        <input type="tel" inputMode="numeric" autoComplete="off" value={form.data.due_day} onChange={e => form.setData('due_day', e.target.value)} required min="1" max="31"
                                             className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="15" />
                                     </div>
                                 </div>
@@ -535,13 +535,13 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
                                     <div className={`grid gap-3 ${form.data.interest_type === 'MIXED' ? 'grid-cols-2' : 'grid-cols-1'}`}>
                                         <div>
                                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Bunga (% / tahun)</label>
-                                            <input type="number" step="0.01" value={form.data.interest_rate} onChange={e => form.setData('interest_rate', e.target.value)}
+                                            <input type="number" step="0.01" inputMode="decimal" autoComplete="off" value={form.data.interest_rate} onChange={e => form.setData('interest_rate', e.target.value)}
                                                 className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="5.5" />
                                         </div>
                                         {form.data.interest_type === 'MIXED' && (
                                             <div>
                                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Flat berapa bulan?</label>
-                                                <input type="number" value={form.data.fixed_tenor} onChange={e => form.setData('fixed_tenor', e.target.value)}
+                                                <input type="tel" inputMode="numeric" autoComplete="off" value={form.data.fixed_tenor} onChange={e => form.setData('fixed_tenor', e.target.value)}
                                                     className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="36" />
                                             </div>
                                         )}
