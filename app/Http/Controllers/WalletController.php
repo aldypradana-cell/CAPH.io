@@ -3,20 +3,65 @@
 namespace App\Http\Controllers;
 
 use App\Models\Wallet;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class WalletController extends Controller
 {
     public function index(Request $request)
     {
-        $wallets = Wallet::where('user_id', $request->user()->id)
+        $userId = $request->user()->id;
+        $monthStart = now()->startOfMonth()->format('Y-m-d');
+        $monthEnd = now()->endOfMonth()->format('Y-m-d');
+
+        $wallets = Wallet::where('user_id', $userId)
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($wallet) {
                 $wallet->balance = (float) $wallet->balance;
                 return $wallet;
             });
+
+        // ── Monthly Cashflow per Wallet (efficient: 2 aggregate queries) ──
+        // Income per wallet: INCOME transactions + TRANSFER received (to_wallet_id)
+        $incomeByWallet = Transaction::where('user_id', $userId)
+            ->whereBetween('date', [$monthStart, $monthEnd])
+            ->where(function ($q) {
+                $q->where('type', 'INCOME');
+            })
+            ->groupBy('wallet_id')
+            ->selectRaw('wallet_id, SUM(amount) as total')
+            ->pluck('total', 'wallet_id');
+
+        // Transfer received (to_wallet_id counts as income for the receiving wallet)
+        $transferInByWallet = Transaction::where('user_id', $userId)
+            ->whereBetween('date', [$monthStart, $monthEnd])
+            ->where('type', 'TRANSFER')
+            ->whereNotNull('to_wallet_id')
+            ->groupBy('to_wallet_id')
+            ->selectRaw('to_wallet_id, SUM(amount) as total')
+            ->pluck('total', 'to_wallet_id');
+
+        // Expense per wallet: EXPENSE transactions + TRANSFER sent (wallet_id)
+        $expenseByWallet = Transaction::where('user_id', $userId)
+            ->whereBetween('date', [$monthStart, $monthEnd])
+            ->where(function ($q) {
+                $q->where('type', 'EXPENSE')
+                  ->orWhere('type', 'TRANSFER');
+            })
+            ->groupBy('wallet_id')
+            ->selectRaw('wallet_id, SUM(amount) as total')
+            ->pluck('total', 'wallet_id');
+
+        // Merge cashflow data into wallets
+        $wallets->transform(function ($wallet) use ($incomeByWallet, $transferInByWallet, $expenseByWallet) {
+            $wallet->monthly_income = (float) ($incomeByWallet[$wallet->id] ?? 0)
+                                    + (float) ($transferInByWallet[$wallet->id] ?? 0);
+            $wallet->monthly_expense = (float) ($expenseByWallet[$wallet->id] ?? 0);
+            return $wallet;
+        });
         
         return Inertia::render('Wallets/Index', [
             'wallets' => $wallets,

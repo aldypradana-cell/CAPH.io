@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import TransactionFormModal from '@/Components/TransactionFormModal';
+import AdvancedFilterSheet from '@/Components/AdvancedFilterSheet';
 
 interface TagData {
     id: number;
@@ -216,6 +217,8 @@ export default function TransactionsIndex({
     const [startDate, setStartDate] = useState(filters?.start_date || '');
     const [endDate, setEndDate] = useState(filters?.end_date || '');
     const [filterTag, setFilterTag] = useState(filters?.tag || '');
+    const [filterWallet, setFilterWallet] = useState(filters?.wallet_id?.toString() || '');
+    const [filterCategory, setFilterCategory] = useState(filters?.category || '');
 
     // Debounced server-side search
     const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -236,6 +239,8 @@ export default function TransactionsIndex({
                 start_date: startDate || undefined,
                 end_date: endDate || undefined,
                 tag: filterTag || undefined,
+                wallet_id: filterWallet || undefined,
+                category: filterCategory || undefined,
             }, { preserveState: true, preserveScroll: true });
         }, 400);
 
@@ -258,6 +263,8 @@ export default function TransactionsIndex({
             start_date: startDate || undefined,
             end_date: endDate || undefined,
             tag: filterTag || undefined,
+            wallet_id: filterWallet || undefined,
+            category: filterCategory || undefined,
         }, { preserveState: true });
     };
 
@@ -267,7 +274,25 @@ export default function TransactionsIndex({
         setStartDate('');
         setEndDate('');
         setFilterTag('');
+        setFilterWallet('');
+        setFilterCategory('');
         router.get(route('transactions.index'), {}, { preserveState: true });
+    };
+
+    const handleAdvancedFilterApply = (advFilters: { type: string; wallet_id: string; category: string; tag: string }) => {
+        setFilterType(advFilters.type);
+        setFilterWallet(advFilters.wallet_id);
+        setFilterCategory(advFilters.category);
+        setFilterTag(advFilters.tag);
+        router.get(route('transactions.index'), {
+            search: searchTerm || undefined,
+            type: advFilters.type || undefined,
+            start_date: startDate || undefined,
+            end_date: endDate || undefined,
+            tag: advFilters.tag || undefined,
+            wallet_id: advFilters.wallet_id || undefined,
+            category: advFilters.category || undefined,
+        }, { preserveState: true });
     };
 
     const handleExportCSV = () => {
@@ -334,61 +359,49 @@ export default function TransactionsIndex({
                     </div>
 
                     {/* Filter & Actions */}
-                    <div className="flex items-center gap-3 flex-wrap">
-                        {/* Type Filter */}
-                        <div className="flex items-center gap-1.5 sm:gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0 scrollbar-hide snap-x">
-                            <select
-                                value={filterType}
-                                onChange={(e) => setFilterType(e.target.value)}
-                                className="snap-start px-3 py-1.5 sm:px-4 sm:py-2 bg-slate-100 dark:bg-slate-800 border-none rounded-xl text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 focus:ring-2 focus:ring-indigo-500 cursor-pointer min-w-max"
-                            >
-                                <option value="">Semua Tipe</option>
-                                <option value="INCOME">Pemasukan</option>
-                                <option value="EXPENSE">Pengeluaran</option>
-                                <option value="TRANSFER">Transfer</option>
-                            </select>
-
-                            <select
-                                value={filterTag}
-                                onChange={(e) => setFilterTag(e.target.value)}
-                                className="snap-start px-3 py-1.5 sm:px-4 sm:py-2 bg-slate-100 dark:bg-slate-800 border-none rounded-xl text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 focus:ring-2 focus:ring-indigo-500 cursor-pointer min-w-max"
-                            >
-                                <option value="">Semua Tag</option>
-                                {userTags.map(tag => (
-                                    <option key={tag.id} value={tag.slug || tag.name}>#{tag.name}</option>
-                                ))}
-                            </select>
-
-                            <div className="snap-start flex items-center gap-1.5 sm:gap-2 bg-slate-100 dark:bg-slate-800 rounded-xl px-2 min-w-max">
-                                <Calendar className="w-4 h-4 text-slate-400" />
-                                <input
-                                    type="date"
-                                    value={startDate}
-                                    onChange={(e) => setStartDate(e.target.value)}
-                                    className="bg-transparent border-none text-[10px] sm:text-xs font-medium text-slate-600 dark:text-slate-300 focus:ring-0 p-1.5 sm:p-2 w-[90px] sm:w-28"
-                                />
-                                <span className="text-slate-400">-</span>
-                                <input
-                                    type="date"
-                                    value={endDate}
-                                    onChange={(e) => setEndDate(e.target.value)}
-                                    className="bg-transparent border-none text-[10px] sm:text-xs font-medium text-slate-600 dark:text-slate-300 focus:ring-0 p-1.5 sm:p-2 w-[90px] sm:w-28"
-                                />
-                            </div>
+                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                        {/* Date Range Picker (always visible — primary filter) */}
+                        <div className="flex items-center gap-1.5 sm:gap-2 bg-slate-100 dark:bg-slate-800 rounded-xl px-2 min-w-max">
+                            <Calendar className="w-4 h-4 text-slate-400" />
+                            <input
+                                type="date"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                                className="bg-transparent border-none text-[10px] sm:text-xs font-medium text-slate-600 dark:text-slate-300 focus:ring-0 p-1.5 sm:p-2 w-[90px] sm:w-28"
+                            />
+                            <span className="text-slate-400">-</span>
+                            <input
+                                type="date"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)}
+                                className="bg-transparent border-none text-[10px] sm:text-xs font-medium text-slate-600 dark:text-slate-300 focus:ring-0 p-1.5 sm:p-2 w-[90px] sm:w-28"
+                            />
                         </div>
 
-                        <button onClick={applyFilters} className="px-3 py-1.5 sm:px-4 sm:py-3 bg-indigo-600 text-white rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold hover:bg-indigo-700 transition-all active:scale-95 shrink-0">
-                            Filter
+                        <button onClick={applyFilters} className="px-3 py-1.5 sm:px-4 sm:py-2 bg-indigo-600 text-white rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold hover:bg-indigo-700 transition-all active:scale-95 shrink-0">
+                            Cari
                         </button>
 
-                        {(filterType || startDate || endDate || filterTag) && (
-                            <button onClick={clearFilters} className="px-3 py-1.5 sm:px-4 sm:py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95 shrink-0">
+                        {/* Advanced Filter Sheet (Tipe, Dompet, Kategori, Tag) */}
+                        <AdvancedFilterSheet
+                            wallets={wallets.map(w => ({ value: w.id.toString(), label: w.name }))}
+                            categories={categories.map(c => ({ value: c.name, label: c.name }))}
+                            tags={userTags.map(t => ({ value: t.slug || t.name, label: t.name }))}
+                            filterType={filterType}
+                            filterWallet={filterWallet}
+                            filterCategory={filterCategory}
+                            filterTag={filterTag}
+                            onApply={handleAdvancedFilterApply}
+                        />
+
+                        {(filterType || filterWallet || filterCategory || filterTag || startDate || endDate) && (
+                            <button onClick={clearFilters} className="px-3 py-1.5 sm:px-4 sm:py-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95 shrink-0">
                                 Reset
                             </button>
                         )}
 
                         {/* CSV Export */}
-                        <button onClick={handleExportCSV} className="hidden sm:flex p-3 glass-card rounded-2xl text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md transition-all active:scale-95" title="Export CSV">
+                        <button onClick={handleExportCSV} className="hidden sm:flex p-2 sm:p-3 glass-card rounded-xl sm:rounded-2xl text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md transition-all active:scale-95" title="Export CSV">
                             <Download className="w-4 h-4" />
                         </button>
 

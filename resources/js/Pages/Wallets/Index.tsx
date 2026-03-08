@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
     Plus, Trash2, X, Wallet as WalletIcon, CreditCard, Banknote,
-    Edit2, AlertTriangle
+    Edit2, AlertTriangle, ArrowUpRight, ArrowDownRight
 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -14,10 +14,19 @@ interface Wallet {
     name: string;
     type: string;
     balance: number;
+    monthly_income: number;
+    monthly_expense: number;
 }
 
 const formatIDR = (amount: number) =>
     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+
+const formatShortIDR = (n: number) => {
+    if (n >= 1_000_000_000) return `Rp${(n / 1_000_000_000).toFixed(1)}M`;
+    if (n >= 1_000_000) return `Rp${(n / 1_000_000).toFixed(1)}jt`;
+    if (n >= 1_000) return `Rp${(n / 1_000).toFixed(0)}rb`;
+    return `Rp${n}`;
+};
 
 export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wallet[] }>) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -126,7 +135,8 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                         return (
                             <div
                                 key={wallet.id}
-                                className={`bg-gradient-to-br ${getWalletGradient(wallet.type)} rounded-2xl p-4 sm:p-6 text-white relative h-56 flex flex-col justify-between overflow-hidden shadow-xl hover:shadow-2xl hover:scale-[1.03] hover:-translate-y-1 transition-all duration-500 group cursor-default animate-pop-in`}
+                                onClick={() => router.visit(route('transactions.index', { wallet_id: wallet.id }))}
+                                className={`bg-gradient-to-br ${getWalletGradient(wallet.type)} rounded-2xl p-4 sm:p-6 text-white relative h-56 flex flex-col justify-between overflow-hidden shadow-xl hover:shadow-2xl hover:scale-[1.03] hover:-translate-y-1 transition-all duration-500 group cursor-pointer animate-pop-in`}
                                 style={{ animationDelay: `${idx * 100}ms` }}
                             >
                                 {/* Background pattern */}
@@ -144,9 +154,20 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                                     <Icon className="w-8 h-8 opacity-60" />
                                 </div>
 
-                                {/* Card Chip (simulated) */}
-                                <div className="relative z-10">
-                                    <div className="w-10 h-7 bg-gradient-to-br from-amber-300 to-amber-500 rounded-md opacity-80" />
+                                {/* Monthly Cashflow Summary */}
+                                <div className="relative z-10 flex items-center gap-2">
+                                    <div className="flex items-center gap-1 px-2 py-1 bg-white/10 backdrop-blur-sm rounded-lg">
+                                        <ArrowUpRight className="w-3 h-3 text-emerald-300" />
+                                        <span className="text-[10px] font-bold text-emerald-200">
+                                            {formatShortIDR(wallet.monthly_income || 0)}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-1 px-2 py-1 bg-white/10 backdrop-blur-sm rounded-lg">
+                                        <ArrowDownRight className="w-3 h-3 text-red-300" />
+                                        <span className="text-[10px] font-bold text-red-200">
+                                            {formatShortIDR(wallet.monthly_expense || 0)}
+                                        </span>
+                                    </div>
                                 </div>
 
                                 {/* Bottom Row */}
@@ -159,10 +180,10 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                                     </div>
                                     {/* Action buttons on hover */}
                                     <div className="relative z-20 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button onClick={() => handleEdit(wallet)} className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors" title="Edit">
+                                        <button onClick={(e) => { e.stopPropagation(); handleEdit(wallet); }} className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors" title="Edit">
                                             <Edit2 className="w-4 h-4" />
                                         </button>
-                                        <button onClick={() => setDeleteId(wallet.id)} className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors" title="Hapus">
+                                        <button onClick={(e) => { e.stopPropagation(); setDeleteId(wallet.id); }} className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors" title="Hapus">
                                             <Trash2 className="w-4 h-4" />
                                         </button>
                                     </div>

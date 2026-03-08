@@ -35,6 +35,19 @@ class TransactionController extends Controller
             $query->where('type', $request->type);
         }
 
+        // Wallet filter (for cross-linking from Wallet page)
+        if ($request->filled('wallet_id')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('wallet_id', $request->wallet_id)
+                  ->orWhere('to_wallet_id', $request->wallet_id);
+            });
+        }
+
+        // Category filter
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+
         // Determine date range (default to current month)
         $startDate = $request->input('start_date', now()->startOfMonth()->format('Y-m-d'));
         $endDate = $request->input('end_date', now()->endOfMonth()->format('Y-m-d'));
@@ -111,6 +124,8 @@ class TransactionController extends Controller
                 'end_date' => $endDate,
                 'tag' => $request->tag,
                 'search' => $request->search,
+                'wallet_id' => $request->wallet_id,
+                'category' => $request->category,
             ],
             'userTags' => $userTags,
             'heatmapData' => $heatmapData,
