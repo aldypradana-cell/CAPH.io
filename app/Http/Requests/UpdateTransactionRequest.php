@@ -18,7 +18,7 @@ class UpdateTransactionRequest extends FormRequest
         $userId = $this->user()->id;
 
         return [
-            'wallet_id'    => ['required', Rule::exists('wallets', 'id')->where('user_id', $userId)],
+            'wallet_id'    => ['nullable', Rule::exists('wallets', 'id')->where('user_id', $userId)],
             'to_wallet_id' => ['nullable', Rule::exists('wallets', 'id')->where('user_id', $userId)],
             'date'         => 'required|date',
             'description'  => 'required|string|max:255',

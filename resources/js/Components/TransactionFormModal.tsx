@@ -13,8 +13,8 @@ interface EditableTransaction {
     amount: number;
     type: 'INCOME' | 'EXPENSE' | 'TRANSFER';
     category: string;
-    wallet: { id: number; name: string };
-    to_wallet?: { id: number; name: string };
+    wallet: { id: number; name: string } | null;
+    to_wallet?: { id: number; name: string } | null;
     tags?: { id: number; name: string; slug: string; color: string | null }[];
 }
 
@@ -77,8 +77,8 @@ export default function TransactionFormModal({
             setInputType(editingTransaction.type);
             setSelectedTags(editingTransaction.tags?.map(t => t.name) || []);
             setData({
-                wallet_id: editingTransaction.wallet.id.toString(),
-                to_wallet_id: editingTransaction.to_wallet?.id.toString() || '',
+                wallet_id: editingTransaction.wallet?.id?.toString() || '',
+                to_wallet_id: editingTransaction.to_wallet?.id?.toString() || '',
                 date: editingTransaction.date,
                 description: editingTransaction.description,
                 amount: Number(editingTransaction.amount).toLocaleString('id-ID'),
@@ -87,7 +87,7 @@ export default function TransactionFormModal({
                 tags: editingTransaction.tags?.map(t => t.name) || [],
                 admin_fee: '',
                 admin_fee_from: 'sender' as 'sender' | 'receiver',
-                is_paylater: false,
+                is_paylater: editingTransaction.type === 'EXPENSE' && !editingTransaction.wallet,
                 paylater_lender: '',
                 paylater_tenor: 1,
                 paylater_due_day: new Date().getDate(),

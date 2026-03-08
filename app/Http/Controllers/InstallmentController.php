@@ -67,7 +67,18 @@ class InstallmentController extends Controller
             'auto_debit'     => 'boolean',
         ]);
 
-        $installment->update($validated);
+        DB::transaction(function () use ($installment, $validated) {
+            $installment->update($validated);
+
+            // Sync with parent transaction if it exists (PayLater sync)
+            if ($installment->transaction_id) {
+                Transaction::where('id', $installment->transaction_id)->update([
+                    'description' => str_replace('PayLater - ', '', $validated['name']),
+                    'amount'      => $validated['total_amount'],
+                    'date'        => $validated['start_date'],
+                ]);
+            }
+        });
 
         return redirect()->back()->with('success', 'Cicilan berhasil diperbarui');
     }

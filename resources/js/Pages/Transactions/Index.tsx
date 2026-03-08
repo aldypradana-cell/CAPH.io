@@ -422,16 +422,20 @@ export default function TransactionsIndex({
                                 className="glass-card rounded-2xl p-4 flex items-center justify-between group hover:shadow-lg transition-all duration-300 animate-fade-in-up"
                                 style={{ animationDelay: `${idx * 50}ms` }}
                             >
-                                <div className="flex items-center gap-4 flex-1 min-w-0">
+                                <div className="flex items-start sm:items-center gap-4 flex-1 min-w-0">
                                     {/* Type Icon */}
                                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${getTypeColor(t.type)} shadow-sm transition-transform group-hover:scale-110 shrink-0`}>
                                         {getTypeIcon(t.type)}
                                     </div>
 
                                     {/* Details */}
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-bold text-slate-800 dark:text-white truncate">{t.description}</p>
+                                    <div className="flex-1 min-w-0 pr-2 sm:pr-0">
+                                        <p className="text-sm font-bold text-slate-800 dark:text-white line-clamp-2 sm:truncate">{t.description}</p>
                                         <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                                            <span className="md:hidden text-[10px] font-medium text-slate-400">
+                                                {new Date(t.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                                            </span>
+                                            <span className="md:hidden text-[10px] text-slate-300">•</span>
                                             <span className="text-[10px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">{t.category}</span>
                                             {t.wallet ? (
                                                 <span className="text-[10px] text-slate-400">{t.wallet.name}</span>
@@ -454,13 +458,13 @@ export default function TransactionsIndex({
                                     </div>
 
                                     {/* Date (hidden on mobile) */}
-                                    <div className="hidden md:block text-xs text-slate-400 font-medium shrink-0">
+                                    <div className="hidden md:block text-xs text-slate-400 font-medium shrink-0 pr-12 lg:pr-20">
                                         {new Date(t.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                                     </div>
                                 </div>
 
                                 {/* Amount & Actions */}
-                                <div className="flex items-center gap-4 shrink-0">
+                                <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 sm:gap-4 shrink-0">
                                     <span className={`text-base font-bold flex items-center gap-1 ${
                                         t.type === 'INCOME' ? 'text-emerald-600 dark:text-emerald-400' : 
                                         t.type === 'TRANSFER' ? 'text-blue-600 dark:text-blue-400' : 
@@ -471,12 +475,12 @@ export default function TransactionsIndex({
                                     </span>
 
                                     {t.category !== 'Investasi Emas' ? (
-                                        <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                                            <button onClick={() => handleEdit(t)} className="p-3 sm:p-2 text-slate-300 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-all hover:scale-110">
-                                                <Pencil className="w-4 h-4" />
+                                        <div className="flex items-center gap-2 sm:gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                                            <button onClick={() => handleEdit(t)} className="p-2 text-indigo-500 dark:text-indigo-400 sm:text-slate-300 md:hover:text-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/20 sm:bg-transparent md:hover:bg-indigo-50 md:dark:hover:bg-indigo-900/30 rounded-lg transition-all md:hover:scale-110 active:scale-90 flex items-center justify-center">
+                                                <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                             </button>
-                                            <button onClick={() => setDeleteId(t.id)} className="p-3 sm:p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all hover:scale-110">
-                                                <Trash2 className="w-4 h-4" />
+                                            <button onClick={() => setDeleteId(t.id)} className="p-2 text-red-500 dark:text-red-400 sm:text-slate-300 md:hover:text-red-500 bg-red-50/50 dark:bg-red-900/20 sm:bg-transparent md:hover:bg-red-50 md:dark:hover:bg-red-900/30 rounded-lg transition-all md:hover:scale-110 active:scale-90 flex items-center justify-center">
+                                                <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                             </button>
                                         </div>
                                     ) : (

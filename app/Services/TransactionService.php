@@ -195,6 +195,7 @@ class TransactionService
                     'name' => 'PayLater - ' . $data['description'],
                     'total_amount' => $data['amount'],
                     'monthly_amount' => $newMonthlyAmount,
+                    'start_date' => $data['date'],
                 ]);
             }
 
