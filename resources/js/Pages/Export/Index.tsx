@@ -259,7 +259,7 @@ ExportPage.layout = (page: any) => (
                 <FileDown className="w-6 h-6" />
             </div>
             <div>
-                <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Export Laporan</h1>
+                <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Export Laporan</h1>
                 <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Unduh riwayat transaksi dalam format Excel atau PDF</p>
             </div>
         </div>

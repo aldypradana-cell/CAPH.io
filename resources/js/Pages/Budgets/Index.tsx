@@ -353,7 +353,7 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
             {isModalOpen && mounted && createPortal(
                 <div className="fixed inset-0 z-[999] flex items-end sm:items-center justify-center p-0 sm:p-6 pb-16 lg:pb-0 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
-                    <div className="relative w-full max-w-md glass-card rounded-t-[2rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-pop-in">
+                    <div className="relative w-full max-w-md glass-card rounded-t-[2rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-pop-in">
                         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 z-10" />
                         <div className="p-5 pb-0 shrink-0 flex justify-between items-center">
                             <h3 className="text-lg font-bold text-slate-800 dark:text-white">{editingBudget ? 'Edit Anggaran' : 'Anggaran Baru'}</h3>
@@ -558,7 +558,7 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
 BudgetsIndex.layout = (page: any) => (
     <AppLayout header={
         <div className="flex flex-col">
-            <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Anggaran</h1>
+            <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Anggaran</h1>
             <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Pantau dan kelola batas pengeluaran Anda</p>
         </div>
     }>

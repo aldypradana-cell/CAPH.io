@@ -10,7 +10,7 @@ const formatIDR = (amount: number) =>
 
 export default function NetWorthCard({ amount }: NetWorthCardProps) {
     return (
-        <div className="bg-gradient-to-r from-[#2e1065] via-[#4c1d95] to-[#7c3aed] p-5 px-8 rounded-[2rem] shadow-2xl shadow-violet-900/40 flex items-center gap-6 hover:scale-[1.01] transition-all duration-500 animate-fade-in-up group relative overflow-hidden h-fit w-full md:w-auto md:min-w-[380px] border border-violet-500/20">
+        <div className="bg-gradient-to-r from-[#2e1065] via-[#4c1d95] to-[#7c3aed] p-4 px-4 sm:p-5 sm:px-8 rounded-[2rem] shadow-2xl shadow-violet-900/40 flex items-center gap-4 sm:gap-6 hover:scale-[1.01] transition-all duration-500 animate-fade-in-up group relative overflow-hidden h-fit w-full md:w-auto md:min-w-[380px] border border-violet-500/20">
             {/* Background Effects */}
             <div className="absolute inset-0 opacity-20">
                 <div className="absolute -right-10 -top-20 w-40 h-40 bg-fuchsia-500 rounded-full blur-3xl group-hover:bg-fuchsia-400 transition-colors duration-500" />
@@ -27,7 +27,7 @@ export default function NetWorthCard({ amount }: NetWorthCardProps) {
             <div className="relative z-10 flex flex-col">
                 <p className="text-[11px] font-bold text-violet-200 uppercase tracking-[0.2em] mb-1 opacity-90 drop-shadow-sm">Total Kekayaan Bersih</p>
                 <div className="flex items-baseline gap-1">
-                    <p className="text-3xl font-black text-white tracking-tight drop-shadow-lg filter">{formatIDR(amount)}</p>
+                    <p className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-lg filter">{formatIDR(amount)}</p>
                 </div>
             </div>
 

@@ -26,7 +26,7 @@ export default function RecentTransactionsWidget({
 }: RecentTransactionsWidgetProps) {
     return (
         <div
-            className={`glass-card p-6 rounded-[2rem] flex flex-col transition-all hover:shadow-lg duration-500 animate-fade-in-up h-full ${className || ''}`}
+            className={`glass-card p-3 sm:p-6 rounded-[2rem] flex flex-col transition-all hover:shadow-lg duration-500 animate-fade-in-up h-full ${className || ''}`}
             style={style}
             onMouseDown={onMouseDown}
             onMouseUp={onMouseUp}

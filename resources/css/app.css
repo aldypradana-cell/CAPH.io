@@ -15,6 +15,8 @@ body {
     radial-gradient(at 100% 0%, hsla(339,49%,30%,0.05) 0, hsla(339,49%,30%,0) 50%);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Dark Mode Background */

@@ -30,6 +30,7 @@ interface Notification {
 export default function AppLayout({ header, children }: PropsWithChildren<LayoutProps>) {
     const user = usePage().props.auth.user as User;
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isMoreOpen, setIsMoreOpen] = useState(false);
     const currentRoute = route().current() || '';
 
     // Dark mode state
@@ -238,23 +239,23 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
             {/* Main Content */}
             < main className="flex-1 flex flex-col h-full overflow-hidden relative" >
                 {/* Glassmorphism Header */}
-                < header className="h-14 sm:h-20 lg:h-24 flex items-center justify-between px-4 sm:px-6 lg:px-10 z-20 sticky top-0 glass transition-colors" >
-                    <div className="flex items-center gap-4 lg:gap-0">
-                        <button onClick={() => setIsSidebarOpen(true)} className="lg:hidden p-2 mr-2 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 rounded-xl shadow-sm transition-all active:scale-95">
-                            <Menu className="w-6 h-6" />
+                < header className="h-14 lg:h-20 flex items-center justify-between px-3 sm:px-6 lg:px-10 z-20 sticky top-0 glass transition-colors" >
+                    <div className="flex items-center gap-2 sm:gap-4 lg:gap-0 flex-1 min-w-0">
+                        <button onClick={() => setIsSidebarOpen(true)} className="lg:hidden p-1.5 sm:p-2 mr-1 sm:mr-2 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 rounded-xl shadow-sm transition-all active:scale-95 flex-shrink-0">
+                            <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
                         </button>
-                        <div className="flex flex-col animate-fade-in">
+                        <div className="flex flex-col animate-fade-in min-w-0">
                             {header}
                         </div>
                     </div>
 
                     {/* Notifications & Help */}
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0 ml-2">
                         {/* Notification Dropdown */}
                         <div className="relative" ref={notifRef}>
                             <button
                                 onClick={() => setIsNotifOpen(!isNotifOpen)}
-                                className="p-3 rounded-2xl bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md transition-all active:scale-95 relative"
+                                className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md transition-all active:scale-95 relative"
                             >
                                 <Bell className="w-5 h-5" />
                                 {unreadCount > 0 && (
@@ -326,7 +327,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                         {/* Dark Mode Toggle */}
                         <button
                             onClick={() => setIsDark(!isDark)}
-                            className="p-3 rounded-2xl bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md transition-all active:scale-95"
+                            className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md transition-all active:scale-95"
                             title={isDark ? 'Mode Terang' : 'Mode Gelap'}
                         >
                             {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -344,7 +345,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                 </header >
 
                 {/* Page Content */}
-                < div className="flex-1 overflow-y-auto p-6 pb-24 lg:px-10 lg:pb-10 scroll-smooth" >
+                < div className="flex-1 overflow-y-auto p-3 pb-24 sm:p-6 sm:pb-24 lg:px-10 lg:pb-10 scroll-smooth" >
                     <div className="max-w-7xl mx-auto w-full animate-fade-in-up">
                         {children}
                     </div>
@@ -367,7 +368,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                         }`}
                                 >
                                     <div className="relative">
-                                        <item.icon className={`w-5 h-5 transition-transform duration-300 ${item.active ? 'scale-110' : ''}`} />
+                                        <item.icon className={`w-6 h-6 transition-transform duration-300 ${item.active ? 'scale-110' : ''}`} />
                                         {item.active && (
                                             <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-indigo-600 dark:bg-indigo-400" />
                                         )}
@@ -389,7 +390,6 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
 
                             {[
                                 { href: route('smart-entry.index'), icon: Zap, label: 'Input AI', active: currentRoute?.startsWith('smart-entry') ?? false },
-                                { href: route('wallets.index'), icon: CreditCard, label: 'Dompet', active: currentRoute?.startsWith('wallets') ?? false },
                             ].map((item) => (
                                 <Link
                                     key={item.label}
@@ -400,7 +400,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                         }`}
                                 >
                                     <div className="relative">
-                                        <item.icon className={`w-5 h-5 transition-transform duration-300 ${item.active ? 'scale-110' : ''}`} />
+                                        <item.icon className={`w-6 h-6 transition-transform duration-300 ${item.active ? 'scale-110' : ''}`} />
                                         {item.active && (
                                             <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-indigo-600 dark:bg-indigo-400" />
                                         )}
@@ -408,9 +408,61 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                     <span className={`text-[10px] font-semibold mt-0.5 ${item.active ? 'font-bold' : ''}`}>{item.label}</span>
                                 </Link>
                             ))}
+
+                            {/* More Menu Button */}
+                            <button
+                                onClick={() => setIsMoreOpen(true)}
+                                className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-300 min-w-[50px] ${[
+                                    'wallets', 'debts', 'insights', 'budgets', 'assets', 'categories', 'settings', 'export', 'help', 'notifications', 'profile'
+                                ].some(r => currentRoute?.startsWith(r))
+                                    ? 'text-indigo-600 dark:text-indigo-400'
+                                    : 'text-slate-400 dark:text-slate-500 active:text-indigo-600 dark:active:text-indigo-400'
+                                }`}
+                            >
+                                <div className="relative">
+                                    <MoreHorizontal className="w-6 h-6" />
+                                </div>
+                                <span className="text-[10px] font-semibold mt-0.5">Lainnya</span>
+                            </button>
                         </div>
                     </div>
                 </nav >
+
+                {/* More Bottom Sheet */}
+                {isMoreOpen && (
+                    <div className="fixed inset-0 z-50 lg:hidden animate-fade-in">
+                        <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={() => setIsMoreOpen(false)} />
+                        <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-slate-900 rounded-t-[2rem] shadow-2xl animate-pop-in pb-[env(safe-area-inset-bottom,16px)]">
+                            <div className="flex justify-center pt-3 pb-2">
+                                <div className="w-10 h-1 bg-slate-200 dark:bg-slate-700 rounded-full" />
+                            </div>
+                            <div className="px-4 pb-4 grid grid-cols-4 gap-3">
+                                {[
+                                    { href: route('wallets.index'), icon: CreditCard, label: 'Dompet', color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' },
+                                    { href: route('budgets.index'), icon: Target, label: 'Anggaran', color: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400' },
+                                    { href: route('debts.index'), icon: HandCoins, label: 'Tagihan', color: 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400' },
+                                    { href: route('insights.index'), icon: PieChart, label: 'Analisis', color: 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400' },
+                                    { href: route('assets.index'), icon: Gem, label: 'Aset', color: 'bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400' },
+                                    { href: route('categories.index'), icon: Tags, label: 'Kategori', color: 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400' },
+                                    { href: route('settings.index'), icon: Settings, label: 'Pengaturan', color: 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400' },
+                                    { href: route('profile.edit'), icon: UserIcon, label: 'Profil', color: 'bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400' },
+                                ].map((item) => (
+                                    <Link
+                                        key={item.label}
+                                        href={item.href}
+                                        onClick={() => setIsMoreOpen(false)}
+                                        className="flex flex-col items-center gap-1.5 py-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95"
+                                    >
+                                        <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${item.color}`}>
+                                            <item.icon className="w-5 h-5" />
+                                        </div>
+                                        <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300">{item.label}</span>
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
             </main >
         </div >
     );

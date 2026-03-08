@@ -637,7 +637,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
             {payingDebt && mounted && createPortal(
                 <div className="fixed inset-0 z-[1001] flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setPayingDebt(null)} />
-                    <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-pop-in">
+                    <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-pop-in">
                         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 to-violet-500 z-10" />
                         <div className="p-5 pb-0 shrink-0">
                             <div className="flex justify-between items-center mb-1">
@@ -711,7 +711,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
             {isDebtModalOpen && mounted && createPortal(
                 <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity" onClick={() => setIsDebtModalOpen(false)} />
-                    <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-pop-in">
+                    <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-pop-in">
                         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-red-500 to-pink-500 z-10" />
 
                         <div className="p-5 pb-0 shrink-0">
@@ -776,7 +776,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                 <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity" onClick={() => setIsRecurringModalOpen(false)} />
 
-                    <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-pop-in">
+                    <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-pop-in">
                         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 z-10" />
 
                         <div className="p-5 pb-0 shrink-0">
@@ -874,7 +874,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
             {isProcessModalOpen && mounted && createPortal(
                 <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity" onClick={() => setIsProcessModalOpen(false)} />
-                    <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-pop-in">
+                    <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-pop-in">
                         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-orange-500 to-amber-500 z-10" />
 
                         <div className="p-5 pb-0 shrink-0">
@@ -922,7 +922,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
 DebtsIndex.layout = (page: any) => (
     <AppLayout header={
         <div className="flex flex-col">
-            <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Tagihan & Kewajiban</h1>
+            <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Tagihan & Kewajiban</h1>
             <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Kelola langganan rutin, hutang, dan piutang Anda</p>
         </div>
     }>

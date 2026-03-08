@@ -113,15 +113,18 @@ function TransactionHeatmap({ data, month, onDateSelect }: { data: Record<string
 
             {isExpanded && (
                 <>
-                    <div className="fixed inset-0 z-40 lg:hidden" onClick={() => setIsExpanded(false)}></div>
-                    <div className="absolute top-full mt-2 w-64 p-3 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 z-50 animate-pop-in right-0 origin-top-right">
+                    {/* Desktop: absolute dropdown */}
+                    <div className="hidden lg:block absolute top-full mt-2 w-64 p-3 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 z-50 animate-pop-in right-0 origin-top-right">
                         <div className="flex justify-between items-center mb-2">
                             <h4 className="text-xs font-bold text-slate-800 dark:text-white">{new Date(yearNum, monthNum).toLocaleString('id-ID', { month: 'short', year: 'numeric' })}</h4>
+                            <button onClick={() => setIsExpanded(false)} className="p-1 lg:hidden text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg transition-colors">
+                                <X className="w-4 h-4" />
+                            </button>
                         </div>
                         
                         <div className="grid grid-cols-7 gap-0.5">
                             {dayNames.map(name => (
-                                <div key={name} className="text-center text-[9px] font-bold text-slate-400 uppercase pb-1 mb-1 border-b border-slate-100 dark:border-slate-800">{name}</div>
+                                <div key={`d-${name}`} className="text-center text-[9px] font-bold text-slate-400 uppercase pb-1 mb-1 border-b border-slate-100 dark:border-slate-800">{name}</div>
                             ))}
                             {calendarDays}
                         </div>
@@ -132,6 +135,35 @@ function TransactionHeatmap({ data, month, onDateSelect }: { data: Record<string
                             <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm bg-red-500"></div> Boros</div>
                         </div>
                     </div>
+
+                    {/* Mobile: centered fixed modal using Portal to avoid clipping */}
+                    {typeof document !== 'undefined' && createPortal(
+                        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 lg:hidden">
+                            <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={() => setIsExpanded(false)}></div>
+                            <div className="relative w-full max-w-[300px] p-5 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 animate-pop-in" onClick={(e) => e.stopPropagation()}>
+                                <div className="flex justify-between items-center mb-4">
+                                    <h4 className="text-sm font-bold text-slate-800 dark:text-white">{new Date(yearNum, monthNum).toLocaleString('id-ID', { month: 'long', year: 'numeric' })}</h4>
+                                    <button onClick={() => setIsExpanded(false)} className="p-1.5 bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl transition-colors active:scale-95">
+                                        <X className="w-4 h-4" />
+                                    </button>
+                                </div>
+                                
+                                <div className="grid grid-cols-7 gap-1">
+                                    {dayNames.map(name => (
+                                        <div key={`m-${name}`} className="text-center text-[10px] font-bold text-slate-400 uppercase pb-2 mb-1 border-b border-slate-100 dark:border-slate-800">{name}</div>
+                                    ))}
+                                    {calendarDays}
+                                </div>
+
+                                <div className="flex justify-between items-center mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-[10px] font-bold text-slate-500">
+                                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-sm bg-indigo-100 dark:bg-indigo-900/40"></div> Baik</div>
+                                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-sm bg-amber-200 dark:bg-amber-900/50"></div> Sedang</div>
+                                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-sm bg-red-500"></div> Boros</div>
+                                </div>
+                            </div>
+                        </div>,
+                        document.body
+                    )}
                 </>
             )}
         </div>
@@ -546,7 +578,7 @@ TransactionsIndex.layout = (page: any) => (
     <AppLayout
         header={
             <div className="flex flex-col">
-                <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Riwayat Transaksi</h1>
+                <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Riwayat Transaksi</h1>
                 <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
                     Kelola semua transaksi keuangan Anda
                 </p>

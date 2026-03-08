@@ -212,7 +212,7 @@ const LayoutHeader = (page: any) => {
     return (
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full">
             <div>
-                <h1 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2"><Bell className="w-6 h-6 text-indigo-600 dark:text-indigo-400" /> Pusat Notifikasi</h1>
+                <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2"><Bell className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600 dark:text-indigo-400" /> Pusat Notifikasi</h1>
                 <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Anda memiliki <span className="font-bold text-indigo-600 dark:text-indigo-400">{unreadCount}</span> notifikasi baru.</p>
             </div>
             <button onClick={() => router.post(route('notifications.readAll'))} disabled={unreadCount === 0} className="px-4 py-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors disabled:opacity-50 flex items-center">

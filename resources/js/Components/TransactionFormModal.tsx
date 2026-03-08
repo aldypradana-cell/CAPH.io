@@ -154,7 +154,7 @@ export default function TransactionFormModal({
     return createPortal(
         <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 animate-fade-in">
             <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity" onClick={handleClose} />
-            <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-pop-in">
+            <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-pop-in">
                 {/* Gradient top bar */}
                 <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 z-10" />
 

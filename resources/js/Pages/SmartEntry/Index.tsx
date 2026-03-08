@@ -304,7 +304,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
 SmartEntryIndex.layout = (page: any) => (
     <AppLayout header={
         <div className="flex flex-col">
-            <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Input Cerdas AI</h1>
+            <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Input Cerdas AI</h1>
             <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Masukkan transaksi dengan bahasa natural</p>
         </div>
     }>

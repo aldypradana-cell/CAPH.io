@@ -61,6 +61,14 @@ export default function Dashboard({
 }>) {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [recurringTransactions, setRecurringTransactions] = useState<RecurringTransaction[]>([]);
+    const [gridMargin, setGridMargin] = useState<[number, number]>([24, 24]);
+
+    useEffect(() => {
+        const updateMargin = () => setGridMargin(window.innerWidth < 640 ? [12, 12] : [24, 24]);
+        updateMargin();
+        window.addEventListener('resize', updateMargin);
+        return () => window.removeEventListener('resize', updateMargin);
+    }, []);
 
     // --- LAZY-LOADED CHART STATE ---
     const [trendData, setTrendData] = useState<ChartData[]>(initialTrendData || []);
@@ -288,7 +296,7 @@ export default function Dashboard({
                                 enabled: true,
                                 handleComponent: (resizeHandleAxis: any, ref: any) => <ResizeHandle ref={ref} handleAxis={resizeHandleAxis} />
                             }}
-                            margin={[24, 24]}
+                            margin={gridMargin}
                         >
                             <div key="trendChart">
                                 <ErrorBoundary title="Widget Trend">
@@ -357,7 +365,7 @@ Dashboard.layout = (page: any) => (
     <AppLayout
         header={
             <div className="flex flex-col">
-                <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Dashboard Ringkasan</h1>
+                <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Dashboard Ringkasan</h1>
                 <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
                     Selamat datang kembali, {page.props.auth.user.name.split(' ')[0]}!
                 </p>
