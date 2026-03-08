@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useForm, router } from '@inertiajs/react';
 import { Plus, Edit2, Trash2, Coins, TrendingUp, AlertCircle, Save } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -34,6 +35,11 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
     const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
     const [editingId, setEditingId] = useState<number | null>(null);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // Price Update Form
     const priceForm = useForm({ price: currentPrice.toString() });
@@ -125,8 +131,9 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
     }, [purchases, currentPrice]);
 
     return (
-        <div className="space-y-6 animate-fade-in-up">
-            {/* HERO SECTION */}
+        <>
+            <div className="space-y-6 animate-fade-in-up">
+                {/* HERO SECTION */}
             <div className="glass-card p-6 md:p-10 rounded-[2rem] relative overflow-hidden flex flex-col lg:flex-row gap-6 lg:gap-10 border border-amber-500/20">
                 <div className="absolute top-0 right-0 w-[30rem] h-[30rem] bg-gradient-to-br from-amber-500/10 to-orange-500/5 rounded-full translate-x-1/3 -translate-y-1/3 blur-3xl pointer-events-none" />
                 
@@ -320,10 +327,11 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
                     </div>
                 </div>
             </div>
+            </div>
 
             {/* Price Edit Modal */}
-            {isPriceModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in">
+            {isPriceModalOpen && mounted && createPortal(
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in">
                     <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 lg:p-8 w-full max-w-md shadow-2xl border border-slate-100 dark:border-slate-800 animate-pop-in">
                         <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-6">Update Harga Emas Hari Ini</h3>
                         <form onSubmit={handlePriceSubmit} className="space-y-4">
@@ -346,13 +354,14 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
                             </div>
                         </form>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
             {/* Add/Edit Modal */}
-            {isFormModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in">
-                    <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 lg:p-8 w-full max-w-lg shadow-2xl border border-slate-100 dark:border-slate-800 animate-pop-in">
+            {isFormModalOpen && mounted && createPortal(
+                <div className="fixed inset-0 z-[100] flex items-start sm:items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in overflow-y-auto">
+                    <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 lg:p-8 w-full max-w-lg shadow-2xl border border-slate-100 dark:border-slate-800 animate-pop-in my-auto">
                         <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-6">{editingId ? 'Edit Tabungan Emas' : 'Tambah Tabungan Emas'}</h3>
                         <form onSubmit={handleFormSubmit} className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
@@ -390,29 +399,31 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
                                 </div>
                             </div>
 
-                            {/* Live Calculation Info Box */}
-                            <div className="bg-amber-50 dark:bg-amber-500/5 border border-amber-100 dark:border-amber-500/20 rounded-2xl p-4 space-y-3">
-                                <div className="flex justify-between items-center text-sm">
-                                    <span className="text-slate-600 dark:text-slate-300 font-bold">Total Modal (Uang Keluar):</span>
-                                    <span className="text-amber-600 dark:text-amber-400 font-black">
-                                        {formatIDR(
-                                            (parseFloat(form.data.grams.replace(/,/g, '.')) || 0) * 
-                                            (parseInt(form.data.price_per_gram.replace(/\D/g, '')) || 0)
-                                        )}
-                                    </span>
-                                </div>
-                                
-                                <div className="flex justify-between items-center text-sm border-t border-amber-200/50 dark:border-amber-500/20 pt-3">
-                                    <span className="text-slate-600 dark:text-slate-300 font-bold">Estimasi Nilai Saat Ini:</span>
-                                    <span className="text-emerald-600 dark:text-emerald-400 font-black">
-                                        {formatIDR((parseFloat(form.data.grams.replace(/,/g, '.')) || 0) * currentPrice)}
-                                    </span>
-                                </div>
+                            {/* Live Calculation Info Box - Only shown when Editing */}
+                            {editingId && (
+                                <div className="bg-amber-50 dark:bg-amber-500/5 border border-amber-100 dark:border-amber-500/20 rounded-2xl p-4 space-y-3">
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-slate-600 dark:text-slate-300 font-bold">Total Modal (Uang Keluar):</span>
+                                        <span className="text-amber-600 dark:text-amber-400 font-black">
+                                            {formatIDR(
+                                                (parseFloat(form.data.grams.replace(/,/g, '.')) || 0) * 
+                                                (parseInt(form.data.price_per_gram.replace(/\D/g, '')) || 0)
+                                            )}
+                                        </span>
+                                    </div>
+                                    
+                                    <div className="flex justify-between items-center text-sm border-t border-amber-200/50 dark:border-amber-500/20 pt-3">
+                                        <span className="text-slate-600 dark:text-slate-300 font-bold">Estimasi Nilai Saat Ini:</span>
+                                        <span className="text-emerald-600 dark:text-emerald-400 font-black">
+                                            {formatIDR((parseFloat(form.data.grams.replace(/,/g, '.')) || 0) * currentPrice)}
+                                        </span>
+                                    </div>
 
-                                <div className="text-xs text-slate-600 dark:text-slate-400 bg-white/60 dark:bg-slate-900/50 p-3 rounded-xl leading-relaxed mt-2 border border-slate-200/50 dark:border-slate-700/50">
-                                    💡 <strong>Catatan:</strong> Merubah <strong>Harga Beli</strong> saja tidak akan merubah Estimasi Nilai Saat Ini, karena estimasi dihitung berdasarkan <em>Harga Emas Hari Ini</em>.
+                                    <div className="text-xs text-slate-600 dark:text-slate-400 bg-white/60 dark:bg-slate-900/50 p-3 rounded-xl leading-relaxed mt-2 border border-slate-200/50 dark:border-slate-700/50">
+                                        💡 <strong>Catatan:</strong> Merubah <strong>Harga Beli</strong> saja tidak akan merubah Estimasi Nilai Saat Ini, karena estimasi dihitung berdasarkan <em>Harga Emas Hari Ini</em>.
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                             
                             <div>
                                 <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Tanggal Beli</label>
@@ -464,8 +475,9 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
                             </div>
                         </form>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
-        </div>
+        </>
     );
 }
