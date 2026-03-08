@@ -14,6 +14,11 @@ class Wallet extends Model
         'name',
         'type',
         'balance',
+        'is_primary',
+    ];
+
+    protected $casts = [
+        'is_primary' => 'boolean',
     ];
 
     protected function casts(): array

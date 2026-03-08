@@ -53,9 +53,14 @@ export default function TransactionFormModal({
             setData('is_paylater', false);
         }
     };
+    // Helper to find primary wallet
+    const getPrimaryWalletId = () => {
+        const primary = (wallets as any[]).find(w => w.is_primary);
+        return primary ? primary.id.toString() : '';
+    };
 
     const { data, setData, processing, reset } = useForm({
-        wallet_id: '',
+        wallet_id: getPrimaryWalletId(),
         to_wallet_id: '',
         date: new Date().toISOString().split('T')[0],
         description: '',
@@ -71,29 +76,34 @@ export default function TransactionFormModal({
         paylater_due_day: new Date().getDate(),
     });
 
-    // Prefill form when editing
+    // Prefill form when editing or resetting for new
     useEffect(() => {
-        if (editingTransaction && isOpen) {
-            setInputType(editingTransaction.type);
-            setSelectedTags(editingTransaction.tags?.map(t => t.name) || []);
-            setData({
-                wallet_id: editingTransaction.wallet?.id?.toString() || '',
-                to_wallet_id: editingTransaction.to_wallet?.id?.toString() || '',
-                date: editingTransaction.date,
-                description: editingTransaction.description,
-                amount: Number(editingTransaction.amount).toLocaleString('id-ID'),
-                type: editingTransaction.type,
-                category: editingTransaction.category,
-                tags: editingTransaction.tags?.map(t => t.name) || [],
-                admin_fee: '',
-                admin_fee_from: 'sender' as 'sender' | 'receiver',
-                is_paylater: editingTransaction.type === 'EXPENSE' && !editingTransaction.wallet,
-                paylater_lender: '',
-                paylater_tenor: 1,
-                paylater_due_day: new Date().getDate(),
-            });
+        if (isOpen) {
+            if (editingTransaction) {
+                setInputType(editingTransaction.type);
+                setSelectedTags(editingTransaction.tags?.map(t => t.name) || []);
+                setData({
+                    wallet_id: editingTransaction.wallet?.id?.toString() || '',
+                    to_wallet_id: editingTransaction.to_wallet?.id?.toString() || '',
+                    date: editingTransaction.date,
+                    description: editingTransaction.description,
+                    amount: Number(editingTransaction.amount).toLocaleString('id-ID'),
+                    type: editingTransaction.type,
+                    category: editingTransaction.category,
+                    tags: editingTransaction.tags?.map(t => t.name) || [],
+                    admin_fee: '',
+                    admin_fee_from: 'sender' as 'sender' | 'receiver',
+                    is_paylater: editingTransaction.type === 'EXPENSE' && !editingTransaction.wallet,
+                    paylater_lender: '',
+                    paylater_tenor: 1,
+                    paylater_due_day: new Date().getDate(),
+                });
+            } else {
+                // New transaction: ensure primary wallet is selected if available and not already set
+                setData('wallet_id', getPrimaryWalletId());
+            }
         }
-    }, [editingTransaction, isOpen]);
+    }, [editingTransaction, isOpen, wallets]);
 
     const handleAmountChange = (val: string) => {
         const rawValue = val.replace(/\D/g, '');
@@ -143,6 +153,8 @@ export default function TransactionFormModal({
     const handleClose = () => {
         onClose();
         reset();
+        // Force reset wallet_id to primary wallet, as reset() uses the very initial form state values
+        setData('wallet_id', getPrimaryWalletId());
         setSelectedTags([]);
         setShowAdminFee(false);
         setInputType('EXPENSE');

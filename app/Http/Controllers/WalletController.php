@@ -118,4 +118,22 @@ class WalletController extends Controller
         
         return redirect()->back()->with('success', 'Dompet berhasil dihapus');
     }
+
+    public function setPrimary(Request $request, Wallet $wallet)
+    {
+        if ($request->user()->cannot('update', $wallet)) {
+            abort(403);
+        }
+
+        DB::transaction(function () use ($request, $wallet) {
+            // Unset current primary wallet (if any) for the user
+            Wallet::where('user_id', $request->user()->id)
+                ->update(['is_primary' => false]);
+
+            // Set the selected wallet as primary
+            $wallet->update(['is_primary' => true]);
+        });
+
+        return redirect()->back()->with('success', $wallet->name . ' berhasil diset sebagai dompet utama');
+    }
 }

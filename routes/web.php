@@ -47,6 +47,7 @@ Route::middleware(['auth'])->group(function () {
         // Wallets
         Route::resource('wallets', WalletController::class)
             ->only(['index', 'store', 'update', 'destroy']);
+        Route::post('/wallets/{wallet}/set-primary', [WalletController::class, 'setPrimary'])->name('wallets.setPrimary');
 
         // Recurring Transactions
         Route::resource('recurring', RecurringTransactionController::class)

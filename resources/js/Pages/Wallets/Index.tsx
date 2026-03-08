@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
     Plus, Trash2, X, Wallet as WalletIcon, CreditCard, Banknote,
-    Edit2, AlertTriangle, ArrowUpRight, ArrowDownRight
+    Edit2, AlertTriangle, ArrowUpRight, ArrowDownRight, Star
 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -16,6 +16,7 @@ interface Wallet {
     balance: number;
     monthly_income: number;
     monthly_expense: number;
+    is_primary: boolean;
 }
 
 const formatIDR = (amount: number) =>
@@ -88,6 +89,14 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
         }
     };
 
+    const handleSetPrimary = (walletId: number) => {
+        router.post(route('wallets.setPrimary', walletId), {}, {
+            preserveState: true,
+            preserveScroll: true,
+            onSuccess: () => toast.success('Dompet utama berhasil diubah')
+        });
+    };
+
     const safeParseFloat = (val: string | number | undefined | null) => {
         if (val === undefined || val === null) return 0;
         if (typeof val === 'number') return val;
@@ -148,7 +157,14 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                                 {/* Top Row */}
                                 <div className="relative z-10 flex justify-between items-start">
                                     <div>
-                                        <p className="text-[10px] font-bold uppercase tracking-widest opacity-60">{wallet.type.replace('-', ' ')}</p>
+                                        <div className="flex items-center gap-1.5 opacity-60">
+                                            <p className="text-[10px] font-bold uppercase tracking-widest">{wallet.type.replace('-', ' ')}</p>
+                                            {wallet.is_primary && (
+                                                <div className="flex items-center bg-amber-400/20 text-amber-300 px-1.5 py-0.5 rounded text-[8px] font-black tracking-wider border border-amber-400/30">
+                                                    <Star className="w-2.5 h-2.5 mr-0.5 fill-amber-300" /> UTAMA
+                                                </div>
+                                            )}
+                                        </div>
                                         <h3 className="text-xl font-bold mt-1">{wallet.name}</h3>
                                     </div>
                                     <Icon className="w-8 h-8 opacity-60" />
@@ -178,12 +194,29 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                                             {formatIDR(safeParseFloat(wallet.balance))}
                                         </p>
                                     </div>
-                                    {/* Action buttons on hover */}
-                                    <div className="relative z-20 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button onClick={(e) => { e.stopPropagation(); handleEdit(wallet); }} className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors" title="Edit">
+                                    {/* Action buttons: Always visible on mobile, hover on desktop */}
+                                    <div className="relative z-20 flex gap-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-300">
+                                        {!wallet.is_primary && (
+                                            <button 
+                                                onClick={(e) => { e.stopPropagation(); handleSetPrimary(wallet.id); }} 
+                                                className="p-2 sm:p-2 bg-white/20 sm:bg-white/10 hover:bg-white/30 rounded-xl transition-colors text-amber-200 hover:text-amber-100" 
+                                                title="Jadikan Utama"
+                                            >
+                                                <Star className="w-4 h-4" />
+                                            </button>
+                                        )}
+                                        <button 
+                                            onClick={(e) => { e.stopPropagation(); handleEdit(wallet); }} 
+                                            className="p-2 sm:p-2 bg-white/20 sm:bg-white/10 hover:bg-white/30 rounded-xl transition-colors" 
+                                            title="Edit"
+                                        >
                                             <Edit2 className="w-4 h-4" />
                                         </button>
-                                        <button onClick={(e) => { e.stopPropagation(); setDeleteId(wallet.id); }} className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors" title="Hapus">
+                                        <button 
+                                            onClick={(e) => { e.stopPropagation(); setDeleteId(wallet.id); }} 
+                                            className="p-2 sm:p-2 bg-white/20 sm:bg-white/10 hover:bg-white/30 rounded-xl transition-colors" 
+                                            title="Hapus"
+                                        >
                                             <Trash2 className="w-4 h-4" />
                                         </button>
                                     </div>
