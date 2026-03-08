@@ -547,28 +547,28 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                                 const isExpanded = expandedDebtId === d.id;
                                 return (
                                     <div key={d.id} className={`glass-card rounded-2xl overflow-hidden group hover:shadow-lg transition-all duration-300 ${d.is_paid ? 'opacity-60' : ''}`}>
-                                        <div className="p-4 flex items-center justify-between">
-                                            <div className="flex items-center gap-4 flex-1 min-w-0">
-                                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${config.color} text-white shadow-sm shrink-0`}>
+                                        <div className="p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
+                                            <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0 w-full sm:w-auto">
+                                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${config.color} text-white shadow-sm shrink-0 mt-1 sm:mt-0`}>
                                                     <config.icon className="w-4 h-4" />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                    <div className="flex items-center gap-2 flex-wrap mb-1 sm:mb-0">
                                                         <p className={`text-sm font-bold text-slate-800 dark:text-white ${d.is_paid ? 'line-through' : ''}`}>{d.person}</p>
                                                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${config.badge}`}>{config.label}</span>
                                                         {isOverdue && <span className="text-[10px] font-bold text-red-600 bg-red-100 dark:bg-red-900/30 px-2 py-0.5 rounded-full flex items-center gap-0.5"><AlertTriangle className="w-3 h-3" /> Jatuh Tempo</span>}
                                                         {d.is_paid && <span className="text-[10px] font-bold text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full flex items-center gap-0.5"><Check className="w-3 h-3" /> Lunas</span>}
                                                     </div>
-                                                    {d.description && <p className="text-[10px] text-slate-400 truncate mt-0.5">{d.description}</p>}
-                                                    {d.due_date && <p className="text-[10px] text-slate-400 flex items-center gap-1 mt-0.5"><Calendar className="w-3 h-3" /> {formatDate(d.due_date)}</p>}
+                                                    {d.description && <p className="text-xs sm:text-[10px] text-slate-500 sm:text-slate-400 line-clamp-2 sm:truncate mt-1 sm:mt-0.5 pr-2 sm:pr-0">{d.description}</p>}
+                                                    {d.due_date && <p className="text-[10px] text-slate-400 flex items-center gap-1 mt-1 sm:mt-0.5"><Calendar className="w-3 h-3" /> {formatDate(d.due_date)}</p>}
                                                 </div>
                                             </div>
-                                            <div className="flex items-center gap-2 shrink-0">
-                                                <div className="text-right">
-                                                    <p className="text-base font-bold text-slate-800 dark:text-white">{formatIDR(d.amount)}</p>
+                                            <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0 w-full sm:w-auto border-t border-slate-100 dark:border-slate-800 sm:border-0 pt-3 sm:pt-0 mt-1 sm:mt-0">
+                                                <div className="text-left sm:text-right flex-1 sm:flex-none">
+                                                    <p className="text-sm sm:text-base font-bold text-slate-800 dark:text-white">{formatIDR(d.amount)}</p>
                                                     {hasCicilan && <p className="text-[10px] text-slate-400">Sisa {formatIDR(d.remaining_amount)}</p>}
                                                 </div>
-                                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                                     {!d.is_paid && (
                                                         <button onClick={() => openPayModal(d)} className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 transition-all hover:scale-110 text-xs font-bold" title="Bayar/Cicil">
                                                             <CheckCircle className="w-4 h-4" />

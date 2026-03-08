@@ -102,10 +102,10 @@ function TransactionHeatmap({ data, month, onDateSelect }: { data: Record<string
     }
 
     return (
-        <div className="relative inline-block z-30 mb-4 lg:mb-0 lg:ml-auto w-auto mt-4 lg:mt-0">
+        <div className="relative inline-block z-30">
             <button 
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all shadow-sm"
+                className="w-full sm:w-auto flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all shadow-sm"
             >
                 <Calendar className="w-3.5 h-3.5" />
                 Aktivitas
@@ -382,7 +382,7 @@ export default function TransactionsIndex({
                         </button>
 
                         {(filterType || startDate || endDate || filterTag) && (
-                            <button onClick={clearFilters} className="hidden sm:block px-4 py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-2xl text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95">
+                            <button onClick={clearFilters} className="px-3 py-1.5 sm:px-4 sm:py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95 shrink-0">
                                 Reset
                             </button>
                         )}
