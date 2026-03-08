@@ -39,26 +39,26 @@ export default function TopTagsWidget({
                 </h3>
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Bulan Ini</span>
             </div>
-            <div className="space-y-4 flex-1">
+            <div className="space-y-4 flex-1 overflow-y-auto min-h-0 pr-1 scrollbar-hide">
                 {tags.length > 0 ? (
                     tags.map((tag, idx) => {
                         const tagColor = tag.color || ['#6366f1', '#ec4899', '#f59e0b', '#10b981', '#8b5cf6'][idx % 5];
                         return (
-                            <div key={tag.name}>
-                                <div className="flex justify-between items-center mb-1.5">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: tagColor }} />
-                                        <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate max-w-[140px]">{tag.name}</span>
+                            <div key={tag.name} className="flex flex-col min-w-0">
+                                <div className="flex justify-between items-center mb-1.5 min-w-0 w-full gap-2">
+                                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                                        <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: tagColor }} />
+                                        <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">{tag.name}</span>
                                     </div>
-                                    <span className="text-xs font-bold text-slate-700 dark:text-slate-200">{formatShortIDR(tag.total)}</span>
+                                    <span className="text-xs font-bold text-slate-700 dark:text-slate-200 shrink-0">{formatShortIDR(tag.total)}</span>
                                 </div>
-                                <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden w-full">
                                     <div
                                         className="h-full rounded-full transition-all duration-1000 ease-out"
                                         style={{ width: `${tag.percentage}%`, backgroundColor: tagColor }}
                                     />
                                 </div>
-                                <div className="flex justify-end mt-0.5">
+                                <div className="flex justify-end mt-0.5 w-full">
                                     <span className="text-[10px] text-slate-400 font-bold">{tag.percentage}%</span>
                                 </div>
                             </div>
