@@ -35,9 +35,12 @@ class TransactionController extends Controller
             $query->where('type', $request->type);
         }
 
-        if ($request->filled('start_date') && $request->filled('end_date')) {
-            $query->inDateRange($request->start_date, $request->end_date);
-        }
+        // Determine date range (default to current month)
+        $startDate = $request->input('start_date', now()->startOfMonth()->format('Y-m-d'));
+        $endDate = $request->input('end_date', now()->endOfMonth()->format('Y-m-d'));
+
+        $query->inDateRange($startDate, $endDate);
+
 
         // Apply tag filter
         if ($request->filled('tag')) {
@@ -54,6 +57,17 @@ class TransactionController extends Controller
                     ->orWhere('category', 'LIKE', "%{$search}%");
             });
         }
+
+        // --- calculate stats for current filter ---
+        // We need to clone the query because paginate() modifies it
+        $statsQuery = clone $query;
+        // MUST clear orderings from the main query, otherwise SQL throws only_full_group_by error for 'date'
+        $statsData = $statsQuery->reorder()->selectRaw('type, SUM(amount) as total')->groupBy('type')->pluck('total', 'type');
+        $filterStats = [
+            'income' => (float) ($statsData['INCOME'] ?? 0),
+            'expense' => (float) ($statsData['EXPENSE'] ?? 0),
+            'net' => (float) ($statsData['INCOME'] ?? 0) - (float) ($statsData['EXPENSE'] ?? 0),
+        ];
 
         $transactions = $query->paginate(20)->withQueryString();
 
@@ -91,10 +105,17 @@ class TransactionController extends Controller
             'transactions' => $transactions,
             'wallets' => $wallets,
             'categories' => $categories,
-            'filters' => $request->only(['type', 'start_date', 'end_date', 'tag', 'search']),
+            'filters' => [
+                'type' => $request->type,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'tag' => $request->tag,
+                'search' => $request->search,
+            ],
             'userTags' => $userTags,
             'heatmapData' => $heatmapData,
             'heatmapMonth' => $heatmapMonth,
+            'filterStats' => $filterStats,
         ]);
     }
 

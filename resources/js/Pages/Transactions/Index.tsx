@@ -171,7 +171,7 @@ function TransactionHeatmap({ data, month, onDateSelect }: { data: Record<string
 }
 
 export default function TransactionsIndex({
-    auth, transactions, wallets, categories, filters, userTags, heatmapData, heatmapMonth
+    auth, transactions, wallets, categories, filters, userTags, heatmapData, heatmapMonth, filterStats
 }: PageProps<{
     transactions: {
         data: Transaction[];
@@ -188,6 +188,11 @@ export default function TransactionsIndex({
     userTags: TagData[];
     heatmapData: Record<string, { expense: number; income: number }>;
     heatmapMonth: string;
+    filterStats: {
+        income: number;
+        expense: number;
+        net: number;
+    };
 }>) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
@@ -412,6 +417,47 @@ export default function TransactionsIndex({
                         </button>
                     </div>
                 </div>
+
+                {/* Filter Stats Widget (Inline Pill Bar) */}
+                {typeof filterStats !== 'undefined' && (
+                    <div className="flex flex-wrap items-center gap-3 sm:gap-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-5 py-3 shadow-sm animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+                        <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center shrink-0">
+                                <TrendingUp className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                            </div>
+                            <div>
+                                <p className="text-[10px] sm:text-xs font-medium text-slate-500 mb-0.5">Pemasukan</p>
+                                <p className="text-xs sm:text-sm font-bold text-slate-800 dark:text-white">{formatIDR(filterStats.income)}</p>
+                            </div>
+                        </div>
+
+                        <div className="hidden sm:block w-px h-8 bg-slate-200 dark:bg-slate-800"></div>
+
+                        <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center shrink-0">
+                                <TrendingDown className="w-3 h-3 text-red-600 dark:text-red-400" />
+                            </div>
+                            <div>
+                                <p className="text-[10px] sm:text-xs font-medium text-slate-500 mb-0.5">Pengeluaran</p>
+                                <p className="text-xs sm:text-sm font-bold text-slate-800 dark:text-white">{formatIDR(filterStats.expense)}</p>
+                            </div>
+                        </div>
+
+                        <div className="hidden sm:block w-px h-8 bg-slate-200 dark:bg-slate-800"></div>
+
+                        <div className="flex items-center gap-2 sm:ml-auto">
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${filterStats.net >= 0 ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400' : 'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400'}`}>
+                                <ArrowRightLeft className="w-3 h-3" />
+                            </div>
+                            <div>
+                                <p className="text-[10px] sm:text-xs font-medium text-slate-500 mb-0.5">Arus Bersih</p>
+                                <p className={`text-xs sm:text-sm font-bold ${filterStats.net >= 0 ? 'text-indigo-600 dark:text-indigo-400' : 'text-red-600 dark:text-red-400'}`}>
+                                    {filterStats.net > 0 ? '+' : ''}{formatIDR(filterStats.net)}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Transaction List */}
                 <div className="space-y-3">
