@@ -20,10 +20,11 @@ class GroqService
     /**
      * Parse natural language input into transaction array using Groq
      */
-    public function parseNaturalLanguageTransaction(string $input): array
+    public function parseNaturalLanguageTransaction(string $input, array $categories = []): array
     {
         try {
             $today = now()->format('Y-m-d');
+            $categoryList = !empty($categories) ? implode(', ', $categories) : 'Makanan, Transport, Gaji';
 
             $systemPrompt = "You are a financial transaction parser. 
 Analyze the user's input and extract transaction data.
@@ -32,7 +33,7 @@ Each object must have:
 - description (string): Brief description (do NOT include hashtags in description)
 - amount (number): Amount in IDR (pure number)
 - type (string): 'INCOME' or 'EXPENSE'
-- category (string): Relevant category (e.g., Makanan, Transport, Gaji)
+- category (string): Pick the most relevant category from this ONLY list: [{$categoryList}]. If none strictly match, pick the closest one.
 - date (string): ISO format YYYY-MM-DD. Default to {$today} if not specified.
 - tags (array of strings): Extract tags from the input. Rules:
   1. Any word starting with '#' becomes a tag (remove the # symbol).

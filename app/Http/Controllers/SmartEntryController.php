@@ -77,7 +77,11 @@ class SmartEntryController extends Controller
         ]);
 
         try {
-            $parsedTransactions = $this->groqService->parseNaturalLanguageTransaction($validated['input']);
+            $userCategories = Category::userCategories($user->id)
+                ->pluck('name')
+                ->toArray();
+
+            $parsedTransactions = $this->groqService->parseNaturalLanguageTransaction($validated['input'], $userCategories);
 
             // Ensure each transaction has a tags array
             $parsedTransactions = array_map(function ($t) {
