@@ -100,6 +100,10 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
         });
     };
 
+    const handleRemoveTransaction = (indexToRemove: number) => {
+        setParsedTransactions(prev => prev.filter((_, i) => i !== indexToRemove));
+    };
+
     const toggleListening = () => {
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
             toast.error('Browser Anda tidak mendukung fitur input suara.');
@@ -256,9 +260,18 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
                                             </div>
                                         </div>
                                     </div>
-                                    <span className={`text-base font-bold ${t.type === 'INCOME' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
-                                        {t.type === 'INCOME' ? '+' : '-'}{formatIDR(t.amount)}
-                                    </span>
+                                    <div className="flex items-center gap-3 shrink-0">
+                                        <span className={`text-base font-bold ${t.type === 'INCOME' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                                            {t.type === 'INCOME' ? '+' : '-'}{formatIDR(t.amount)}
+                                        </span>
+                                        <button 
+                                            onClick={() => handleRemoveTransaction(idx)}
+                                            className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all active:scale-95"
+                                            title="Batal tambahkan transaksi ini"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                         </div>
