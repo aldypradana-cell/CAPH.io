@@ -118,7 +118,8 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
     };
 
     const getBudgetColor = (pct: number) => {
-        if (pct >= 90) return { bar: 'bg-red-500', text: 'text-red-600 dark:text-red-400', ring: 'ring-red-500/20' };
+        if (pct >= 100) return { bar: 'bg-rose-600', text: 'text-rose-600 dark:text-rose-400', ring: 'ring-rose-500/20' };
+        if (pct >= 90) return { bar: 'bg-orange-500', text: 'text-orange-600 dark:text-orange-400', ring: 'ring-orange-500/20' };
         if (pct >= 70) return { bar: 'bg-amber-500', text: 'text-amber-600 dark:text-amber-400', ring: 'ring-amber-500/20' };
         return { bar: 'bg-emerald-500', text: 'text-emerald-600 dark:text-emerald-400', ring: 'ring-emerald-500/20' };
     };
@@ -129,7 +130,7 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
 
     const totalBudget = regularBudgets.reduce((s, b) => s + Number(b.limit), 0);
     const totalSpent = regularBudgets.reduce((s, b) => s + Number(b.spent), 0);
-    const overallPct = totalBudget > 0 ? Math.min(100, Math.round((totalSpent / totalBudget) * 100)) : 0;
+    const overallPct = totalBudget > 0 ? Math.round((totalSpent / totalBudget) * 100) : 0;
 
     // Auto Budget handlers
     const handleAutoIncomeChange = (val: string) => {
@@ -199,11 +200,15 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                                 const meta = MASTER_LABELS[mb.category];
                                 if (!meta) return null;
                                 const Icon = meta.icon;
-                                const pct = mb.percentage;
-                                const barColor = pct >= 90 ? 'bg-red-500' : pct >= 70 ? 'bg-amber-500' : `bg-gradient-to-r ${meta.gradient}`;
+                                const pct = Math.round((mb.spent / mb.limit) * 100) || 0; // Calculate real percentage if backend caps it, assuming backend doesn't but just in case. Wait, mb.percentage is provided by backend. Let's use backend's mb.percentage.
+                                const realPct = mb.percentage;
+                                const visualPct = Math.min(100, realPct);
+                                const barColor = realPct >= 100 ? 'bg-rose-600' : realPct >= 90 ? 'bg-orange-500' : realPct >= 70 ? 'bg-amber-500' : `bg-gradient-to-r ${meta.gradient}`;
+                                const isOverBudget = realPct >= 100;
+                                const overBudgetAmount = mb.spent - mb.limit;
                                 return (
-                                    <div key={mb.id} className={`glass-card rounded-[2rem] p-5 relative overflow-hidden group animate-pop-in`} style={{ animationDelay: `${idx * 80}ms` }}>
-                                        <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${meta.gradient}`} />
+                                    <div key={mb.id} className={`glass-card rounded-[2rem] p-5 relative overflow-hidden group animate-pop-in ${isOverBudget ? 'border-rose-500/50 bg-rose-50/30 dark:bg-rose-900/10 shadow-lg shadow-rose-500/10' : 'border-slate-100 dark:border-slate-800'}`} style={{ animationDelay: `${idx * 80}ms` }}>
+                                        <div className={`absolute top-0 left-0 w-full h-1 ${isOverBudget ? 'bg-rose-500' : `bg-gradient-to-r ${meta.gradient}`}`} />
                                         <div className="flex items-center justify-between mb-3">
                                             <div className="flex items-center gap-2.5">
                                                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br ${meta.gradient} text-white shadow-md`}>
@@ -220,19 +225,30 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                                         </div>
                                         <div className="space-y-2">
                                             <div className="flex justify-between items-baseline">
-                                                <span className={`text-2xl font-bold ${pct >= 90 ? 'text-red-600 dark:text-red-400' : pct >= 70 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-800 dark:text-white'}`}>
-                                                    {pct}%
+                                                <span className={`text-2xl font-bold ${isOverBudget ? 'text-rose-600 dark:text-rose-400' : realPct >= 90 ? 'text-orange-600 dark:text-orange-400' : realPct >= 70 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-800 dark:text-white'}`}>
+                                                    {realPct}%
                                                 </span>
                                                 <span className="text-[10px] text-slate-400 font-semibold">{formatIDR(mb.spent)} / {formatIDR(mb.limit)}</span>
                                             </div>
-                                            <div className="h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                                                <div className={`h-full ${barColor} rounded-full transition-all duration-1000`} style={{ width: `${pct}%` }} />
+                                            <div className={`h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden ${isOverBudget ? 'ring-2 ring-rose-500/20' : ''}`}>
+                                                <div className={`h-full ${barColor} rounded-full transition-all duration-1000 ${isOverBudget ? 'animate-pulse' : ''}`} style={{ width: `${visualPct}%` }} />
                                             </div>
-                                            <p className="text-xs text-slate-400">Sisa: {formatIDR(mb.remaining)}</p>
+                                            <div className="flex justify-between items-center text-xs">
+                                                {isOverBudget ? (
+                                                    <span className="font-bold text-rose-600 dark:text-rose-400">Over {formatIDR(overBudgetAmount)}!</span>
+                                                ) : (
+                                                    <span className="text-slate-400">Sisa: {formatIDR(mb.limit - mb.spent)}</span>
+                                                )}
+                                            </div>
                                         </div>
-                                        {pct >= 90 && (
-                                            <div className="mt-3 flex items-center gap-1.5 text-[10px] text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-2.5 py-1.5 rounded-xl">
-                                                <AlertTriangle className="w-3 h-3" /> Hampir melebihi batas!
+                                        {realPct >= 80 && !isOverBudget && (
+                                            <div className="mt-3 flex items-center gap-1.5 text-[10px] text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2.5 py-1.5 rounded-xl border border-orange-100 dark:border-orange-500/20">
+                                                <AlertTriangle className="w-3 h-3" /> Sisa anggaran menipis!
+                                            </div>
+                                        )}
+                                        {isOverBudget && (
+                                            <div className="mt-3 flex items-center justify-center gap-1.5 text-[11px] font-bold text-white bg-rose-500 px-2.5 py-1.5 rounded-xl shadow-lg shadow-rose-500/30">
+                                                <AlertTriangle className="w-4 h-4" /> MELEBIHI BATAS ANGGARAN
                                             </div>
                                         )}
                                     </div>
@@ -252,11 +268,16 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                                 <span className="text-3xl font-bold text-slate-800 dark:text-white">{formatIDR(totalSpent)}</span>
                                 <span className="text-sm text-slate-400">/ {formatIDR(totalBudget)}</span>
                             </div>
-                            <div className="w-full max-w-sm mt-3">
-                                <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                                    <div className={`h-full ${overallPct >= 90 ? 'bg-red-500' : overallPct >= 70 ? 'bg-amber-500' : 'bg-indigo-500'} rounded-full transition-all duration-1000`} style={{ width: `${overallPct}%` }} />
+                            <div className="w-full max-w-sm mt-3 relative">
+                                <div className={`h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden ${overallPct >= 100 ? 'ring-2 ring-rose-500/30' : ''}`}>
+                                    <div className={`h-full ${overallPct >= 100 ? 'bg-rose-600 animate-pulse' : overallPct >= 90 ? 'bg-orange-500' : overallPct >= 70 ? 'bg-amber-500' : 'bg-indigo-500'} rounded-full transition-all duration-1000`} style={{ width: `${Math.min(100, overallPct)}%` }} />
                                 </div>
-                                <p className="text-xs text-slate-400 mt-1">{overallPct}% terpakai bulan ini</p>
+                                <div className="flex justify-between items-center mt-1.5">
+                                    <p className="text-xs text-slate-400">{overallPct}% terpakai bulan ini</p>
+                                    {overallPct >= 100 && (
+                                        <p className="text-xs font-bold text-rose-600 dark:text-rose-400">Over Budget!</p>
+                                    )}
+                                </div>
                             </div>
                         </div>
                         <div className="flex gap-3 self-start">
@@ -279,12 +300,17 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                 {/* ═══════════════ Regular Budget Cards ═══════════════ */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                     {regularBudgets.length > 0 ? regularBudgets.map((b, idx) => {
-                        const colors = getBudgetColor(b.percentage);
+                        const realPct = b.percentage;
+                        const visualPct = Math.min(100, realPct);
+                        const isOverBudget = realPct >= 100;
+                        const overBudgetAmount = b.spent - b.limit;
+                        const colors = getBudgetColor(realPct);
+                        
                         return (
-                            <div key={b.id} className={`glass-card p-5 rounded-[2rem] hover:shadow-lg transition-all duration-300 group animate-pop-in`} style={{ animationDelay: `${idx * 80}ms` }}>
+                            <div key={b.id} className={`glass-card p-5 rounded-[2rem] hover:shadow-lg transition-all duration-300 group animate-pop-in ${isOverBudget ? 'border-rose-500/50 bg-rose-50/30 dark:bg-rose-900/10 shadow-lg shadow-rose-500/10' : 'border-slate-100 dark:border-slate-800'}`} style={{ animationDelay: `${idx * 80}ms` }}>
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-3">
-                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${colors.bar} text-white shadow-sm`}>
+                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${colors.bar} text-white shadow-sm font-bold`}>
                                             <Target className="w-5 h-5" />
                                         </div>
                                         <div>
@@ -299,17 +325,28 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                                 </div>
                                 <div className="space-y-2">
                                     <div className="flex justify-between items-center">
-                                        <span className={`text-2xl font-bold ${colors.text}`}>{b.percentage}%</span>
+                                        <span className={`text-2xl font-bold ${colors.text}`}>{realPct}%</span>
                                         <span className="text-xs text-slate-400">{formatIDR(b.spent)} / {formatIDR(b.limit)}</span>
                                     </div>
-                                    <div className="h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                                        <div className={`h-full ${colors.bar} rounded-full transition-all duration-1000`} style={{ width: `${b.percentage}%` }} />
+                                    <div className={`h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden ${isOverBudget ? 'ring-2 ring-rose-500/20' : ''}`}>
+                                        <div className={`h-full ${colors.bar} rounded-full transition-all duration-1000 ${isOverBudget ? 'animate-pulse' : ''}`} style={{ width: `${visualPct}%` }} />
                                     </div>
-                                    <p className="text-xs text-slate-400">Sisa: {formatIDR(b.remaining)}</p>
+                                    <div className="flex justify-between items-center text-xs mt-1">
+                                        {isOverBudget ? (
+                                            <span className="font-bold text-rose-600 dark:text-rose-400">Over {formatIDR(overBudgetAmount)}!</span>
+                                        ) : (
+                                            <span className="text-slate-400">Sisa: {formatIDR(b.limit - b.spent)}</span>
+                                        )}
+                                    </div>
                                 </div>
-                                {b.percentage >= 90 && (
-                                    <div className="mt-3 flex items-center gap-1.5 text-[10px] text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-2.5 py-1.5 rounded-xl">
-                                        <AlertTriangle className="w-3 h-3" /> Hampir melebihi batas!
+                                {realPct >= 80 && !isOverBudget && (
+                                    <div className="mt-3 flex items-center gap-1.5 text-[10px] text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2.5 py-1.5 rounded-xl border border-orange-100 dark:border-orange-500/20">
+                                        <AlertTriangle className="w-3 h-3" /> Sisa anggaran menipis!
+                                    </div>
+                                )}
+                                {isOverBudget && (
+                                    <div className="mt-3 flex items-center justify-center gap-1.5 text-[11px] font-bold text-white bg-rose-500 px-2.5 py-1.5 rounded-xl shadow-lg shadow-rose-500/30">
+                                        <AlertTriangle className="w-4 h-4" /> MELEBIHI BATAS
                                     </div>
                                 )}
                             </div>

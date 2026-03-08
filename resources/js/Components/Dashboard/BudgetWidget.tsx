@@ -85,19 +85,22 @@ export default function BudgetWidget({
                                 const emoji = SLOT_EMOJI[b.category] || '📊';
                                 const r = 18, stroke = 4;
                                 const circ = 2 * Math.PI * r;
-                                const offset = circ - (b.percentage / 100) * circ;
-                                const ringColor = b.percentage >= 90 ? '#ef4444' : b.percentage >= 70 ? '#f59e0b' : '#10b981';
+                                const visualPct = Math.min(100, b.percentage);
+                                const isOverBudget = b.percentage >= 100;
+                                const offset = circ - (visualPct / 100) * circ;
+                                const ringColor = isOverBudget ? '#e11d48' : b.percentage >= 90 ? '#f59e0b' : '#10b981';
 
                                 return (
-                                    <div key={b.id} className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors">
+                                    <div key={b.id} className={`bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors ${isOverBudget ? 'ring-1 ring-rose-500/30' : ''}`}>
                                         <div className="flex items-center gap-2.5">
                                             <svg width={44} height={44} className="transform -rotate-90 shrink-0">
                                                 <circle cx="22" cy="22" r={r} fill="none" stroke="currentColor" strokeWidth={stroke} className="text-slate-200 dark:text-slate-700" />
                                                 <circle cx="22" cy="22" r={r} fill="none" stroke={ringColor} strokeWidth={stroke}
                                                     strokeDasharray={circ} strokeDashoffset={offset} strokeLinecap="round"
-                                                    style={{ transition: 'stroke-dashoffset 0.8s ease' }} />
+                                                    style={{ transition: 'stroke-dashoffset 0.8s ease' }}
+                                                    className={isOverBudget ? 'animate-pulse' : ''} />
                                                 <text x="22" y="22" textAnchor="middle" dominantBaseline="central"
-                                                    className="fill-slate-700 dark:fill-white text-[9px] font-bold" transform="rotate(90, 22, 22)">
+                                                    className={`fill-slate-700 dark:fill-white text-[9px] font-bold ${isOverBudget ? 'fill-rose-600 dark:fill-rose-400' : ''}`} transform="rotate(90, 22, 22)">
                                                     {b.percentage}%
                                                 </text>
                                             </svg>
@@ -122,21 +125,36 @@ export default function BudgetWidget({
                                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Budget Manual</span>
                             </div>
                         )}
-                        {manualBudgets.map((b) => (
-                            <div key={b.id} className="mb-3 last:mb-0">
-                                <div className="flex justify-between items-center mb-1.5">
-                                    <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">{b.category}</span>
-                                    <span className="text-xs font-bold text-slate-500">{b.percentage}%</span>
+                        {manualBudgets.map((b) => {
+                            const isOverBudget = b.percentage >= 100;
+                            const overBudgetAmount = b.spent - b.limit;
+                            const barColor = getBudgetColor(b.percentage);
+
+                            return (
+                                <div key={b.id} className="mb-3 last:mb-0">
+                                    <div className="flex justify-between items-center mb-1.5">
+                                        <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">{b.category}</span>
+                                        <span className={`text-xs font-bold ${isOverBudget ? 'text-rose-600 dark:text-rose-400' : 'text-slate-500'}`}>{b.percentage}%</span>
+                                    </div>
+                                    <div className={`h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden ${isOverBudget ? 'ring-1 ring-rose-500/30' : ''}`}>
+                                        <div className={`h-full ${barColor} rounded-full transition-all duration-1000 ${isOverBudget ? 'animate-pulse' : ''}`} style={{ width: `${Math.min(100, b.percentage)}%` }} />
+                                    </div>
+                                    <div className="flex justify-between items-center text-[10px] mt-1">
+                                        {isOverBudget ? (
+                                            <>
+                                                <span className="font-bold text-rose-600 dark:text-rose-400">Over {formatShortIDR(overBudgetAmount)}!</span>
+                                                <span className="text-slate-400 font-medium">Batas: {formatShortIDR(b.limit)}</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span className="text-slate-500 font-medium">{formatShortIDR(b.spent)}</span>
+                                                <span className="text-slate-400">/ {formatShortIDR(b.limit)}</span>
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
-                                <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                                    <div className={`h-full ${getBudgetColor(b.percentage)} rounded-full transition-all duration-1000`} style={{ width: `${b.percentage}%` }} />
-                                </div>
-                                <div className="flex justify-between text-[10px] text-slate-400 mt-1">
-                                    <span>{formatShortIDR(b.spent)}</span>
-                                    <span>/ {formatShortIDR(b.limit)}</span>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
             </div>
