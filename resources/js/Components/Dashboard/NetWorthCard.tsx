@@ -10,7 +10,7 @@ const formatIDR = (amount: number) =>
 
 export default function NetWorthCard({ amount }: NetWorthCardProps) {
     return (
-        <div className="bg-gradient-to-r from-[#2e1065] via-[#4c1d95] to-[#7c3aed] p-4 px-4 sm:p-5 sm:px-8 rounded-[2rem] shadow-2xl shadow-violet-900/40 flex items-center gap-4 sm:gap-6 hover:scale-[1.01] transition-all duration-500 animate-fade-in-up group relative overflow-hidden h-fit w-full md:w-auto md:min-w-[380px] border border-violet-500/20">
+        <div className="bg-gradient-to-r from-[#2e1065] via-[#4c1d95] to-[#7c3aed] p-3 px-3 sm:p-5 sm:px-8 rounded-[2rem] shadow-2xl shadow-violet-900/40 flex items-center gap-4 sm:gap-6 hover:scale-[1.01] active:scale-[0.99] transition-all duration-500 animate-fade-in-up group relative overflow-hidden h-fit w-full md:w-auto md:min-w-[380px] border border-violet-500/20">
             {/* Background Effects */}
             <div className="absolute inset-0 opacity-20">
                 <div className="absolute -right-10 -top-20 w-40 h-40 bg-fuchsia-500 rounded-full blur-3xl group-hover:bg-fuchsia-400 transition-colors duration-500" />
@@ -20,7 +20,7 @@ export default function NetWorthCard({ amount }: NetWorthCardProps) {
             {/* Shine Effect */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out" />
 
-            <div className="p-3.5 bg-gradient-to-br from-white/20 to-white/5 text-white rounded-2xl backdrop-blur-md relative z-10 shadow-inner border border-white/10">
+            <div className="p-2.5 sm:p-3.5 bg-gradient-to-br from-white/20 to-white/5 text-white rounded-2xl backdrop-blur-md relative z-10 shadow-inner border border-white/10">
                 <Gem className="w-6 h-6 text-violet-100" />
             </div>
 

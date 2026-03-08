@@ -154,7 +154,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
             <Head title="Input AI" />
             <Toaster position="top-right" />
 
-            <div className="max-w-3xl mx-auto space-y-6 animate-fade-in-up">
+            <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6 animate-fade-in-up">
                 {/* Hero - Hidden on mobile to prioritize input */}
                 <div className="hidden md:block glass-card p-8 rounded-[2rem] text-center animate-fade-in-up">
                     <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-white mx-auto mb-4 shadow-lg shadow-indigo-500/30">
@@ -305,7 +305,7 @@ SmartEntryIndex.layout = (page: any) => (
     <AppLayout header={
         <div className="flex flex-col min-w-0">
             <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Input Cerdas AI</h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">Masukkan transaksi dengan bahasa natural</p>
+                <p className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">Masukkan transaksi dengan bahasa natural</p>
         </div>
     }>
         {page}

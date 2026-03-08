@@ -110,9 +110,9 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
             <Head title="Dompet" />
             <Toaster position="top-right" />
 
-            <div className="space-y-6 animate-fade-in-up">
+            <div className="space-y-4 sm:space-y-6 animate-fade-in-up">
                 {/* Total Balance Header */}
-                <div className="bg-gradient-to-br from-indigo-700 to-indigo-900 p-8 rounded-3xl text-white shadow-xl relative overflow-hidden group hover:shadow-2xl transition-all duration-300 animate-fade-in-up">
+                <div className="bg-gradient-to-br from-indigo-700 to-indigo-900 p-5 sm:p-8 rounded-3xl text-white shadow-xl relative overflow-hidden group hover:shadow-2xl transition-all duration-300 animate-fade-in-up">
                     <WalletIcon className="absolute right-[-20px] bottom-[-20px] w-64 h-64 opacity-10 group-hover:scale-110 transition-transform duration-700" />
                     <p className="text-indigo-100 font-medium mb-1 opacity-80 uppercase tracking-widest text-xs">Total Saldo Semua Dompet</p>
                     <h2 className="text-4xl font-bold">{formatIDR(totalBalance)}</h2>
@@ -126,7 +126,7 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                         return (
                             <div
                                 key={wallet.id}
-                                className={`bg-gradient-to-br ${getWalletGradient(wallet.type)} rounded-2xl p-6 text-white relative h-56 flex flex-col justify-between overflow-hidden shadow-xl hover:shadow-2xl hover:scale-[1.03] hover:-translate-y-1 transition-all duration-500 group cursor-default animate-pop-in`}
+                                className={`bg-gradient-to-br ${getWalletGradient(wallet.type)} rounded-2xl p-4 sm:p-6 text-white relative h-56 flex flex-col justify-between overflow-hidden shadow-xl hover:shadow-2xl hover:scale-[1.03] hover:-translate-y-1 transition-all duration-500 group cursor-default animate-pop-in`}
                                 style={{ animationDelay: `${idx * 100}ms` }}
                             >
                                 {/* Background pattern */}
@@ -263,7 +263,7 @@ WalletsIndex.layout = (page: any) => (
         header={
             <div className="flex flex-col min-w-0">
                 <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Dompet Saya</h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">Kelola sumber dana keuangan Anda</p>
+                <p className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">Kelola sumber dana keuangan Anda</p>
             </div>
         }
     >

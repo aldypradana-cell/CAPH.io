@@ -373,7 +373,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
             <Head title="Tagihan & Kewajiban" />
             <Toaster position="top-right" />
 
-            <div className="space-y-6 animate-fade-in-up">
+            <div className="space-y-4 sm:space-y-6 animate-fade-in-up">
                 {/* GLOBAL DASHBOARD WIDGET */}
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
                     {/* Summary Cards */}
@@ -444,7 +444,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                 )}
 
                 {/* TABS NAVIGATION */}
-                <div className="flex space-x-2 bg-slate-100 dark:bg-slate-800/50 p-1.5 rounded-2xl w-fit mx-auto lg:mx-0">
+                <div className="flex space-x-2 overflow-x-auto bg-slate-100 dark:bg-slate-800/50 p-1.5 rounded-2xl w-fit mx-auto lg:mx-0 scrollbar-hide">
                     <button
                         onClick={() => setActiveTab('RECURRING')}
                         className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${activeTab === 'RECURRING'
@@ -522,7 +522,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                                 ))}
                             </div>
                         ) : (
-                            <div className="glass-card rounded-[2rem] p-16 text-center">
+                            <div className="glass-card rounded-[2rem] p-8 sm:p-16 text-center">
                                 <Repeat className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
                                 <p className="text-lg font-bold text-slate-400">Belum ada jadwal transaksi rutin</p>
                             </div>
@@ -621,7 +621,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                                     </div>
                                 );
                             }) : (
-                                <div className="glass-card rounded-[2rem] p-16 text-center">
+                                <div className="glass-card rounded-[2rem] p-8 sm:p-16 text-center">
                                     <HandCoins className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
                                     <p className="text-lg font-bold text-slate-400">Belum ada data hutang/piutang</p>
                                 </div>
@@ -923,7 +923,7 @@ DebtsIndex.layout = (page: any) => (
     <AppLayout header={
         <div className="flex flex-col min-w-0">
             <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Tagihan & Kewajiban</h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">Kelola langganan rutin, hutang, dan piutang Anda</p>
+                <p className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">Kelola langganan rutin, hutang, dan piutang Anda</p>
         </div>
     }>
         {page}

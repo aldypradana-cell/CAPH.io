@@ -208,7 +208,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
             <Head title="Analisis AI" />
             <Toaster position="top-right" />
 
-            <div className="max-w-5xl mx-auto space-y-6 animate-fade-in-up">
+            <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6 animate-fade-in-up">
                 {lastUpdated && (
                     <p className="text-xs text-slate-400 -mt-2 mb-2">Terakhir diupdate: {new Date(lastUpdated).toLocaleString('id-ID')}</p>
                 )}
@@ -295,7 +295,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
 
                 {/* ── Hero (first time, no insight yet) ── */}
                 {!insight && !isLoading && (
-                    <div className="glass-card p-8 rounded-[2rem] text-center animate-fade-in-up">
+                    <div className="glass-card p-5 sm:p-8 rounded-[2rem] text-center animate-fade-in-up">
                         <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center text-white mx-auto mb-4 shadow-lg shadow-purple-500/30 animate-pulse-slow">
                             <Sparkles className="w-8 h-8" />
                         </div>
@@ -645,7 +645,7 @@ InsightsIndex.layout = (page: any) => (
     <AppLayout header={
         <div className="flex flex-col min-w-0">
             <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Analisis AI</h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">Insight cerdas dari data keuangan Anda</p>
+                <p className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">Insight cerdas dari data keuangan Anda</p>
         </div>
     }>
         {page}

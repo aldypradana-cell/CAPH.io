@@ -12,13 +12,13 @@ export default function StatsCards({ stats }: StatsCardsProps) {
     return (
         <div className="-mx-6 px-6 flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide md:mx-0 md:px-0 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible md:pb-0">
             {/* Balance */}
-            <div className="min-w-[220px] sm:min-w-[280px] snap-center md:min-w-0 bg-gradient-to-br from-[#1e3a8a] via-[#2563eb] to-[#3b82f6] shadow-xl shadow-blue-500/20 p-4 sm:p-5 md:p-6 rounded-[2rem] hover:scale-[1.02] transition-all duration-500 group relative overflow-hidden animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+            <div className="min-w-[220px] sm:min-w-[280px] snap-center md:min-w-0 bg-gradient-to-br from-[#1e3a8a] via-[#2563eb] to-[#3b82f6] shadow-xl shadow-blue-500/20 p-3 sm:p-4 md:p-6 rounded-[2rem] hover:scale-[1.02] active:scale-[0.98] transition-all duration-500 group relative overflow-hidden animate-fade-in-up" style={{ animationDelay: '100ms' }}>
                 <div className="absolute inset-0 opacity-10">
                     <div className="absolute -right-10 -top-10 w-32 h-32 bg-white rounded-full blur-2xl" />
                     <div className="absolute -left-10 -bottom-10 w-32 h-32 bg-white rounded-full blur-2xl" />
                 </div>
                 <div className="relative z-10">
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between mb-2 sm:mb-4">
                         <div className="p-3 bg-white/20 text-white rounded-2xl backdrop-blur-sm">
                             <WalletIcon className="w-6 h-6" />
                         </div>
@@ -33,13 +33,13 @@ export default function StatsCards({ stats }: StatsCardsProps) {
             </div>
 
             {/* Income */}
-            <div className="min-w-[220px] sm:min-w-[280px] snap-center md:min-w-0 bg-gradient-to-br from-[#059669] via-[#10b981] to-[#34d399] shadow-xl shadow-emerald-500/20 p-4 sm:p-5 md:p-6 rounded-[2rem] hover:scale-[1.02] transition-all duration-500 group relative overflow-hidden animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+            <div className="min-w-[220px] sm:min-w-[280px] snap-center md:min-w-0 bg-gradient-to-br from-[#059669] via-[#10b981] to-[#34d399] shadow-xl shadow-emerald-500/20 p-3 sm:p-4 md:p-6 rounded-[2rem] hover:scale-[1.02] active:scale-[0.98] transition-all duration-500 group relative overflow-hidden animate-fade-in-up" style={{ animationDelay: '200ms' }}>
                 <div className="absolute inset-0 opacity-10">
                     <div className="absolute -right-10 -top-10 w-32 h-32 bg-white rounded-full blur-2xl" />
                     <div className="absolute -left-10 -bottom-10 w-32 h-32 bg-white rounded-full blur-2xl" />
                 </div>
                 <div className="relative z-10">
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between mb-2 sm:mb-4">
                         <div className="p-3 bg-white/20 text-white rounded-2xl backdrop-blur-sm">
                             <TrendingUp className="w-6 h-6" />
                         </div>
@@ -53,13 +53,13 @@ export default function StatsCards({ stats }: StatsCardsProps) {
             </div>
 
             {/* Expense */}
-            <div className="min-w-[220px] sm:min-w-[280px] snap-center md:min-w-0 bg-gradient-to-br from-[#9f1239] via-[#e11d48] to-[#f43f5e] shadow-xl shadow-rose-500/20 p-4 sm:p-5 md:p-6 rounded-[2rem] hover:scale-[1.02] transition-all duration-500 group relative overflow-hidden animate-fade-in-up" style={{ animationDelay: '300ms' }}>
+            <div className="min-w-[220px] sm:min-w-[280px] snap-center md:min-w-0 bg-gradient-to-br from-[#9f1239] via-[#e11d48] to-[#f43f5e] shadow-xl shadow-rose-500/20 p-3 sm:p-4 md:p-6 rounded-[2rem] hover:scale-[1.02] active:scale-[0.98] transition-all duration-500 group relative overflow-hidden animate-fade-in-up" style={{ animationDelay: '300ms' }}>
                 <div className="absolute inset-0 opacity-10">
                     <div className="absolute -right-10 -top-10 w-32 h-32 bg-white rounded-full blur-2xl" />
                     <div className="absolute -left-10 -bottom-10 w-32 h-32 bg-white rounded-full blur-2xl" />
                 </div>
                 <div className="relative z-10">
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between mb-2 sm:mb-4">
                         <div className="p-3 bg-white/20 text-white rounded-2xl backdrop-blur-sm">
                             <TrendingDown className="w-6 h-6" />
                         </div>

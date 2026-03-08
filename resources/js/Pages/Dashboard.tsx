@@ -246,23 +246,23 @@ export default function Dashboard({
             <Head title="Dashboard" />
             <Toaster position="top-right" />
 
-            <div className="space-y-8">
+            <div className="space-y-4 sm:space-y-8">
                 {/* Header Action Bar */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 animate-fade-in-up" style={{ animationDelay: '0ms' }}>
                     <div className="w-full md:w-auto">
                         <NetWorthCard amount={stats.netWorth} />
                     </div>
-                    <div className="flex items-center gap-3 ml-auto">
+                    <div className="hidden sm:flex items-center gap-3 ml-auto">
                         <button
                             onClick={resetLayout}
-                            className="p-3 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-2xl border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all hover:scale-105 active:scale-95"
+                            className="hidden sm:flex p-3 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-2xl border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all hover:scale-105 active:scale-95"
                             title="Reset Layout"
                         >
                             <RotateCcw className="w-4 h-4" />
                         </button>
                         <Link
                             href={route('smart-entry.index')}
-                            className="flex items-center px-5 py-3 bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 rounded-2xl text-sm font-bold hover:bg-indigo-50 dark:hover:bg-slate-700 transition-all border border-indigo-100 dark:border-slate-700 shadow-sm hover:shadow-md hover:scale-105 active:scale-95"
+                            className="hidden sm:flex items-center px-5 py-3 bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 rounded-2xl text-sm font-bold hover:bg-indigo-50 dark:hover:bg-slate-700 transition-all border border-indigo-100 dark:border-slate-700 shadow-sm hover:shadow-md hover:scale-105 active:scale-95"
                         >
                             <Sparkles className="w-4 h-4 mr-2 text-indigo-500 dark:text-indigo-400" />
                             AI Input
@@ -366,7 +366,7 @@ Dashboard.layout = (page: any) => (
         header={
             <div className="flex flex-col min-w-0">
                 <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Dashboard Ringkasan</h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">
+                <p className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">
                     Selamat datang kembali, {page.props.auth.user.name.split(' ')[0]}!
                 </p>
             </div>

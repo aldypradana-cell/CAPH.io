@@ -318,9 +318,9 @@ export default function TransactionsIndex({
             <Head title="Transaksi" />
             <Toaster position="top-right" />
 
-            <div className="space-y-6 animate-fade-in-up">
+            <div className="space-y-3 sm:space-y-6 animate-fade-in-up">
                 {/* Toolbar */}
-                <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
+                <div className="flex flex-col lg:flex-row gap-2 sm:gap-4 items-stretch lg:items-center justify-between mb-2 sm:mb-0">
                     {/* Search */}
                     <div className="relative flex-1 max-w-md">
                         <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -336,11 +336,11 @@ export default function TransactionsIndex({
                     {/* Filter & Actions */}
                     <div className="flex items-center gap-3 flex-wrap">
                         {/* Type Filter */}
-                        <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+                        <div className="flex items-center gap-1.5 sm:gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0 scrollbar-hide snap-x">
                             <select
                                 value={filterType}
                                 onChange={(e) => setFilterType(e.target.value)}
-                                className="px-4 py-2 bg-slate-100 dark:bg-slate-800 border-none rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+                                className="snap-start px-3 py-1.5 sm:px-4 sm:py-2 bg-slate-100 dark:bg-slate-800 border-none rounded-xl text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 focus:ring-2 focus:ring-indigo-500 cursor-pointer min-w-max"
                             >
                                 <option value="">Semua Tipe</option>
                                 <option value="INCOME">Pemasukan</option>
@@ -351,7 +351,7 @@ export default function TransactionsIndex({
                             <select
                                 value={filterTag}
                                 onChange={(e) => setFilterTag(e.target.value)}
-                                className="px-4 py-2 bg-slate-100 dark:bg-slate-800 border-none rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+                                className="snap-start px-3 py-1.5 sm:px-4 sm:py-2 bg-slate-100 dark:bg-slate-800 border-none rounded-xl text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 focus:ring-2 focus:ring-indigo-500 cursor-pointer min-w-max"
                             >
                                 <option value="">Semua Tag</option>
                                 {userTags.map(tag => (
@@ -359,36 +359,36 @@ export default function TransactionsIndex({
                                 ))}
                             </select>
 
-                            <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 rounded-xl px-2">
+                            <div className="snap-start flex items-center gap-1.5 sm:gap-2 bg-slate-100 dark:bg-slate-800 rounded-xl px-2 min-w-max">
                                 <Calendar className="w-4 h-4 text-slate-400" />
                                 <input
                                     type="date"
                                     value={startDate}
                                     onChange={(e) => setStartDate(e.target.value)}
-                                    className="bg-transparent border-none text-xs font-medium text-slate-600 dark:text-slate-300 focus:ring-0 p-2 w-28"
+                                    className="bg-transparent border-none text-[10px] sm:text-xs font-medium text-slate-600 dark:text-slate-300 focus:ring-0 p-1.5 sm:p-2 w-[90px] sm:w-28"
                                 />
                                 <span className="text-slate-400">-</span>
                                 <input
                                     type="date"
                                     value={endDate}
                                     onChange={(e) => setEndDate(e.target.value)}
-                                    className="bg-transparent border-none text-xs font-medium text-slate-600 dark:text-slate-300 focus:ring-0 p-2 w-28"
+                                    className="bg-transparent border-none text-[10px] sm:text-xs font-medium text-slate-600 dark:text-slate-300 focus:ring-0 p-1.5 sm:p-2 w-[90px] sm:w-28"
                                 />
                             </div>
                         </div>
 
-                        <button onClick={applyFilters} className="px-4 py-3 bg-indigo-600 text-white rounded-2xl text-sm font-bold hover:bg-indigo-700 transition-all active:scale-95">
+                        <button onClick={applyFilters} className="px-3 py-1.5 sm:px-4 sm:py-3 bg-indigo-600 text-white rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold hover:bg-indigo-700 transition-all active:scale-95 shrink-0">
                             Filter
                         </button>
 
                         {(filterType || startDate || endDate || filterTag) && (
-                            <button onClick={clearFilters} className="px-4 py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-2xl text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95">
+                            <button onClick={clearFilters} className="hidden sm:block px-4 py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-2xl text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95">
                                 Reset
                             </button>
                         )}
 
                         {/* CSV Export */}
-                        <button onClick={handleExportCSV} className="p-3 glass-card rounded-2xl text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md transition-all active:scale-95" title="Export CSV">
+                        <button onClick={handleExportCSV} className="hidden sm:flex p-3 glass-card rounded-2xl text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md transition-all active:scale-95" title="Export CSV">
                             <Download className="w-4 h-4" />
                         </button>
 
@@ -411,7 +411,7 @@ export default function TransactionsIndex({
                         {/* Add Button */}
                         <button
                             onClick={() => { setEditingTransaction(null); setIsModalOpen(true); }}
-                            className="flex items-center px-5 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95"
+                            className="hidden sm:flex items-center px-5 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95"
                         >
                             <Plus className="w-4 h-4 mr-2" /> Transaksi Baru
                         </button>
@@ -536,7 +536,7 @@ export default function TransactionsIndex({
                             </div>
                         ))
                     ) : (
-                        <div className="glass-card rounded-[2rem] p-16 text-center animate-fade-in-up">
+                        <div className="glass-card rounded-[2rem] p-8 sm:p-16 text-center animate-fade-in-up">
                             <ArrowDownUp className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4 animate-pulse" />
                             <p className="text-lg font-bold text-slate-400 dark:text-slate-500 mb-1">Belum ada transaksi</p>
                             <p className="text-sm text-slate-400">Klik "Transaksi Baru" untuk memulai pencatatan</p>
@@ -629,7 +629,7 @@ TransactionsIndex.layout = (page: any) => (
         header={
             <div className="flex flex-col min-w-0">
                 <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Riwayat Transaksi</h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">
+                <p className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">
                     Kelola semua transaksi keuangan Anda
                 </p>
             </div>

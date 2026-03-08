@@ -182,7 +182,7 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
             <Head title="Anggaran" />
             <Toaster position="top-right" />
 
-            <div className="space-y-6 animate-fade-in-up">
+            <div className="space-y-4 sm:space-y-6 animate-fade-in-up">
 
                 {/* ═══════════════ Master Budget Section ═══════════════ */}
                 {masterBudgets.length > 0 && (
@@ -243,7 +243,7 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                 )}
 
                 {/* ═══════════════ Overall Summary (Regular Budgets) ═══════════════ */}
-                <div className="glass-card p-8 rounded-[2rem] relative overflow-hidden">
+                <div className="glass-card p-5 sm:p-8 rounded-[2rem] relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-500/5 rounded-full -translate-y-1/2 translate-x-1/2" />
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div>
@@ -315,7 +315,7 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                             </div>
                         );
                     }) : (
-                        <div className="col-span-full glass-card rounded-[2rem] p-16 text-center">
+                        <div className="col-span-full glass-card rounded-[2rem] p-8 sm:p-16 text-center">
                             <Target className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
                             <p className="text-lg font-bold text-slate-400">Belum ada anggaran</p>
                         </div>
@@ -559,7 +559,7 @@ BudgetsIndex.layout = (page: any) => (
     <AppLayout header={
         <div className="flex flex-col min-w-0">
             <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Anggaran</h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">Pantau dan kelola batas pengeluaran Anda</p>
+                <p className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">Pantau dan kelola batas pengeluaran Anda</p>
         </div>
     }>
         {page}
