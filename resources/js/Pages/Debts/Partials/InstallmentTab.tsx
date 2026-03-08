@@ -249,6 +249,11 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
                                         </div>
                                         <div className="flex flex-col items-end gap-1">
                                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${cfg.badge}`}>{cfg.label}</span>
+                                            {inst.wallet_id === null && (
+                                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 flex items-center gap-1">
+                                                    <Clock className="w-2.5 h-2.5" /> PayLater
+                                                </span>
+                                            )}
                                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${inst.auto_debit ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'}`}>
                                                 {inst.auto_debit ? 'Auto Debit' : 'Manual'}
                                             </span>

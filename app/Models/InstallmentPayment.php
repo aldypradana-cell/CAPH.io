@@ -15,6 +15,7 @@ class InstallmentPayment extends Model
         'amount',
         'paid_at',
         'wallet_id',
+        'transaction_id',
         'notes',
     ];
 

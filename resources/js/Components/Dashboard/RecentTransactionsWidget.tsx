@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, ArrowRightLeft, GripHorizontal } from 'lucide-react';
+import { TrendingUp, TrendingDown, ArrowRightLeft, GripHorizontal, Clock } from 'lucide-react';
 import { Link } from '@inertiajs/react';
 import { Transaction } from '@/types/dashboard';
 
@@ -51,7 +51,19 @@ export default function RecentTransactionsWidget({
                                 </div>
                                 <div>
                                     <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 line-clamp-1">{t.description}</p>
-                                    <p className="text-[10px] text-slate-400">{t.category} · {new Date(t.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</p>
+                                    <p className="text-[10px] text-slate-400 flex items-center gap-1.5 mt-0.5">
+                                        <span>{t.category}</span>
+                                        <span className="opacity-30">·</span>
+                                        <span className="shrink-0">{new Date(t.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
+                                        {!t.wallet_id && (
+                                            <>
+                                                <span className="opacity-30">·</span>
+                                                <span className="text-amber-600 dark:text-amber-400 font-bold flex items-center gap-0.5">
+                                                    <Clock className="w-2 h-2" /> PayLater
+                                                </span>
+                                            </>
+                                        )}
+                                    </p>
                                 </div>
                             </div>
                             <span className={`text-sm font-bold ${t.type === 'INCOME' ? 'text-emerald-600 dark:text-emerald-400' : t.type === 'TRANSFER' ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400'}`}>

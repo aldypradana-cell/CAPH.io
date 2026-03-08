@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import {
     Plus, Pencil, Trash2, X, Search, Filter, Download, ArrowDownUp,
-    TrendingUp, TrendingDown, ArrowRightLeft, AlertTriangle, Calendar, Hash
+    TrendingUp, TrendingDown, ArrowRightLeft, AlertTriangle, Calendar, Hash, Clock
 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import TransactionFormModal from '@/Components/TransactionFormModal';
@@ -401,7 +401,13 @@ export default function TransactionsIndex({
                                         <p className="text-sm font-bold text-slate-800 dark:text-white truncate">{t.description}</p>
                                         <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                                             <span className="text-[10px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">{t.category}</span>
-                                            <span className="text-[10px] text-slate-400">{t.wallet?.name}</span>
+                                            {t.wallet ? (
+                                                <span className="text-[10px] text-slate-400">{t.wallet.name}</span>
+                                            ) : (
+                                                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                                    <Clock className="w-2.5 h-2.5" /> PayLater
+                                                </span>
+                                            )}
                                             {t.type === 'TRANSFER' && t.to_wallet && (
                                                 <span className="text-[10px] text-slate-400 flex items-center gap-1">
                                                     <ArrowRightLeft className="w-3 h-3" /> {t.to_wallet.name}

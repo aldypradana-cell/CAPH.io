@@ -78,7 +78,18 @@ class InstallmentController extends Controller
             abort(403);
         }
 
-        $installment->delete();
+        DB::transaction(function () use ($installment) {
+            // If this installment was created via PayLater, delete its parent transaction too
+            if ($installment->transaction_id) {
+                $transaction = \App\Models\Transaction::find($installment->transaction_id);
+                if ($transaction) {
+                    // Use service to handle possible wallet/other syncs (though PayLater has no wallet)
+                    app(TransactionService::class)->deleteTransaction($transaction);
+                }
+            }
+
+            $installment->delete();
+        });
 
         return redirect()->back()->with('success', 'Cicilan berhasil dihapus');
     }

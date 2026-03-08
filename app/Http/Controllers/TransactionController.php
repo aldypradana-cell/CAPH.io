@@ -104,11 +104,17 @@ class TransactionController extends Controller
         $validated = $request->validated();
 
         try {
-            $transactions = $this->transactionService->createTransactions(
-            [$validated],
-                $request->user()->id,
-                $validated['wallet_id']
-            );
+            if (!empty($validated['is_paylater'])) {
+                // If PayLater, defer to special creation flow without touching wallet
+                $transactions = $this->transactionService->createPayLaterTransaction($validated, $userId);
+            } else {
+                // Regular transaction flow
+                $transactions = $this->transactionService->createTransactions(
+                    [$validated],
+                    $userId,
+                    $validated['wallet_id']
+                );
+            }
 
             // Sync tags after creating the transaction
             if (!empty($validated['tags']) && !empty($transactions)) {

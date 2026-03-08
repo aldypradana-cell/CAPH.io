@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useForm, router } from '@inertiajs/react';
-import { X, TrendingDown, TrendingUp, ArrowRightLeft } from 'lucide-react';
+import { X, TrendingDown, TrendingUp, ArrowRightLeft, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
 import TagInput from '@/Components/TagInput';
 import { WalletData, CategoryData, TagData } from '@/types/dashboard';
@@ -34,10 +34,25 @@ export default function TransactionFormModal({
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [mounted, setMounted] = useState(false);
     const [showAdminFee, setShowAdminFee] = useState(false);
+    const [payLaterEnabled, setPayLaterEnabled] = useState(false);
 
     useEffect(() => {
         setMounted(true);
+        // Load PayLater preference from localStorage
+        const storedPref = localStorage.getItem('caph_paylater_enabled');
+        if (storedPref === 'true') {
+            setPayLaterEnabled(true);
+        }
     }, []);
+
+    const togglePayLaterFeature = () => {
+        const newValue = !payLaterEnabled;
+        setPayLaterEnabled(newValue);
+        localStorage.setItem('caph_paylater_enabled', newValue.toString());
+        if (!newValue) {
+            setData('is_paylater', false);
+        }
+    };
 
     const { data, setData, processing, reset } = useForm({
         wallet_id: '',
@@ -50,6 +65,10 @@ export default function TransactionFormModal({
         tags: [] as string[],
         admin_fee: '',
         admin_fee_from: 'sender' as 'sender' | 'receiver',
+        is_paylater: false,
+        paylater_lender: '',
+        paylater_tenor: 1,
+        paylater_due_day: new Date().getDate(),
     });
 
     // Prefill form when editing
@@ -68,6 +87,10 @@ export default function TransactionFormModal({
                 tags: editingTransaction.tags?.map(t => t.name) || [],
                 admin_fee: '',
                 admin_fee_from: 'sender' as 'sender' | 'receiver',
+                is_paylater: false,
+                paylater_lender: '',
+                paylater_tenor: 1,
+                paylater_due_day: new Date().getDate(),
             });
         }
     }, [editingTransaction, isOpen]);
@@ -123,6 +146,7 @@ export default function TransactionFormModal({
         setSelectedTags([]);
         setShowAdminFee(false);
         setInputType('EXPENSE');
+        setData('is_paylater', false);
     };
 
     if (!isOpen || !mounted) return null;
@@ -140,9 +164,29 @@ export default function TransactionFormModal({
                         <h3 className="text-lg font-bold text-slate-800 dark:text-white">
                             {editingTransaction ? 'Edit Transaksi' : 'Transaksi Baru'}
                         </h3>
-                        <button onClick={handleClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
-                            <X className="w-5 h-5" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                            {/* PayLater Settings Toggle */}
+                            {!editingTransaction && (
+                                <div className="relative group">
+                                    <button
+                                        type="button"
+                                        onClick={togglePayLaterFeature}
+                                        className={`p-1.5 rounded-xl transition-all ${
+                                            payLaterEnabled
+                                                ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400'
+                                                : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:text-slate-200 dark:hover:bg-slate-700'
+                                        }`}
+                                        title={payLaterEnabled ? 'Matikan menu PayLater' : 'Tampilkan menu PayLater'}
+                                    >
+                                        <Clock className="w-5 h-5" />
+                                    </button>
+                                </div>
+                            )}
+
+                            <button onClick={handleClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
                     </div>
 
                     {/* Type Toggle */}
@@ -160,6 +204,7 @@ export default function TransactionFormModal({
                                         category: '',
                                         admin_fee: '',
                                         admin_fee_from: 'sender' as 'sender' | 'receiver',
+                                        is_paylater: false,
                                     }));
                                 }}
                                 className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 ${inputType === type
@@ -186,15 +231,85 @@ export default function TransactionFormModal({
                             <input type="tel" value={data.amount} onChange={(e) => handleAmountChange(e.target.value)} className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-2xl text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 text-center" placeholder="0" autoFocus required />
                         </div>
 
-                        <div>
-                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Dompet</label>
-                            <select value={data.wallet_id} onChange={(e) => setData('wallet_id', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required>
-                                <option value="">Pilih Dompet</option>
-                                {wallets.map(w => (
-                                    <option key={w.id} value={w.id}>{w.name}</option>
-                                ))}
-                            </select>
-                        </div>
+                        {!data.is_paylater && (
+                            <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Dompet</label>
+                                <select value={data.wallet_id} onChange={(e) => setData('wallet_id', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required={!data.is_paylater}>
+                                    <option value="">Pilih Dompet</option>
+                                    {wallets.map(w => (
+                                        <option key={w.id} value={w.id}>{w.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+
+                        {/* PayLater Toggle Checkbox (Hanya untuk EXPENSE dan jika fitur diaktifkan) */}
+                        {inputType === 'EXPENSE' && payLaterEnabled && (
+                            <div className="pt-1 pb-2 border-b border-slate-100 dark:border-slate-800">
+                                <label 
+                                    className="flex items-center gap-2 cursor-pointer group"
+                                    onClick={() => setData('is_paylater', !data.is_paylater)}
+                                >
+                                    <div className={`w-5 h-5 rounded flex items-center justify-center transition-colors ${data.is_paylater ? 'bg-amber-500' : 'bg-slate-200 dark:bg-slate-700 group-hover:bg-slate-300 dark:group-hover:bg-slate-600'}`}>
+                                        {data.is_paylater && <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>}
+                                    </div>
+                                    <span className={`text-sm font-medium transition-colors ${data.is_paylater ? 'text-amber-600 dark:text-amber-400' : 'text-slate-600 dark:text-slate-300'}`}>
+                                        Bayar pakai PayLater / Cicil
+                                    </span>
+                                </label>
+
+                                {/* PayLater Expanded Fields */}
+                                {data.is_paylater && (
+                                    <div className="mt-3 p-3.5 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 rounded-2xl space-y-3 animate-fade-in">
+                                        <div>
+                                            <label className="text-[10px] font-bold text-amber-700/70 dark:text-amber-500/70 uppercase tracking-widest block mb-1 ml-1">Nama Layanan (Kredivo, SpayLater, dll)</label>
+                                            <input
+                                                type="text"
+                                                value={data.paylater_lender}
+                                                onChange={(e) => setData('paylater_lender', e.target.value)}
+                                                className="w-full px-3 py-2 border border-amber-200/60 dark:border-amber-700/40 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 outline-none text-slate-900 dark:text-white bg-white dark:bg-slate-900/50"
+                                                placeholder="Cnth: Kredivo"
+                                                required={data.is_paylater}
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label className="text-[10px] font-bold text-amber-700/70 dark:text-amber-500/70 uppercase tracking-widest block mb-1 ml-1">Tenor Cicilan</label>
+                                                <select
+                                                    value={data.paylater_tenor}
+                                                    onChange={(e) => setData('paylater_tenor', parseInt(e.target.value))}
+                                                    className="w-full px-3 py-2 border border-amber-200/60 dark:border-amber-700/40 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 outline-none text-slate-900 dark:text-white bg-white dark:bg-slate-900/50"
+                                                >
+                                                    {[1, 2, 3, 6, 12, 24].map(months => (
+                                                        <option key={months} value={months}>{months} Bulan</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="text-[10px] font-bold text-amber-700/70 dark:text-amber-500/70 uppercase tracking-widest block mb-1 ml-1">Tgl Jatuh Tempo</label>
+                                                <select
+                                                    value={data.paylater_due_day}
+                                                    onChange={(e) => setData('paylater_due_day', parseInt(e.target.value))}
+                                                    className="w-full px-3 py-2 border border-amber-200/60 dark:border-amber-700/40 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 outline-none text-slate-900 dark:text-white bg-white dark:bg-slate-900/50"
+                                                >
+                                                    {Array.from({ length: 28 }, (_, i) => i + 1).map(day => (
+                                                        <option key={day} value={day}>Setiap tgl {day}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        {/* Preview Cicilan */}
+                                        {parseAmount(data.amount) > 0 && (
+                                            <div className="mt-2 pt-2 border-t border-amber-200/50 dark:border-amber-800/30 flex items-center gap-2 text-amber-700 dark:text-amber-400 font-medium text-xs">
+                                                <Clock className="w-4 h-4" />
+                                                <span>Estimasi Cicilan: <strong>Rp {Math.round(parseAmount(data.amount) / data.paylater_tenor).toLocaleString('id-ID')}</strong> / bulan</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         {inputType === 'TRANSFER' && (
                             <div>
@@ -319,8 +434,8 @@ export default function TransactionFormModal({
 
                         <div className="flex space-x-3 pt-4">
                             <button type="button" onClick={handleClose} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors active:scale-95">Batal</button>
-                            <button type="submit" disabled={processing} className="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-indigo-500/30 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50">
-                                {processing ? 'Menyimpan...' : 'Simpan'}
+                            <button type="submit" disabled={processing} className={`flex-1 py-3 text-white rounded-2xl text-sm font-bold shadow-lg hover:scale-105 active:scale-95 transition-transform disabled:opacity-50 ${data.is_paylater ? 'bg-gradient-to-r from-amber-500 to-orange-500 shadow-amber-500/30' : 'bg-gradient-to-r from-indigo-600 to-violet-600 shadow-indigo-500/30'}`}>
+                                {processing ? 'Menyimpan...' : (data.is_paylater ? 'Simpan (PayLater 🕒)' : 'Simpan')}
                             </button>
                         </div>
                     </form>

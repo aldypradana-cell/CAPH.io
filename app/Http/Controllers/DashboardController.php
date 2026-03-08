@@ -74,13 +74,15 @@ class DashboardController extends Controller
         $totalAssetsValue = (float) Asset::where('user_id', $user->id)->sum('value');
 
         // Sum up total remaining amounts of active installments
+        // FIXED: Eager load payments to ensure accurate remaining_amount calculation
         $activeInstallments = Installment::where('user_id', $user->id)
             ->where('is_completed', false)
+            ->with(['payments'])
             ->get();
         
         $totalInstallmentDebts = 0;
         foreach ($activeInstallments as $installment) {
-            $totalInstallmentDebts += $installment->remaining_amount;
+            $totalInstallmentDebts += (float) $installment->remaining_amount;
         }
         
         $netWorth = ($balance + $totalReceivables + $totalAssetsValue) - ($totalDebts + $totalInstallmentDebts);

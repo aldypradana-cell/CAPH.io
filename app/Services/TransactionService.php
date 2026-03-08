@@ -9,6 +9,8 @@ use App\Models\DebtPayment;
 use App\Enums\TransactionType;
 use Illuminate\Support\Facades\DB;
 use App\Models\Budget;
+use App\Models\Installment;
+use App\Models\InstallmentPayment;
 use Illuminate\Support\Carbon;
 use App\Notifications\BudgetExceeded;
 
@@ -124,20 +126,22 @@ class TransactionService
     public function updateTransaction(Transaction $transaction, array $data)
     {
         return DB::transaction(function () use ($transaction, $data) {
-            // 1. Lock & revert old balance with pessimistic lock
-            $oldWallet = Wallet::where('id', $transaction->wallet_id)->lockForUpdate()->firstOrFail();
-            if ($transaction->type === TransactionType::INCOME->value) {
-                $oldWallet->decrement('balance', $transaction->amount);
-            } elseif ($transaction->type === TransactionType::EXPENSE->value) {
-                $oldWallet->increment('balance', $transaction->amount);
-            } elseif ($transaction->type === TransactionType::TRANSFER->value && $transaction->to_wallet_id) {
-                $oldWallet->increment('balance', $transaction->amount);
-                Wallet::where('id', $transaction->to_wallet_id)->lockForUpdate()->firstOrFail()->decrement('balance', $transaction->amount);
+            // 1. Lock & revert old balance (if wallet exists)
+            if ($transaction->wallet_id) {
+                $oldWallet = Wallet::where('id', $transaction->wallet_id)->lockForUpdate()->firstOrFail();
+                if ($transaction->type === TransactionType::INCOME->value) {
+                    $oldWallet->decrement('balance', $transaction->amount);
+                } elseif ($transaction->type === TransactionType::EXPENSE->value) {
+                    $oldWallet->increment('balance', $transaction->amount);
+                } elseif ($transaction->type === TransactionType::TRANSFER->value && $transaction->to_wallet_id) {
+                    $oldWallet->increment('balance', $transaction->amount);
+                    Wallet::where('id', $transaction->to_wallet_id)->lockForUpdate()->firstOrFail()->decrement('balance', $transaction->amount);
+                }
             }
 
             // 2. Update Transaction
             $transaction->update([
-                'wallet_id' => $data['wallet_id'],
+                'wallet_id' => $data['wallet_id'] ?? null,
                 'to_wallet_id' => $data['to_wallet_id'] ?? null,
                 'amount' => $data['amount'],
                 'type' => $data['type'],
@@ -146,22 +150,24 @@ class TransactionService
                 'date' => $data['date'],
             ]);
 
-            // 3. Lock & apply new balance
-            $wallet = Wallet::where('id', $data['wallet_id'])->lockForUpdate()->firstOrFail();
-            if ($data['type'] === TransactionType::INCOME->value) {
-                $wallet->increment('balance', $data['amount']);
-            } elseif ($data['type'] === TransactionType::EXPENSE->value) {
-                if ($wallet->balance < $data['amount']) {
-                    throw new \Exception("Saldo dompet \"{$wallet->name}\" tidak cukup. Saldo: Rp" . number_format($wallet->balance, 0, ',', '.') . ", Dibutuhkan: Rp" . number_format($data['amount'], 0, ',', '.'));
+            // 3. Lock & apply new balance (if wallet exists)
+            if ($data['wallet_id']) {
+                $wallet = Wallet::where('id', $data['wallet_id'])->lockForUpdate()->firstOrFail();
+                if ($data['type'] === TransactionType::INCOME->value) {
+                    $wallet->increment('balance', $data['amount']);
+                } elseif ($data['type'] === TransactionType::EXPENSE->value) {
+                    if ($wallet->balance < $data['amount']) {
+                        throw new \Exception("Saldo dompet \"{$wallet->name}\" tidak cukup. Saldo: Rp" . number_format($wallet->balance, 0, ',', '.') . ", Dibutuhkan: Rp" . number_format($data['amount'], 0, ',', '.'));
+                    }
+                    $wallet->decrement('balance', $data['amount']);
+                    $this->checkBudget($transaction);
+                } elseif ($data['type'] === TransactionType::TRANSFER->value && isset($data['to_wallet_id'])) {
+                    if ($wallet->balance < $data['amount']) {
+                        throw new \Exception("Saldo dompet \"{$wallet->name}\" tidak cukup untuk transfer. Saldo: Rp" . number_format($wallet->balance, 0, ',', '.') . ", Dibutuhkan: Rp" . number_format($data['amount'], 0, ',', '.'));
+                    }
+                    $wallet->decrement('balance', $data['amount']);
+                    Wallet::where('id', $data['to_wallet_id'])->lockForUpdate()->firstOrFail()->increment('balance', $data['amount']);
                 }
-                $wallet->decrement('balance', $data['amount']);
-                $this->checkBudget($transaction);
-            } elseif ($data['type'] === TransactionType::TRANSFER->value && isset($data['to_wallet_id'])) {
-                if ($wallet->balance < $data['amount']) {
-                    throw new \Exception("Saldo dompet \"{$wallet->name}\" tidak cukup untuk transfer. Saldo: Rp" . number_format($wallet->balance, 0, ',', '.') . ", Dibutuhkan: Rp" . number_format($data['amount'], 0, ',', '.'));
-                }
-                $wallet->decrement('balance', $data['amount']);
-                Wallet::where('id', $data['to_wallet_id'])->lockForUpdate()->firstOrFail()->increment('balance', $data['amount']);
             }
 
             // Sync with DebtPayment if this transaction belongs to one
@@ -181,6 +187,17 @@ class TransactionService
                 }
             }
 
+            // Sync with Installment (PayLater sync)
+            $installment = Installment::where('transaction_id', $transaction->id)->first();
+            if ($installment) {
+                $newMonthlyAmount = (float) $data['amount'] / (int) $installment->total_tenor;
+                $installment->update([
+                    'name' => 'PayLater - ' . $data['description'],
+                    'total_amount' => $data['amount'],
+                    'monthly_amount' => $newMonthlyAmount,
+                ]);
+            }
+
             return $transaction;
         });
     }
@@ -188,15 +205,19 @@ class TransactionService
     public function deleteTransaction(Transaction $transaction)
     {
         return DB::transaction(function () use ($transaction) {
-            // Pessimistic lock: cegah race condition saat revert saldo
-            $wallet = Wallet::where('id', $transaction->wallet_id)->lockForUpdate()->firstOrFail();
+            // Revert Balance (if wallet exists)
+            if ($transaction->wallet_id) {
+                // Pessimistic lock: cegah race condition saat revert saldo
+                $wallet = Wallet::where('id', $transaction->wallet_id)->lockForUpdate()->firstOrFail();
 
-            // Revert Balance
-            if ($transaction->type === TransactionType::INCOME->value) {
-                $wallet->decrement('balance', $transaction->amount);
-            } elseif ($transaction->type === TransactionType::EXPENSE->value) {
-                $wallet->increment('balance', $transaction->amount);
-            } elseif ($transaction->type === TransactionType::TRANSFER->value && $transaction->to_wallet_id) {
+                if ($transaction->type === TransactionType::INCOME->value) {
+                    $wallet->decrement('balance', $transaction->amount);
+                } elseif ($transaction->type === TransactionType::EXPENSE->value) {
+                    $wallet->increment('balance', $transaction->amount);
+                }
+            }
+
+            if ($transaction->type === TransactionType::TRANSFER->value && $transaction->wallet_id && $transaction->to_wallet_id) {
                 $wallet->increment('balance', $transaction->amount);
                 Wallet::where('id', $transaction->to_wallet_id)->lockForUpdate()->firstOrFail()->decrement('balance', $transaction->amount);
             }
@@ -204,14 +225,32 @@ class TransactionService
             // Sync with DebtPayment BEFORE deleting the transaction
             $debtPayment = DebtPayment::where('transaction_id', $transaction->id)->first();
             if ($debtPayment) {
-                $debt = current([$debtPayment->debt]); // Keep a reference
-                $debtPayment->delete(); // Delete the payment first
+                $debt = current([$debtPayment->debt]);
+                $debtPayment->delete();
                 
-                // Recalculate debt is_paid status
                 if ($debt) {
                     $totalPaid = $debt->payments()->sum('amount');
                     $debt->update(['is_paid' => $totalPaid >= (float) $debt->amount]);
                 }
+            }
+
+            // Sync with Installment (PayLater) BEFORE deleting the transaction
+            $installment = Installment::where('transaction_id', $transaction->id)->first();
+            if ($installment) {
+                $installment->delete();
+            }
+
+            // Sync with InstallmentPayment (Repayment) BEFORE deleting the transaction
+            $instPayment = InstallmentPayment::where('transaction_id', $transaction->id)->first();
+            if ($instPayment) {
+                $installment = $instPayment->installment;
+                if ($installment) {
+                    // Decrement paid tenor
+                    $installment->paid_tenor = max(0, $installment->paid_tenor - 1);
+                    $installment->is_completed = false;
+                    $installment->save();
+                }
+                $instPayment->delete();
             }
 
             $transaction->delete();
@@ -268,5 +307,53 @@ class TransactionService
                 $user->notify(new BudgetExceeded($budget, $transaction));
             }
         }
+    }
+
+    /**
+     * Create a PayLater transaction and its corresponding Installment
+     */
+    public function createPayLaterTransaction(array $data, int $userId)
+    {
+        return DB::transaction(function () use ($data, $userId) {
+            // 1. Create the Transaction WITHOUT touching any wallet
+            $transaction = Transaction::create([
+                'user_id' => $userId,
+                'wallet_id' => null, // Intentionally null for PayLater
+                'to_wallet_id' => null,
+                'amount' => $data['amount'],
+                'type' => \App\Enums\TransactionType::EXPENSE->value,
+                'category' => $data['category'],
+                'description' => $data['description'],
+                'date' => $data['date'],
+            ]);
+
+            // Check budget even if it's PayLater (it's still an expense)
+            $this->checkBudget($transaction);
+
+            // 2. Create the Installment record
+            $tenor = (int) $data['paylater_tenor'];
+            $monthlyAmount = $data['amount'] / $tenor;
+            
+            \App\Models\Installment::create([
+                'user_id' => $userId,
+                'transaction_id' => $transaction->id,
+                'name' => 'PayLater - ' . $data['description'],
+                'type' => 'OTHER',
+                'interest_type' => \App\Enums\InterestType::FLAT->value,
+                'total_amount' => $data['amount'],
+                'monthly_amount' => $monthlyAmount,
+                'total_tenor' => $tenor,
+                'paid_tenor' => 0,
+                'interest_rate' => 0, // Simplified to 0% for now
+                'due_day' => $data['paylater_due_day'],
+                'start_date' => now()->format('Y-m-d'),
+                'lender' => $data['paylater_lender'],
+                'wallet_id' => null,
+                'is_completed' => false,
+                'notes' => 'Otomatis dibuat dari transaksi PayLater pada ' . date('d M Y'),
+            ]);
+
+            return [$transaction];
+        });
     }
 }

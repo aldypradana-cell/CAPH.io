@@ -96,21 +96,27 @@ class DebtController extends Controller
                 ];
             });
 
-        // Summary calculations need to use base query, not paginated subset
-        $baseInstallments = \App\Models\Installment::where('user_id', $user->id)->get();
+        // Sum up total remaining amounts of active installments
+        // FIXED: Added with('payments') for robust calculation of remaining_amount accessor
+        $baseInstallments = \App\Models\Installment::where('user_id', $user->id)
+            ->with(['payments'])
+            ->get();
+
         $installmentSummary = [
-            'totalRemaining'    => $baseInstallments->where('is_completed', false)->sum('remaining_amount'),
-            'monthlyDue'        => $baseInstallments->where('is_completed', false)->sum('monthly_amount'),
+            'totalRemaining'    => $baseInstallments->where('is_completed', false)->sum(fn($i) => (float)$i->remaining_amount),
+            'monthlyDue'        => $baseInstallments->where('is_completed', false)->sum(fn($i) => (float)$i->monthly_amount),
             'activeCount'       => $baseInstallments->where('is_completed', false)->count(),
             'completedCount'    => $baseInstallments->where('is_completed', true)->count(),
         ];
 
-        // --- Debt Freedom Projection Logic ---
+        // --- Projection Logic for Debt Freedom Countdown ---
+        // 1. Initial State
         $currentDate = now()->startOfMonth();
         $simDate = $currentDate->copy();
-        
         $simInstallments = $baseInstallments->where('is_completed', false)->map(function($i) {
             return (object) [
+                'id' => $i->id,
+                'name' => $i->name,
                 'monthly' => (float)$i->monthly_amount,
                 'total' => (float)$i->remaining_amount,
                 'paid_total' => 0

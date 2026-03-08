@@ -21,6 +21,7 @@ export interface Transaction {
     type: 'INCOME' | 'EXPENSE' | 'TRANSFER';
     category: string;
     wallet?: { id: number; name: string };
+    wallet_id?: number | null;
 }
 
 export interface WalletData {

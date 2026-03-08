@@ -26,6 +26,7 @@ class Installment extends Model
         'wallet_id',
         'notes',
         'auto_debit',
+        'transaction_id',
         'is_completed',
     ];
 
@@ -51,6 +52,11 @@ class Installment extends Model
     public function wallet()
     {
         return $this->belongsTo(Wallet::class);
+    }
+
+    public function transaction()
+    {
+        return $this->belongsTo(Transaction::class);
     }
 
     public function payments()
