@@ -25,16 +25,18 @@ interface TransactionFormModalProps {
     categories: CategoryData[] | { id: number; name: string; type: string }[];
     userTags: TagData[] | { id: number; name: string; slug: string; color: string | null }[];
     editingTransaction?: EditableTransaction | null;
+    suggestions?: Record<string, string[]>;
 }
 
 export default function TransactionFormModal({
-    isOpen, onClose, wallets, categories, userTags, editingTransaction = null
+    isOpen, onClose, wallets, categories, userTags, editingTransaction = null, suggestions = {}
 }: TransactionFormModalProps) {
     const [inputType, setInputType] = useState<'EXPENSE' | 'INCOME' | 'TRANSFER'>('EXPENSE');
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [mounted, setMounted] = useState(false);
     const [showAdminFee, setShowAdminFee] = useState(false);
     const [payLaterEnabled, setPayLaterEnabled] = useState(false);
+    const [isDescFocused, setIsDescFocused] = useState(false);
 
     useEffect(() => {
         setMounted(true);
@@ -435,7 +437,43 @@ export default function TransactionFormModal({
 
                         <div>
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Deskripsi</label>
-                            <input type="text" value={data.description} onChange={(e) => setData('description', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="Makan siang" required />
+                            {/* Smart Suggestion Chips — hanya muncul saat fokus & ada saran */}
+                            {(() => {
+                                const selectedCat = data.category;
+                                const matchedSuggestions = selectedCat && suggestions[selectedCat]
+                                    ? suggestions[selectedCat].filter(s =>
+                                        !data.description || s.toLowerCase().includes(data.description.toLowerCase())
+                                    ).slice(0, 8)
+                                    : [];
+
+                                return (isDescFocused || data.description) && matchedSuggestions.length > 0 ? (
+                                    <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-1.5 mb-1.5 animate-fade-in">
+                                        {matchedSuggestions.map((s, i) => (
+                                            <button
+                                                key={i}
+                                                type="button"
+                                                onClick={() => {
+                                                    setData('description', s);
+                                                    setIsDescFocused(false);
+                                                }}
+                                                className="shrink-0 px-3 py-1.5 text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/40 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-900/40 hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
+                                            >
+                                                {s}
+                                            </button>
+                                        ))}
+                                    </div>
+                                ) : null;
+                            })()}
+                            <input
+                                type="text"
+                                value={data.description}
+                                onChange={(e) => setData('description', e.target.value)}
+                                onFocus={() => setIsDescFocused(true)}
+                                onBlur={() => setTimeout(() => setIsDescFocused(false), 200)}
+                                className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50"
+                                placeholder="Makan siang"
+                                required
+                            />
                         </div>
 
                         <TagInput

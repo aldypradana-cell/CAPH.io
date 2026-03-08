@@ -45,7 +45,7 @@ const ResizeHandle = React.forwardRef<HTMLDivElement, any>(({ handleAxis, ...pro
 });
 
 export default function Dashboard({
-    auth, stats, trendData: initialTrendData, pieData: initialPieData, budgetProgress, recentTransactions, wallets, upcomingBills, topTags, categories, userTags, filters
+    auth, stats, trendData: initialTrendData, pieData: initialPieData, budgetProgress, recentTransactions, wallets, upcomingBills, topTags, categories, userTags, suggestions, filters
 }: PageProps<{
     stats: Stats;
     trendData: ChartData[];
@@ -57,6 +57,7 @@ export default function Dashboard({
     topTags: TopTagData[];
     categories: CategoryData[];
     userTags: TagData[];
+    suggestions: Record<string, string[]>;
     filters: FilterState;
 }>) {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -356,6 +357,7 @@ export default function Dashboard({
                 wallets={wallets}
                 categories={categories}
                 userTags={userTags}
+                suggestions={suggestions}
             />
         </>
     );

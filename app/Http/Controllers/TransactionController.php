@@ -9,12 +9,15 @@ use App\Models\Tag;
 use App\Services\TransactionService;
 use App\Http\Requests\StoreTransactionRequest;
 use App\Http\Requests\UpdateTransactionRequest;
+use App\Traits\HasTransactionSuggestions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class TransactionController extends Controller
 {
+    use HasTransactionSuggestions;
+
     protected $transactionService;
 
     public function __construct(TransactionService $transactionService)
@@ -131,6 +134,7 @@ class TransactionController extends Controller
             'heatmapData' => $heatmapData,
             'heatmapMonth' => $heatmapMonth,
             'filterStats' => $filterStats,
+            'suggestions' => $this->getTransactionSuggestions($user->id),
         ]);
     }
 

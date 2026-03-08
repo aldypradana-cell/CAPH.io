@@ -14,11 +14,14 @@ use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Services\BudgetTemplate;
+use App\Traits\HasTransactionSuggestions;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
+    use HasTransactionSuggestions;
+
     public function index(Request $request)
     {
         $user = $request->user();
@@ -222,6 +225,7 @@ class DashboardController extends Controller
             'topTags' => $topTags,
             'categories' => $categories,
             'userTags' => $userTags,
+            'suggestions' => $this->getTransactionSuggestions($user->id),
             'filters' => [
                 'startDate' => $startDate,
                 'endDate' => $endDate,
