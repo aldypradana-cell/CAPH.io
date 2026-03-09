@@ -95,10 +95,12 @@ Kembalikan array objek JSON dengan properti:
                 $occupation = $occupationMap[$fp['occupation'] ?? 'PRIVATE'] ?? 'Tidak diketahui';
                 
                 $goals = '';
-                if (!empty($fp['goals'])) {
-                    foreach ($fp['goals'] as $goal) {
-                        $amount = number_format($goal['amount'] ?? 0, 0, ',', '.');
-                        $goals .= "  - {$goal['name']}: Target Rp{$amount} pada {$goal['deadline']}\n";
+                $userGoals = $user->goals()->get();
+                if ($userGoals->isNotEmpty()) {
+                    foreach ($userGoals as $goal) {
+                        $amount = number_format($goal->target_amount, 0, ',', '.');
+                        $deadline = $goal->deadline ? $goal->deadline->format('Y-m-d') : 'tanpa tenggat';
+                        $goals .= "  - {$goal->name}: Target Rp{$amount} pada {$deadline}\n";
                     }
                 } else {
                     $goals = '  Belum ada target spesifik.';

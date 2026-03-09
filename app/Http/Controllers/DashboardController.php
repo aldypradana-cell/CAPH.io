@@ -36,7 +36,8 @@ class DashboardController extends Controller
         $pieEndDate = $request->input('pieEndDate', $endDate);
         
         // Get user wallets
-        $wallets = Wallet::where('user_id', $user->id)->get();
+        $allWallets = Wallet::where('user_id', $user->id)->get();
+        $wallets = $allWallets->where('type', '!=', 'SAVING')->values();
         
         // Get recent transactions (limit 10) instead of all
         $recentTransactions = Transaction::forUser($user->id)
@@ -58,7 +59,7 @@ class DashboardController extends Controller
 
         $totalIncome = (float) ($statsData['INCOME'] ?? 0);
         $totalExpense = (float) ($statsData['EXPENSE'] ?? 0);
-        $balance = (float) $wallets->sum('balance'); // Current balance is always real-time from wallets
+        $balance = (float) $allWallets->sum('balance'); // Net worth uses ALL wallets including SAVING
         $transactionCount = Transaction::forUser($user->id)->inDateRange($fixedStartDate, $fixedEndDate)->count();
         
         // --- Net Worth Calculation ---
@@ -221,6 +222,7 @@ class DashboardController extends Controller
             'budgetProgress' => $budgetProgress,
             'recentTransactions' => $recentTransactions,
             'wallets' => $wallets,
+            'allWallets' => $allWallets,
             'upcomingBills' => $upcomingBills,
             'topTags' => $topTags,
             'categories' => $categories,

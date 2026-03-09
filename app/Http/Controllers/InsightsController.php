@@ -403,10 +403,6 @@ class InsightsController extends Controller
             'maritalStatus' => 'required|in:SINGLE,MARRIED',
             'dependents'    => 'required|integer|min:0',
             'occupation'    => 'required|in:STABLE,PRIVATE,FREELANCE',
-            'goals'         => 'nullable|array',
-            'goals.*.name'     => 'required|string',
-            'goals.*.amount'   => 'required|numeric|min:0',
-            'goals.*.deadline' => 'required|string',
         ]);
 
         $request->user()->update([

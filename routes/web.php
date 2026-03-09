@@ -49,6 +49,14 @@ Route::middleware(['auth'])->group(function () {
             ->only(['index', 'store', 'update', 'destroy']);
         Route::post('/wallets/{wallet}/set-primary', [WalletController::class, 'setPrimary'])->name('wallets.setPrimary');
 
+        // Savings & Goals
+        Route::get('/savings', [\App\Http\Controllers\SavingsController::class, 'index'])->name('savings.index');
+        Route::post('/savings/goals', [\App\Http\Controllers\SavingsController::class, 'storeGoal'])->name('savings.goals.store');
+        Route::put('/savings/goals/{goal}', [\App\Http\Controllers\SavingsController::class, 'updateGoal'])->name('savings.goals.update');
+        Route::delete('/savings/goals/{goal}', [\App\Http\Controllers\SavingsController::class, 'destroyGoal'])->name('savings.goals.destroy');
+        Route::post('/savings/topup', [\App\Http\Controllers\SavingsController::class, 'topup'])->name('savings.topup');
+        Route::post('/savings/withdraw', [\App\Http\Controllers\SavingsController::class, 'withdraw'])->name('savings.withdraw');
+
         // Recurring Transactions
         Route::resource('recurring', RecurringTransactionController::class)
             ->only(['store', 'update', 'destroy']);

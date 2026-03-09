@@ -172,7 +172,7 @@ function TransactionHeatmap({ data, month, onDateSelect }: { data: Record<string
 }
 
 export default function TransactionsIndex({
-    auth, transactions, wallets, categories, filters, userTags, heatmapData, heatmapMonth, filterStats, suggestions
+    auth, transactions, wallets, allWallets, categories, filters, userTags, heatmapData, heatmapMonth, filterStats, suggestions
 }: PageProps<{
     transactions: {
         data: Transaction[];
@@ -184,6 +184,7 @@ export default function TransactionsIndex({
         total: number;
     };
     wallets: Wallet[];
+    allWallets: Wallet[];
     categories: Category[];
     filters: any;
     userTags: TagData[];
@@ -629,6 +630,7 @@ export default function TransactionsIndex({
                 isOpen={isModalOpen}
                 onClose={() => { setIsModalOpen(false); setEditingTransaction(null); }}
                 wallets={wallets}
+                allWallets={allWallets}
                 categories={categories}
                 userTags={userTags}
                 editingTransaction={editingTransaction}

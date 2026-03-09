@@ -103,7 +103,9 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
         return parseFloat(val.toString()) || 0;
     };
 
-    const totalBalance = wallets.reduce((sum, w) => sum + safeParseFloat(w.balance), 0);
+    // Filter out SAVING wallets — they have their own page
+    const dailyWallets = wallets.filter(w => w.type !== 'SAVING');
+    const totalBalance = dailyWallets.reduce((sum, w) => sum + safeParseFloat(w.balance), 0);
 
     const getWalletGradient = (type: string) => {
         switch (type) {
@@ -134,12 +136,12 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                     <WalletIcon className="absolute right-[-20px] bottom-[-20px] w-64 h-64 opacity-10 group-hover:scale-110 transition-transform duration-700" />
                     <p className="text-indigo-100 font-medium mb-1 opacity-80 uppercase tracking-widest text-xs">Total Saldo Semua Dompet</p>
                     <h2 className="text-4xl font-bold">{formatIDR(totalBalance)}</h2>
-                    <p className="text-indigo-200 text-sm mt-2">{wallets.length} dompet terdaftar</p>
+                    <p className="text-indigo-200 text-sm mt-2">{dailyWallets.length} dompet terdaftar</p>
                 </div>
 
                 {/* Wallet Cards Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {wallets.map((wallet, idx) => {
+                    {dailyWallets.map((wallet, idx) => {
                         const Icon = getWalletIcon(wallet.type);
                         return (
                             <div
@@ -235,7 +237,7 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                     <div
                         onClick={() => { setEditingWallet(null); reset(); setIsModalOpen(true); }}
                         className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl h-56 flex flex-col items-center justify-center cursor-pointer hover:border-indigo-300 dark:hover:border-indigo-600 hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-all group animate-pop-in"
-                        style={{ animationDelay: `${wallets.length * 100}ms` }}
+                        style={{ animationDelay: `${dailyWallets.length * 100}ms` }}
                     >
                         <Plus className="w-10 h-10 text-slate-300 dark:text-slate-600 group-hover:text-indigo-500 transition-colors mb-2" />
                         <p className="text-sm font-bold text-slate-400 dark:text-slate-500 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Tambah Dompet</p>

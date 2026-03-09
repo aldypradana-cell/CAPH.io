@@ -113,13 +113,15 @@ class TransactionController extends Controller
             }
         }
 
-        $wallets = Wallet::where('user_id', $user->id)->get();
+        $wallets = Wallet::where('user_id', $user->id)->where('type', '!=', 'SAVING')->get();
+        $allWallets = Wallet::where('user_id', $user->id)->get(); // Includes SAVING for transfer targets
         $categories = Category::userCategories($user->id)->get();
         $userTags = Tag::where('user_id', $user->id)->orderBy('name')->get();
 
         return Inertia::render('Transactions/Index', [
             'transactions' => $transactions,
             'wallets' => $wallets,
+            'allWallets' => $allWallets,
             'categories' => $categories,
             'filters' => [
                 'type' => $request->type,

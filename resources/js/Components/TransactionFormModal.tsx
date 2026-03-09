@@ -24,12 +24,13 @@ interface TransactionFormModalProps {
     wallets: WalletData[] | { id: number; name: string }[];
     categories: CategoryData[] | { id: number; name: string; type: string }[];
     userTags: TagData[] | { id: number; name: string; slug: string; color: string | null }[];
+    allWallets?: WalletData[] | { id: number; name: string }[];
     editingTransaction?: EditableTransaction | null;
     suggestions?: Record<string, string[]>;
 }
 
 export default function TransactionFormModal({
-    isOpen, onClose, wallets, categories, userTags, editingTransaction = null, suggestions = {}
+    isOpen, onClose, wallets, allWallets, categories, userTags, editingTransaction = null, suggestions = {}
 }: TransactionFormModalProps) {
     const [inputType, setInputType] = useState<'EXPENSE' | 'INCOME' | 'TRANSFER'>('EXPENSE');
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -378,7 +379,7 @@ export default function TransactionFormModal({
                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Ke Dompet</label>
                                 <select value={data.to_wallet_id} onChange={(e) => setData('to_wallet_id', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required>
                                     <option value="">Pilih Dompet Tujuan</option>
-                                    {wallets.filter(w => w.id.toString() !== data.wallet_id).map(w => (
+                                    {(allWallets || wallets).filter(w => w.id.toString() !== data.wallet_id).map(w => (
                                         <option key={w.id} value={w.id}>
                                             {w.name} {(w as any).balance !== undefined ? `(Rp ${Number((w as any).balance).toLocaleString('id-ID')})` : ''}
                                         </option>

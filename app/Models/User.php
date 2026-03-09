@@ -91,4 +91,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(FinancialInsight::class);
     }
+
+    public function goals()
+    {
+        return $this->hasMany(Goal::class);
+    }
 }

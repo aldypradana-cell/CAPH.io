@@ -72,7 +72,7 @@ class WalletController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required|in:CASH,BANK,E-WALLET',
+            'type' => 'required|in:CASH,BANK,E-WALLET,SAVING',
             'balance' => 'required|numeric|min:0',
         ]);
         
@@ -94,7 +94,7 @@ class WalletController extends Controller
         
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required|in:CASH,BANK,E-WALLET',
+            'type' => 'required|in:CASH,BANK,E-WALLET,SAVING',
             'balance' => 'required|numeric|min:0',
         ]);
         

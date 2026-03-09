@@ -76,7 +76,6 @@ class ProfileController extends Controller
             'financial_profile.maritalStatus' => 'nullable|in:SINGLE,MARRIED',
             'financial_profile.dependents' => 'nullable|integer|min:0',
             'financial_profile.occupation' => 'nullable|in:STABLE,PRIVATE,FREELANCE',
-            'financial_profile.goals' => 'nullable|array',
         ]);
 
         $request->user()->update([

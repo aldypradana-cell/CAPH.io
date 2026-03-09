@@ -2,10 +2,10 @@ import AppLayout from '@/Layouts/AppLayout';
 import { Head, usePage, router } from '@inertiajs/react';
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { Moon, Sun, Bell, DollarSign, Globe, Shield, Database, Upload, Download, Users, Briefcase, Target, Plus, Trash2, ChevronRight, Save, Loader2 } from 'lucide-react';
+import { Moon, Sun, Bell, DollarSign, Globe, Shield, Database, Upload, Download, Users, Briefcase, Target, Plus, Trash2, ChevronRight, Save, Loader2, PiggyBank } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
-interface FinancialGoal { id: string; name: string; amount: number; deadline: string; }
+
 
 export default function Settings() {
     const user = usePage().props.auth.user;
@@ -27,14 +27,11 @@ export default function Settings() {
     const [maritalStatus, setMaritalStatus] = useState('SINGLE');
     const [dependents, setDependents] = useState(0);
     const [occupation, setOccupation] = useState('PRIVATE');
-    const [goals, setGoals] = useState<FinancialGoal[]>([]);
+
     const [savingProfile, setSavingProfile] = useState(false);
     const [profileDirty, setProfileDirty] = useState(false);
 
-    // Goal form
-    const [newGoalName, setNewGoalName] = useState('');
-    const [newGoalAmount, setNewGoalAmount] = useState('');
-    const [newGoalDate, setNewGoalDate] = useState('');
+
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isRestoring, setIsRestoring] = useState(false);
@@ -46,14 +43,6 @@ export default function Settings() {
             setMaritalStatus(fp.maritalStatus || 'SINGLE');
             setDependents(fp.dependents ?? 0);
             setOccupation(fp.occupation || 'PRIVATE');
-            if (Array.isArray(fp.goals)) {
-                setGoals(fp.goals.map((g: any, i: number) => ({
-                    id: g.id || `saved-${i}`,
-                    name: g.name || '',
-                    amount: g.amount || 0,
-                    deadline: g.deadline || '',
-                })));
-            }
         }
     }, []);
 
@@ -65,7 +54,6 @@ export default function Settings() {
                 maritalStatus,
                 dependents,
                 occupation,
-                goals: goals.map(g => ({ name: g.name, amount: g.amount, deadline: g.deadline })),
             },
         }, {
             preserveScroll: true,
@@ -99,20 +87,7 @@ export default function Settings() {
         toast.success(`Tema diubah ke ${t === 'dark' ? 'Gelap' : 'Terang'}`);
     };
 
-    const handleAddGoal = () => {
-        if (!newGoalName || !newGoalAmount || !newGoalDate) { toast.error('Mohon lengkapi data target'); return; }
-        const amount = parseFloat(newGoalAmount.replace(/\./g, '')) || 0;
-        setGoals(prev => [...prev, { id: Date.now().toString(), name: newGoalName, amount, deadline: newGoalDate }]);
-        setProfileDirty(true);
-        toast.success('Target ditambahkan — jangan lupa Simpan!');
-        setNewGoalName(''); setNewGoalAmount(''); setNewGoalDate('');
-    };
 
-    const handleAmountChange = (val: string) => {
-        const raw = val.replace(/\D/g, '');
-        if (!raw) { setNewGoalAmount(''); return; }
-        setNewGoalAmount(parseInt(raw).toLocaleString('id-ID'));
-    };
 
     const handleBackup = () => {
         // Trigger browser download via the Laravel API route
@@ -213,50 +188,23 @@ export default function Settings() {
                             </div>
                         </div>
 
-                        {/* Financial Goals */}
+                        {/* Financial Goals — Redirected to Savings Page */}
                         <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-6">
-                            <div className="flex items-center gap-2 text-indigo-100 mb-6">
+                            <div className="flex items-center gap-2 text-indigo-100 mb-4">
                                 <Target className="w-5 h-5" />
-                                <div>
-                                    <span className="text-sm font-bold uppercase tracking-wider block">Target Finansial (Mimpi Anda)</span>
-                                    <span className="text-[10px] opacity-70">AI akan menghitung gap tabungan bulanan.</span>
-                                </div>
+                                <span className="text-sm font-bold uppercase tracking-wider">Target Finansial</span>
                             </div>
-
-                            <div className="space-y-3 mb-6">
-                                {goals.map((goal) => (
-                                    <div key={goal.id} className="flex items-center justify-between p-3 bg-slate-900/20 rounded-xl border border-white/10 hover:bg-slate-900/40 transition-colors group">
-                                        <div className="flex items-center gap-3">
-                                            <div className="p-2 bg-emerald-500/20 rounded-lg text-emerald-300"><Target className="w-4 h-4" /></div>
-                                            <div>
-                                                <p className="font-bold text-sm">{goal.name}</p>
-                                                <p className="text-xs text-indigo-200">Target: Rp {Number(goal.amount).toLocaleString('id-ID')} <span className="mx-1">•</span> {goal.deadline}</p>
-                                            </div>
-                                        </div>
-                                        <button onClick={() => { setGoals(prev => prev.filter(g => g.id !== goal.id)); setProfileDirty(true); toast.success('Target dihapus — jangan lupa Simpan!'); }} className="p-2 text-white/50 hover:text-red-400 hover:bg-white/10 rounded-lg transition-colors">
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
-                                    </div>
-                                ))}
-                                {goals.length === 0 && <div className="text-center py-6 text-white/40 text-sm italic">Belum ada target. Tambahkan mimpi Anda sekarang!</div>}
-                            </div>
-
-                            <div className="flex flex-col md:flex-row gap-3 items-end bg-slate-900/30 p-4 rounded-xl border border-white/5">
-                                <div className="w-full md:flex-1">
-                                    <label className="text-[10px] text-indigo-300 block mb-1">Nama Target (Cth: Rumah)</label>
-                                    <input type="text" value={newGoalName} onChange={(e) => setNewGoalName(e.target.value)} className="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-indigo-400 outline-none" placeholder="Beli Rumah" />
+                            <div className="bg-emerald-500/10 border border-emerald-400/20 rounded-xl p-4 flex items-center gap-4">
+                                <div className="p-3 bg-emerald-500/20 rounded-xl text-emerald-300 shrink-0">
+                                    <PiggyBank className="w-6 h-6" />
                                 </div>
-                                <div className="w-full md:w-32">
-                                    <label className="text-[10px] text-indigo-300 block mb-1">Nominal (Rp)</label>
-                                    <input type="text" value={newGoalAmount} onChange={(e) => handleAmountChange(e.target.value)} className="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-indigo-400 outline-none" placeholder="500.000.000" />
+                                <div className="flex-1">
+                                    <p className="text-sm font-bold text-white">Kelola di Halaman Tabungan & Impian</p>
+                                    <p className="text-xs text-emerald-200/70 mt-0.5">Target finansial kini bisa dikelola lebih lengkap di halaman khusus.</p>
                                 </div>
-                                <div className="w-full md:w-auto">
-                                    <label className="text-[10px] text-indigo-300 block mb-1">Tenggat Waktu</label>
-                                    <input type="date" value={newGoalDate} onChange={(e) => setNewGoalDate(e.target.value)} className="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-indigo-400 outline-none" />
-                                </div>
-                                <button onClick={handleAddGoal} className="w-full md:w-auto px-4 py-2 bg-white text-indigo-700 font-bold rounded-lg hover:bg-indigo-50 transition-colors flex items-center justify-center text-sm shadow-lg">
-                                    <Plus className="w-4 h-4 mr-1" /> Tambah
-                                </button>
+                                <a href={route('savings.index')} className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white text-sm font-bold rounded-xl transition-colors flex items-center gap-1 shrink-0">
+                                    Buka <ChevronRight className="w-4 h-4" />
+                                </a>
                             </div>
                         </div>
 
