@@ -370,7 +370,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
 
     return (
         <>
-            <Head title="Tagihan & Kewajiban" />
+            <Head title="Jadwal & Tagihan" />
             <Toaster position="top-right" />
 
             <div className="space-y-4 sm:space-y-6 animate-fade-in-up">
@@ -922,7 +922,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
 DebtsIndex.layout = (page: any) => (
     <AppLayout header={
         <div className="flex flex-col min-w-0">
-            <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Tagihan & Kewajiban</h1>
+            <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Jadwal & Tagihan</h1>
                 <p className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">Kelola langganan rutin, hutang, dan piutang Anda</p>
         </div>
     }>

@@ -180,7 +180,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                     <NavItem href={route('budgets.index')} icon={Target} label="Anggaran" active={currentRoute?.startsWith('budgets') ?? false} />
                                     <NavItem href={route('savings.index')} icon={PiggyBank} label="Tabungan & Impian" active={currentRoute?.startsWith('savings') ?? false} />
                                     <NavItem href={route('categories.index')} icon={Tags} label="Kategori" active={currentRoute?.startsWith('categories') ?? false} />
-                                    <NavItem href={route('debts.index')} icon={HandCoins} label="Tagihan & Kewajiban" active={currentRoute?.startsWith('debts') ?? false} />
+                                    <NavItem href={route('debts.index')} icon={HandCoins} label="Jadwal & Tagihan" active={currentRoute?.startsWith('debts') ?? false} />
                                     <NavItem href={route('assets.index')} icon={Gem} label="Aset" active={currentRoute?.startsWith('assets') ?? false} />
                                 </div>
                             </div>
@@ -442,7 +442,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                     { href: route('wallets.index'), icon: CreditCard, label: 'Dompet', color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' },
                                     { href: route('budgets.index'), icon: Target, label: 'Anggaran', color: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400' },
                                     { href: route('savings.index'), icon: PiggyBank, label: 'Tabungan', color: 'bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400' },
-                                    { href: route('debts.index'), icon: HandCoins, label: 'Tagihan', color: 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400' },
+                                    { href: route('debts.index'), icon: HandCoins, label: 'Jadwal', color: 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400' },
                                     { href: route('insights.index'), icon: PieChart, label: 'Analisis', color: 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400' },
                                     { href: route('assets.index'), icon: Gem, label: 'Aset', color: 'bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400' },
                                     { href: route('categories.index'), icon: Tags, label: 'Kategori', color: 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400' },
