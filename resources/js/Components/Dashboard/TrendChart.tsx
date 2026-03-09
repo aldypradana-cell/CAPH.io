@@ -1,6 +1,7 @@
-import { BarChart3, GripHorizontal } from 'lucide-react';
+import { useState } from 'react';
+import { TrendingUp, BarChart3, GripHorizontal, Activity } from 'lucide-react';
 import {
-    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
+    AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 import { ChartData, FilterState } from '@/types/dashboard';
 
@@ -58,6 +59,7 @@ export default function TrendChart({
     data, filters, activeFilter, onFilterChange, onDateChange, isLoading,
     className, style, onMouseDown, onMouseUp, onTouchEnd
 }: TrendChartProps) {
+    const [chartType, setChartType] = useState<'AREA' | 'BAR'>('BAR');
     return (
         <div
             className={`glass-card p-3 sm:p-6 lg:p-8 rounded-[2rem] flex flex-col transition-all hover:shadow-lg duration-500 animate-fade-in-up h-full ${className || ''}`}
@@ -70,7 +72,11 @@ export default function TrendChart({
                 <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
                         <div className="p-2.5 bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 rounded-xl relative group cursor-grab active:cursor-grabbing">
-                            <BarChart3 className="w-5 h-5 group-hover:opacity-0 transition-opacity duration-200" />
+                            {chartType === 'AREA' ? (
+                                <TrendingUp className="w-5 h-5 group-hover:opacity-0 transition-opacity duration-200" />
+                            ) : (
+                                <BarChart3 className="w-5 h-5 group-hover:opacity-0 transition-opacity duration-200" />
+                            )}
                             <GripHorizontal className="w-5 h-5 absolute top-2.5 left-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
                         </div>
                         <div>
@@ -80,6 +86,22 @@ export default function TrendChart({
                     </div>
                     {/* Filters */}
                     <div className="flex flex-wrap gap-2 items-center" onMouseDown={(e) => e.stopPropagation()}>
+                        <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+                            <button
+                                onClick={() => setChartType('BAR')}
+                                title="Grafik Batang"
+                                className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'BAR' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                            >
+                                <BarChart3 className="w-4 h-4" />
+                            </button>
+                            <button
+                                onClick={() => setChartType('AREA')}
+                                title="Grafik Garis Area"
+                                className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'AREA' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                            >
+                                <TrendingUp className="w-4 h-4" />
+                            </button>
+                        </div>
                         <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl overflow-x-auto scrollbar-hide">
                             {(['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY', 'CUSTOM'] as const).map(filter => (
                                 <button
@@ -107,38 +129,59 @@ export default function TrendChart({
             </div>
             <div className="flex-1 w-full min-h-0">
                 {isLoading ? (
-                    <div className="flex items-end justify-center gap-3 h-full px-8 pb-8">
-                        {[40, 65, 50, 80, 35, 60, 70, 45].map((h, i) => (
-                            <div key={i} className="flex-1 flex gap-1">
-                                <div className="flex-1 bg-emerald-100 dark:bg-emerald-900/30 rounded-t-md animate-pulse" style={{ height: `${h}%`, animationDelay: `${i * 100}ms` }} />
-                                <div className="flex-1 bg-red-100 dark:bg-red-900/30 rounded-t-md animate-pulse" style={{ height: `${h * 0.7}%`, animationDelay: `${i * 100 + 50}ms` }} />
-                            </div>
-                        ))}
+                    <div className="flex flex-col h-full px-4 pb-8 relative overflow-hidden">
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <Activity className="w-12 h-12 text-indigo-200 dark:text-indigo-900/40 animate-pulse" />
+                        </div>
+                        <div className="mt-auto h-1/2 flex items-end gap-1 opacity-20">
+                            {Array.from({ length: 20 }).map((_, i) => (
+                                <div key={i} className="flex-1 bg-indigo-100 dark:bg-indigo-900/30 rounded-t-sm" style={{ height: `${Math.random() * 100}%` }} />
+                            ))}
+                        </div>
                     </div>
                 ) : (
                 <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                        <defs>
-                            <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#10b981" stopOpacity={0.8} />
-                                <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                            </linearGradient>
-                            <linearGradient id="colorExpense" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8} />
-                                <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
-                            </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" className="stroke-slate-100 dark:stroke-slate-800" />
-                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 500 }} dy={10} interval={data.length > 10 ? 'preserveStartEnd' : 0} />
-                        <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 500 }} tickFormatter={formatShortIDR} />
-                        <Tooltip
-                            cursor={{ fill: 'transparent' }}
-                            content={<CustomTooltip />}
-                        />
-                        <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '12px' }} iconType="circle" />
-                        <Bar dataKey="Pemasukan" fill="url(#colorIncome)" radius={[6, 6, 0, 0]} maxBarSize={40} animationDuration={1000} />
-                        <Bar dataKey="Pengeluaran" fill="url(#colorExpense)" radius={[6, 6, 0, 0]} maxBarSize={40} animationDuration={1000} />
-                    </BarChart>
+                    {chartType === 'AREA' ? (
+                        <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                            <defs>
+                                <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
+                                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                                </linearGradient>
+                                <linearGradient id="colorExpense" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.2} />
+                                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" className="stroke-slate-100 dark:stroke-slate-800" />
+                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 500 }} dy={10} interval={data.length > 10 ? 'preserveStartEnd' : 0} />
+                            <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 500 }} tickFormatter={formatShortIDR} />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '12px' }} iconType="circle" />
+                            <Area type="monotone" dataKey="Pemasukan" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorIncome)" animationDuration={1500} dot={{ r: 4, fill: '#10b981', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6, strokeWidth: 0 }} />
+                            <Area type="monotone" dataKey="Pengeluaran" stroke="#ef4444" strokeWidth={3} fillOpacity={1} fill="url(#colorExpense)" animationDuration={1500} dot={{ r: 4, fill: '#ef4444', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6, strokeWidth: 0 }} />
+                        </AreaChart>
+                    ) : (
+                        <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                            <defs>
+                                <linearGradient id="colorIncomeBar" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.8} />
+                                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                                </linearGradient>
+                                <linearGradient id="colorExpenseBar" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8} />
+                                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" className="stroke-slate-100 dark:stroke-slate-800" />
+                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 500 }} dy={10} interval={data.length > 10 ? 'preserveStartEnd' : 0} />
+                            <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 500 }} tickFormatter={formatShortIDR} />
+                            <Tooltip cursor={{ fill: 'transparent' }} content={<CustomTooltip />} />
+                            <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '12px' }} iconType="circle" />
+                            <Bar dataKey="Pemasukan" fill="url(#colorIncomeBar)" radius={[6, 6, 0, 0]} maxBarSize={40} animationDuration={1000} />
+                            <Bar dataKey="Pengeluaran" fill="url(#colorExpenseBar)" radius={[6, 6, 0, 0]} maxBarSize={40} animationDuration={1000} />
+                        </BarChart>
+                    )}
                 </ResponsiveContainer>
                 )}
             </div>
