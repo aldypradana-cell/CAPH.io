@@ -833,7 +833,9 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Dompet</label>
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">
+                                            {recurringForm.data.type === 'INCOME' ? 'Dompet Penerima' : recurringForm.data.type === 'TRANSFER' ? 'Dari Dompet' : 'Sumber Dana'}
+                                        </label>
                                         <select value={recurringForm.data.wallet_id} onChange={(e) => recurringForm.setData('wallet_id', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required>
                                             <option value="">Pilih Dompet</option>
                                             {wallets.map(w => (
@@ -851,9 +853,17 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                                 <div className="p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl border border-indigo-100 dark:border-indigo-500/20">
                                     <label className="flex items-center space-x-2 cursor-pointer">
                                         <input type="checkbox" checked={recurringForm.data.auto_cut} onChange={(e) => recurringForm.setData('auto_cut', e.target.checked)} className="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" />
-                                        <span className="text-sm text-indigo-900 dark:text-indigo-200 font-bold">Otomatis Potong Saldo?</span>
+                                        <span className="text-sm text-indigo-900 dark:text-indigo-200 font-bold">
+                                            {recurringForm.data.type === 'INCOME' ? 'Otomatis Tambah Saldo?' : recurringForm.data.type === 'TRANSFER' ? 'Otomatis Transfer?' : 'Otomatis Potong Saldo?'}
+                                        </span>
                                     </label>
-                                    <p className="text-xs text-indigo-500 dark:text-indigo-400 mt-1 ml-6">Jika aktif, transaksi dibuat otomatis saat hari H. Jika tidak, akan muncul notifikasi "Jatuh Tempo".</p>
+                                    <p className="text-xs text-indigo-500 dark:text-indigo-400 mt-1 ml-6">
+                                        {recurringForm.data.type === 'INCOME' 
+                                            ? 'Jika aktif, uang otomatis ditambahkan ke dompet saat hari H. Jika tidak, akan muncul notifikasi "Jadwal Penerimaan".' 
+                                            : recurringForm.data.type === 'TRANSFER'
+                                            ? 'Jika aktif, dana otomatis ditransfer dari dompet sumber saat hari H. Jika tidak, akan muncul notifikasi "Jadwal Transfer".'
+                                            : 'Jika aktif, transaksi dipotong otomatis saat hari H. Jika tidak, akan muncul notifikasi "Jatuh Tempo".'}
+                                    </p>
                                 </div>
 
                                 <div className="mt-6 flex justify-end space-x-3">
