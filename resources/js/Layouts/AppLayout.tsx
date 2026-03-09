@@ -432,10 +432,14 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                 {/* More Bottom Sheet */}
                 {isMoreOpen && (
                     <div className="fixed inset-0 z-50 lg:hidden animate-fade-in">
-                        <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={() => setIsMoreOpen(false)} />
-                        <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-slate-900 rounded-t-[2rem] shadow-2xl animate-pop-in pb-[env(safe-area-inset-bottom,16px)]">
-                            <div className="flex justify-center pt-3 pb-2">
-                                <div className="w-10 h-1 bg-slate-200 dark:bg-slate-700 rounded-full" />
+                        <div className="absolute inset-0 bg-indigo-900/10 dark:bg-slate-950/50 backdrop-blur-md transition-opacity" onClick={() => setIsMoreOpen(false)} />
+                        <div className="absolute bottom-0 left-0 right-0 glass-heavy rounded-t-[2rem] shadow-2xl overflow-hidden border-t border-slate-200/50 dark:border-slate-700/50 animate-pop-in pb-[env(safe-area-inset-bottom,16px)]">
+                            {/* Ambient Colors for Glass */}
+                            <div className="absolute top-0 right-0 w-48 h-48 bg-purple-400/20 dark:bg-purple-500/20 rounded-full blur-3xl pointer-events-none" style={{ transform: 'translate(30%, -30%)' }} />
+                            <div className="absolute bottom-0 left-0 w-48 h-48 bg-indigo-400/20 dark:bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" style={{ transform: 'translate(-30%, 30%)' }} />
+
+                            <div className="flex justify-center pt-3 pb-2 relative z-10">
+                                <div className="w-10 h-1 bg-slate-300 dark:bg-slate-600 rounded-full" />
                             </div>
                             <div className="px-4 pb-4 grid grid-cols-4 gap-3">
                                 {[
@@ -453,9 +457,9 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                         key={item.label}
                                         href={item.href}
                                         onClick={() => setIsMoreOpen(false)}
-                                        className="flex flex-col items-center gap-1.5 py-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95"
+                                        className="flex flex-col items-center gap-1.5 py-3 rounded-2xl hover:bg-white/40 dark:hover:bg-slate-800/40 transition-all active:scale-95 relative z-10"
                                     >
-                                        <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${item.color}`}>
+                                        <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${item.color.replace('bg-', 'bg-transparent border border-').replace('text-', 'text-')}`}>
                                             <item.icon weight="duotone" className="w-5 h-5" />
                                         </div>
                                         <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300">{item.label}</span>

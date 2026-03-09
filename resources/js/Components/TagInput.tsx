@@ -127,7 +127,7 @@ export default function TagInput({ availableTags, selectedTags, onChange }: TagI
                 Tags
             </label>
             <div
-                className="flex flex-wrap items-center gap-1.5 min-h-[42px] px-3 py-2 border border-slate-200 dark:border-slate-700/50 rounded-2xl bg-slate-50 dark:bg-slate-900/50 focus-within:ring-2 focus-within:ring-indigo-500 transition-all cursor-text"
+                className="flex flex-wrap items-center gap-1.5 min-h-[42px] px-3 py-2 glass-heavy rounded-2xl focus-within:ring-2 focus-within:ring-indigo-500 transition-all cursor-text"
                 onClick={() => inputRef.current?.focus()}
             >
                 {/* Selected tag badges */}
@@ -167,7 +167,7 @@ export default function TagInput({ availableTags, selectedTags, onChange }: TagI
 
             {/* Dropdown */}
             {isOpen && options.length > 0 && (
-                <div className="absolute z-50 left-0 right-0 mt-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl overflow-hidden animate-pop-in max-h-[180px] overflow-y-auto scrollbar-hide">
+                <div className="absolute z-50 left-0 right-0 mt-1.5 glass-heavy rounded-xl overflow-hidden animate-pop-in max-h-[180px] overflow-y-auto scrollbar-hide">
                     {options.map((opt, idx) => (
                         <button
                             key={opt.type + opt.name}

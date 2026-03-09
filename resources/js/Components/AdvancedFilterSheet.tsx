@@ -43,7 +43,7 @@ function FilterPill({
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-95 ${
                 isActive
                     ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                    : 'bg-white/40 dark:bg-slate-800/40 backdrop-blur-sm border-white/40 dark:border-slate-700/50 border text-slate-600 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-slate-700/50'
             }`}
         >
             {label}
@@ -159,12 +159,15 @@ export default function AdvancedFilterSheet({
                 <div className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center animate-fade-in">
                     {/* Backdrop */}
                     <div
-                        className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
+                        className="absolute inset-0 bg-indigo-900/10 dark:bg-slate-950/50 backdrop-blur-md transition-opacity"
                         onClick={() => setIsOpen(false)}
                     />
 
                     {/* Sheet */}
-                    <div className="relative w-full sm:max-w-md bg-white dark:bg-slate-900 rounded-t-[2rem] sm:rounded-[2rem] shadow-2xl overflow-hidden animate-pop-in max-h-[85vh] flex flex-col border-t sm:border border-slate-100 dark:border-slate-800">
+                    <div className="relative w-full sm:max-w-md glass-heavy rounded-t-[2rem] sm:rounded-[2rem] shadow-2xl overflow-hidden animate-pop-in max-h-[85vh] flex flex-col border-t sm:border border-slate-100/50 dark:border-slate-800/50">
+                        {/* Ambient Colors for Glass */}
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-400/20 dark:bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" style={{ transform: 'translate(30%, -30%)' }} />
+                        <div className="absolute bottom-0 left-0 w-64 h-64 bg-rose-400/20 dark:bg-pink-500/20 rounded-full blur-3xl pointer-events-none" style={{ transform: 'translate(-30%, 30%)' }} />
                         {/* Drag handle (mobile) */}
                         <div className="sm:hidden flex justify-center pt-3 pb-1">
                             <div className="w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full" />
@@ -178,7 +181,7 @@ export default function AdvancedFilterSheet({
                             </h3>
                             <button
                                 onClick={() => setIsOpen(false)}
-                                className="p-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors active:scale-95"
+                                className="p-2 bg-white/40 dark:bg-slate-800/40 backdrop-blur-sm border border-white/40 dark:border-slate-700/50 rounded-xl text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white transition-colors active:scale-95"
                             >
                                 <X weight="bold" className="w-4 h-4" />
                             </button>
@@ -278,10 +281,10 @@ export default function AdvancedFilterSheet({
                         </div>
 
                         {/* Footer Actions */}
-                        <div className="flex gap-3 p-5 pt-3 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
+                        <div className="flex gap-3 p-5 pt-3 border-t border-slate-100/50 dark:border-slate-800/50 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md">
                             <button
                                 onClick={handleReset}
-                                className="flex-1 py-3 rounded-xl text-sm font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors active:scale-95"
+                                className="flex-1 py-3 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 bg-white/40 dark:bg-slate-800/40 backdrop-blur-sm border border-white/40 dark:border-slate-700/50 hover:bg-white/60 dark:hover:bg-slate-700/60 transition-colors active:scale-95"
                             >
                                 Reset
                             </button>

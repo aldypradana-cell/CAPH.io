@@ -192,8 +192,12 @@ export default function TransactionFormModal({
 
     return createPortal(
         <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 animate-fade-in">
-            <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity" onClick={handleClose} />
-            <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-pop-in">
+            <div className="absolute inset-0 bg-indigo-900/10 dark:bg-slate-950/50 backdrop-blur-md transition-opacity" onClick={handleClose} />
+            <div className="relative w-full max-w-md glass-heavy rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-pop-in">
+                {/* Ambient Colors for Glass */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-purple-400/20 dark:bg-purple-500/20 rounded-full blur-3xl pointer-events-none" style={{ transform: 'translate(30%, -30%)' }} />
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-400/20 dark:bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" style={{ transform: 'translate(-30%, 30%)' }} />
+
                 {/* Gradient top bar */}
                 <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 z-10" />
 
@@ -229,7 +233,7 @@ export default function TransactionFormModal({
                     </div>
 
                     {/* Type Toggle */}
-                    <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl mb-2">
+                    <div className="flex p-1 bg-white/40 dark:bg-slate-800/40 rounded-2xl mb-2 backdrop-blur-md border border-white/40 dark:border-slate-700/50">
                         {(['EXPENSE', 'INCOME', 'TRANSFER'] as const).map(type => (
                             <button
                                 key={type}
@@ -289,13 +293,13 @@ export default function TransactionFormModal({
                         {/* Amount First */}
                         <div>
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Jumlah (Rp)</label>
-                            <input type="tel" inputMode="numeric" autoComplete="off" value={data.amount} onChange={(e) => handleAmountChange(e.target.value)} className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-2xl text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 text-center" placeholder="0" autoFocus required />
+                            <input type="tel" inputMode="numeric" autoComplete="off" value={data.amount} onChange={(e) => handleAmountChange(e.target.value)} className="w-full px-4 py-3 border border-slate-200/60 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-2xl text-slate-900 dark:text-white bg-white/50 dark:bg-slate-900/50 text-center backdrop-blur-sm" placeholder="0" autoFocus required />
                         </div>
 
                         {!data.is_paylater && (
                             <div>
                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Dompet</label>
-                                <select value={data.wallet_id} onChange={(e) => setData('wallet_id', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required={!data.is_paylater}>
+                                <select value={data.wallet_id} onChange={(e) => setData('wallet_id', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200/60 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm" required={!data.is_paylater}>
                                     <option value="">Pilih Dompet</option>
                                     {wallets.map(w => (
                                         <option key={w.id} value={w.id}>
@@ -377,7 +381,7 @@ export default function TransactionFormModal({
                         {inputType === 'TRANSFER' && (
                             <div>
                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Ke Dompet</label>
-                                <select value={data.to_wallet_id} onChange={(e) => setData('to_wallet_id', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required>
+                                <select value={data.to_wallet_id} onChange={(e) => setData('to_wallet_id', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200/60 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm" required>
                                     <option value="">Pilih Dompet Tujuan</option>
                                     {(allWallets || wallets).filter(w => w.id.toString() !== data.wallet_id).map(w => (
                                         <option key={w.id} value={w.id}>
@@ -468,7 +472,7 @@ export default function TransactionFormModal({
                                 <select
                                     value={data.category}
                                     onChange={(e) => setData('category', e.target.value)}
-                                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50"
+                                    className="w-full px-4 py-2.5 border border-slate-200/60 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm"
                                     required
                                 >
                                     <option value="">Pilih</option>
@@ -482,7 +486,7 @@ export default function TransactionFormModal({
                             </div>
                             <div>
                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Tanggal</label>
-                                <input type="date" value={data.date} onChange={(e) => setData('date', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required />
+                                <input type="date" value={data.date} onChange={(e) => setData('date', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200/60 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm" required />
                             </div>
                         </div>
 
@@ -521,7 +525,7 @@ export default function TransactionFormModal({
                                 onChange={(e) => setData('description', e.target.value)}
                                 onFocus={() => setIsDescFocused(true)}
                                 onBlur={() => setTimeout(() => setIsDescFocused(false), 200)}
-                                className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50"
+                                className="w-full px-4 py-2.5 border border-slate-200/60 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm"
                                 placeholder="Makan siang"
                                 required
                             />
