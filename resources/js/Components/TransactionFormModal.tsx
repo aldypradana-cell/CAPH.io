@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useForm, router } from '@inertiajs/react';
-import { X, TrendingDown, TrendingUp, ArrowRightLeft, Clock } from 'lucide-react';
+import { X, TrendingDown, TrendingUp, ArrowRightLeft, Clock, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import TagInput from '@/Components/TagInput';
 import { WalletData, CategoryData, TagData } from '@/types/dashboard';
@@ -37,6 +37,7 @@ export default function TransactionFormModal({
     const [showAdminFee, setShowAdminFee] = useState(false);
     const [payLaterEnabled, setPayLaterEnabled] = useState(false);
     const [isDescFocused, setIsDescFocused] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     useEffect(() => {
         setMounted(true);
@@ -107,6 +108,11 @@ export default function TransactionFormModal({
         }
     }, [editingTransaction, isOpen, wallets]);
 
+    // Clear error message when user data changes
+    useEffect(() => {
+        if (errorMessage) setErrorMessage(null);
+    }, [data.amount, data.wallet_id, data.to_wallet_id, data.description, data.category, data.type]);
+
     const handleAmountChange = (val: string) => {
         const rawValue = val.replace(/\D/g, '');
         if (!rawValue) { setData('amount', ''); return; }
@@ -137,17 +143,34 @@ export default function TransactionFormModal({
             toast.success(editingTransaction ? 'Diperbarui!' : 'Ditambahkan!');
         };
 
+        const errorCallback = (errors: any) => {
+            const msg = errors.message || (Object.keys(errors).length > 0 ? errors[Object.keys(errors)[0]] : 'Gagal menyimpan transaksi');
+            setErrorMessage(msg);
+            toast.error(msg, {
+                icon: '❌',
+                style: {
+                    borderRadius: '16px',
+                    background: '#1e293b',
+                    color: '#fff',
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                },
+            });
+        };
+
         if (editingTransaction) {
             router.put(route('transactions.update', editingTransaction.id), payload, {
                 preserveState: true,
                 preserveScroll: true,
                 onSuccess: successCallback,
+                onError: errorCallback,
             });
         } else {
             router.post(route('transactions.store'), payload, {
                 preserveState: true,
                 preserveScroll: true,
                 onSuccess: successCallback,
+                onError: errorCallback,
             });
         }
     };
@@ -161,6 +184,7 @@ export default function TransactionFormModal({
         setShowAdminFee(false);
         setInputType('EXPENSE');
         setData('is_paylater', false);
+        setErrorMessage(null);
     };
 
     if (!isOpen || !mounted) return null;
@@ -236,6 +260,28 @@ export default function TransactionFormModal({
                     </div>
                 </div>
 
+                {/* Inline Error Alert */}
+                {errorMessage && (
+                    <div className="mx-5 mt-2 bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/40 rounded-2xl overflow-hidden animate-shake shadow-sm relative group">
+                        <div className="absolute inset-0 bg-red-500/5 backdrop-blur-[2px]" />
+                        <div className="relative p-3.5 flex items-start gap-3">
+                            <div className="w-8 h-8 rounded-xl bg-red-100 dark:bg-red-900/40 flex items-center justify-center shrink-0">
+                                <AlertTriangle className="w-4 h-4 text-red-600 dark:text-red-400" />
+                            </div>
+                            <div className="flex-1 min-w-0 pr-6">
+                                <h4 className="text-[11px] font-bold text-red-600 dark:text-red-400 uppercase tracking-widest mb-0.5">Ada Kendala</h4>
+                                <p className="text-[12px] font-medium text-red-800 dark:text-red-200/80 leading-snug">{errorMessage}</p>
+                            </div>
+                            <button 
+                                onClick={() => setErrorMessage(null)} 
+                                className="absolute right-2 top-2 p-1.5 text-red-400 hover:text-red-600 dark:hover:text-red-200 transition-colors bg-white/50 dark:bg-black/20 rounded-lg group-hover:opacity-100 lg:opacity-0 transition-opacity"
+                            >
+                                <X className="w-3.5 h-3.5" />
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 {/* Form */}
                 <div className="p-5 pt-4 overflow-y-auto scrollbar-hide">
                     <form onSubmit={handleSubmit} className="space-y-3">
@@ -251,7 +297,9 @@ export default function TransactionFormModal({
                                 <select value={data.wallet_id} onChange={(e) => setData('wallet_id', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required={!data.is_paylater}>
                                     <option value="">Pilih Dompet</option>
                                     {wallets.map(w => (
-                                        <option key={w.id} value={w.id}>{w.name}</option>
+                                        <option key={w.id} value={w.id}>
+                                            {w.name} {(w as any).balance !== undefined ? `(Rp ${Number((w as any).balance).toLocaleString('id-ID')})` : ''}
+                                        </option>
                                     ))}
                                 </select>
                             </div>
@@ -331,7 +379,9 @@ export default function TransactionFormModal({
                                 <select value={data.to_wallet_id} onChange={(e) => setData('to_wallet_id', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required>
                                     <option value="">Pilih Dompet Tujuan</option>
                                     {wallets.filter(w => w.id.toString() !== data.wallet_id).map(w => (
-                                        <option key={w.id} value={w.id}>{w.name}</option>
+                                        <option key={w.id} value={w.id}>
+                                            {w.name} {(w as any).balance !== undefined ? `(Rp ${Number((w as any).balance).toLocaleString('id-ID')})` : ''}
+                                        </option>
                                     ))}
                                 </select>
                             </div>
