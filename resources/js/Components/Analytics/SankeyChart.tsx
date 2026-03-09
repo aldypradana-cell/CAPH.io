@@ -142,6 +142,7 @@ const CustomLink = ({ sourceX, targetX, sourceY, targetY, sourceControlX, target
                 className="transition-all duration-300 cursor-pointer"
                 onMouseEnter={() => setActiveLink(index)}
                 onMouseLeave={() => setActiveLink(null)}
+                onClick={() => setActiveLink(activeLink === index ? null : index)}
             />
         </Layer>
     );
@@ -184,6 +185,14 @@ export default function SankeyChart({ data, isLoading }: SankeyChartProps) {
                     </div>
                 ) : (
                     <div className="p-4 sm:p-10 lg:p-14">
+                        {/* Mobile Scroll Hint */}
+                        <div className="flex lg:hidden items-center justify-center mb-6 text-slate-400 dark:text-slate-500 animate-pulse bg-slate-50/50 dark:bg-slate-800/50 py-2 rounded-xl">
+                            <svg className="w-5 h-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                            </svg>
+                            <span className="text-xs font-semibold uppercase tracking-widest leading-none">Geser Horizontal Untuk Detail</span>
+                        </div>
+
                         <div className="overflow-x-auto scrollbar-hide -mx-4 sm:-mx-10 lg:-mx-14 px-4 sm:px-10 lg:px-14">
                             <div className="min-w-[1200px] h-[650px] flex items-center justify-center">
                                 <Sankey
