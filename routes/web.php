@@ -147,6 +147,10 @@ Route::middleware(['auth'])->group(function () {
             Route::delete('/master/categories/{category}', [MasterDataController::class , 'destroyCategory'])->name('master.categories.destroy');
         }
         );
+        Route::get('/analytics', [\App\Http\Controllers\AnalyticsController::class, 'index'])->name('analytics.index');
+        Route::get('/api/analytics/sankey', [\App\Http\Controllers\AnalyticsController::class, 'sankeyApi'])->name('api.analytics.sankey');
+        Route::get('/api/analytics/net-flow', [\App\Http\Controllers\AnalyticsController::class, 'netFlowApi'])->name('api.analytics.netFlow');
+        Route::get('/api/analytics/summary', [\App\Http\Controllers\AnalyticsController::class, 'summaryApi'])->name('api.analytics.summary');
     });
 
 require __DIR__ . '/auth.php';

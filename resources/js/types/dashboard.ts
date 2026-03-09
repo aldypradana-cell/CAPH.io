@@ -97,3 +97,26 @@ export interface FilterState {
     pieStartDate?: string;
     pieEndDate?: string;
 }
+
+export interface SankeyNode {
+    name: string;
+}
+
+export interface SankeyLink {
+    source: number;
+    target: number;
+    value: number;
+}
+
+export interface SankeyData {
+    nodes: SankeyNode[];
+    links: SankeyLink[];
+}
+
+export interface NetFlowData {
+    name: string;
+    monthRaw: string;
+    income: number;
+    expense: number;
+    net: number;
+}

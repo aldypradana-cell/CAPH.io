@@ -6,7 +6,7 @@ import {
     Target, Gem, CreditCard, Tags, User as UserIcon,
     Settings, FileDown, Bell, HelpCircle, Menu, X,
     ShieldCheck, Check, AlertTriangle, Info, CheckCircle,
-    Sun, Moon, MoreHorizontal, Users, FileText, Database, ArrowRightLeft, Plus, PiggyBank
+    Sun, Moon, MoreHorizontal, Users, FileText, Database, ArrowRightLeft, Plus, PiggyBank, BarChart3
 }
     from 'lucide-react';
 import { User } from '@/types';
@@ -167,9 +167,10 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                 <p className="px-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">Menu Utama</p>
                                 <div className="space-y-1">
                                     <NavItem href={route('dashboard')} icon={LayoutDashboard} label="Dashboard" active={currentRoute === 'dashboard'} />
+                                    <NavItem href={route('analytics.index')} icon={BarChart3} label="Analisis Arus Kas" active={currentRoute?.startsWith('analytics') ?? false} />
                                     <NavItem href={route('transactions.index')} icon={List} label="Riwayat" active={currentRoute?.startsWith('transactions') ?? false} />
                                     <NavItem href={route('smart-entry.index')} icon={Zap} label="Input AI" active={currentRoute?.startsWith('smart-entry') ?? false} />
-                                    <NavItem href={route('insights.index')} icon={PieChart} label="Analisis" active={currentRoute?.startsWith('insights') ?? false} />
+                                    <NavItem href={route('insights.index')} icon={PieChart} label="Analisis AI" active={currentRoute?.startsWith('insights') ?? false} />
                                 </div>
                             </div>
 
