@@ -68,26 +68,25 @@ export default function TrendChart({
             onMouseUp={onMouseUp}
             onTouchEnd={onTouchEnd}
         >
-            <div className="flex flex-col justify-between mb-6 gap-4">
-                <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2.5 bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 rounded-xl relative group cursor-grab active:cursor-grabbing">
+            <div className="flex flex-col mb-6 gap-4">
+                <div className="flex flex-row items-start justify-between gap-2">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="p-2 sm:p-2.5 bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 rounded-xl relative group cursor-grab active:cursor-grabbing shrink-0">
                             {chartType === 'AREA' ? (
-                                <TrendingUp className="w-5 h-5 group-hover:opacity-0 transition-opacity duration-200" />
+                                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 group-hover:opacity-0 transition-opacity duration-200" />
                             ) : (
-                                <BarChart3 className="w-5 h-5 group-hover:opacity-0 transition-opacity duration-200" />
+                                <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 group-hover:opacity-0 transition-opacity duration-200" />
                             )}
-                            <GripHorizontal className="w-5 h-5 absolute top-2.5 left-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
+                            <GripHorizontal className="w-4 h-4 sm:w-5 sm:h-5 absolute top-2 sm:top-2.5 left-2 sm:left-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
                         </div>
-                        <div>
-                            <h4 className="font-bold text-slate-800 dark:text-white text-lg">Analisis Tren</h4>
-                            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Pemasukan vs Pengeluaran</p>
+                        <div className="min-w-0">
+                            <h4 className="font-bold text-slate-800 dark:text-white text-base sm:text-lg truncate">Analisis Tren</h4>
+                            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium truncate hidden sm:block">Pemasukan vs Pengeluaran</p>
                         </div>
                     </div>
-                    {/* Filters */}
-                    <div className="flex flex-wrap gap-2 items-center" onMouseDown={(e) => e.stopPropagation()}>
-                        <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
-                            <button
+                    
+                    <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl shrink-0" onMouseDown={(e) => e.stopPropagation()}>
+                        <button
                                 onClick={() => setChartType('BAR')}
                                 title="Grafik Batang"
                                 className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'BAR' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
@@ -102,30 +101,31 @@ export default function TrendChart({
                                 <TrendingUp className="w-4 h-4" />
                             </button>
                         </div>
-                        <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl overflow-x-auto scrollbar-hide">
-                            {(['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY', 'CUSTOM'] as const).map(filter => (
-                                <button
-                                    key={filter}
-                                    onClick={() => onFilterChange(filter)}
-                                    className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all whitespace-nowrap active:scale-95 ${activeFilter === filter
-                                        ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm'
-                                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
-                                        }`}
-                                >
-                                    {filter === 'DAILY' ? 'Harian' : filter === 'WEEKLY' ? 'Mingguan' : filter === 'MONTHLY' ? 'Bulanan' : filter === 'YEARLY' ? 'Tahunan' : 'Custom'}
-                                </button>
-                            ))}
-                        </div>
                     </div>
                 </div>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs bg-slate-50 dark:bg-slate-800 p-2 rounded-xl border border-slate-100 dark:border-slate-700 w-fit" onMouseDown={(e) => e.stopPropagation()}>
-                    <span className="font-bold text-slate-400 uppercase tracking-wider text-[10px]">Range:</span>
-                    <div className="flex items-center gap-2">
-                        <input type="date" value={filters.startDate} onChange={(e) => onDateChange('start', e.target.value)} className="bg-transparent font-medium text-slate-900 dark:text-slate-100 focus:outline-none text-xs" />
-                        <span className="text-slate-300">-</span>
-                        <input type="date" value={filters.endDate} onChange={(e) => onDateChange('end', e.target.value)} className="bg-transparent font-medium text-slate-900 dark:text-slate-100 focus:outline-none text-xs" />
+                
+                {/* Row 2: Time Filter and Range */}
+                <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+                    <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl w-max">
+                        {(['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY', 'CUSTOM'] as const).map(filter => (
+                            <button
+                                key={filter}
+                                onClick={() => onFilterChange(filter)}
+                                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all whitespace-nowrap active:scale-95 ${activeFilter === filter
+                                    ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm'
+                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                                    }`}
+                            >
+                                {filter === 'DAILY' ? 'Harian' : filter === 'WEEKLY' ? 'Mingguan' : filter === 'MONTHLY' ? 'Bulanan' : filter === 'YEARLY' ? 'Tahunan' : 'Custom'}
+                            </button>
+                        ))}
                     </div>
-                </div>
+                    
+                    <div className="flex justify-center gap-2" onMouseDown={(e) => e.stopPropagation()}>
+                        <input type="date" value={filters.startDate} onChange={(e) => onDateChange('start', e.target.value)} className="bg-slate-50 dark:bg-slate-800 border-none rounded-lg text-[10px] text-slate-500 dark:text-slate-400 px-2 py-1 outline-none font-medium flex-1 w-full sm:w-auto text-center" />
+                        <span className="text-slate-300 self-center">-</span>
+                        <input type="date" value={filters.endDate} onChange={(e) => onDateChange('end', e.target.value)} className="bg-slate-50 dark:bg-slate-800 border-none rounded-lg text-[10px] text-slate-500 dark:text-slate-400 px-2 py-1 outline-none font-medium flex-1 w-full sm:w-auto text-center" />
+                    </div>
             </div>
             <div className="flex-1 w-full min-h-0">
                 {isLoading ? (

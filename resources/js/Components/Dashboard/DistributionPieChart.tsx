@@ -49,8 +49,8 @@ const CustomTreemapContent = ({ root, depth, x, y, width, height, index, payload
     // Only render for depth 1 (the actual categories)
     if (depth !== 1) return null;
 
-    // Use a solid color from the palette
-    const fillColor = colors[Math.floor((index / (root.children?.length || 1)) * colors.length) % colors.length];
+    // Use a solid color from the palette, matching the Donut chart behavior
+    const fillColor = colors[index % colors.length];
     
     // Determine if the box is big enough for text
     const showName = width > 45 && height > 25;
@@ -105,7 +105,7 @@ export default function DistributionPieChart({
             onMouseUp={onMouseUp}
             onTouchEnd={onTouchEnd}
         >
-            <div className="flex flex-col xl:flex-row xl:items-center justify-between mb-4 gap-4">
+            <div className="flex flex-row items-start justify-between mb-4 gap-2">
                 <div className="flex items-center gap-3">
                     <div className="p-2.5 bg-pink-50 dark:bg-slate-800 text-pink-600 dark:text-pink-400 rounded-xl relative group cursor-grab active:cursor-grabbing">
                         {chartType === 'DONUT' ? (
@@ -121,7 +121,7 @@ export default function DistributionPieChart({
                     </div>
                 </div>
                 
-                <div className="flex flex-wrap gap-2 items-center" onMouseDown={(e) => e.stopPropagation()}>
+                <div className="flex flex-wrap gap-2 items-center justify-end" onMouseDown={(e) => e.stopPropagation()}>
                     <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
                         <button
                             onClick={() => setChartType('DONUT')}
