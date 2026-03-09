@@ -4,7 +4,7 @@ import { PageProps } from '@/types';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
-    Plus, X, Tags, Trash2, Edit2, AlertTriangle
+    Plus, X, Tags, Trash2, Edit2, AlertTriangle, Eye, EyeOff
 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -13,6 +13,7 @@ interface Category {
     name: string;
     type: string;
     is_default: boolean;
+    is_hidden: boolean;
     budget_rule: string | null;
 }
 
@@ -61,6 +62,13 @@ export default function CategoriesIndex({ auth, categories }: PageProps<{ catego
         setIsModalOpen(true);
     };
 
+    const handleToggleHide = (c: Category) => {
+        router.patch(route('categories.toggle-hide', c.id), {}, {
+            preserveScroll: true,
+            preserveState: true,
+        });
+    };
+
     const filtered = categories.filter(c => activeTab === 'ALL' || c.type === activeTab);
 
     return (
@@ -93,9 +101,9 @@ export default function CategoriesIndex({ auth, categories }: PageProps<{ catego
                 {/* Category Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {filtered.length > 0 ? filtered.map((c, idx) => (
-                        <div key={c.id} className="glass-card rounded-2xl p-4 flex items-center justify-between group hover:shadow-lg transition-all duration-300 animate-pop-in" style={{ animationDelay: `${idx * 50}ms` }}>
+                        <div key={c.id} className={`glass-card rounded-2xl p-4 flex items-center justify-between group hover:shadow-lg transition-all duration-300 animate-pop-in ${c.is_hidden ? 'opacity-60 grayscale-[50%]' : ''}`} style={{ animationDelay: `${idx * 50}ms` }}>
                             <div className="flex items-center gap-3">
-                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${c.type === 'INCOME' ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600' : 'bg-red-100 dark:bg-red-900/40 text-red-600'} shadow-sm`}>
+                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${c.type === 'INCOME' ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600' : 'bg-red-100 dark:bg-red-900/40 text-red-600'} shadow-sm ${c.is_hidden ? 'opacity-50' : ''}`}>
                                     <Tags className="w-5 h-5" />
                                 </div>
                                 <div>
@@ -105,6 +113,7 @@ export default function CategoriesIndex({ auth, categories }: PageProps<{ catego
                                             {c.type === 'INCOME' ? 'Masuk' : 'Keluar'}
                                         </span>
                                         {c.is_default && <span className="text-[10px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">Default</span>}
+                                        {c.is_hidden && <span className="text-[10px] font-bold text-slate-500 bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded-full flex items-center gap-1"><EyeOff className="w-3 h-3"/> Disembunyikan</span>}
                                         {c.budget_rule && BUDGET_RULE_LABELS[c.budget_rule] && (
                                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${BUDGET_RULE_LABELS[c.budget_rule].color}`}>
                                                 {BUDGET_RULE_LABELS[c.budget_rule].label}
@@ -113,12 +122,17 @@ export default function CategoriesIndex({ auth, categories }: PageProps<{ catego
                                     </div>
                                 </div>
                             </div>
-                            {!c.is_default && (
-                                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button onClick={() => handleEdit(c)} className="p-1.5 text-slate-300 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-all"><Edit2 className="w-3.5 h-3.5" /></button>
-                                    <button onClick={() => setDeleteId(c.id)} className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all"><Trash2 className="w-3.5 h-3.5" /></button>
-                                </div>
-                            )}
+                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button onClick={() => handleToggleHide(c)} title={c.is_hidden ? "Tampilkan Kategori" : "Sembunyikan Kategori"} className={`p-1.5 rounded-lg transition-all ${c.is_hidden ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/30' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
+                                    {c.is_hidden ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                                </button>
+                                {!c.is_default && (
+                                    <>
+                                        <button onClick={() => handleEdit(c)} className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-all"><Edit2 className="w-4 h-4" /></button>
+                                        <button onClick={() => setDeleteId(c.id)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all"><Trash2 className="w-4 h-4" /></button>
+                                    </>
+                                )}
+                            </div>
                         </div>
                     )) : (
                         <div className="col-span-full glass-card rounded-[2rem] p-16 text-center">

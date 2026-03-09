@@ -14,6 +14,7 @@ class Category extends Model
         'name',
         'type',
         'is_default',
+        'is_hidden',
         'budget_rule',
     ];
 
@@ -21,6 +22,7 @@ class Category extends Model
     {
         return [
             'is_default' => 'boolean',
+            'is_hidden' => 'boolean',
         ];
     }
 
@@ -36,6 +38,14 @@ class Category extends Model
      * Scopes
      */
     public function scopeUserCategories($query, $userId)
+    {
+        return $query->where(function ($q) use ($userId) {
+            $q->where('is_default', true)
+                ->orWhere('user_id', $userId);
+        })->where('is_hidden', false);
+    }
+
+    public function scopeAllUserCategories($query, $userId)
     {
         return $query->where(function ($q) use ($userId) {
             $q->where('is_default', true)

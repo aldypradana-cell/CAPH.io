@@ -13,7 +13,7 @@ class CategoryController extends Controller
         $user = $request->user();
 
         // System categories (is_default = true) + user's custom categories
-        $categories = Category::userCategories($user->id)
+        $categories = Category::allUserCategories($user->id)
             ->orderBy('type')
             ->orderBy('name')
             ->get();
@@ -73,5 +73,21 @@ class CategoryController extends Controller
         $category->delete();
 
         return redirect()->back()->with('success', 'Kategori berhasil dihapus');
+    }
+
+    public function toggleHide(Request $request, Category $category)
+    {
+        // Users can hide both default and custom categories, 
+        // as long as the custom ones belong to them
+        if (!$category->is_default && $category->user_id !== $request->user()->id) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        $category->update([
+            'is_hidden' => !$category->is_hidden
+        ]);
+
+        $status = $category->is_hidden ? 'disembunyikan' : 'ditampilkan kembali';
+        return redirect()->back()->with('success', "Kategori berhasil {$status}.");
     }
 }

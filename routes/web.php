@@ -98,6 +98,7 @@ Route::middleware(['auth'])->group(function () {
         // Categories
         Route::resource('categories', CategoryController::class)
             ->only(['index', 'store', 'update', 'destroy']);
+        Route::patch('categories/{category}/toggle-hide', [CategoryController::class, 'toggleHide'])->name('categories.toggle-hide');
 
         // Financial Insights (AI)
         Route::get('/insights', [InsightsController::class, 'index'])->name('insights.index');
