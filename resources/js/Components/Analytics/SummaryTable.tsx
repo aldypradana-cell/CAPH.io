@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowUpRight, ArrowDownRight, Layers, CreditCard } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, Stack as Layers, CreditCard } from '@phosphor-icons/react';
 
 interface SummaryTableProps {
     data: any;
@@ -32,14 +32,14 @@ export default function SummaryTable({ data, isLoading }: SummaryTableProps) {
                     <div className="grid grid-cols-2 gap-4">
                         <div className="bg-emerald-50 dark:bg-emerald-500/10 p-4 rounded-2xl border border-emerald-100 dark:border-emerald-500/20">
                             <div className="flex items-center gap-2 mb-1">
-                                <ArrowDownRight className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                                <ArrowDownRight weight="bold" className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                                 <p className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">Total Masuk</p>
                             </div>
                             <p className="text-lg font-bold text-emerald-800 dark:text-emerald-300">{formatIDR(data.totalIncome)}</p>
                         </div>
                         <div className="bg-rose-50 dark:bg-rose-500/10 p-4 rounded-2xl border border-rose-100 dark:border-rose-500/20">
                             <div className="flex items-center gap-2 mb-1">
-                                <ArrowUpRight className="w-4 h-4 text-rose-600 dark:text-rose-400" />
+                                <ArrowUpRight weight="bold" className="w-4 h-4 text-rose-600 dark:text-rose-400" />
                                 <p className="text-xs font-bold text-rose-700 dark:text-rose-400 uppercase tracking-wider">Total Keluar</p>
                             </div>
                             <p className="text-lg font-bold text-rose-800 dark:text-rose-300">{formatIDR(data.totalExpense)}</p>
@@ -49,7 +49,7 @@ export default function SummaryTable({ data, isLoading }: SummaryTableProps) {
                     {/* Top 5 Expenses */}
                     <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-800">
                         <h4 className="font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
-                            <Layers className="w-4 h-4" /> 5 Pengeluaran Teratas
+                            <Layers weight="duotone" className="w-4 h-4" /> 5 Pengeluaran Teratas
                         </h4>
                         
                         {data.topExpenses && data.topExpenses.length > 0 ? (

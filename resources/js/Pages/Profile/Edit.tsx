@@ -3,7 +3,9 @@ import { PageProps } from '@/types';
 import { Head, useForm, usePage, Link } from '@inertiajs/react';
 import { FormEventHandler, useRef, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { User, Lock, Trash2, Shield, Mail, AlertTriangle, X, Eye, EyeOff, Check } from 'lucide-react';
+import { 
+    User, Lock, Trash as Trash2, Shield, EnvelopeSimple as Mail, Warning as AlertTriangle, X, Eye, EyeSlash as EyeOff, Check 
+} from '@phosphor-icons/react';
 import toast, { Toaster } from 'react-hot-toast';
 
 export default function Edit({
@@ -87,7 +89,7 @@ export default function Edit({
                         </div>
                         <h2 className="text-xl font-bold text-slate-800 dark:text-white">{user.name}</h2>
                         <p className="text-sm text-slate-400 flex items-center justify-center gap-1 mt-1">
-                            <Mail className="w-3.5 h-3.5" /> {user.email}
+                            <Mail weight="duotone" className="w-3.5 h-3.5" /> {user.email}
                         </p>
                     </div>
                 </div>
@@ -96,7 +98,7 @@ export default function Edit({
                 <div className="glass-card rounded-[2rem] p-6 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
                     <div className="flex items-center gap-3 mb-5">
                         <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600">
-                            <User className="w-5 h-5" />
+                            <User weight="duotone" className="w-5 h-5" />
                         </div>
                         <div>
                             <h3 className="text-base font-bold text-slate-800 dark:text-white">Informasi Profil</h3>
@@ -124,7 +126,7 @@ export default function Edit({
                                     </Link>
                                 </p>
                                 {status === 'verification-link-sent' && (
-                                    <p className="text-sm font-bold text-emerald-600 mt-2 flex items-center gap-1"><Check className="w-4 h-4" /> Link verifikasi baru telah dikirim!</p>
+                                    <p className="text-sm font-bold text-emerald-600 mt-2 flex items-center gap-1"><Check weight="bold" className="w-4 h-4" /> Link verifikasi baru telah dikirim!</p>
                                 )}
                             </div>
                         )}
@@ -134,7 +136,7 @@ export default function Edit({
                                 {profileForm.processing ? 'Menyimpan...' : 'Simpan'}
                             </button>
                             {profileForm.recentlySuccessful && (
-                                <span className="text-sm text-emerald-600 font-medium flex items-center gap-1 animate-fade-in"><Check className="w-4 h-4" /> Tersimpan</span>
+                                <span className="text-sm text-emerald-600 font-medium flex items-center gap-1 animate-fade-in"><Check weight="bold" className="w-4 h-4" /> Tersimpan</span>
                             )}
                         </div>
                     </form>
@@ -144,7 +146,7 @@ export default function Edit({
                 <div className="glass-card rounded-[2rem] p-6 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
                     <div className="flex items-center gap-3 mb-5">
                         <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600">
-                            <Lock className="w-5 h-5" />
+                            <Lock weight="duotone" className="w-5 h-5" />
                         </div>
                         <div>
                             <h3 className="text-base font-bold text-slate-800 dark:text-white">Ubah Password</h3>
@@ -157,7 +159,7 @@ export default function Edit({
                             <div className="relative">
                                 <input type={showCurrentPw ? 'text' : 'password'} ref={currentPasswordInput} value={passwordForm.data.current_password} onChange={(e) => passwordForm.setData('current_password', e.target.value)} className={inputClass} />
                                 <button type="button" onClick={() => setShowCurrentPw(!showCurrentPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1">
-                                    {showCurrentPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                    {showCurrentPw ? <EyeOff weight="duotone" className="w-4 h-4" /> : <Eye weight="duotone" className="w-4 h-4" />}
                                 </button>
                             </div>
                             {passwordForm.errors.current_password && <p className="text-xs text-red-500 mt-1 ml-1">{passwordForm.errors.current_password}</p>}
@@ -167,7 +169,7 @@ export default function Edit({
                             <div className="relative">
                                 <input type={showNewPw ? 'text' : 'password'} ref={passwordInput} value={passwordForm.data.password} onChange={(e) => passwordForm.setData('password', e.target.value)} className={inputClass} />
                                 <button type="button" onClick={() => setShowNewPw(!showNewPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1">
-                                    {showNewPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                    {showNewPw ? <EyeOff weight="duotone" className="w-4 h-4" /> : <Eye weight="duotone" className="w-4 h-4" />}
                                 </button>
                             </div>
                             {passwordForm.errors.password && <p className="text-xs text-red-500 mt-1 ml-1">{passwordForm.errors.password}</p>}
@@ -182,7 +184,7 @@ export default function Edit({
                                 {passwordForm.processing ? 'Menyimpan...' : 'Ubah Password'}
                             </button>
                             {passwordForm.recentlySuccessful && (
-                                <span className="text-sm text-emerald-600 font-medium flex items-center gap-1 animate-fade-in"><Check className="w-4 h-4" /> Tersimpan</span>
+                                <span className="text-sm text-emerald-600 font-medium flex items-center gap-1 animate-fade-in"><Check weight="bold" className="w-4 h-4" /> Tersimpan</span>
                             )}
                         </div>
                     </form>
@@ -192,7 +194,7 @@ export default function Edit({
                 <div className="glass-card rounded-[2rem] p-6 border-red-200/30 dark:border-red-800/20 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
                     <div className="flex items-center gap-3 mb-5">
                         <div className="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600">
-                            <Trash2 className="w-5 h-5" />
+                            <Trash2 weight="duotone" className="w-5 h-5" />
                         </div>
                         <div>
                             <h3 className="text-base font-bold text-slate-800 dark:text-white">Hapus Akun</h3>
@@ -203,7 +205,7 @@ export default function Edit({
                         Setelah akun dihapus, semua data dan resource akan hilang secara permanen. Pastikan Anda sudah mengunduh data yang ingin disimpan.
                     </p>
                     <button onClick={() => setConfirmingDeletion(true)} className="px-5 py-3 bg-red-600 text-white rounded-2xl text-sm font-bold hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/30 transition-all hover:scale-105 active:scale-95">
-                        <Trash2 className="w-4 h-4 inline mr-2" /> Hapus Akun Saya
+                        <Trash2 weight="bold" className="w-4 h-4 inline mr-2" /> Hapus Akun Saya
                     </button>
                 </div>
             </div>
@@ -216,7 +218,7 @@ export default function Edit({
                         <div className="h-1.5 bg-gradient-to-r from-red-500 to-rose-600" />
                         <form onSubmit={deleteUser} className="p-6">
                             <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 mb-4 mx-auto">
-                                <AlertTriangle className="w-7 h-7" />
+                                <AlertTriangle weight="fill" className="w-7 h-7" />
                             </div>
                             <h3 className="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">Hapus Akun?</h3>
                             <p className="text-sm text-center text-slate-500 mb-6">

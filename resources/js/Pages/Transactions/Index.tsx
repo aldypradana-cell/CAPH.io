@@ -4,9 +4,9 @@ import { PageProps } from '@/types';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import {
-    Plus, Pencil, Trash2, X, Search, Filter, Download, ArrowDownUp,
-    TrendingUp, TrendingDown, ArrowRightLeft, AlertTriangle, Calendar, Hash, Clock
-} from 'lucide-react';
+    Plus, PencilSimple as Pencil, Trash as Trash2, X, MagnifyingGlass as Search, Faders as Filter, DownloadSimple as Download, ArrowsDownUp as ArrowDownUp,
+    TrendUp as TrendingUp, TrendDown as TrendingDown, ArrowsLeftRight as ArrowRightLeft, Warning as AlertTriangle, CalendarBlank as Calendar, Hash, Clock
+} from '@phosphor-icons/react';
 import toast, { Toaster } from 'react-hot-toast';
 import TransactionFormModal from '@/Components/TransactionFormModal';
 import AdvancedFilterSheet from '@/Components/AdvancedFilterSheet';
@@ -108,7 +108,7 @@ function TransactionHeatmap({ data, month, onDateSelect }: { data: Record<string
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="w-full sm:w-auto flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all shadow-sm"
             >
-                <Calendar className="w-3.5 h-3.5" />
+                <Calendar weight="duotone" className="w-3.5 h-3.5" />
                 Aktivitas
             </button>
 
@@ -119,7 +119,7 @@ function TransactionHeatmap({ data, month, onDateSelect }: { data: Record<string
                         <div className="flex justify-between items-center mb-2">
                             <h4 className="text-xs font-bold text-slate-800 dark:text-white">{new Date(yearNum, monthNum).toLocaleString('id-ID', { month: 'short', year: 'numeric' })}</h4>
                             <button onClick={() => setIsExpanded(false)} className="p-1 lg:hidden text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg transition-colors">
-                                <X className="w-4 h-4" />
+                                <X weight="bold" className="w-4 h-4" />
                             </button>
                         </div>
                         
@@ -145,7 +145,7 @@ function TransactionHeatmap({ data, month, onDateSelect }: { data: Record<string
                                 <div className="flex justify-between items-center mb-4">
                                     <h4 className="text-sm font-bold text-slate-800 dark:text-white">{new Date(yearNum, monthNum).toLocaleString('id-ID', { month: 'long', year: 'numeric' })}</h4>
                                     <button onClick={() => setIsExpanded(false)} className="p-1.5 bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl transition-colors active:scale-95">
-                                        <X className="w-4 h-4" />
+                                        <X weight="bold" className="w-4 h-4" />
                                     </button>
                                 </div>
                                 
@@ -324,9 +324,9 @@ export default function TransactionsIndex({
 
     const getTypeIcon = (type: string) => {
         switch (type) {
-            case 'INCOME': return <TrendingUp className="w-4 h-4" />;
-            case 'EXPENSE': return <TrendingDown className="w-4 h-4" />;
-            case 'TRANSFER': return <ArrowRightLeft className="w-4 h-4" />;
+            case 'INCOME': return <TrendingUp weight="bold" className="w-4 h-4" />;
+            case 'EXPENSE': return <TrendingDown weight="bold" className="w-4 h-4" />;
+            case 'TRANSFER': return <ArrowRightLeft weight="bold" className="w-4 h-4" />;
             default: return null;
         }
     };
@@ -350,7 +350,7 @@ export default function TransactionsIndex({
                 <div className="flex flex-col lg:flex-row gap-2 sm:gap-4 items-stretch lg:items-center justify-between mb-2 sm:mb-0">
                     {/* Search */}
                     <div className="relative flex-1 max-w-md">
-                        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        <Search weight="bold" className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
                         <input
                             type="text"
                             placeholder="Cari transaksi..."
@@ -364,7 +364,7 @@ export default function TransactionsIndex({
                     <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                         {/* Date Range Picker (always visible — primary filter) */}
                         <div className="flex items-center gap-1.5 sm:gap-2 bg-slate-100 dark:bg-slate-800 rounded-xl px-2 min-w-max">
-                            <Calendar className="w-4 h-4 text-slate-400" />
+                            <Calendar weight="duotone" className="w-4 h-4 text-slate-400" />
                             <input
                                 type="date"
                                 value={startDate}
@@ -404,7 +404,7 @@ export default function TransactionsIndex({
 
                         {/* CSV Export */}
                         <button onClick={handleExportCSV} className="hidden sm:flex p-2 sm:p-3 glass-card rounded-xl sm:rounded-2xl text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md transition-all active:scale-95" title="Export CSV">
-                            <Download className="w-4 h-4" />
+                            <Download weight="bold" className="w-4 h-4" />
                         </button>
 
                         {/* Heatmap Calendar Popover */}
@@ -428,7 +428,7 @@ export default function TransactionsIndex({
                             onClick={() => { setEditingTransaction(null); setIsModalOpen(true); }}
                             className="hidden sm:flex items-center px-5 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95"
                         >
-                            <Plus className="w-4 h-4 mr-2" /> Transaksi Baru
+                            <Plus weight="bold" className="w-4 h-4 mr-2" /> Transaksi Baru
                         </button>
                     </div>
                 </div>
@@ -438,7 +438,7 @@ export default function TransactionsIndex({
                     <div className="flex flex-wrap items-center gap-3 sm:gap-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-5 py-3 shadow-sm animate-fade-in-up" style={{ animationDelay: '100ms' }}>
                         <div className="flex items-center gap-2">
                             <div className="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center shrink-0">
-                                <TrendingUp className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                                <TrendingUp weight="bold" className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                             </div>
                             <div>
                                 <p className="text-[10px] sm:text-xs font-medium text-slate-500 mb-0.5">Pemasukan</p>
@@ -450,7 +450,7 @@ export default function TransactionsIndex({
 
                         <div className="flex items-center gap-2">
                             <div className="w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center shrink-0">
-                                <TrendingDown className="w-3 h-3 text-red-600 dark:text-red-400" />
+                                <TrendingDown weight="bold" className="w-3 h-3 text-red-600 dark:text-red-400" />
                             </div>
                             <div>
                                 <p className="text-[10px] sm:text-xs font-medium text-slate-500 mb-0.5">Pengeluaran</p>
@@ -462,7 +462,7 @@ export default function TransactionsIndex({
 
                         <div className="flex items-center gap-2 sm:ml-auto">
                             <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${filterStats.net >= 0 ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400' : 'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400'}`}>
-                                <ArrowRightLeft className="w-3 h-3" />
+                                <ArrowRightLeft weight="bold" className="w-3 h-3" />
                             </div>
                             <div>
                                 <p className="text-[10px] sm:text-xs font-medium text-slate-500 mb-0.5">Arus Bersih</p>
@@ -502,17 +502,17 @@ export default function TransactionsIndex({
                                                 <span className="text-[10px] text-slate-400">{t.wallet.name}</span>
                                             ) : (
                                                 <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-0.5 rounded-full flex items-center gap-1">
-                                                    <Clock className="w-2.5 h-2.5" /> PayLater
+                                                    <Clock weight="fill" className="w-2.5 h-2.5" /> PayLater
                                                 </span>
                                             )}
                                             {t.type === 'TRANSFER' && t.to_wallet && (
                                                 <span className="text-[10px] text-slate-400 flex items-center gap-1">
-                                                    <ArrowRightLeft className="w-3 h-3" /> {t.to_wallet.name}
+                                                    <ArrowRightLeft weight="bold" className="w-3 h-3" /> {t.to_wallet.name}
                                                 </span>
                                             )}
                                             {t.tags && t.tags.length > 0 && t.tags.map(tag => (
                                                 <span key={tag.id} className="inline-flex items-center gap-0.5 text-[10px] font-bold text-white px-1.5 py-0.5 rounded-full" style={{ backgroundColor: tag.color || '#6366f1' }}>
-                                                    <Hash className="w-2.5 h-2.5 opacity-70" />{tag.name}
+                                                    <Hash weight="bold" className="w-2.5 h-2.5 opacity-70" />{tag.name}
                                                 </span>
                                             ))}
                                         </div>
@@ -531,17 +531,17 @@ export default function TransactionsIndex({
                                         t.type === 'TRANSFER' ? 'text-blue-600 dark:text-blue-400' : 
                                         !t.wallet ? 'text-amber-500 dark:text-amber-400' : 'text-red-600 dark:text-red-400'
                                     }`}>
-                                        {!t.wallet && t.type === 'EXPENSE' && <Clock className="w-4 h-4" />}
+                                        {!t.wallet && t.type === 'EXPENSE' && <Clock weight="duotone" className="w-4 h-4" />}
                                         {t.type === 'INCOME' ? '+' : (!t.wallet ? '' : '-')}{formatIDR(t.amount)}
                                     </span>
 
                                     {t.category !== 'Investasi Emas' ? (
                                         <div className="flex items-center gap-2 sm:gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                             <button onClick={() => handleEdit(t)} className="p-2 text-indigo-500 dark:text-indigo-400 sm:text-slate-300 md:hover:text-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/20 sm:bg-transparent md:hover:bg-indigo-50 md:dark:hover:bg-indigo-900/30 rounded-lg transition-all md:hover:scale-110 active:scale-90 flex items-center justify-center">
-                                                <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                                <Pencil weight="duotone" className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                             </button>
                                             <button onClick={() => setDeleteId(t.id)} className="p-2 text-red-500 dark:text-red-400 sm:text-slate-300 md:hover:text-red-500 bg-red-50/50 dark:bg-red-900/20 sm:bg-transparent md:hover:bg-red-50 md:dark:hover:bg-red-900/30 rounded-lg transition-all md:hover:scale-110 active:scale-90 flex items-center justify-center">
-                                                <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                                <Trash2 weight="duotone" className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                             </button>
                                         </div>
                                     ) : (
@@ -552,7 +552,7 @@ export default function TransactionsIndex({
                         ))
                     ) : (
                         <div className="glass-card rounded-[2rem] p-8 sm:p-16 text-center animate-fade-in-up">
-                            <ArrowDownUp className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4 animate-pulse" />
+                            <ArrowDownUp weight="duotone" className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4 animate-pulse" />
                             <p className="text-lg font-bold text-slate-400 dark:text-slate-500 mb-1">Belum ada transaksi</p>
                             <p className="text-sm text-slate-400">Klik "Transaksi Baru" untuk memulai pencatatan</p>
                         </div>
@@ -599,7 +599,7 @@ export default function TransactionsIndex({
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setDeleteId(null)} />
                     <div className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-2xl animate-pop-in border border-slate-100 dark:border-slate-800">
                         <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 mb-4 mx-auto">
-                            <AlertTriangle className="w-7 h-7" />
+                            <AlertTriangle weight="fill" className="w-7 h-7" />
                         </div>
                         <h3 className="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">Hapus Transaksi?</h3>
                         <p className="text-sm text-center text-slate-500 dark:text-slate-400 mb-6 px-4">

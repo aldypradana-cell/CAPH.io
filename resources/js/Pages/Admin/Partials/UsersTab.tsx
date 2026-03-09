@@ -1,7 +1,7 @@
 import { router, useForm } from '@inertiajs/react';
 import {
-    Shield, ShieldOff, Trash2, Search, Users, AlertTriangle, UserCheck, UserX, Zap, Activity
-} from 'lucide-react';
+    Shield, ShieldSlash as ShieldOff, Trash as Trash2, MagnifyingGlass as Search, Users, Warning as AlertTriangle, UserCheck, UserMinus as UserX, Lightning as Zap, Pulse as Activity
+} from '@phosphor-icons/react';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import toast from 'react-hot-toast';
@@ -78,7 +78,7 @@ export default function UsersTab({ users, filters }: { users: { data: User[] }, 
             {/* Search */}
             <form onSubmit={handleSearch} className="glass-card rounded-2xl p-4 flex gap-3 items-center">
                 <div className="relative flex-1">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <Search weight="bold" className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Cari user..."
                         className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50"
                     />
@@ -103,7 +103,7 @@ export default function UsersTab({ users, filters }: { users: { data: User[] }, 
                                         {user.role}
                                     </span>
                                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-0.5 ${user.status === 'ACTIVE' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
-                                        {user.status === 'ACTIVE' ? <UserCheck className="w-3 h-3" /> : <UserX className="w-3 h-3" />}
+                                        {user.status === 'ACTIVE' ? <UserCheck weight="bold" className="w-3 h-3" /> : <UserX weight="bold" className="w-3 h-3" />}
                                         {user.status === 'ACTIVE' ? 'Aktif' : 'Suspended'}
                                     </span>
                                 </div>
@@ -123,7 +123,7 @@ export default function UsersTab({ users, filters }: { users: { data: User[] }, 
                                     onClick={() => handleEditQuota(user)}
                                     className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-indigo-700 bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400 transition-all hover:scale-105 active:scale-95 hover:shadow-lg hover:shadow-indigo-500/20"
                                 >
-                                    <Zap className="w-3.5 h-3.5" /> Kuota AI
+                                    <Zap weight="duotone" className="w-3.5 h-3.5" /> Kuota AI
                                 </button>
                                 <button
                                     onClick={() => handleSuspend(user)}
@@ -132,20 +132,20 @@ export default function UsersTab({ users, filters }: { users: { data: User[] }, 
                                         : 'text-emerald-700 bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 hover:shadow-emerald-500/20 hover:shadow-lg'
                                         }`}
                                 >
-                                    {user.status === 'ACTIVE' ? <><ShieldOff className="w-3.5 h-3.5" /> Suspend</> : <><Shield className="w-3.5 h-3.5" /> Aktifkan</>}
+                                    {user.status === 'ACTIVE' ? <><ShieldOff weight="duotone" className="w-3.5 h-3.5" /> Suspend</> : <><Shield weight="duotone" className="w-3.5 h-3.5" /> Aktifkan</>}
                                 </button>
                                 <button
                                     onClick={() => handleDelete(user)}
                                     className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-red-700 bg-red-100 dark:bg-red-900/30 dark:text-red-400 transition-all hover:scale-105 active:scale-95 hover:shadow-lg hover:shadow-red-500/20"
                                 >
-                                    <Trash2 className="w-3.5 h-3.5" /> Hapus
+                                    <Trash2 weight="duotone" className="w-3.5 h-3.5" /> Hapus
                                 </button>
                             </div>
                         )}
                     </div>
                 )) : (
                     <div className="glass-card rounded-[2rem] p-16 text-center">
-                        <Users className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
+                        <Users weight="duotone" className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
                         <p className="text-lg font-bold text-slate-400">Tidak ada user ditemukan</p>
                     </div>
                 )}
@@ -156,7 +156,7 @@ export default function UsersTab({ users, filters }: { users: { data: User[] }, 
                 <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setDeleteId(null)} />
                     <div className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-2xl animate-pop-in border border-slate-100 dark:border-slate-800">
-                        <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 mb-4 mx-auto"><AlertTriangle className="w-7 h-7" /></div>
+                        <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 mb-4 mx-auto"><AlertTriangle weight="duotone" className="w-7 h-7" /></div>
                         <h3 className="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">Hapus User?</h3>
                         <p className="text-sm text-center text-slate-500 mb-6 px-4">
                             Hapus <strong>{deleteUser.name}</strong>? Semua data user akan hilang permanen.
@@ -177,7 +177,7 @@ export default function UsersTab({ users, filters }: { users: { data: User[] }, 
                     <div className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-2xl animate-pop-in border border-slate-100 dark:border-slate-800">
                         <div className="flex items-center gap-3 mb-6">
                             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white">
-                                <Zap className="w-6 h-6" />
+                                <Zap weight="duotone" className="w-6 h-6" />
                             </div>
                             <div>
                                 <h3 className="text-lg font-bold text-slate-800 dark:text-white">Kuota AI Pengguna</h3>
@@ -189,7 +189,7 @@ export default function UsersTab({ users, filters }: { users: { data: User[] }, 
                         <div className="grid grid-cols-2 gap-3 mb-6">
                             <div className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide flex items-center gap-1 mb-1">
-                                    <Activity className="w-3 h-3 text-indigo-500" /> Penggunaan Hari Ini
+                                    <Activity weight="bold" className="w-3 h-3 text-indigo-500" /> Penggunaan Hari Ini
                                 </p>
                                 <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
                                     {editQuotaUser.smart_entry_used_today} <span className="text-xs text-slate-400 font-medium">Smart Entry</span>
@@ -197,7 +197,7 @@ export default function UsersTab({ users, filters }: { users: { data: User[] }, 
                             </div>
                             <div className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide flex items-center gap-1 mb-1">
-                                    <Activity className="w-3 h-3 text-purple-500" /> Penggunaan Minggu Ini
+                                    <Activity weight="bold" className="w-3 h-3 text-purple-500" /> Penggunaan Minggu Ini
                                 </p>
                                 <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
                                     {editQuotaUser.insight_used_this_week} <span className="text-xs text-slate-400 font-medium">AI Insight</span>

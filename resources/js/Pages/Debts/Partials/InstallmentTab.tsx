@@ -2,10 +2,10 @@ import { router, useForm } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
-    Plus, X, Home, Car, CreditCard, Smartphone, Package,
-    Calendar, Wallet, TrendingDown, AlertTriangle,
-    ChevronDown, ChevronUp, Check, Edit2, Trash2, Clock, CheckCircle
-} from 'lucide-react';
+    Plus, X, House as Home, Car, CreditCard, DeviceMobile as Smartphone, Package,
+    CalendarBlank as Calendar, Wallet, TrendDown as TrendingDown, Warning as AlertTriangle,
+    CaretDown as ChevronDown, CaretUp as ChevronUp, Check, PencilSimple as Edit2, Trash as Trash2, Clock, CheckCircle
+} from '@phosphor-icons/react';
 import toast from 'react-hot-toast';
 
 // --- Types ---
@@ -205,7 +205,7 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
                     <div key={idx} className="glass-card p-6 rounded-[2rem] hover:shadow-xl transition-all duration-300 group">
                         <div className="flex items-center justify-between mb-4">
                             <div className={`p-3 bg-gradient-to-br ${card.color} text-white rounded-2xl shadow-lg`}>
-                                <card.icon className="w-5 h-5" />
+                                <card.icon weight="duotone" className="w-5 h-5" />
                             </div>
                         </div>
                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{card.label}</p>
@@ -218,7 +218,7 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
             {/* Add Button */}
             <div className="flex justify-end">
                 <button onClick={() => openForm()} className="flex items-center px-5 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95">
-                    <Plus className="w-4 h-4 mr-2" /> Tambah Cicilan
+                    <Plus weight="bold" className="w-4 h-4 mr-2" /> Tambah Cicilan
                 </button>
             </div>
 
@@ -240,7 +240,7 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
                                     <div className="flex items-start justify-between mb-4">
                                         <div className="flex items-center gap-3">
                                             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg bg-gradient-to-br ${cfg.gradient}`}>
-                                                <Icon className="w-6 h-6" />
+                                                <Icon weight="duotone" className="w-6 h-6" />
                                             </div>
                                             <div>
                                                 <h3 className="text-base font-bold text-slate-800 dark:text-white">{inst.name}</h3>
@@ -251,7 +251,7 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
                                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${cfg.badge}`}>{cfg.label}</span>
                                             {inst.wallet_id === null && (
                                                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 flex items-center gap-1">
-                                                    <Clock className="w-2.5 h-2.5" /> PayLater
+                                                    <Clock weight="fill" className="w-2.5 h-2.5" /> PayLater
                                                 </span>
                                             )}
                                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${inst.auto_debit ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'}`}>
@@ -295,16 +295,16 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
                                     {/* Action buttons */}
                                     <div className="flex gap-2">
                                         <button onClick={() => openPay(inst)} className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-xs font-bold shadow-lg shadow-indigo-500/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-1">
-                                            <Wallet className="w-3.5 h-3.5" /> Bayar Angsuran
+                                            <Wallet weight="duotone" className="w-3.5 h-3.5" /> Bayar Angsuran
                                         </button>
                                         <button onClick={() => setExpandedId(isExpanded ? null : inst.id)} className="py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
-                                            {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                            {isExpanded ? <ChevronUp weight="bold" className="w-4 h-4" /> : <ChevronDown weight="bold" className="w-4 h-4" />}
                                         </button>
                                         <button onClick={() => openForm(inst)} className="py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
-                                            <Edit2 className="w-4 h-4" />
+                                            <Edit2 weight="duotone" className="w-4 h-4" />
                                         </button>
                                         <button onClick={() => setDeleteId(inst.id)} className="py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold hover:bg-red-50 hover:text-red-600 transition-colors">
-                                            <Trash2 className="w-4 h-4" />
+                                            <Trash2 weight="duotone" className="w-4 h-4" />
                                         </button>
                                     </div>
 
@@ -322,7 +322,7 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
                                                     return (
                                                         <div key={tenor} className={`flex items-center gap-3 p-2 rounded-xl text-xs transition-all ${isCurrent ? 'bg-indigo-50 dark:bg-indigo-900/20 ring-1 ring-indigo-200 dark:ring-indigo-800' : isPaid ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : 'opacity-40'}`}>
                                                             <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${isPaid ? 'bg-emerald-500 text-white' : isCurrent ? 'bg-indigo-500 text-white animate-pulse' : 'bg-slate-200 dark:bg-slate-700 text-slate-400'}`}>
-                                                                {isPaid ? <Check className="w-3.5 h-3.5" /> : <span className="text-[10px] font-bold">{tenor}</span>}
+                                                                {isPaid ? <Check weight="bold" className="w-3.5 h-3.5" /> : <span className="text-[10px] font-bold">{tenor}</span>}
                                                             </div>
                                                             <div className="flex-1">
                                                                 <span className="font-bold text-slate-700 dark:text-slate-200">Angsuran ke-{tenor}</span>
@@ -344,7 +344,7 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
                 </div>
             ) : (
                 <div className="glass-card rounded-[2rem] p-16 text-center">
-                    <CreditCard className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
+                    <CreditCard weight="duotone" className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
                     <p className="text-lg font-bold text-slate-400">Belum ada cicilan</p>
                     <p className="text-xs text-slate-400 mt-1">Klik "Tambah Cicilan" untuk mulai tracking.</p>
                 </div>
@@ -354,7 +354,7 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
             {completed.length > 0 && (
                 <div>
                     <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-emerald-500" /> Cicilan Lunas ({completed.length})
+                        <CheckCircle weight="fill" className="w-4 h-4 text-emerald-500" /> Cicilan Lunas ({completed.length})
                     </h3>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
                         {completed.map(inst => {
@@ -364,7 +364,7 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
                                 <div key={inst.id} className="glass-card rounded-2xl p-4 flex items-center justify-between opacity-60 hover:opacity-100 transition-opacity">
                                     <div className="flex items-center gap-3">
                                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white ${cfg.bg}`}>
-                                            <Icon className="w-5 h-5" />
+                                            <Icon weight="duotone" className="w-5 h-5" />
                                         </div>
                                         <div>
                                             <p className="text-sm font-bold text-slate-800 dark:text-white line-through">{inst.name}</p>
@@ -389,7 +389,7 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
                 <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setDeleteId(null)} />
                     <div className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-2xl animate-pop-in border border-slate-100 dark:border-slate-800">
-                        <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 mb-4 mx-auto"><AlertTriangle className="w-7 h-7" /></div>
+                        <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 mb-4 mx-auto"><AlertTriangle weight="fill" className="w-7 h-7" /></div>
                         <h3 className="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">Hapus cicilan ini?</h3>
                         <p className="text-xs text-center text-slate-400 mb-6">Semua riwayat pembayaran juga akan dihapus.</p>
                         <div className="flex gap-3">
@@ -412,7 +412,7 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
                                 <h3 className="text-lg font-bold text-slate-800 dark:text-white">Bayar Angsuran</h3>
                                 <p className="text-xs text-slate-400">{payingItem.name} — ke-{payingItem.paid_tenor + 1}/{payingItem.total_tenor}</p>
                             </div>
-                            <button onClick={() => setIsPayOpen(false)} className="text-slate-400 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"><X className="w-5 h-5" /></button>
+                            <button onClick={() => setIsPayOpen(false)} className="text-slate-400 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"><X weight="bold" className="w-5 h-5" /></button>
                         </div>
                         <div className="p-5 pt-4 overflow-y-auto scrollbar-hide">
                             <form onSubmit={handlePaySubmit} className="space-y-4">
@@ -461,7 +461,7 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
                         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 z-10" />
                         <div className="p-5 pb-0 shrink-0 flex justify-between items-center">
                             <h3 className="text-lg font-bold text-slate-800 dark:text-white">{editingItem ? 'Edit Cicilan' : 'Tambah Cicilan Baru'}</h3>
-                            <button onClick={() => setIsFormOpen(false)} className="text-slate-400 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"><X className="w-5 h-5" /></button>
+                            <button onClick={() => setIsFormOpen(false)} className="text-slate-400 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"><X weight="bold" className="w-5 h-5" /></button>
                         </div>
                         <div className="p-5 pt-4 overflow-y-auto scrollbar-hide">
                             <form onSubmit={handleFormSubmit} className="space-y-4">
@@ -479,7 +479,7 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
                                         {Object.entries(TYPE_CONFIG).map(([key, { label, icon: Ic, badge }]) => (
                                             <button key={key} type="button" onClick={() => form.setData('type', key)}
                                                 className={`py-2 rounded-xl text-[10px] font-bold transition-all border flex flex-col items-center gap-1 ${form.data.type === key ? `${badge} border-transparent shadow-sm scale-105` : 'border-slate-200 dark:border-slate-700 text-slate-400'}`}>
-                                                <Ic className="w-4 h-4" /> {label}
+                                                <Ic weight="duotone" className="w-4 h-4" /> {label}
                                             </button>
                                         ))}
                                     </div>

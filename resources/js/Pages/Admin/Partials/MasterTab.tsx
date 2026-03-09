@@ -2,9 +2,9 @@ import { router, useForm } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
-    Tags, Plus, Edit2, Trash2,
-    TrendingUp, TrendingDown, Database, X
-} from 'lucide-react';
+    Tag as Tags, Plus, PencilSimple as Edit2, Trash as Trash2,
+    TrendUp as TrendingUp, TrendDown as TrendingDown, Database, X
+} from '@phosphor-icons/react';
 
 interface Category {
     id: number;
@@ -97,7 +97,7 @@ export default function MasterTab({ categories }: { categories: Category[] }) {
             <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                        <Tags className="w-5 h-5 text-indigo-500" /> Kategori Global
+                        <Tags weight="duotone" className="w-5 h-5 text-indigo-500" /> Kategori Global
                     </h2>
                     <div className="flex gap-2">
                         {categories.length === 0 && (
@@ -105,14 +105,14 @@ export default function MasterTab({ categories }: { categories: Category[] }) {
                                 onClick={handleSeed}
                                 className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2"
                             >
-                                <Database className="w-4 h-4" /> Seed Default
+                                <Database weight="bold" className="w-4 h-4" /> Seed Default
                             </button>
                         )}
                         <button
                             onClick={() => openModal()}
                             className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2"
                         >
-                            <Plus className="w-4 h-4" /> Tambah Kategori
+                            <Plus weight="bold" className="w-4 h-4" /> Tambah Kategori
                         </button>
                     </div>
                 </div>
@@ -123,7 +123,7 @@ export default function MasterTab({ categories }: { categories: Category[] }) {
                             <div key={cat.id} className="group p-4 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-indigo-200 dark:hover:border-indigo-800 hover:shadow-md transition-all bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center">
                                 <div className="flex items-center gap-3">
                                     <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white ${cat.color ? cat.color.replace('bg-', 'bg-gradient-to-br from-').replace('-500', '-500 to-').replace('-600', '-600') + ' ' + cat.color : 'bg-slate-500'}`}>
-                                        <Tags className="w-5 h-5" />
+                                        <Tags weight="fill" className="w-5 h-5" />
                                     </div>
                                     <div>
                                         <p className="font-bold text-slate-800 dark:text-white">{cat.name}</p>
@@ -144,13 +144,13 @@ export default function MasterTab({ categories }: { categories: Category[] }) {
                                         onClick={() => openModal(cat)}
                                         className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg"
                                     >
-                                        <Edit2 className="w-4 h-4" />
+                                        <Edit2 weight="duotone" className="w-4 h-4" />
                                     </button>
                                     <button
                                         onClick={() => handleDelete(cat.id)}
                                         className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
                                     >
-                                        <Trash2 className="w-4 h-4" />
+                                        <Trash2 weight="duotone" className="w-4 h-4" />
                                     </button>
                                 </div>
                             </div>
@@ -158,7 +158,7 @@ export default function MasterTab({ categories }: { categories: Category[] }) {
                     </div>
                 ) : (
                     <div className="text-center py-12">
-                        <Database className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                        <Database weight="duotone" className="w-12 h-12 text-slate-300 mx-auto mb-3" />
                         <p className="text-slate-500">Belum ada kategori global.</p>
                         <p className="text-xs text-slate-400">Klik "Seed Default" untuk generate kategori bawaan.</p>
                     </div>
@@ -173,7 +173,7 @@ export default function MasterTab({ categories }: { categories: Category[] }) {
                         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 z-10" />
                         <div className="p-5 pb-0 shrink-0 flex justify-between items-center">
                             <h3 className="text-lg font-bold text-slate-800 dark:text-white">{editingCategory ? 'Edit Kategori' : 'Tambah Kategori Baru'}</h3>
-                            <button type="button" onClick={closeModal} className="text-slate-400 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"><X className="w-5 h-5" /></button>
+                            <button type="button" onClick={closeModal} className="text-slate-400 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"><X weight="bold" className="w-5 h-5" /></button>
                         </div>
                         <div className="p-5 pt-4 overflow-y-auto scrollbar-hide">
                             <form onSubmit={handleSubmit} className="space-y-4">
@@ -187,10 +187,10 @@ export default function MasterTab({ categories }: { categories: Category[] }) {
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Tipe</label>
                                     <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl">
                                         <button type="button" onClick={() => { setData('type', 'INCOME'); setData('budget_rule', null); }} className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${data.type === 'INCOME' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/30' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}>
-                                            <TrendingUp className="w-3.5 h-3.5" /> Pemasukan
+                                            <TrendingUp weight="bold" className="w-3.5 h-3.5" /> Pemasukan
                                         </button>
                                         <button type="button" onClick={() => setData('type', 'EXPENSE')} className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${data.type === 'EXPENSE' ? 'bg-red-600 text-white shadow-lg shadow-red-500/30' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}>
-                                            <TrendingDown className="w-3.5 h-3.5" /> Pengeluaran
+                                            <TrendingDown weight="bold" className="w-3.5 h-3.5" /> Pengeluaran
                                         </button>
                                     </div>
                                     {errors.type && <p className="text-xs text-red-500 mt-1 ml-1">{errors.type}</p>}

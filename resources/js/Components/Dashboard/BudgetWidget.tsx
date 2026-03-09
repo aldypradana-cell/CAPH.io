@@ -1,4 +1,4 @@
-import { Target, GripHorizontal, Zap } from 'lucide-react';
+import { Target, DotsSix as GripHorizontal, Lightning as Zap } from '@phosphor-icons/react';
 import { Link } from '@inertiajs/react';
 import { BudgetProgress } from '@/types/dashboard';
 
@@ -58,8 +58,8 @@ export default function BudgetWidget({
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 group cursor-grab active:cursor-grabbing">
                     <div className="relative">
-                        <Target className="w-5 h-5 text-indigo-500 group-hover:opacity-0 transition-opacity duration-200" />
-                        <GripHorizontal className="w-5 h-5 text-slate-400 absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
+                        <Target weight="duotone" className="w-5 h-5 text-indigo-500 group-hover:opacity-0 transition-opacity duration-200" />
+                        <GripHorizontal weight="bold" className="w-5 h-5 text-slate-400 absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
                     </div>
                     Budget Watch
                 </h3>
@@ -76,7 +76,7 @@ export default function BudgetWidget({
                 {masterBudgets.length > 0 && (
                     <div>
                         <div className="flex items-center gap-1.5 mb-2">
-                            <Zap className="w-3.5 h-3.5 text-indigo-500" />
+                            <Zap weight="duotone" className="w-3.5 h-3.5 text-indigo-500" />
                             <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">Alokasi Otomatis</span>
                         </div>
                         <div className="grid grid-cols-2 gap-2">
@@ -121,7 +121,7 @@ export default function BudgetWidget({
                     <div>
                         {masterBudgets.length > 0 && (
                             <div className="flex items-center gap-1.5 mb-2">
-                                <Target className="w-3.5 h-3.5 text-slate-400" />
+                                <Target weight="duotone" className="w-3.5 h-3.5 text-slate-400" />
                                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Budget Manual</span>
                             </div>
                         )}

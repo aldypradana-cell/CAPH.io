@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AppLayout from '@/Layouts/AppLayout';
 import { Head } from '@inertiajs/react';
-import { Calendar, RefreshCw } from 'lucide-react';
+import { CalendarBlank as Calendar, ArrowsClockwise as RefreshCw } from '@phosphor-icons/react';
 import axios from 'axios';
 import SankeyChart from '@/Components/Analytics/SankeyChart';
 import { SankeyData } from '@/types/dashboard';
@@ -63,7 +63,7 @@ export default function AnalyticsIndex({ defaultPeriod }: AnalyticsProps) {
                     <div className="flex items-center gap-3">
                         <div className="flex items-center bg-white dark:bg-slate-800 p-1.5 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/60">
                             <div className="flex items-center px-3 py-1.5 bg-slate-50 dark:bg-slate-900/50 rounded-xl">
-                                <Calendar className="w-4 h-4 text-indigo-500 mr-2" />
+                                <Calendar weight="duotone" className="w-4 h-4 text-indigo-500 mr-2" />
                                 <div className="flex items-center gap-2">
                                     <input 
                                         type="date" 
@@ -87,7 +87,7 @@ export default function AnalyticsIndex({ defaultPeriod }: AnalyticsProps) {
                             className="p-3 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors active:scale-95"
                             title="Refresh Data"
                         >
-                            <RefreshCw className={`w-5 h-5 ${isLoadingSankey ? 'animate-spin' : ''}`} />
+                            <RefreshCw weight="bold" className={`w-5 h-5 ${isLoadingSankey ? 'animate-spin' : ''}`} />
                         </button>
                     </div>
                 </div>

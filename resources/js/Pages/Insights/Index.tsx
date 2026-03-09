@@ -3,10 +3,10 @@ import { Head, Link } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { useState } from 'react';
 import {
-    Sparkles, Loader2, Heart, TrendingUp, TrendingDown,
-    Shield, Target, AlertTriangle, CheckCircle2, Zap,
-    ArrowUpRight, ArrowDownRight, ChevronRight, Info
-} from 'lucide-react';
+    Sparkle as Sparkles, SpinnerGap as Loader2, Heart, TrendUp as TrendingUp, TrendDown as TrendingDown,
+    Shield, Target, Warning as AlertTriangle, CheckCircle as CheckCircle2, Lightning as Zap,
+    ArrowUpRight, ArrowDownRight, CaretRight as ChevronRight, Info
+} from '@phosphor-icons/react';
 import toast, { Toaster } from 'react-hot-toast';
 
 // ── Types ────────────────────────────────────────────
@@ -218,7 +218,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                     <div className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-200 dark:border-indigo-800/30 rounded-2xl p-4 flex items-center justify-between animate-fade-in-up">
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl text-indigo-600 dark:text-indigo-400">
-                                <Info className="w-5 h-5" />
+                                <Info weight="duotone" className="w-5 h-5" />
                             </div>
                             <div>
                                 <p className="text-sm font-bold text-slate-800 dark:text-white">Profil Finansial Belum Lengkap</p>
@@ -287,7 +287,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                 disabled={isLoading || isQuotaExceeded}
                                 className={`w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-xs font-bold transition-all transition-transform ${isQuotaExceeded ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg hover:shadow-purple-500/30 hover:scale-105 active:scale-95 disabled:opacity-50'}`}
                             >
-                                {isLoading ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />Menganalisis...</> : <><Sparkles className="w-3.5 h-3.5 mr-1.5" />{insight ? 'Refresh Analysis' : 'Generate Insights'}</>}
+                                {isLoading ? <><Loader2 weight="bold" className="w-3.5 h-3.5 mr-1.5 animate-spin" />Menganalisis...</> : <><Sparkles weight="fill" className="w-3.5 h-3.5 mr-1.5" />{insight ? 'Refresh Analysis' : 'Generate Insights'}</>}
                             </button>
                         </div>
                     </div>
@@ -297,7 +297,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                 {!insight && !isLoading && (
                     <div className="glass-card p-5 sm:p-8 rounded-[2rem] text-center animate-fade-in-up">
                         <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center text-white mx-auto mb-4 shadow-lg shadow-purple-500/30 animate-pulse-slow">
-                            <Sparkles className="w-8 h-8" />
+                            <Sparkles weight="duotone" className="w-8 h-8" />
                         </div>
                         <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">Financial Health Check</h2>
                         <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-4">
@@ -305,7 +305,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                         </p>
                         {!hasProfile && (
                             <p className="text-xs text-amber-500 flex items-center justify-center gap-1">
-                                <AlertTriangle className="w-3 h-3" /> Isi Profil Finansial di Pengaturan untuk hasil lebih akurat
+                                <AlertTriangle weight="fill" className="w-3 h-3" /> Isi Profil Finansial di Pengaturan untuk hasil lebih akurat
                             </p>
                         )}
 
@@ -329,7 +329,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                 {/* ── Loading State ── */}
                 {isLoading && (
                     <div className="glass-card p-12 rounded-[2rem] text-center animate-fade-in-up">
-                        <Loader2 className="w-12 h-12 mx-auto mb-4 text-purple-500 animate-spin" />
+                        <Loader2 weight="bold" className="w-12 h-12 mx-auto mb-4 text-purple-500 animate-spin" />
                         <p className="text-lg font-bold text-slate-700 dark:text-slate-200 mb-1">AI sedang menganalisis...</p>
                         <p className="text-sm text-slate-400">Memproses transaksi & menghitung proyeksi</p>
                     </div>
@@ -359,26 +359,26 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                             {/* Cashflow */}
                             <div className="glass-card p-6 rounded-[2rem] animate-fade-in-up" style={{ animationDelay: '100ms' }}>
                                 <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center mb-4">
-                                    <TrendingUp className="w-5 h-5 mr-2 text-blue-500" /> Cashflow Bulan Ini
+                                    <TrendingUp weight="bold" className="w-5 h-5 mr-2 text-blue-500" /> Cashflow Bulan Ini
                                 </h3>
                                 <div className="space-y-3">
                                     <div className="flex justify-between items-center p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl">
                                         <div className="flex items-center gap-2">
-                                            <ArrowUpRight className="w-4 h-4 text-emerald-500" />
+                                            <ArrowUpRight weight="bold" className="w-4 h-4 text-emerald-500" />
                                             <span className="text-sm text-slate-600 dark:text-slate-300">Pemasukan</span>
                                         </div>
                                         <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">{formatShortIDR(insight.cashflow.income)}</span>
                                     </div>
                                     <div className="flex justify-between items-center p-3 bg-red-50 dark:bg-red-900/10 rounded-xl">
                                         <div className="flex items-center gap-2">
-                                            <ArrowDownRight className="w-4 h-4 text-red-500" />
+                                            <ArrowDownRight weight="bold" className="w-4 h-4 text-red-500" />
                                             <span className="text-sm text-slate-600 dark:text-slate-300">Pengeluaran</span>
                                         </div>
                                         <span className="text-sm font-bold text-red-600 dark:text-red-400">{formatShortIDR(insight.cashflow.expense)}</span>
                                     </div>
                                     <div className="flex justify-between items-center p-3 bg-blue-50 dark:bg-blue-900/10 rounded-xl">
                                         <div className="flex items-center gap-2">
-                                            <Zap className="w-4 h-4 text-blue-500" />
+                                            <Zap weight="fill" className="w-4 h-4 text-blue-500" />
                                             <span className="text-sm text-slate-600 dark:text-slate-300">Surplus</span>
                                         </div>
                                         <span className={`text-sm font-bold ${insight.cashflow.surplus >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
@@ -400,7 +400,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                             {/* Emergency Fund */}
                             <div className="glass-card p-6 rounded-[2rem] animate-fade-in-up" style={{ animationDelay: '200ms' }}>
                                 <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center mb-4">
-                                    <Shield className="w-5 h-5 mr-2 text-indigo-500" /> Dana Darurat
+                                    <Shield weight="duotone" className="w-5 h-5 mr-2 text-indigo-500" /> Dana Darurat
                                 </h3>
                                 <div className="space-y-4">
                                     <div className="text-center">
@@ -457,7 +457,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                         {/* ── 4. GOAL PROJECTIONS ── */}
                         <div className="glass-card p-6 rounded-[2rem] animate-fade-in-up" style={{ animationDelay: '300ms' }}>
                             <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center mb-4">
-                                <Target className="w-5 h-5 mr-2 text-violet-500" /> Proyeksi Goal
+                                <Target weight="duotone" className="w-5 h-5 mr-2 text-violet-500" /> Proyeksi Goal
                             </h3>
                             {insight.goalProjections.length > 0 ? (
                                 <div className="space-y-4">
@@ -508,7 +508,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                 </div>
                             ) : (
                                 <div className="p-6 bg-slate-50 dark:bg-slate-800/50 rounded-2xl text-center border-2 border-dashed border-slate-200 dark:border-slate-700">
-                                    <Target className="w-8 h-8 mx-auto text-slate-300 mb-2" />
+                                    <Target weight="duotone" className="w-8 h-8 mx-auto text-slate-300 mb-2" />
                                     <p className="text-sm font-bold text-slate-600 dark:text-slate-400">Belum ada Goals</p>
                                     <p className="text-xs text-slate-500 mb-0">Tambahkan target finansial di Profil untuk melihat proyeksi.</p>
                                 </div>
@@ -553,7 +553,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                         {/* ── 6. SPENDING ALERTS ── */}
                         <div className="glass-card p-6 rounded-[2rem] animate-fade-in-up" style={{ animationDelay: '400ms' }}>
                             <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center mb-4">
-                                <AlertTriangle className="w-5 h-5 mr-2 text-amber-500" /> Spending Alerts
+                                <AlertTriangle weight="fill" className="w-5 h-5 mr-2 text-amber-500" /> Spending Alerts
                             </h3>
                             {insight.spendingAlerts.length > 0 ? (
                                 <div className="space-y-3">
@@ -589,7 +589,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                             ) : (
                                 <div className="p-4 bg-emerald-50 dark:bg-emerald-900/10 rounded-2xl flex items-center gap-4">
                                     <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                                        <CheckCircle2 className="w-5 h-5" />
+                                        <CheckCircle2 weight="fill" className="w-5 h-5" />
                                     </div>
                                     <div>
                                         <p className="text-sm font-bold text-slate-800 dark:text-white">Pengeluaran Terkendali!</p>
@@ -602,7 +602,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                         {/* ── 5. ACTION PLAN ── */}
                         <div className="glass-card p-6 rounded-[2rem] animate-fade-in-up" style={{ animationDelay: '500ms' }}>
                             <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center mb-4">
-                                <CheckCircle2 className="w-5 h-5 mr-2 text-emerald-500" /> Action Plan
+                                <CheckCircle2 weight="fill" className="w-5 h-5 mr-2 text-emerald-500" /> Action Plan
                             </h3>
                             {insight.actionItems.length > 0 ? (
                                 <div className="space-y-3">

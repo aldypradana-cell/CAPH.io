@@ -1,4 +1,4 @@
-import { Tag as TagIcon, GripHorizontal } from 'lucide-react';
+import { Hash as Tag } from '@phosphor-icons/react';
 import { TopTagData } from '@/types/dashboard';
 
 interface TopTagsWidgetProps {
@@ -32,8 +32,7 @@ export default function TopTagsWidget({
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 group cursor-grab active:cursor-grabbing">
                     <div className="relative">
-                        <TagIcon className="w-5 h-5 text-violet-500 group-hover:opacity-0 transition-opacity duration-200" />
-                        <GripHorizontal className="w-5 h-5 text-slate-400 absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
+                        <Tag weight="duotone" className="w-4 h-4 text-emerald-500 dark:text-emerald-400 group-hover:scale-110 transition-transform" />
                     </div>
                     Fokus Pengeluaran
                 </h3>
@@ -66,7 +65,7 @@ export default function TopTagsWidget({
                     })
                 ) : (
                     <div className="flex flex-col items-center justify-center flex-1 text-slate-300 dark:text-slate-600 py-8">
-                        <TagIcon className="w-12 h-12 mb-2 opacity-20" />
+                        <Tag weight="duotone" className="w-12 h-12 mb-2 opacity-20" />
                         <p className="text-sm font-medium">Belum ada pengeluaran bertag bulan ini</p>
                     </div>
                 )}

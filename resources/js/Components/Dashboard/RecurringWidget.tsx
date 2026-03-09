@@ -1,4 +1,4 @@
-import { Repeat, Sparkles, CalendarClock, GripHorizontal } from 'lucide-react';
+import { Repeat, Sparkle as Sparkles, CalendarBlank as CalendarClock, DotsSix as GripHorizontal } from '@phosphor-icons/react';
 import { Link } from '@inertiajs/react';
 import { RecurringTransaction } from '@/types/dashboard';
 
@@ -35,8 +35,8 @@ export default function RecurringWidget({
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 group cursor-grab active:cursor-grabbing">
                     <div className="relative">
-                        <Repeat className="w-5 h-5 text-indigo-500 group-hover:opacity-0 transition-opacity duration-200" />
-                        <GripHorizontal className="w-5 h-5 text-slate-400 absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
+                        <Repeat weight="duotone" className="w-5 h-5 text-indigo-500 group-hover:opacity-0 transition-opacity duration-200" />
+                        <GripHorizontal weight="bold" className="w-5 h-5 text-slate-400 absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
                     </div>
                     Transaksi Rutin
                 </h3>
@@ -61,7 +61,7 @@ export default function RecurringWidget({
                                             rt.type === 'INCOME' ? 'bg-gradient-to-br from-emerald-500 to-teal-600' :
                                                 'bg-gradient-to-br from-blue-500 to-indigo-600'
                                             }`}>
-                                            {rt.frequency === 'MONTHLY' ? <span className="text-xs font-bold">BLN</span> : <Repeat className="w-5 h-5" />}
+                                            {rt.frequency === 'MONTHLY' ? <span className="text-xs font-bold">BLN</span> : <Repeat weight="bold" className="w-5 h-5" />}
                                         </div>
                                         <div>
                                             <p className="text-sm font-bold text-slate-800 dark:text-white line-clamp-1">{rt.name}</p>
@@ -69,7 +69,7 @@ export default function RecurringWidget({
                                                 <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400">{rt.category}</span>
                                                 {rt.auto_cut && (
                                                     <span className="px-1.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-[9px] font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-0.5">
-                                                        <Sparkles className="w-2 h-2" /> Auto
+                                                        <Sparkles weight="fill" className="w-2 h-2" /> Auto
                                                     </span>
                                                 )}
                                             </div>
@@ -90,7 +90,7 @@ export default function RecurringWidget({
                                             'bg-slate-100 text-slate-500 dark:bg-slate-700/50 dark:text-slate-400'
                                     }`}>
                                     <span className="flex items-center gap-1">
-                                        <CalendarClock className="w-3 h-3" />
+                                        <CalendarClock weight="duotone" className="w-3 h-3" />
                                         {nextDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
                                     </span>
                                     <span>

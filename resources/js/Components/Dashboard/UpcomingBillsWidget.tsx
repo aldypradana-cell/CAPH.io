@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowDownRight, ArrowUpRight, Receipt, Wallet as WalletIcon, GripHorizontal } from 'lucide-react';
+import { Warning as AlertTriangle, ArrowDownRight, ArrowUpRight, Receipt, Wallet as WalletIcon, DotsSix as GripHorizontal } from '@phosphor-icons/react';
 import { Link } from '@inertiajs/react';
 import { Debt } from '@/types/dashboard';
 
@@ -35,8 +35,8 @@ export default function UpcomingBillsWidget({
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 group cursor-grab active:cursor-grabbing">
                     <div className="relative">
-                        <AlertTriangle className="w-5 h-5 text-rose-500 group-hover:opacity-0 transition-opacity duration-200" />
-                        <GripHorizontal className="w-5 h-5 text-slate-400 absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
+                        <AlertTriangle weight="duotone" className="w-5 h-5 text-rose-500 group-hover:opacity-0 transition-opacity duration-200" />
+                        <GripHorizontal weight="bold" className="w-5 h-5 text-slate-400 absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
                     </div>
                     Hutang & Piutang
                 </h3>
@@ -54,13 +54,13 @@ export default function UpcomingBillsWidget({
                             <div key={bill.id} className="group relative p-3 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 hover:border-indigo-200 dark:hover:border-indigo-900 transition-all hover:shadow-md hover:scale-[1.02]">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-sm shrink-0 ${isDebt ? 'bg-gradient-to-br from-rose-500 to-red-600' :
+                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-sm shrink-0 flex-shrink-0 ${isDebt ? 'bg-gradient-to-br from-rose-500 to-red-600' :
                                             isReceivable ? 'bg-gradient-to-br from-emerald-500 to-teal-600' :
                                                 'bg-gradient-to-br from-amber-500 to-orange-600'
                                             }`}>
-                                            {isDebt ? <ArrowDownRight className="w-5 h-5" /> :
-                                                isReceivable ? <ArrowUpRight className="w-5 h-5" /> :
-                                                    <Receipt className="w-5 h-5" />}
+                                            {isDebt ? <ArrowDownRight weight="bold" className="w-5 h-5" /> :
+                                                isReceivable ? <ArrowUpRight weight="bold" className="w-5 h-5" /> :
+                                                    <Receipt weight="duotone" className="w-5 h-5" />}
                                         </div>
                                         <div className="min-w-0">
                                             <p className="text-sm font-bold text-slate-800 dark:text-white truncate">{bill.person}</p>
@@ -88,7 +88,7 @@ export default function UpcomingBillsWidget({
                     })
                 ) : (
                     <div className="flex flex-col items-center justify-center flex-1 text-slate-400 py-8">
-                        <WalletIcon className="w-12 h-12 mb-2 opacity-20" />
+                        <WalletIcon weight="duotone" className="w-12 h-12 mb-2 opacity-20" />
                         <span className="text-sm">Tidak ada tagihan aktif</span>
                     </div>
                 )}

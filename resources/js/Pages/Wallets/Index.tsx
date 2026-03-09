@@ -4,9 +4,9 @@ import { PageProps } from '@/types';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
-    Plus, Trash2, X, Wallet as WalletIcon, CreditCard, Banknote,
-    Edit2, AlertTriangle, ArrowUpRight, ArrowDownRight, Star
-} from 'lucide-react';
+    Plus, Trash as Trash2, X, Wallet as WalletIcon, CreditCard, Money as Banknote,
+    PencilSimple as Edit2, Warning as AlertTriangle, ArrowUpRight, ArrowDownRight, Star
+} from '@phosphor-icons/react';
 import toast, { Toaster } from 'react-hot-toast';
 
 interface Wallet {
@@ -133,7 +133,7 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
             <div className="space-y-4 sm:space-y-6 animate-fade-in-up">
                 {/* Total Balance Header */}
                 <div className="bg-gradient-to-br from-indigo-700 to-indigo-900 p-5 sm:p-8 rounded-3xl text-white shadow-xl relative overflow-hidden group hover:shadow-2xl transition-all duration-300 animate-fade-in-up">
-                    <WalletIcon className="absolute right-[-20px] bottom-[-20px] w-64 h-64 opacity-10 group-hover:scale-110 transition-transform duration-700" />
+                    <WalletIcon weight="duotone" className="absolute right-[-20px] bottom-[-20px] w-64 h-64 opacity-10 group-hover:scale-110 transition-transform duration-700" />
                     <p className="text-indigo-100 font-medium mb-1 opacity-80 uppercase tracking-widest text-xs">Total Saldo Semua Dompet</p>
                     <h2 className="text-4xl font-bold">{formatIDR(totalBalance)}</h2>
                     <p className="text-indigo-200 text-sm mt-2">{dailyWallets.length} dompet terdaftar</p>
@@ -163,25 +163,25 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                                             <p className="text-[10px] font-bold uppercase tracking-widest">{wallet.type.replace('-', ' ')}</p>
                                             {wallet.is_primary && (
                                                 <div className="flex items-center bg-amber-400/20 text-amber-300 px-1.5 py-0.5 rounded text-[8px] font-black tracking-wider border border-amber-400/30">
-                                                    <Star className="w-2.5 h-2.5 mr-0.5 fill-amber-300" /> UTAMA
+                                                    <Star weight="fill" className="w-2.5 h-2.5 mr-0.5 fill-amber-300" /> UTAMA
                                                 </div>
                                             )}
                                         </div>
                                         <h3 className="text-xl font-bold mt-1">{wallet.name}</h3>
                                     </div>
-                                    <Icon className="w-8 h-8 opacity-60" />
+                                    <Icon weight="duotone" className="w-8 h-8 opacity-60" />
                                 </div>
 
                                 {/* Monthly Cashflow Summary */}
                                 <div className="relative z-10 flex items-center gap-2">
                                     <div className="flex items-center gap-1 px-2 py-1 bg-white/10 backdrop-blur-sm rounded-lg">
-                                        <ArrowUpRight className="w-3 h-3 text-emerald-300" />
+                                        <ArrowUpRight weight="bold" className="w-3 h-3 text-emerald-300" />
                                         <span className="text-[10px] font-bold text-emerald-200">
                                             {formatShortIDR(wallet.monthly_income || 0)}
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-1 px-2 py-1 bg-white/10 backdrop-blur-sm rounded-lg">
-                                        <ArrowDownRight className="w-3 h-3 text-red-300" />
+                                        <ArrowDownRight weight="bold" className="w-3 h-3 text-red-300" />
                                         <span className="text-[10px] font-bold text-red-200">
                                             {formatShortIDR(wallet.monthly_expense || 0)}
                                         </span>
@@ -204,7 +204,7 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                                                 className="p-2 sm:p-2 bg-white/20 sm:bg-white/10 hover:bg-white/30 rounded-xl transition-colors text-amber-200 hover:text-amber-100" 
                                                 title="Jadikan Utama"
                                             >
-                                                <Star className="w-4 h-4" />
+                                                <Star weight="fill" className="w-4 h-4" />
                                             </button>
                                         )}
                                         <button 
@@ -212,14 +212,14 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                                             className="p-2 sm:p-2 bg-white/20 sm:bg-white/10 hover:bg-white/30 rounded-xl transition-colors" 
                                             title="Edit"
                                         >
-                                            <Edit2 className="w-4 h-4" />
+                                            <Edit2 weight="duotone" className="w-4 h-4" />
                                         </button>
                                         <button 
                                             onClick={(e) => { e.stopPropagation(); setDeleteId(wallet.id); }} 
                                             className="p-2 sm:p-2 bg-white/20 sm:bg-white/10 hover:bg-white/30 rounded-xl transition-colors" 
                                             title="Hapus"
                                         >
-                                            <Trash2 className="w-4 h-4" />
+                                            <Trash2 weight="duotone" className="w-4 h-4" />
                                         </button>
                                     </div>
                                 </div>
@@ -239,7 +239,7 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                         className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl h-56 flex flex-col items-center justify-center cursor-pointer hover:border-indigo-300 dark:hover:border-indigo-600 hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-all group animate-pop-in"
                         style={{ animationDelay: `${dailyWallets.length * 100}ms` }}
                     >
-                        <Plus className="w-10 h-10 text-slate-300 dark:text-slate-600 group-hover:text-indigo-500 transition-colors mb-2" />
+                        <Plus weight="bold" className="w-10 h-10 text-slate-300 dark:text-slate-600 group-hover:text-indigo-500 transition-colors mb-2" />
                         <p className="text-sm font-bold text-slate-400 dark:text-slate-500 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Tambah Dompet</p>
                     </div>
                 </div>
@@ -251,7 +251,7 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setDeleteId(null)} />
                     <div className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-2xl animate-pop-in border border-slate-100 dark:border-slate-800">
                         <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 mb-4 mx-auto">
-                            <AlertTriangle className="w-7 h-7" />
+                            <AlertTriangle weight="fill" className="w-7 h-7" />
                         </div>
                         <h3 className="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">Hapus Dompet?</h3>
                         <p className="text-sm text-center text-slate-500 dark:text-slate-400 mb-6 px-4">Semua transaksi terkait dompet ini juga akan dihapus.</p>

@@ -3,7 +3,7 @@ import { Head, Link } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Sparkles, Plus, ArrowDownRight, RotateCcw } from 'lucide-react';
+import { Sparkle as Sparkles, Plus, ArrowDownRight, ArrowsClockwise as RotateCcw } from '@phosphor-icons/react';
 import toast, { Toaster } from 'react-hot-toast';
 import { Responsive, useContainerWidth } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
@@ -39,7 +39,7 @@ const ResizeHandle = React.forwardRef<HTMLDivElement, any>(({ handleAxis, ...pro
             {...props}
             className={`absolute bottom-2 right-2 cursor-nwse-resize p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-indigo-500 transition-colors z-20`}
         >
-            <ArrowDownRight className="w-5 h-5" />
+            <ArrowDownRight weight="bold" className="w-5 h-5" />
         </div>
     );
 });

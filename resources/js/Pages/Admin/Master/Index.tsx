@@ -3,9 +3,9 @@ import { Head, router, useForm } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { useState } from 'react';
 import {
-    Tags, Plus, Edit2, Trash2, Save, X,
-    Wallet, TrendingUp, TrendingDown
-} from 'lucide-react';
+    Tag as Tags, Plus, PencilSimple as Edit2, Trash as Trash2, FloppyDisk as Save, X,
+    Wallet, TrendUp as TrendingUp, TrendDown as TrendingDown
+} from '@phosphor-icons/react';
 import Modal from '@/Components/Modal'; // Assuming we have a Modal component
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
@@ -83,13 +83,13 @@ export default function AdminMasterIndex({ categories }: { categories: Category[
                 <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6">
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                            <Tags className="w-5 h-5 text-indigo-500" /> Kategori Global
+                            <Tags weight="duotone" className="w-5 h-5 text-indigo-500" /> Kategori Global
                         </h2>
                         <button
                             onClick={() => openModal()}
                             className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2"
                         >
-                            <Plus className="w-4 h-4" /> Tambah Kategori
+                            <Plus weight="bold" className="w-4 h-4" /> Tambah Kategori
                         </button>
                     </div>
 
@@ -98,7 +98,7 @@ export default function AdminMasterIndex({ categories }: { categories: Category[
                             <div key={cat.id} className="group p-4 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-indigo-200 dark:hover:border-indigo-800 hover:shadow-md transition-all bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center">
                                 <div className="flex items-center gap-3">
                                     <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white ${cat.color.replace('bg-', 'bg-gradient-to-br from-').replace('-500', '-500 to-').replace('-600', '-600') + ' ' + cat.color}`}>
-                                        <Tags className="w-5 h-5" />
+                                        <Tags weight="fill" className="w-5 h-5" />
                                     </div>
                                     <div>
                                         <p className="font-bold text-slate-800 dark:text-white">{cat.name}</p>
@@ -112,13 +112,13 @@ export default function AdminMasterIndex({ categories }: { categories: Category[
                                         onClick={() => openModal(cat)}
                                         className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg"
                                     >
-                                        <Edit2 className="w-4 h-4" />
+                                        <Edit2 weight="duotone" className="w-4 h-4" />
                                     </button>
                                     <button
                                         onClick={() => handleDelete(cat.id)}
                                         className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
                                     >
-                                        <Trash2 className="w-4 h-4" />
+                                        <Trash2 weight="duotone" className="w-4 h-4" />
                                     </button>
                                 </div>
                             </div>
@@ -158,7 +158,7 @@ export default function AdminMasterIndex({ categories }: { categories: Category[
                                         : 'border-slate-200 dark:border-slate-700 text-slate-500'
                                         }`}
                                 >
-                                    <TrendingUp className="w-4 h-4" /> Pemasukan
+                                    <TrendingUp weight="bold" className="w-4 h-4" /> Pemasukan
                                 </button>
                                 <button
                                     type="button"
@@ -168,7 +168,7 @@ export default function AdminMasterIndex({ categories }: { categories: Category[
                                         : 'border-slate-200 dark:border-slate-700 text-slate-500'
                                         }`}
                                 >
-                                    <TrendingDown className="w-4 h-4" /> Pengeluaran
+                                    <TrendingDown weight="bold" className="w-4 h-4" /> Pengeluaran
                                 </button>
                             </div>
                         </div>

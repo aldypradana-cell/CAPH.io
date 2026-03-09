@@ -3,7 +3,10 @@ import { Head, useForm, router } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Plus, X, Target, AlertTriangle, Trash2, Edit2, Sparkles, Loader2, Wallet, ShieldCheck, TrendingUp, PiggyBank } from 'lucide-react';
+import { 
+    Plus, X, Target, Warning as AlertTriangle, Trash as Trash2, PencilSimple as Edit2, Sparkle as Sparkles, 
+    SpinnerGap as Loader2, Wallet, ShieldCheck, TrendUp as TrendingUp, PiggyBank 
+} from '@phosphor-icons/react';
 import toast, { Toaster } from 'react-hot-toast';
 
 interface Budget {
@@ -189,7 +192,7 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                 {masterBudgets.length > 0 && (
                     <div className="space-y-4">
                         <div className="flex items-center gap-2">
-                            <Sparkles className="w-5 h-5 text-indigo-500" />
+                            <Sparkles weight="duotone" className="w-5 h-5 text-indigo-500" />
                             <h2 className="text-sm font-bold text-slate-600 dark:text-slate-300 uppercase tracking-widest">Auto-Budget</h2>
                             {activeTemplate && (
                                 <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2.5 py-0.5 rounded-full">Aturan {activeTemplate}</span>
@@ -212,7 +215,7 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                                         <div className="flex items-center justify-between mb-3">
                                             <div className="flex items-center gap-2.5">
                                                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br ${meta.gradient} text-white shadow-md`}>
-                                                    <Icon className="w-5 h-5" />
+                                                    <Icon weight="duotone" className="w-5 h-5" />
                                                 </div>
                                                 <div>
                                                     <h3 className="font-bold text-slate-800 dark:text-white text-sm">{mb.template_label || meta.label}</h3>
@@ -220,7 +223,7 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                                                 </div>
                                             </div>
                                             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button onClick={() => setDeleteId(mb.id)} className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all"><Trash2 className="w-3.5 h-3.5" /></button>
+                                                <button onClick={() => setDeleteId(mb.id)} className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all"><Trash2 weight="duotone" className="w-3.5 h-3.5" /></button>
                                             </div>
                                         </div>
                                         <div className="space-y-2">
@@ -243,12 +246,12 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                                         </div>
                                         {realPct >= 80 && !isOverBudget && (
                                             <div className="mt-3 flex items-center gap-1.5 text-[10px] text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2.5 py-1.5 rounded-xl border border-orange-100 dark:border-orange-500/20">
-                                                <AlertTriangle className="w-3 h-3" /> Sisa anggaran menipis!
+                                                <AlertTriangle weight="fill" className="w-3 h-3" /> Sisa anggaran menipis!
                                             </div>
                                         )}
                                         {isOverBudget && (
                                             <div className="mt-3 flex items-center justify-center gap-1.5 text-[11px] font-bold text-white bg-rose-500 px-2.5 py-1.5 rounded-xl shadow-lg shadow-rose-500/30">
-                                                <AlertTriangle className="w-4 h-4" /> MELEBIHI BATAS ANGGARAN
+                                                <AlertTriangle weight="fill" className="w-4 h-4" /> MELEBIHI BATAS ANGGARAN
                                             </div>
                                         )}
                                     </div>
@@ -285,13 +288,13 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                                 onClick={() => { setIsAutoOpen(true); setAutoStep(1); }}
                                 className="flex items-center px-5 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-orange-500/30 transition-all hover:scale-105 active:scale-95"
                             >
-                                <Sparkles className="w-4 h-4 mr-2" /> Auto Budget
+                                <Sparkles weight="fill" className="w-4 h-4 mr-2" /> Auto Budget
                             </button>
                             <button
                                 onClick={() => { setEditingBudget(null); reset(); setIsModalOpen(true); }}
                                 className="flex items-center px-5 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95"
                             >
-                                <Plus className="w-4 h-4 mr-2" /> Tambah Anggaran
+                                <Plus weight="bold" className="w-4 h-4 mr-2" /> Tambah Anggaran
                             </button>
                         </div>
                     </div>
@@ -311,7 +314,7 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-3">
                                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${colors.bar} text-white shadow-sm font-bold`}>
-                                            <Target className="w-5 h-5" />
+                                            <Target weight="duotone" className="w-5 h-5" />
                                         </div>
                                         <div>
                                             <h3 className="font-bold text-slate-800 dark:text-white text-sm">{b.category}</h3>
@@ -319,8 +322,8 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                                         </div>
                                     </div>
                                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button onClick={() => handleEdit(b)} className="p-1.5 text-slate-300 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-all"><Edit2 className="w-3.5 h-3.5" /></button>
-                                        <button onClick={() => setDeleteId(b.id)} className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all"><Trash2 className="w-3.5 h-3.5" /></button>
+                                        <button onClick={() => handleEdit(b)} className="p-1.5 text-slate-300 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-all"><Edit2 weight="duotone" className="w-3.5 h-3.5" /></button>
+                                        <button onClick={() => setDeleteId(b.id)} className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all"><Trash2 weight="duotone" className="w-3.5 h-3.5" /></button>
                                     </div>
                                 </div>
                                 <div className="space-y-2">
@@ -341,19 +344,19 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                                 </div>
                                 {realPct >= 80 && !isOverBudget && (
                                     <div className="mt-3 flex items-center gap-1.5 text-[10px] text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 px-2.5 py-1.5 rounded-xl border border-orange-100 dark:border-orange-500/20">
-                                        <AlertTriangle className="w-3 h-3" /> Sisa anggaran menipis!
+                                        <AlertTriangle weight="fill" className="w-3 h-3" /> Sisa anggaran menipis!
                                     </div>
                                 )}
                                 {isOverBudget && (
                                     <div className="mt-3 flex items-center justify-center gap-1.5 text-[11px] font-bold text-white bg-rose-500 px-2.5 py-1.5 rounded-xl shadow-lg shadow-rose-500/30">
-                                        <AlertTriangle className="w-4 h-4" /> MELEBIHI BATAS
+                                        <AlertTriangle weight="fill" className="w-4 h-4" /> MELEBIHI BATAS
                                     </div>
                                 )}
                             </div>
                         );
                     }) : (
                         <div className="col-span-full glass-card rounded-[2rem] p-8 sm:p-16 text-center">
-                            <Target className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
+                            <Target weight="duotone" className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
                             <p className="text-lg font-bold text-slate-400">Belum ada anggaran</p>
                         </div>
                     )}
@@ -365,7 +368,7 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                 <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setDeleteId(null)} />
                     <div className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-2xl animate-pop-in border border-slate-100 dark:border-slate-800">
-                        <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 mb-4 mx-auto"><AlertTriangle className="w-7 h-7" /></div>
+                        <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 mb-4 mx-auto"><AlertTriangle weight="fill" className="w-7 h-7" /></div>
                         <h3 className="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">Hapus Anggaran?</h3>
                         <p className="text-sm text-center text-slate-500 mb-6 px-4">Tindakan ini tidak dapat dibatalkan.</p>
                         <div className="flex gap-3">
@@ -394,7 +397,7 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 z-10" />
                         <div className="p-5 pb-0 shrink-0 flex justify-between items-center">
                             <h3 className="text-lg font-bold text-slate-800 dark:text-white">{editingBudget ? 'Edit Anggaran' : 'Anggaran Baru'}</h3>
-                            <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"><X className="w-5 h-5" /></button>
+                            <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"><X weight="bold" className="w-5 h-5" /></button>
                         </div>
                         <div className="p-5 pt-4 overflow-y-auto scrollbar-hide">
                             <form onSubmit={handleSubmit} className="space-y-3">
@@ -444,10 +447,10 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 z-10" />
                         <div className="p-5 pb-0 shrink-0 flex justify-between items-center">
                             <div className="flex items-center gap-2">
-                                <Sparkles className="w-5 h-5 text-amber-500" />
+                                <Sparkles weight="fill" className="w-5 h-5 text-amber-500" />
                                 <h3 className="text-lg font-bold text-slate-800 dark:text-white">Auto Budget</h3>
                             </div>
-                            <button onClick={() => { setIsAutoOpen(false); setAutoStep(1); }} className="text-slate-400 hover:text-slate-600 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"><X className="w-5 h-5" /></button>
+                            <button onClick={() => { setIsAutoOpen(false); setAutoStep(1); }} className="text-slate-400 hover:text-slate-600 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"><X weight="bold" className="w-5 h-5" /></button>
                         </div>
                         <div className="p-5 pt-4 overflow-y-auto scrollbar-hide">
                             {autoStep === 1 && (
@@ -534,7 +537,7 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                                         disabled={fetchingIncome}
                                         className="w-full py-2.5 text-sm font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-2xl hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                                     >
-                                        {fetchingIncome ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wallet className="w-4 h-4" />}
+                                        {fetchingIncome ? <Loader2 weight="bold" className="w-4 h-4 animate-spin" /> : <Wallet weight="duotone" className="w-4 h-4" />}
                                         {fetchingIncome ? 'Mengambil data...' : 'Pakai Pemasukan Bulan Lalu'}
                                     </button>
 
@@ -553,7 +556,7 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                                                     return (
                                                         <div key={rule} className="flex items-center gap-3">
                                                             <div className={`w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br ${meta?.gradient} text-white shadow-sm shrink-0`}>
-                                                                {Icon && <Icon className="w-4 h-4" />}
+                                                                {Icon && <Icon weight="duotone" className="w-4 h-4" />}
                                                             </div>
                                                             <div className="flex-1 min-w-0">
                                                                 <div className="flex items-baseline justify-between gap-2">
@@ -577,7 +580,7 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                                             disabled={autoLoading || !autoIncome}
                                             className="flex-1 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-2xl text-sm font-bold shadow-lg shadow-orange-500/30 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50 flex items-center justify-center gap-2"
                                         >
-                                            {autoLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                                            {autoLoading ? <Loader2 weight="bold" className="w-4 h-4 animate-spin" /> : <Sparkles weight="fill" className="w-4 h-4" />}
                                             {autoLoading ? 'Menerapkan...' : 'Terapkan'}
                                         </button>
                                     </div>

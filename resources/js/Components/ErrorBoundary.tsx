@@ -1,5 +1,5 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { Warning as AlertTriangle } from '@phosphor-icons/react';
 
 interface Props {
     children?: ReactNode;
@@ -33,7 +33,7 @@ class ErrorBoundary extends Component<Props, State> {
             }
             return (
                 <div className="flex flex-col items-center justify-center p-6 bg-red-50 dark:bg-red-900/10 rounded-2xl border border-red-100 dark:border-red-800/30 text-center w-full h-full min-h-[150px]">
-                    <AlertTriangle className="w-8 h-8 text-red-500 mb-3" />
+                    <AlertTriangle weight="duotone" className="w-8 h-8 text-red-500 mb-3" />
                     <h3 className="text-sm font-semibold text-red-800 dark:text-red-400 mb-1">
                         {this.props.title || 'Gagal memuat komponen'}
                     </h3>

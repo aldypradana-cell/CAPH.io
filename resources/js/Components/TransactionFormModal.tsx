@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useForm, router } from '@inertiajs/react';
-import { X, TrendingDown, TrendingUp, ArrowRightLeft, Clock, AlertTriangle } from 'lucide-react';
+import { X, TrendDown as TrendingDown, TrendUp as TrendingUp, ArrowsLeftRight as ArrowRightLeft, Clock, Warning as AlertTriangle } from '@phosphor-icons/react';
 import toast from 'react-hot-toast';
 import TagInput from '@/Components/TagInput';
 import { WalletData, CategoryData, TagData } from '@/types/dashboard';
@@ -217,13 +217,13 @@ export default function TransactionFormModal({
                                         }`}
                                         title={payLaterEnabled ? 'Matikan menu PayLater' : 'Tampilkan menu PayLater'}
                                     >
-                                        <Clock className="w-5 h-5" />
+                                        <Clock weight="duotone" className="w-5 h-5" />
                                     </button>
                                 </div>
                             )}
 
                             <button onClick={handleClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
-                                <X className="w-5 h-5" />
+                                <X weight="bold" className="w-5 h-5" />
                             </button>
                         </div>
                     </div>
@@ -253,9 +253,9 @@ export default function TransactionFormModal({
                                     : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
                                     }`}
                             >
-                                {type === 'EXPENSE' ? <><TrendingDown className="w-3 h-3" /> KELUAR</> :
-                                    type === 'INCOME' ? <><TrendingUp className="w-3 h-3" /> MASUK</> :
-                                        <><ArrowRightLeft className="w-3 h-3" /> TRANSFER</>}
+                                {type === 'EXPENSE' ? <><TrendingDown weight="bold" className="w-3 h-3" /> KELUAR</> :
+                                    type === 'INCOME' ? <><TrendingUp weight="bold" className="w-3 h-3" /> MASUK</> :
+                                        <><ArrowRightLeft weight="bold" className="w-3 h-3" /> TRANSFER</>}
                             </button>
                         ))}
                     </div>
@@ -267,7 +267,7 @@ export default function TransactionFormModal({
                         <div className="absolute inset-0 bg-red-500/5 backdrop-blur-[2px]" />
                         <div className="relative p-3.5 flex items-start gap-3">
                             <div className="w-8 h-8 rounded-xl bg-red-100 dark:bg-red-900/40 flex items-center justify-center shrink-0">
-                                <AlertTriangle className="w-4 h-4 text-red-600 dark:text-red-400" />
+                                <AlertTriangle weight="fill" className="w-4 h-4 text-red-600 dark:text-red-400" />
                             </div>
                             <div className="flex-1 min-w-0 pr-6">
                                 <h4 className="text-[11px] font-bold text-red-600 dark:text-red-400 uppercase tracking-widest mb-0.5">Ada Kendala</h4>
@@ -277,7 +277,7 @@ export default function TransactionFormModal({
                                 onClick={() => setErrorMessage(null)} 
                                 className="absolute right-2 top-2 p-1.5 text-red-400 hover:text-red-600 dark:hover:text-red-200 transition-colors bg-white/50 dark:bg-black/20 rounded-lg group-hover:opacity-100 lg:opacity-0 transition-opacity"
                             >
-                                <X className="w-3.5 h-3.5" />
+                                <X weight="bold" className="w-3.5 h-3.5" />
                             </button>
                         </div>
                     </div>
@@ -365,7 +365,7 @@ export default function TransactionFormModal({
                                         {/* Preview Cicilan */}
                                         {parseAmount(data.amount) > 0 && (
                                             <div className="mt-2 pt-2 border-t border-amber-200/50 dark:border-amber-800/30 flex items-center gap-2 text-amber-700 dark:text-amber-400 font-medium text-xs">
-                                                <Clock className="w-4 h-4" />
+                                                <Clock weight="duotone" className="w-4 h-4" />
                                                 <span>Estimasi Cicilan: <strong>Rp {Math.round(parseAmount(data.amount) / data.paylater_tenor).toLocaleString('id-ID')}</strong> / bulan</span>
                                             </div>
                                         )}

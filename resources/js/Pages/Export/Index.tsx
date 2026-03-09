@@ -3,9 +3,9 @@ import { Head } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { useState, useEffect, useCallback } from 'react';
 import {
-    FileDown, Calendar, FileSpreadsheet, FileText,
-    CheckCircle2, Loader2, Wallet, TrendingUp, TrendingDown, ArrowRightLeft,
-} from 'lucide-react';
+    DownloadSimple as FileDown, CalendarBlank as Calendar, FileXls as FileSpreadsheet, FileText,
+    CheckCircle as CheckCircle2, SpinnerGap as Loader2, Wallet, TrendUp as TrendingUp, TrendDown as TrendingDown, ArrowsLeftRight as ArrowRightLeft,
+} from '@phosphor-icons/react';
 import toast, { Toaster } from 'react-hot-toast';
 
 interface WalletOption {
@@ -116,7 +116,7 @@ export default function ExportPage({ wallets }: ExportPageProps) {
                         {/* Date Range */}
                         <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 transition-colors">
                             <h3 className="font-bold text-slate-800 dark:text-white mb-4 flex items-center">
-                                <Calendar className="w-4 h-4 mr-2 text-indigo-500" /> Rentang Tanggal
+                                <Calendar weight="duotone" className="w-4 h-4 mr-2 text-indigo-500" /> Rentang Tanggal
                             </h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
@@ -136,7 +136,7 @@ export default function ExportPage({ wallets }: ExportPageProps) {
                         {wallets.length > 0 && (
                             <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 transition-colors">
                                 <h3 className="font-bold text-slate-800 dark:text-white mb-4 flex items-center">
-                                    <Wallet className="w-4 h-4 mr-2 text-purple-500" /> Filter Dompet
+                                    <Wallet weight="duotone" className="w-4 h-4 mr-2 text-purple-500" /> Filter Dompet
                                 </h3>
                                 <select value={walletId} onChange={e => setWalletId(e.target.value)}
                                     className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-800 dark:text-white font-medium transition-colors">
@@ -157,18 +157,18 @@ export default function ExportPage({ wallets }: ExportPageProps) {
                                         ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 shadow-lg shadow-emerald-500/10'
                                         : 'border-slate-100 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-slate-500 dark:text-slate-400'
                                         }`}>
-                                    <FileSpreadsheet className="w-6 h-6 mr-2" />
+                                    <FileSpreadsheet weight="duotone" className="w-6 h-6 mr-2" />
                                     <span className="font-bold">Excel (.xlsx)</span>
-                                    {format === 'excel' && <CheckCircle2 className="w-5 h-5 ml-auto text-emerald-600 dark:text-emerald-400" />}
+                                    {format === 'excel' && <CheckCircle2 weight="fill" className="w-5 h-5 ml-auto text-emerald-600 dark:text-emerald-400" />}
                                 </button>
                                 <button onClick={() => setFormat('pdf')}
                                     className={`flex items-center justify-center p-4 rounded-xl border-2 transition-all active:scale-95 ${format === 'pdf'
                                         ? 'border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 shadow-lg shadow-red-500/10'
                                         : 'border-slate-100 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-slate-500 dark:text-slate-400'
                                         }`}>
-                                    <FileText className="w-6 h-6 mr-2" />
+                                    <FileText weight="duotone" className="w-6 h-6 mr-2" />
                                     <span className="font-bold">PDF Report</span>
-                                    {format === 'pdf' && <CheckCircle2 className="w-5 h-5 ml-auto text-red-600 dark:text-red-400" />}
+                                    {format === 'pdf' && <CheckCircle2 weight="fill" className="w-5 h-5 ml-auto text-red-600 dark:text-red-400" />}
                                 </button>
                             </div>
                         </div>
@@ -181,7 +181,7 @@ export default function ExportPage({ wallets }: ExportPageProps) {
 
                             {loadingPreview && (
                                 <div className="flex items-center justify-center py-6">
-                                    <Loader2 className="w-6 h-6 animate-spin text-indigo-400" />
+                                    <Loader2 weight="bold" className="w-6 h-6 animate-spin text-indigo-400" />
                                 </div>
                             )}
 
@@ -189,19 +189,19 @@ export default function ExportPage({ wallets }: ExportPageProps) {
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-center pb-4 border-b border-slate-700">
                                         <span className="text-slate-400 text-sm flex items-center gap-1.5">
-                                            <ArrowRightLeft className="w-3.5 h-3.5" /> Total Transaksi
+                                            <ArrowRightLeft weight="bold" className="w-3.5 h-3.5" /> Total Transaksi
                                         </span>
                                         <span className="font-bold text-lg">{preview.count}</span>
                                     </div>
                                     <div className="flex justify-between items-center">
                                         <span className="text-emerald-400 text-sm flex items-center gap-1.5">
-                                            <TrendingUp className="w-3.5 h-3.5" /> Pemasukan
+                                            <TrendingUp weight="bold" className="w-3.5 h-3.5" /> Pemasukan
                                         </span>
                                         <span className="font-bold text-emerald-400">+ {fmtCompact(preview.income)}</span>
                                     </div>
                                     <div className="flex justify-between items-center">
                                         <span className="text-red-400 text-sm flex items-center gap-1.5">
-                                            <TrendingDown className="w-3.5 h-3.5" /> Pengeluaran
+                                            <TrendingDown weight="bold" className="w-3.5 h-3.5" /> Pengeluaran
                                         </span>
                                         <span className="font-bold text-red-400">- {fmtCompact(preview.expense)}</span>
                                     </div>
@@ -230,8 +230,8 @@ export default function ExportPage({ wallets }: ExportPageProps) {
                                     disabled={isExporting || !startDate || !endDate}
                                     className="w-full py-3.5 bg-white text-slate-900 rounded-xl font-bold hover:bg-indigo-50 transition-all shadow-lg flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed active:scale-95">
                                     {isExporting
-                                        ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Memproses...</>
-                                        : <><FileDown className="w-5 h-5 mr-2" /> Download {format.toUpperCase()}</>
+                                        ? <><Loader2 weight="bold" className="w-5 h-5 mr-2 animate-spin" /> Memproses...</>
+                                        : <><FileDown weight="bold" className="w-5 h-5 mr-2" /> Download {format.toUpperCase()}</>
                                     }
                                 </button>
                             </div>
@@ -256,7 +256,7 @@ ExportPage.layout = (page: any) => (
     <AppLayout header={
         <div className="flex items-center gap-4">
             <div className="p-3 bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-xl">
-                <FileDown className="w-6 h-6" />
+                <FileDown weight="duotone" className="w-6 h-6" />
             </div>
             <div className="min-w-0 flex-1">
                 <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Export Laporan</h1>

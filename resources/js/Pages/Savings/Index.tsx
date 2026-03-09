@@ -4,10 +4,10 @@ import { PageProps } from '@/types';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
-    Plus, Trash2, X, Edit2, ArrowDownRight, ArrowUpRight,
-    Target, PiggyBank, Vault, TrendingUp, Calendar, AlertTriangle,
-    ChevronRight, Loader2, Banknote
-} from 'lucide-react';
+    Plus, Trash as Trash2, X, PencilSimple as Edit2, ArrowDownRight, ArrowUpRight,
+    Target, PiggyBank, Vault, TrendUp as TrendingUp, CalendarBlank as Calendar, Warning as AlertTriangle,
+    CaretRight as ChevronRight, SpinnerGap as Loader2, Money as Banknote
+} from '@phosphor-icons/react';
 import toast, { Toaster } from 'react-hot-toast';
 
 interface SavingWallet {
@@ -230,7 +230,7 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
             <div className="space-y-4 sm:space-y-6 animate-fade-in-up">
                 {/* Hero Header */}
                 <div className="bg-gradient-to-br from-emerald-600 via-teal-700 to-cyan-800 p-5 sm:p-8 rounded-3xl text-white shadow-xl relative overflow-hidden group hover:shadow-2xl transition-all duration-500">
-                    <Vault className="absolute right-[-20px] bottom-[-20px] w-64 h-64 opacity-10 group-hover:scale-110 transition-transform duration-700" />
+                    <Vault weight="duotone" className="absolute right-[-20px] bottom-[-20px] w-64 h-64 opacity-10 group-hover:scale-110 transition-transform duration-700" />
                     <div className="absolute top-0 right-0 w-80 h-80 bg-white opacity-5 rounded-full blur-3xl -translate-y-20 translate-x-20 pointer-events-none" />
                     <div className="relative z-10">
                         <p className="text-emerald-100 font-medium mb-1 opacity-80 uppercase tracking-widest text-xs">Total Simpanan</p>
@@ -248,7 +248,7 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
                             : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
                             }`}
                     >
-                        <PiggyBank className="w-4 h-4" />
+                        <PiggyBank weight="duotone" className="w-4 h-4" />
                         Kantong Tabungan
                     </button>
                     <button
@@ -258,7 +258,7 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
                             : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
                             }`}
                     >
-                        <Target className="w-4 h-4" />
+                        <Target weight="duotone" className="w-4 h-4" />
                         Target & Impian
                     </button>
                 </div>
@@ -279,7 +279,7 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
                                 </div>
                                 {/* Vault Watermark */}
                                 <div className="absolute bottom-2 right-2 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
-                                    <Vault className="w-20 h-20" />
+                                    <Vault weight="duotone" className="w-20 h-20" />
                                 </div>
 
                                 {/* Top Row */}
@@ -290,19 +290,19 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
                                         </div>
                                         <h3 className="text-xl font-bold mt-1">{wallet.name}</h3>
                                     </div>
-                                    <PiggyBank className="w-8 h-8 opacity-60" />
+                                    <PiggyBank weight="duotone" className="w-8 h-8 opacity-60" />
                                 </div>
 
                                 {/* Monthly Cashflow */}
                                 <div className="relative z-10 flex items-center gap-2">
                                     <div className="flex items-center gap-1 px-2 py-1 bg-white/10 backdrop-blur-sm rounded-lg">
-                                        <ArrowDownRight className="w-3 h-3 text-emerald-300" />
+                                        <ArrowDownRight weight="bold" className="w-3 h-3 text-emerald-300" />
                                         <span className="text-[10px] font-bold text-emerald-200">
                                             {formatShortIDR(wallet.monthly_in)}
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-1 px-2 py-1 bg-white/10 backdrop-blur-sm rounded-lg">
-                                        <ArrowUpRight className="w-3 h-3 text-red-300" />
+                                        <ArrowUpRight weight="bold" className="w-3 h-3 text-red-300" />
                                         <span className="text-[10px] font-bold text-red-200">
                                             {formatShortIDR(wallet.monthly_out)}
                                         </span>
@@ -318,16 +318,16 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
                                     {/* Quick Actions */}
                                     <div className="relative z-20 flex gap-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-300">
                                         <button onClick={(e) => { e.stopPropagation(); openTopup(wallet); }} className="p-2 bg-emerald-500/30 hover:bg-emerald-500/50 rounded-xl transition-colors text-emerald-200 hover:text-white" title="Setor">
-                                            <ArrowDownRight className="w-4 h-4" />
+                                            <ArrowDownRight weight="bold" className="w-4 h-4" />
                                         </button>
                                         <button onClick={(e) => { e.stopPropagation(); openWithdraw(wallet); }} className="p-2 bg-red-500/20 hover:bg-red-500/40 rounded-xl transition-colors text-red-200 hover:text-white" title="Tarik">
-                                            <ArrowUpRight className="w-4 h-4" />
+                                            <ArrowUpRight weight="bold" className="w-4 h-4" />
                                         </button>
                                         <button onClick={(e) => { e.stopPropagation(); handleEditSaving(wallet); }} className="p-2 bg-white/10 hover:bg-white/30 rounded-xl transition-colors" title="Edit">
-                                            <Edit2 className="w-4 h-4" />
+                                            <Edit2 weight="duotone" className="w-4 h-4" />
                                         </button>
                                         <button onClick={(e) => { e.stopPropagation(); setDeleteSavingId(wallet.id); }} className="p-2 bg-white/10 hover:bg-white/30 rounded-xl transition-colors" title="Hapus">
-                                            <Trash2 className="w-4 h-4" />
+                                            <Trash2 weight="duotone" className="w-4 h-4" />
                                         </button>
                                     </div>
                                 </div>
@@ -340,7 +340,7 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
                             className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl h-60 flex flex-col items-center justify-center cursor-pointer hover:border-emerald-300 dark:hover:border-emerald-600 hover:bg-emerald-50/30 dark:hover:bg-emerald-900/10 transition-all group animate-pop-in"
                             style={{ animationDelay: `${savingWallets.length * 100}ms` }}
                         >
-                            <Plus className="w-10 h-10 text-slate-300 dark:text-slate-600 group-hover:text-emerald-500 transition-colors mb-2" />
+                            <Plus weight="bold" className="w-10 h-10 text-slate-300 dark:text-slate-600 group-hover:text-emerald-500 transition-colors mb-2" />
                             <p className="text-sm font-bold text-slate-400 dark:text-slate-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Buat Tabungan Baru</p>
                         </div>
                     </div>
@@ -351,14 +351,14 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
                     <div className="space-y-6 animate-fade-in-up">
                         {goals.length === 0 ? (
                             <div className="text-center py-16">
-                                <Target className="w-16 h-16 mx-auto mb-4 text-slate-200 dark:text-slate-700" />
+                                <Target weight="duotone" className="w-16 h-16 mx-auto mb-4 text-slate-200 dark:text-slate-700" />
                                 <h3 className="text-lg font-bold text-slate-500 dark:text-slate-400 mb-2">Belum ada target finansial</h3>
                                 <p className="text-sm text-slate-400 dark:text-slate-500 mb-6">Impikan sesuatu dan mulai menabung untuk mewujudkannya!</p>
                                 <button
                                     onClick={() => { setEditingGoal(null); goalForm.reset(); goalForm.setData('color', 'emerald'); setShowGoalModal(true); }}
                                     className="px-6 py-3 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-purple-500/30 transition-all hover:scale-105 active:scale-95"
                                 >
-                                    <Plus className="w-4 h-4 inline mr-2" /> Tambah Impian Pertama
+                                    <Plus weight="bold" className="w-4 h-4 inline mr-2" /> Tambah Impian Pertama
                                 </button>
                             </div>
                         ) : (
@@ -385,13 +385,13 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
                                                     <div className="flex items-start justify-between mb-4">
                                                         <div className="flex items-center gap-3">
                                                             <div className={`w-10 h-10 rounded-xl ${colorScheme.bg} ${colorScheme.text} flex items-center justify-center`}>
-                                                                <Target className="w-5 h-5" />
+                                                                <Target weight="duotone" className="w-5 h-5" />
                                                             </div>
                                                             <div>
                                                                 <h3 className="font-bold text-slate-800 dark:text-white">{goal.name}</h3>
                                                                 {goal.deadline && (
                                                                     <div className="flex items-center gap-1 text-[11px] text-slate-400 mt-0.5">
-                                                                        <Calendar className="w-3 h-3" />
+                                                                        <Calendar weight="duotone" className="w-3 h-3" />
                                                                         <span>{new Date(goal.deadline).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
                                                                         {monthsLeft !== null && <span className="ml-1 font-bold">({monthsLeft} bln lagi)</span>}
                                                                     </div>
@@ -400,10 +400,10 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
                                                         </div>
                                                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                                             <button onClick={() => handleEditGoal(goal)} className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
-                                                                <Edit2 className="w-3.5 h-3.5" />
+                                                                <Edit2 weight="duotone" className="w-3.5 h-3.5" />
                                                             </button>
                                                             <button onClick={() => setDeleteGoalId(goal.id)} className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
-                                                                <Trash2 className="w-3.5 h-3.5" />
+                                                                <Trash2 weight="duotone" className="w-3.5 h-3.5" />
                                                             </button>
                                                         </div>
                                                     </div>
@@ -446,7 +446,7 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
                                         onClick={() => { setEditingGoal(null); goalForm.reset(); goalForm.setData('color', 'emerald'); setShowGoalModal(true); }}
                                         className="px-6 py-3 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-purple-500/30 transition-all hover:scale-105 active:scale-95"
                                     >
-                                        <Plus className="w-4 h-4 inline mr-2" /> Tambah Target Baru
+                                        <Plus weight="bold" className="w-4 h-4 inline mr-2" /> Tambah Target Baru
                                     </button>
                                 </div>
                             </>
@@ -605,7 +605,7 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setDeleteSavingId(null)} />
                     <div className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-2xl animate-pop-in border border-slate-100 dark:border-slate-800">
                         <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 mb-4 mx-auto">
-                            <AlertTriangle className="w-7 h-7" />
+                            <AlertTriangle weight="fill" className="w-7 h-7" />
                         </div>
                         <h3 className="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">Hapus Tabungan?</h3>
                         <p className="text-sm text-center text-slate-500 dark:text-slate-400 mb-6 px-4">Seluruh saldo tabungan ini juga akan dihapus.</p>
@@ -624,7 +624,7 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setDeleteGoalId(null)} />
                     <div className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-2xl animate-pop-in border border-slate-100 dark:border-slate-800">
                         <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 mb-4 mx-auto">
-                            <AlertTriangle className="w-7 h-7" />
+                            <AlertTriangle weight="fill" className="w-7 h-7" />
                         </div>
                         <h3 className="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">Hapus Target?</h3>
                         <p className="text-sm text-center text-slate-500 dark:text-slate-400 mb-6 px-4">Target impian ini akan dihapus secara permanen.</p>

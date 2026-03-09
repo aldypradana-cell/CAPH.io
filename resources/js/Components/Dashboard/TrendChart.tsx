@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { TrendingUp, BarChart3, GripHorizontal, Activity } from 'lucide-react';
+import { TrendUp as TrendingUp, ChartBar as BarChart3, DotsSix as GripHorizontal, Pulse } from '@phosphor-icons/react';
 import {
     AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
@@ -73,11 +73,11 @@ export default function TrendChart({
                     <div className="flex items-center gap-2 sm:gap-3">
                         <div className="p-2 sm:p-2.5 bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 rounded-xl relative group cursor-grab active:cursor-grabbing shrink-0">
                             {chartType === 'AREA' ? (
-                                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 group-hover:opacity-0 transition-opacity duration-200" />
+                                <TrendingUp weight="duotone" className="w-4 h-4 sm:w-5 sm:h-5 group-hover:opacity-0 transition-opacity duration-200" />
                             ) : (
-                                <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 group-hover:opacity-0 transition-opacity duration-200" />
+                                <BarChart3 weight="duotone" className="w-4 h-4 sm:w-5 sm:h-5 group-hover:opacity-0 transition-opacity duration-200" />
                             )}
-                            <GripHorizontal className="w-4 h-4 sm:w-5 sm:h-5 absolute top-2 sm:top-2.5 left-2 sm:left-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
+                            <GripHorizontal weight="bold" className="w-4 h-4 sm:w-5 sm:h-5 absolute top-2 sm:top-2.5 left-2 sm:left-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
                         </div>
                         <div className="min-w-0">
                             <h4 className="font-bold text-slate-800 dark:text-white text-base sm:text-lg truncate">Analisis Tren</h4>
@@ -91,14 +91,14 @@ export default function TrendChart({
                                 title="Grafik Batang"
                                 className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'BAR' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
                             >
-                                <BarChart3 className="w-4 h-4" />
+                                <BarChart3 weight="duotone" className="w-4 h-4" />
                             </button>
                             <button
                                 onClick={() => setChartType('AREA')}
                                 title="Grafik Garis Area"
                                 className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'AREA' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
                             >
-                                <TrendingUp className="w-4 h-4" />
+                                <TrendingUp weight="duotone" className="w-4 h-4" />
                             </button>
                         </div>
                     </div>
@@ -131,7 +131,7 @@ export default function TrendChart({
                 {isLoading ? (
                     <div className="flex flex-col h-full px-4 pb-8 relative overflow-hidden">
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <Activity className="w-12 h-12 text-indigo-200 dark:text-indigo-900/40 animate-pulse" />
+                            <Pulse weight="duotone" className="w-12 h-12 text-indigo-200 dark:text-indigo-900/40 animate-pulse" />
                         </div>
                         <div className="mt-auto h-1/2 flex items-end gap-1 opacity-20">
                             {Array.from({ length: 20 }).map((_, i) => (

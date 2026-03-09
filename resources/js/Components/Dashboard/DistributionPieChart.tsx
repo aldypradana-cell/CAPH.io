@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { PieChart as PieChartIcon, Calendar, GripHorizontal, LayoutGrid } from 'lucide-react';
+import { ChartPieSlice as PieChartIcon, Calendar, DotsSix as GripHorizontal, SquaresFour as LayoutGrid } from '@phosphor-icons/react';
 import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer, Treemap } from 'recharts';
 import { PieData, FilterState } from '@/types/dashboard';
 
@@ -109,11 +109,11 @@ export default function DistributionPieChart({
                 <div className="flex items-center gap-3">
                     <div className="p-2.5 bg-pink-50 dark:bg-slate-800 text-pink-600 dark:text-pink-400 rounded-xl relative group cursor-grab active:cursor-grabbing">
                         {chartType === 'DONUT' ? (
-                            <PieChartIcon className="w-5 h-5 group-hover:opacity-0 transition-opacity duration-200" />
+                            <PieChartIcon weight="duotone" className="w-5 h-5 group-hover:opacity-0 transition-opacity duration-200" />
                         ) : (
-                            <LayoutGrid className="w-5 h-5 group-hover:opacity-0 transition-opacity duration-200" />
+                            <LayoutGrid weight="duotone" className="w-5 h-5 group-hover:opacity-0 transition-opacity duration-200" />
                         )}
-                        <GripHorizontal className="w-5 h-5 absolute top-2.5 left-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
+                        <GripHorizontal weight="bold" className="w-5 h-5 absolute top-2.5 left-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
                     </div>
                     <div>
                         <h4 className="font-bold text-slate-800 dark:text-white text-lg">Distribusi</h4>
@@ -128,18 +128,18 @@ export default function DistributionPieChart({
                             title="Donut Chart"
                             className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'DONUT' ? 'bg-white dark:bg-slate-700 text-pink-600 dark:text-pink-400 shadow-sm' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
                         >
-                            <PieChartIcon className="w-4 h-4" />
+                            <PieChartIcon weight="duotone" className="w-4 h-4" />
                         </button>
                         <button
                             onClick={() => setChartType('TREEMAP')}
                             title="Treemap"
                             className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'TREEMAP' ? 'bg-white dark:bg-slate-700 text-pink-600 dark:text-pink-400 shadow-sm' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
                         >
-                            <LayoutGrid className="w-4 h-4" />
+                            <LayoutGrid weight="duotone" className="w-4 h-4" />
                         </button>
                     </div>
                     <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl items-center gap-1 text-[10px] font-bold px-2 py-1 text-slate-500 dark:text-slate-400">
-                        <Calendar className="w-3 h-3" />
+                        <Calendar weight="duotone" className="w-3 h-3" />
                         Custom
                     </div>
                 </div>
@@ -180,7 +180,7 @@ export default function DistributionPieChart({
                                 </PieChart>
                             ) : (
                                 <Treemap
-                                    data={data}
+                                    data={data as any}
                                     dataKey="value"
                                     aspectRatio={4 / 3}
                                     stroke="transparent"
@@ -197,7 +197,7 @@ export default function DistributionPieChart({
                 </>
             ) : (
                 <div className="flex-1 flex flex-col items-center justify-center text-slate-300 dark:text-slate-600">
-                    <PieChartIcon className="w-16 h-16 mb-2 opacity-20" />
+                    <PieChartIcon weight="duotone" className="w-16 h-16 mb-2 opacity-20" />
                     <p className="text-sm font-medium">Belum ada data</p>
                 </div>
             )}

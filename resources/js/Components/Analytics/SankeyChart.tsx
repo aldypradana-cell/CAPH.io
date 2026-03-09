@@ -1,7 +1,7 @@
 import React from 'react';
 import { Sankey, Tooltip, ResponsiveContainer, Layer, Rectangle } from 'recharts';
 import { SankeyData } from '@/types/dashboard';
-import { FileSearch } from 'lucide-react';
+import { MagnifyingGlass as FileSearch } from '@phosphor-icons/react';
 
 interface SankeyChartProps {
     data: SankeyData | null;
@@ -182,7 +182,7 @@ export default function SankeyChart({ data, isLoading }: SankeyChartProps) {
                 ) : !chartData ? (
                     <div className="w-full h-[800px] flex flex-col items-center justify-center text-center p-8">
                         <div className="w-24 h-24 bg-slate-50 dark:bg-slate-800/50 rounded-3xl flex items-center justify-center mb-6 text-slate-300 dark:text-slate-700">
-                            <FileSearch className="w-12 h-12" />
+                            <FileSearch weight="duotone" className="w-12 h-12" />
                         </div>
                         <h4 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">Tidak Ada Data Aliran</h4>
                         <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm">

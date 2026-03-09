@@ -4,9 +4,9 @@ import { PageProps } from '@/types';
 import { useState, FormEventHandler, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
-    Plus, X, HandCoins, AlertTriangle, Trash2, Edit2, Check, Calendar,
-    TrendingUp, TrendingDown, Receipt, Repeat, Wallet, Clock, CheckCircle, ArrowRight, CreditCard
-} from 'lucide-react';
+    Plus, X, HandCoins, Warning as AlertTriangle, Trash as Trash2, PencilSimple as Edit2, Check, CalendarBlank as Calendar,
+    TrendUp as TrendingUp, TrendDown as TrendingDown, Receipt, Repeat, Wallet, Clock, CheckCircle, ArrowRight, CreditCard
+} from '@phosphor-icons/react';
 import toast, { Toaster } from 'react-hot-toast';
 import InstallmentTab from './Partials/InstallmentTab';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
@@ -97,7 +97,7 @@ function DebtFreedomCountdown({ data }: { data: { month: string; remaining: numb
             <div className="relative z-10 flex flex-col sm:flex-row sm:items-end justify-between mb-3 gap-3">
                 <div>
                     <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 mb-0.5">
-                        <TrendingDown className="w-4 h-4 text-indigo-500" />
+                        <TrendingDown weight="bold" className="w-4 h-4 text-indigo-500" />
                         Proyeksi Bebas Hutang
                     </h3>
                     <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -381,7 +381,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                         <div className="glass-card p-5 rounded-[2rem] shadow-sm hover:shadow-xl transition-all duration-300 group flex-1">
                             <div className="flex items-center justify-between mb-3">
                                 <div className="p-3 bg-gradient-to-br from-red-500 to-rose-600 text-white rounded-2xl shadow-lg">
-                                    <TrendingDown className="w-5 h-5" />
+                                    <TrendingDown weight="bold" className="w-5 h-5" />
                                 </div>
                             </div>
                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Kewajiban (Hutang + Cicilan)</p>
@@ -390,7 +390,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                         <div className="glass-card p-5 rounded-[2rem] shadow-sm hover:shadow-xl transition-all duration-300 group flex-1">
                             <div className="flex items-center justify-between mb-3">
                                 <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-2xl shadow-lg">
-                                    <TrendingUp className="w-5 h-5" />
+                                    <TrendingUp weight="bold" className="w-5 h-5" />
                                 </div>
                             </div>
                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Piutang</p>
@@ -409,7 +409,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                     <div className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/10 rounded-[2rem] p-6 border border-orange-100 dark:border-orange-500/20 shadow-lg shadow-orange-500/5">
                         <h3 className="text-lg font-bold text-orange-800 dark:text-orange-400 mb-4 flex items-center">
                             <div className="p-2 bg-orange-100 dark:bg-orange-900/40 rounded-xl mr-3">
-                                <AlertTriangle className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                                <AlertTriangle weight="fill" className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                             </div>
                             Tagihan Jatuh Tempo ({dueRecurring.length})
                         </h3>
@@ -422,20 +422,20 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                                                 {formatDate(bill.next_run_date)}
                                             </div>
                                             <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
-                                                <Repeat className="w-4 h-4" />
+                                                <Repeat weight="bold" className="w-4 h-4" />
                                             </div>
                                         </div>
                                         <h4 className="font-bold text-slate-800 dark:text-white text-lg mb-1">{bill.name}</h4>
                                         <div className="text-2xl font-bold text-slate-900 dark:text-gray-100">{formatIDR(bill.amount)}</div>
                                         <div className="flex items-center gap-2 mt-2 text-xs text-slate-500">
-                                            <Wallet className="w-3 h-3" /> {bill.wallet.name}
+                                            <Wallet weight="duotone" className="w-3 h-3" /> {bill.wallet.name}
                                         </div>
                                     </div>
                                     <button
                                         onClick={() => openProcessModal(bill)}
                                         className="w-full justify-center bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl py-3 flex items-center transition-colors"
                                     >
-                                        Bayar Sekarang <ArrowRight className="w-4 h-4 ml-2" />
+                                        Bayar Sekarang <ArrowRight weight="bold" className="w-4 h-4 ml-2" />
                                     </button>
                                 </div>
                             ))}
@@ -452,7 +452,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                             : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
                             }`}
                     >
-                        <Repeat className="w-4 h-4" /> Rutin & Langganan
+                        <Repeat weight="bold" className="w-4 h-4" /> Rutin & Langganan
                     </button>
                     <button
                         onClick={() => setActiveTab('INSTALLMENT')}
@@ -461,7 +461,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                             : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
                             }`}
                     >
-                        <CreditCard className="w-4 h-4" /> Cicilan
+                        <CreditCard weight="duotone" className="w-4 h-4" /> Cicilan
                     </button>
                     <button
                         onClick={() => setActiveTab('DEBT')}
@@ -470,7 +470,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                             : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
                             }`}
                     >
-                        <HandCoins className="w-4 h-4" /> Hutang & Piutang
+                        <HandCoins weight="duotone" className="w-4 h-4" /> Hutang & Piutang
                     </button>
                 </div>
 
@@ -484,7 +484,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                     <div className="animate-fade-in-up">
                         <div className="flex justify-end mb-4">
                             <button onClick={() => openRecurringModal()} className="flex items-center px-5 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95">
-                                <Plus className="w-4 h-4 mr-2" /> Tambah Jadwal
+                                <Plus weight="bold" className="w-4 h-4 mr-2" /> Tambah Jadwal
                             </button>
                         </div>
 
@@ -496,7 +496,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
 
                                         <div className="flex justify-between items-start mb-4 relative z-10">
                                             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg ${item.type === 'EXPENSE' ? 'bg-gradient-to-br from-red-500 to-rose-600' : 'bg-gradient-to-br from-emerald-500 to-teal-600'}`}>
-                                                <Repeat className="w-6 h-6" />
+                                                <Repeat weight="bold" className="w-6 h-6" />
                                             </div>
                                             <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${item.auto_cut ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'}`}>
                                                 {item.auto_cut ? 'Auto Cut' : 'Manual'}
@@ -505,7 +505,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
 
                                         <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">{item.name}</h3>
                                         <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-1">
-                                            <Clock className="w-3 h-3" /> {item.frequency} • {item.category}
+                                            <Clock weight="duotone" className="w-3 h-3" /> {item.frequency} • {item.category}
                                         </p>
 
                                         <div className="mb-6">
@@ -523,7 +523,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                             </div>
                         ) : (
                             <div className="glass-card rounded-[2rem] p-8 sm:p-16 text-center">
-                                <Repeat className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
+                                <Repeat weight="duotone" className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
                                 <p className="text-lg font-bold text-slate-400">Belum ada jadwal transaksi rutin</p>
                             </div>
                         )}
@@ -535,7 +535,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                     <div className="animate-fade-in-up">
                         <div className="flex justify-end mb-4">
                             <button onClick={() => openDebtModal()} className="flex items-center px-5 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95">
-                                <Plus className="w-4 h-4 mr-2" /> Tambah Catatan
+                                <Plus weight="bold" className="w-4 h-4 mr-2" /> Tambah Catatan
                             </button>
                         </div>
 
@@ -550,17 +550,17 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                                         <div className="p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
                                             <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0 w-full sm:w-auto">
                                                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${config.color} text-white shadow-sm shrink-0 mt-1 sm:mt-0`}>
-                                                    <config.icon className="w-4 h-4" />
+                                                    <config.icon weight="bold" className="w-4 h-4" />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center gap-2 flex-wrap mb-1 sm:mb-0">
                                                         <p className={`text-sm font-bold text-slate-800 dark:text-white ${d.is_paid ? 'line-through' : ''}`}>{d.person}</p>
                                                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${config.badge}`}>{config.label}</span>
-                                                        {isOverdue && <span className="text-[10px] font-bold text-red-600 bg-red-100 dark:bg-red-900/30 px-2 py-0.5 rounded-full flex items-center gap-0.5"><AlertTriangle className="w-3 h-3" /> Jatuh Tempo</span>}
-                                                        {d.is_paid && <span className="text-[10px] font-bold text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full flex items-center gap-0.5"><Check className="w-3 h-3" /> Lunas</span>}
+                                                        {isOverdue && <span className="text-[10px] font-bold text-red-600 bg-red-100 dark:bg-red-900/30 px-2 py-0.5 rounded-full flex items-center gap-0.5"><AlertTriangle weight="fill" className="w-3 h-3" /> Jatuh Tempo</span>}
+                                                        {d.is_paid && <span className="text-[10px] font-bold text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full flex items-center gap-0.5"><Check weight="bold" className="w-3 h-3" /> Lunas</span>}
                                                     </div>
                                                     {d.description && <p className="text-xs sm:text-[10px] text-slate-500 sm:text-slate-400 line-clamp-2 sm:truncate mt-1 sm:mt-0.5 pr-2 sm:pr-0">{d.description}</p>}
-                                                    {d.due_date && <p className="text-[10px] text-slate-400 flex items-center gap-1 mt-1 sm:mt-0.5"><Calendar className="w-3 h-3" /> {formatDate(d.due_date)}</p>}
+                                                    {d.due_date && <p className="text-[10px] text-slate-400 flex items-center gap-1 mt-1 sm:mt-0.5"><Calendar weight="duotone" className="w-3 h-3" /> {formatDate(d.due_date)}</p>}
                                                 </div>
                                             </div>
                                             <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0 w-full sm:w-auto border-t border-slate-100 dark:border-slate-800 sm:border-0 pt-3 sm:pt-0 mt-1 sm:mt-0">
@@ -571,11 +571,11 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                                                 <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                                     {!d.is_paid && (
                                                         <button onClick={() => openPayModal(d)} className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 transition-all hover:scale-110 text-xs font-bold" title="Bayar/Cicil">
-                                                            <CheckCircle className="w-4 h-4" />
+                                                            <CheckCircle weight="fill" className="w-4 h-4" />
                                                         </button>
                                                     )}
-                                                    <button onClick={() => openDebtModal(d)} className="p-2 text-slate-300 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-all hover:scale-110"><Edit2 className="w-4 h-4" /></button>
-                                                    <button onClick={() => setDeleteDebtId(d.id)} className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all hover:scale-110"><Trash2 className="w-4 h-4" /></button>
+                                                    <button onClick={() => openDebtModal(d)} className="p-2 text-slate-300 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-all hover:scale-110"><Edit2 weight="duotone" className="w-4 h-4" /></button>
+                                                    <button onClick={() => setDeleteDebtId(d.id)} className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all hover:scale-110"><Trash2 weight="duotone" className="w-4 h-4" /></button>
                                                 </div>
                                             </div>
                                         </div>
@@ -622,7 +622,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                                 );
                             }) : (
                                 <div className="glass-card rounded-[2rem] p-8 sm:p-16 text-center">
-                                    <HandCoins className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
+                                    <HandCoins weight="duotone" className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
                                     <p className="text-lg font-bold text-slate-400">Belum ada data hutang/piutang</p>
                                 </div>
                             )}
@@ -644,7 +644,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                                 <h2 className="text-lg font-bold text-gray-900 dark:text-white">
                                     {payingDebt.type === 'RECEIVABLE' ? 'Terima Piutang' : 'Bayar Utang'}
                                 </h2>
-                                <button onClick={() => setPayingDebt(null)} className="text-slate-400 hover:text-slate-600 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"><X className="w-5 h-5" /></button>
+                                <button onClick={() => setPayingDebt(null)} className="text-slate-400 hover:text-slate-600 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"><X weight="bold" className="w-5 h-5" /></button>
                             </div>
                             <p className="text-xs text-slate-400 mb-4">{payingDebt.person} • Total {formatIDR(payingDebt.amount)} • Sisa {formatIDR(payingDebt.remaining_amount)}</p>
                         </div>
@@ -696,7 +696,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                 <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setDeleteDebtId(null)} />
                     <div className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-2xl animate-pop-in border border-slate-100 dark:border-slate-800">
-                        <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 mb-4 mx-auto"><AlertTriangle className="w-7 h-7" /></div>
+                        <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 mb-4 mx-auto"><AlertTriangle weight="fill" className="w-7 h-7" /></div>
                         <h3 className="text-xl font-bold text-center text-slate-900 dark:text-white mb-6">Hapus data ini?</h3>
                         <div className="flex gap-3">
                             <button onClick={() => setDeleteDebtId(null)} className="flex-1 py-3 rounded-xl font-bold text-slate-600 bg-slate-100 dark:bg-slate-800 dark:text-slate-300">Batal</button>
@@ -720,7 +720,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                                     {editingDebt ? 'Edit Catatan' : 'Tambah Catatan Baru'}
                                 </h2>
                                 <button onClick={() => setIsDebtModalOpen(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
-                                    <X className="w-5 h-5" />
+                                    <X weight="bold" className="w-5 h-5" />
                                 </button>
                             </div>
 
@@ -785,7 +785,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                                     {editingRecurring ? 'Edit Jadwal Rutin' : 'Buat Jadwal Rutin Baru'}
                                 </h2>
                                 <button onClick={() => setIsRecurringModalOpen(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
-                                    <X className="w-5 h-5" />
+                                    <X weight="bold" className="w-5 h-5" />
                                 </button>
                             </div>
                         </div>
@@ -891,7 +891,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                             <div className="flex justify-between items-center mb-4">
                                 <h2 className="text-lg font-bold text-gray-900 dark:text-white">Bayar Tagihan: {selectedProcessRecurring?.name}</h2>
                                 <button onClick={() => setIsProcessModalOpen(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
-                                    <X className="w-5 h-5" />
+                                    <X weight="bold" className="w-5 h-5" />
                                 </button>
                             </div>
                         </div>

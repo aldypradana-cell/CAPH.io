@@ -1,7 +1,9 @@
 import { useState, useMemo, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useForm, router } from '@inertiajs/react';
-import { Plus, Edit2, Trash2, Coins, TrendingUp, AlertCircle, Save } from 'lucide-react';
+import { 
+    Plus, PencilSimple as Edit2, Trash as Trash2, Coins, TrendUp as TrendingUp, WarningCircle as AlertCircle, FloppyDisk as Save 
+} from '@phosphor-icons/react';
 import toast from 'react-hot-toast';
 
 interface GoldPurchase {
@@ -141,7 +143,7 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
                 <div className="relative z-10 flex-1 w-full text-center lg:text-left flex flex-col justify-center">
                     <div className="inline-flex items-center justify-center lg:justify-start gap-2 mb-2 lg:mb-4">
                         <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center">
-                            <Coins className="w-4 h-4 text-amber-500" />
+                            <Coins weight="duotone" className="w-4 h-4 text-amber-500" />
                         </div>
                         <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Estimasi Nilai Emas</p>
                     </div>
@@ -162,7 +164,7 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
 
                     <div className="flex justify-center lg:justify-start">
                         <button onClick={() => { setEditingId(null); form.reset(); setIsFormModalOpen(true); }} className="w-full sm:w-auto flex items-center justify-center px-6 py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white rounded-2xl text-sm font-bold shadow-xl shadow-amber-500/20 hover:shadow-2xl hover:shadow-amber-500/30 hover:-translate-y-0.5 transition-all active:scale-95 group">
-                            <Plus className="w-5 h-5 mr-3 group-hover:rotate-90 transition-transform duration-300" /> Tambah Transaksi Emas
+                            <Plus weight="bold" className="w-5 h-5 mr-3 group-hover:rotate-90 transition-transform duration-300" /> Tambah Transaksi Emas
                         </button>
                     </div>
                 </div>
@@ -174,7 +176,7 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
                         <div className="flex justify-between items-start mb-2">
                             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Harga Acuan Emas</p>
                             <button onClick={() => setIsPriceModalOpen(true)} className="text-amber-500 hover:text-amber-600 dark:hover:text-amber-400 text-xs font-bold flex items-center">
-                                <Edit2 className="w-3 h-3 mr-1" /> Edit
+                                <Edit2 weight="duotone" className="w-3 h-3 mr-1" /> Edit
                             </button>
                         </div>
                         <p className="text-2xl font-black text-slate-800 dark:text-white">{formatIDR(currentPrice)}<span className="text-sm font-bold text-slate-400">/gr</span></p>
@@ -185,7 +187,7 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
                         <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Floating Profit/Loss</p>
                         <div className="flex items-center gap-3">
                             <div className={`p-2 rounded-xl ${stats.profitLoss >= 0 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'}`}>
-                                <TrendingUp className={`w-5 h-5 ${stats.profitLoss < 0 ? 'rotate-180' : ''}`} />
+                                <TrendingUp weight="bold" className={`w-5 h-5 ${stats.profitLoss < 0 ? 'rotate-180' : ''}`} />
                             </div>
                             <div>
                                 <p className={`text-xl font-black ${stats.profitLoss >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
@@ -251,8 +253,8 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
                                         </td>
                                         <td className="p-4 pr-6 lg:pr-8 text-right whitespace-nowrap">
                                             <div className="flex justify-end gap-2 opacity-100 md:opacity-50 group-hover:opacity-100 transition-opacity">
-                                                <button onClick={() => handleEdit(p)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all"><Edit2 className="w-4 h-4" /></button>
-                                                <button onClick={() => handleDelete(p.id)} className="p-2 text-slate-400 hover:text-rose-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all"><Trash2 className="w-4 h-4" /></button>
+                                                <button onClick={() => handleEdit(p)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all"><Edit2 weight="duotone" className="w-4 h-4" /></button>
+                                                <button onClick={() => handleDelete(p.id)} className="p-2 text-slate-400 hover:text-rose-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all"><Trash2 weight="duotone" className="w-4 h-4" /></button>
                                             </div>
                                         </td>
                                     </tr>
@@ -261,7 +263,7 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
                                 <tr>
                                     <td colSpan={6} className="p-16 text-center">
                                         <div className="w-16 h-16 rounded-full border-4 border-dashed border-slate-200 dark:border-slate-700 flex items-center justify-center mx-auto mb-4">
-                                            <Coins className="w-6 h-6 text-slate-300 dark:text-slate-600" />
+                                            <Coins weight="duotone" className="w-6 h-6 text-slate-300 dark:text-slate-600" />
                                         </div>
                                         <p className="text-slate-500 font-medium">Belum ada riwayat pembelian emas.</p>
                                     </td>
@@ -288,8 +290,8 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
                                             {p.notes && <p className="text-xs text-slate-400 mt-0.5 truncate max-w-[200px]">{p.notes}</p>}
                                         </div>
                                         <div className="flex gap-1">
-                                            <button onClick={() => handleEdit(p)} className="p-1.5 text-slate-400 hover:text-indigo-600 bg-slate-50 dark:bg-slate-800 rounded-lg transition-all active:scale-95"><Edit2 className="w-4 h-4" /></button>
-                                            <button onClick={() => handleDelete(p.id)} className="p-1.5 text-slate-400 hover:text-rose-500 bg-slate-50 dark:bg-slate-800 rounded-lg transition-all active:scale-95"><Trash2 className="w-4 h-4" /></button>
+                                            <button onClick={() => handleEdit(p)} className="p-1.5 text-slate-400 hover:text-indigo-600 bg-slate-50 dark:bg-slate-800 rounded-lg transition-all active:scale-95"><Edit2 weight="duotone" className="w-4 h-4" /></button>
+                                            <button onClick={() => handleDelete(p.id)} className="p-1.5 text-slate-400 hover:text-rose-500 bg-slate-50 dark:bg-slate-800 rounded-lg transition-all active:scale-95"><Trash2 weight="duotone" className="w-4 h-4" /></button>
                                         </div>
                                     </div>
                                     
@@ -319,7 +321,7 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
                         }) : (
                             <div className="p-12 text-center">
                                 <div className="w-16 h-16 rounded-full border-4 border-dashed border-slate-200 dark:border-slate-700 flex items-center justify-center mx-auto mb-4">
-                                    <Coins className="w-6 h-6 text-slate-300 dark:text-slate-600" />
+                                    <Coins weight="duotone" className="w-6 h-6 text-slate-300 dark:text-slate-600" />
                                 </div>
                                 <p className="text-slate-500 font-medium text-sm">Belum ada riwayat pembelian emas.</p>
                             </div>
@@ -470,7 +472,7 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
                             <div className="flex justify-end gap-3 pt-6 border-t border-slate-100 dark:border-slate-800">
                                 <button type="button" onClick={() => setIsFormModalOpen(false)} className="px-5 py-2.5 text-sm font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">Batal</button>
                                 <button type="submit" disabled={form.processing} className="px-5 py-2.5 flex items-center gap-2 text-sm font-bold text-white bg-amber-500 hover:bg-amber-600 rounded-xl shadow-lg shadow-amber-500/30 transition-all active:scale-95 disabled:opacity-50">
-                                    <Save className="w-4 h-4" /> Simpan
+                                    <Save weight="bold" className="w-4 h-4" /> Simpan
                                 </button>
                             </div>
                         </form>

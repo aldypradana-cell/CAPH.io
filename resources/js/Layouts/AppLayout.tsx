@@ -1,14 +1,13 @@
 import { PropsWithChildren, useState, useRef, useEffect } from 'react';
 import { Link, usePage, router } from '@inertiajs/react';
 import {
-    LayoutDashboard, List, Zap, PieChart,
-    Wallet as WalletIcon, LogOut, HandCoins,
-    Target, Gem, CreditCard, Tags, User as UserIcon,
-    Settings, FileDown, Bell, HelpCircle, Menu, X,
-    ShieldCheck, Check, AlertTriangle, Info, CheckCircle,
-    Sun, Moon, MoreHorizontal, Users, FileText, Database, ArrowRightLeft, Plus, PiggyBank, BarChart3
-}
-    from 'lucide-react';
+    SquaresFour as LayoutDashboard, Receipt as List, Lightning as Zap, ChartPieSlice as PieChart,
+    Wallet as WalletIcon, SignOut as LogOut, HandCoins,
+    Target, Diamond as Gem, CreditCard, Tag as Tags, User as UserIcon,
+    Gear as Settings, DownloadSimple as FileDown, Bell, Question as HelpCircle, List as Menu, X,
+    ShieldCheck, Check, Warning as AlertTriangle, Info, CheckCircle,
+    Sun, Moon, DotsThree as MoreHorizontal, Users, FileText, Database, ArrowsLeftRight as ArrowRightLeft, Plus, PiggyBank, ChartBar as BarChart3
+} from '@phosphor-icons/react';
 import { User } from '@/types';
 
 interface LayoutProps {
@@ -107,10 +106,10 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
 
     const getNotifIcon = (type: string) => {
         switch (type) {
-            case 'WARNING': return <AlertTriangle className="w-4 h-4 text-amber-500" />;
-            case 'ALERT': return <AlertTriangle className="w-4 h-4 text-red-500" />;
-            case 'SUCCESS': return <CheckCircle className="w-4 h-4 text-emerald-500" />;
-            default: return <Info className="w-4 h-4 text-blue-500" />;
+            case 'WARNING': return <AlertTriangle weight="duotone" className="w-4 h-4 text-amber-500" />;
+            case 'ALERT': return <AlertTriangle weight="duotone" className="w-4 h-4 text-red-500" />;
+            case 'SUCCESS': return <CheckCircle weight="duotone" className="w-4 h-4 text-emerald-500" />;
+            default: return <Info weight="duotone" className="w-4 h-4 text-blue-500" />;
         }
     };
 
@@ -125,7 +124,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                     }`}
             >
                 <div className={`mr-3 transition-transform duration-500 ease-out ${active ? 'scale-110' : 'group-hover:scale-110'}`}>
-                    <Icon className={`w-5 h-5 ${active ? 'text-white' : 'text-slate-400 dark:text-slate-500 group-hover:text-indigo-600 dark:group-hover:text-indigo-400'}`} />
+                    <Icon weight="duotone" className={`w-5 h-5 ${active ? 'text-white' : 'text-slate-400 dark:text-slate-500 group-hover:text-indigo-600 dark:group-hover:text-indigo-400'}`} />
                 </div>
                 <span className="font-semibold text-sm tracking-wide">{label}</span>
                 {active && <div className="absolute right-3 w-1.5 h-1.5 rounded-full bg-white/40 animate-pulse" />}
@@ -149,7 +148,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                         <div className="flex items-center justify-between p-6 pb-2">
                             <div className="flex items-center space-x-3 group cursor-default">
                                 <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110">
-                                    <WalletIcon className="w-6 h-6" />
+                                    <WalletIcon weight="duotone" className="w-6 h-6" />
                                 </div>
                                 <div>
                                     <h1 className="text-xl font-bold tracking-tight text-slate-800 dark:text-white leading-none">CAPH.io</h1>
@@ -157,7 +156,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                 </div>
                             </div>
                             <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 p-2 rounded-xl transition-colors">
-                                <X className="w-5 h-5" />
+                                <X weight="bold" className="w-5 h-5" />
                             </button>
                         </div>
 
@@ -259,7 +258,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                 onClick={() => setIsNotifOpen(!isNotifOpen)}
                                 className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md transition-all active:scale-95 relative"
                             >
-                                <Bell className="w-5 h-5" />
+                                <Bell weight="duotone" className="w-5 h-5" />
                                 {unreadCount > 0 && (
                                     <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-800 animate-pulse"></span>
                                 )}
@@ -332,7 +331,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                             className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md transition-all active:scale-95"
                             title={isDark ? 'Mode Terang' : 'Mode Gelap'}
                         >
-                            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                            {isDark ? <Sun weight="duotone" className="w-5 h-5" /> : <Moon weight="duotone" className="w-5 h-5" />}
                         </button>
 
                         {/* Help Button */}
@@ -341,7 +340,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                             className="p-3 rounded-2xl bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md transition-all active:scale-95 hidden sm:block"
                             title="Bantuan"
                         >
-                            <HelpCircle className="w-5 h-5" />
+                            <HelpCircle weight="duotone" className="w-5 h-5" />
                         </Link>
                     </div>
                 </header >
@@ -370,7 +369,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                         }`}
                                 >
                                     <div className="relative">
-                                        <item.icon className={`w-6 h-6 transition-transform duration-300 ${item.active ? 'scale-110' : ''}`} />
+                                        <item.icon weight="duotone" className={`w-6 h-6 transition-transform duration-300 ${item.active ? 'scale-110' : ''}`} />
                                         {item.active && (
                                             <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-indigo-600 dark:bg-indigo-400" />
                                         )}
@@ -386,7 +385,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                     className="flex items-center justify-center w-12 h-12 bg-gradient-to-tr from-indigo-600 to-violet-600 text-white rounded-full shadow-lg shadow-indigo-500/40 hover:scale-110 active:scale-95 transition-all duration-300 ring-4 ring-slate-50 dark:ring-slate-950"
                                     aria-label="Tambah Transaksi"
                                 >
-                                    <Plus className="w-6 h-6 leading-none" />
+                                    <Plus weight="bold" className="w-6 h-6 leading-none" />
                                 </Link>
                             </div>
 
@@ -402,7 +401,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                         }`}
                                 >
                                     <div className="relative">
-                                        <item.icon className={`w-6 h-6 transition-transform duration-300 ${item.active ? 'scale-110' : ''}`} />
+                                        <item.icon weight="duotone" className={`w-6 h-6 transition-transform duration-300 ${item.active ? 'scale-110' : ''}`} />
                                         {item.active && (
                                             <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-indigo-600 dark:bg-indigo-400" />
                                         )}
@@ -422,7 +421,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                 }`}
                             >
                                 <div className="relative">
-                                    <MoreHorizontal className="w-6 h-6" />
+                                    <MoreHorizontal weight="duotone" className="w-6 h-6" />
                                 </div>
                                 <span className="text-[10px] font-semibold mt-0.5">Lainnya</span>
                             </button>
@@ -457,7 +456,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                         className="flex flex-col items-center gap-1.5 py-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95"
                                     >
                                         <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${item.color}`}>
-                                            <item.icon className="w-5 h-5" />
+                                            <item.icon weight="duotone" className="w-5 h-5" />
                                         </div>
                                         <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300">{item.label}</span>
                                     </Link>

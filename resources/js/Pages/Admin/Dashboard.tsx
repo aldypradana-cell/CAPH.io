@@ -1,9 +1,9 @@
 import AppLayout from '@/Layouts/AppLayout';
 import { Head, usePage, router, Link } from '@inertiajs/react';
 import {
-    LayoutDashboard, Users, Activity, Database,
-    Shield, ArrowRightLeft, FileText, Menu
-} from 'lucide-react';
+    SquaresFour as LayoutDashboard, Users, Pulse as Activity, Database,
+    Shield, ArrowsLeftRight as ArrowRightLeft, FileText, List as Menu
+} from '@phosphor-icons/react';
 import { Toaster } from 'react-hot-toast';
 
 // Partials
@@ -98,7 +98,7 @@ export default function AdminDashboard() {
                                     : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
                                     }`}
                             >
-                                <t.icon className={`w-4 h-4 ${isActive ? 'animate-pulse' : ''}`} />
+                                <t.icon weight={isActive ? "fill" : "duotone"} className={`w-4 h-4 ${isActive ? 'animate-pulse' : ''}`} />
                                 {t.label}
                                 {isActive && (
                                     <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-indigo-500 rounded-t-full" />
@@ -135,7 +135,7 @@ AdminDashboard.layout = (page: any) => {
         <AppLayout header={
             <div className="flex items-center gap-4">
                 <div className="p-3 bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-xl">
-                    <Shield className="w-6 h-6" />
+                    <Shield weight="duotone" className="w-6 h-6" />
                 </div>
                 <div>
                     <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Admin Panel</h1>

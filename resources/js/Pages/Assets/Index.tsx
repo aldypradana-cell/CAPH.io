@@ -4,8 +4,8 @@ import { PageProps } from '@/types';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
-    Plus, X, Gem, Trash2, Edit2, AlertTriangle, Home, Car, TrendingUp, Coins
-} from 'lucide-react';
+    Plus, X, Diamond as Gem, Trash as Trash2, PencilSimple as Edit2, Warning as AlertTriangle, House as Home, CarProfile as Car, TrendUp as TrendingUp, Coins
+} from '@phosphor-icons/react';
 import toast, { Toaster } from 'react-hot-toast';
 
 interface Asset {
@@ -149,7 +149,7 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
 
                     <div className="relative z-10 flex flex-col sm:flex-row items-center gap-5 w-full">
                         <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30 shrink-0">
-                            <Gem className="w-8 h-8 text-white" />
+                            <Gem weight="duotone" className="w-8 h-8 text-white" />
                         </div>
                         
                         <div className="flex-1 text-center sm:text-left flex flex-col justify-center">
@@ -185,13 +185,13 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
                             onClick={() => handleTabChange('assets')}
                             className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === 'assets' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
                         >
-                            <Gem className="w-4 h-4" /> Aset Umum
+                            <Gem weight="fill" className="w-4 h-4" /> Aset Umum
                         </button>
                         <button 
                             onClick={() => handleTabChange('gold')}
                             className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === 'gold' ? 'bg-white dark:bg-slate-700 text-amber-500 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
                         >
-                            <Coins className="w-4 h-4" /> Emas Antam
+                            <Coins weight="fill" className="w-4 h-4" /> Emas Antam
                         </button>
                     </div>
                 </div>
@@ -202,7 +202,7 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
                             <div className="w-full flex justify-between items-center sm:hidden px-4 mb-2">
                                 <h3 className="text-xl font-bold text-slate-800 dark:text-white">Aset Tunai & Properti</h3>
                                 <button onClick={() => { setEditingAsset(null); reset(); setIsModalOpen(true); }} className="p-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-indigo-500/30 transition-all hover:-translate-y-1">
-                                    <Plus className="w-5 h-5" />
+                                    <Plus weight="bold" className="w-5 h-5" />
                                 </button>
                             </div>
 
@@ -254,7 +254,7 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
                              ) : (
                                  <div className="w-full flex items-center justify-center gap-4 text-slate-400">
                                      <div className="w-16 h-16 rounded-full border-4 border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center">
-                                         <Gem className="w-6 h-6 text-slate-300 dark:text-slate-600" />
+                                         <Gem weight="duotone" className="w-6 h-6 text-slate-300 dark:text-slate-600" />
                                      </div>
                                      <p className="text-sm font-medium">Data portofolio kosong</p>
                                  </div>
@@ -264,13 +264,13 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
                         {/* Add Action Mini Card */}
                         <div className="relative z-10 w-full lg:flex-1 p-6 md:p-8 rounded-[2rem] border border-white/50 dark:border-slate-800/50 flex flex-col items-center sm:items-start justify-center text-center sm:text-left shadow-sm hover:shadow-lg transition-all" style={{ background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%)' }}>
                             <div className="w-12 h-12 rounded-xl bg-indigo-500 text-white flex items-center justify-center mb-4 shadow-lg shadow-indigo-500/30">
-                                <Gem className="w-6 h-6" />
+                                <Gem weight="duotone" className="w-6 h-6" />
                             </div>
                             <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">Kelola Portofolio Aset Umum</h3>
                             <p className="text-sm text-slate-500 mb-6">Tambahkan instrumen seperti reksadana, saham, deposito, atau properti untuk dipantau secara statis.</p>
                             
                             <button onClick={() => { setEditingAsset(null); reset(); setIsModalOpen(true); }} className="px-6 py-3.5 bg-slate-900 border dark:border-none dark:bg-white text-white dark:text-slate-900 rounded-xl text-sm font-bold shadow-xl shadow-slate-900/20 dark:shadow-white/10 hover:-translate-y-1 transition-all active:scale-95 group flex items-center">
-                                <Plus className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform duration-300" /> Tambah Instrumen Baru
+                                <Plus weight="bold" className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform duration-300" /> Tambah Instrumen Baru
                             </button>
                         </div>
                     </div>
@@ -316,7 +316,7 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
                                     <div className="flex items-start justify-between w-full sm:w-auto sm:flex-1">
                                         <div className="flex items-center gap-4">
                                             <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${config.color} text-white flex items-center justify-center shadow-lg shadow-${config.color.split('-')[1]}-500/20 shrink-0`}>
-                                                <config.icon className="w-6 h-6" />
+                                                <config.icon weight="duotone" className="w-6 h-6" />
                                             </div>
                                             <div>
                                                 <h3 className="font-bold text-slate-800 dark:text-white text-base max-w-[200px] truncate">{a.name}</h3>
@@ -326,8 +326,8 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
                                         
                                         {/* Mobile Friendly Actions - Positioned absolutely on large bento or relative on small bento */}
                                         <div className={`flex gap-1 opacity-60 hover:opacity-100 transition-opacity bg-slate-50 dark:bg-slate-800/50 rounded-xl p-1 z-10 ${isLargeBento ? 'absolute top-6 right-6 sm:relative sm:top-0 sm:right-0 ml-4' : ''}`}>
-                                            <button onClick={() => handleEdit(a)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all"><Edit2 className="w-4 h-4" /></button>
-                                            <button onClick={() => setDeleteId(a.id)} className="p-2 text-slate-400 hover:text-red-500 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all"><Trash2 className="w-4 h-4" /></button>
+                                            <button onClick={() => handleEdit(a)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all"><Edit2 weight="duotone" className="w-4 h-4" /></button>
+                                            <button onClick={() => setDeleteId(a.id)} className="p-2 text-slate-400 hover:text-red-500 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all"><Trash2 weight="duotone" className="w-4 h-4" /></button>
                                         </div>
                                     </div>
                                     
@@ -348,7 +348,7 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
                         );
                     }) : (
                         <div className="col-span-full glass-card rounded-[2rem] p-24 text-center">
-                            <Gem className="w-20 h-20 text-slate-200 dark:text-slate-800 mx-auto mb-6" />
+                            <Gem weight="duotone" className="w-20 h-20 text-slate-200 dark:text-slate-800 mx-auto mb-6" />
                             <h3 className="text-2xl font-bold text-slate-400 mb-2">Belum Ada Aset Terdaftar</h3>
                             <p className="text-slate-500">Mulai tambahkan instrumen aset kekayaan Anda untuk memonitor portofolio finansial.</p>
                         </div>
@@ -365,7 +365,7 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
                 <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setDeleteId(null)} />
                     <div className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-2xl animate-pop-in border border-slate-100 dark:border-slate-800">
-                        <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 mb-4 mx-auto"><AlertTriangle className="w-7 h-7" /></div>
+                        <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 mb-4 mx-auto"><AlertTriangle weight="fill" className="w-7 h-7" /></div>
                         <h3 className="text-xl font-bold text-center text-slate-900 dark:text-white mb-6">Hapus aset ini?</h3>
                         <div className="flex gap-3">
                             <button onClick={() => setDeleteId(null)} className="flex-1 py-3 rounded-xl font-bold text-slate-600 bg-slate-100 dark:bg-slate-800 dark:text-slate-300">Batal</button>
@@ -384,7 +384,7 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
                         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 z-10" />
                         <div className="p-5 pb-0 shrink-0 flex justify-between items-center">
                             <h3 className="text-lg font-bold text-slate-800 dark:text-white">{editingAsset ? 'Edit Aset' : 'Aset Baru'}</h3>
-                            <button onClick={() => setIsModalOpen(false)} className="text-slate-400 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"><X className="w-5 h-5" /></button>
+                            <button onClick={() => setIsModalOpen(false)} className="text-slate-400 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"><X weight="bold" className="w-5 h-5" /></button>
                         </div>
                         <div className="p-5 pt-4 overflow-y-auto scrollbar-hide">
                             <form onSubmit={handleSubmit} className="space-y-3">

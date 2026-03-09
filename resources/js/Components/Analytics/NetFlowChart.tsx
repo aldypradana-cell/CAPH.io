@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { TrendingUp, BarChart3, GripHorizontal } from 'lucide-react';
+import { TrendUp as TrendingUp, ChartBar as BarChart3, DotsSixVertical as GripHorizontal } from '@phosphor-icons/react';
 
 interface NetFlowChartProps {
     data: any[];
@@ -47,11 +47,11 @@ export default function NetFlowChart({ data, isLoading }: NetFlowChartProps) {
                 <div className="flex items-center gap-3">
                     <div className="p-2 sm:p-2.5 bg-sky-50 dark:bg-slate-800 text-sky-600 dark:text-sky-400 rounded-xl relative group cursor-grab active:cursor-grabbing shrink-0">
                         {chartType === 'AREA' ? (
-                            <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
+                            <TrendingUp weight="duotone" className="w-4 h-4 sm:w-5 sm:h-5" />
                         ) : (
-                            <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5" />
+                            <BarChart3 weight="duotone" className="w-4 h-4 sm:w-5 sm:h-5" />
                         )}
-                        <GripHorizontal className="w-4 h-4 sm:w-5 sm:h-5 absolute top-2 sm:top-2.5 left-2 sm:left-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                        <GripHorizontal weight="bold" className="w-4 h-4 sm:w-5 sm:h-5 absolute top-2 sm:top-2.5 left-2 sm:left-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                     </div>
                     <div className="min-w-0">
                         <h4 className="font-bold text-slate-800 dark:text-white text-base sm:text-lg truncate">Arus Kas Bersih</h4>
@@ -64,13 +64,13 @@ export default function NetFlowChart({ data, isLoading }: NetFlowChartProps) {
                         onClick={() => setChartType('BAR')}
                         className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'BAR' ? 'bg-white dark:bg-slate-700 text-sky-600 dark:text-sky-400 shadow-sm' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
                     >
-                        <BarChart3 className="w-4 h-4" />
+                        <BarChart3 weight="duotone" className="w-4 h-4" />
                     </button>
                     <button
                         onClick={() => setChartType('AREA')}
                         className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'AREA' ? 'bg-white dark:bg-slate-700 text-sky-600 dark:text-sky-400 shadow-sm' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
                     >
-                        <TrendingUp className="w-4 h-4" />
+                        <TrendingUp weight="duotone" className="w-4 h-4" />
                     </button>
                 </div>
             </div>

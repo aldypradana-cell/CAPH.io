@@ -3,8 +3,8 @@ import { Head, useForm } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { useState, useEffect } from 'react';
 import {
-    Zap, Sparkles, Check, X, Loader2, TrendingUp, TrendingDown, Hash, Mic, MicOff
-} from 'lucide-react';
+    Lightning as Zap, Sparkle as Sparkles, Check, X, SpinnerGap as Loader2, TrendUp as TrendingUp, TrendDown as TrendingDown, Hash, Microphone as Mic, MicrophoneSlash as MicOff
+} from '@phosphor-icons/react';
 import toast, { Toaster } from 'react-hot-toast';
 
 interface Wallet { id: number; name: string; }
@@ -162,7 +162,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
                 {/* Hero - Hidden on mobile to prioritize input */}
                 <div className="hidden md:block glass-card p-8 rounded-[2rem] text-center animate-fade-in-up">
                     <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-white mx-auto mb-4 shadow-lg shadow-indigo-500/30">
-                        <Sparkles className="w-8 h-8" />
+                        <Sparkles weight="duotone" className="w-8 h-8" />
                     </div>
                     <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">AI Smart Entry</h2>
                     <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
@@ -183,7 +183,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
                     <div className="flex items-center justify-between mt-3">
                         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
                             <span className="text-[10px] text-slate-400 flex items-center gap-1 font-bold">
-                                <Sparkles className="w-3 h-3 text-indigo-500" /> Powered by Gemini
+                                <Sparkles weight="fill" className="w-3 h-3 text-indigo-500" /> Powered by Gemini
                             </span>
                             {aiQuota && (
                                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${isQuotaExceeded ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
@@ -206,7 +206,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
                                 }`}
                                 title={isListening ? "Hentikan mendengarkan" : "Ketik pakai suara"}
                             >
-                                {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                                {isListening ? <MicOff weight="duotone" className="w-5 h-5" /> : <Mic weight="duotone" className="w-5 h-5" />}
                             </button>
                             <button
                                 onClick={handleParse}
@@ -214,9 +214,9 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
                                 className={`flex items-center px-5 py-2.5 rounded-2xl text-sm font-bold transition-all transition-transform ${isQuotaExceeded ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:shadow-lg hover:shadow-indigo-500/30 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100'}`}
                             >
                                 {isParsing ? (
-                                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Memproses...</>
+                                    <><Loader2 weight="bold" className="w-4 h-4 mr-2 animate-spin" /> Memproses...</>
                                 ) : (
-                                    <><Zap className="w-4 h-4 mr-2" /> Analisis</>
+                                    <><Zap weight="fill" className="w-4 h-4 mr-2" /> Analisis</>
                                 )}
                             </button>
                         </div>
@@ -227,7 +227,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
                 {error && (
                     <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-4 flex items-center gap-3 animate-pop-in">
                         <div className="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center shrink-0">
-                            <X className="w-4 h-4 text-red-500" />
+                            <X weight="bold" className="w-4 h-4 text-red-500" />
                         </div>
                         <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
                     </div>
@@ -237,7 +237,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
                 {parsedTransactions.length > 0 && (
                     <div className="glass-card rounded-[2rem] p-6 space-y-4 animate-pop-in">
                         <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center">
-                            <Check className="w-5 h-5 mr-2 text-emerald-500" />
+                            <Check weight="bold" className="w-5 h-5 mr-2 text-emerald-500" />
                             Transaksi Terdeteksi ({parsedTransactions.length})
                         </h3>
 
@@ -246,7 +246,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
                                 <div key={idx} className={`flex items-center justify-between p-4 rounded-2xl border-l-4 ${t.type === 'INCOME' ? 'border-l-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/10' : 'border-l-red-500 bg-red-50/50 dark:bg-red-900/10'} transition-all animate-pop-in`} style={{ animationDelay: `${idx * 80}ms` }}>
                                     <div className="flex items-center gap-3">
                                         <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${t.type === 'INCOME' ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600' : 'bg-red-100 dark:bg-red-900/40 text-red-600'}`}>
-                                            {t.type === 'INCOME' ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                                            {t.type === 'INCOME' ? <TrendingUp weight="bold" className="w-4 h-4" /> : <TrendingDown weight="bold" className="w-4 h-4" />}
                                         </div>
                                         <div>
                                             <p className="text-sm font-bold text-slate-800 dark:text-white">{t.description}</p>
@@ -254,7 +254,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
                                                 <span className="text-[10px] text-slate-400">{t.category} · {new Date(t.date).toLocaleDateString('id-ID')}</span>
                                                 {t.tags && t.tags.length > 0 && t.tags.map((tag, ti) => (
                                                     <span key={ti} className="inline-flex items-center gap-0.5 text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-1.5 py-0.5 rounded-full">
-                                                        <Hash className="w-2.5 h-2.5" />{tag}
+                                                        <Hash weight="bold" className="w-2.5 h-2.5" />{tag}
                                                     </span>
                                                 ))}
                                             </div>
@@ -269,7 +269,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
                                             className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all active:scale-95"
                                             title="Batal tambahkan transaksi ini"
                                         >
-                                            <X className="w-4 h-4" />
+                                            <X weight="bold" className="w-4 h-4" />
                                         </button>
                                     </div>
                                 </div>

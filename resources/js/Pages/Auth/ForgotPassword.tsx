@@ -1,6 +1,6 @@
 import { Head, useForm, Link } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
-import { Wallet } from 'lucide-react';
+import { Wallet } from '@phosphor-icons/react';
 
 export default function ForgotPassword({ status }: { status?: string }) {
     const { data, setData, post, processing, errors } = useForm({
@@ -37,7 +37,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                     <div className="flex flex-col items-center text-center mb-8">
                         <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-2xl flex items-center justify-center text-white shadow-2xl shadow-indigo-500/40 mb-5 relative group">
                             <div className="absolute inset-0 rounded-2xl bg-white/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                            <Wallet className="w-8 h-8 relative z-10" />
+                            <Wallet weight="duotone" className="w-8 h-8 relative z-10" />
                         </div>
                         <h1 className="text-3xl font-bold tracking-tight text-white mb-1">CAPH.io</h1>
                         <p className="text-sm font-medium tracking-[0.2em] text-indigo-400 uppercase">

@@ -1,5 +1,4 @@
-import React from 'react';
-import { Gem } from 'lucide-react';
+import { Diamond as Gem } from '@phosphor-icons/react';
 
 interface NetWorthCardProps {
     amount: number;
@@ -21,7 +20,7 @@ export default function NetWorthCard({ amount }: NetWorthCardProps) {
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out" />
 
             <div className="p-2.5 sm:p-3.5 bg-gradient-to-br from-white/20 to-white/5 text-white rounded-2xl backdrop-blur-md relative z-10 shadow-inner border border-white/10">
-                <Gem className="w-6 h-6 text-violet-100" />
+                <Gem weight="duotone" className="w-6 h-6 text-violet-100" />
             </div>
 
             <div className="relative z-10 flex flex-col">

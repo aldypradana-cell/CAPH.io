@@ -1,9 +1,9 @@
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
 import {
-    Activity, Shield, ShieldOff, UserMinus, FileText, Search,
-    Database, Plus, Pencil, Trash2, Sprout, Filter, ChevronLeft, ChevronRight
-} from 'lucide-react';
+    Pulse as Activity, Shield, ShieldSlash as ShieldOff, UserMinus, FileText, MagnifyingGlass as Search,
+    Database, Plus, Pencil, Trash as Trash2, Plant as Sprout, Funnel as Filter, CaretLeft as ChevronLeft, CaretRight as ChevronRight
+} from '@phosphor-icons/react';
 
 interface LogEntry {
     id: number;
@@ -67,7 +67,7 @@ export default function LogsTab({ logs, filters = {} }: { logs: PaginatedLogs; f
             {/* ── Filters ── */}
             <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
                 <div className="flex items-center gap-2 mb-3">
-                    <Filter className="w-4 h-4 text-indigo-500" />
+                    <Filter weight="duotone" className="w-4 h-4 text-indigo-500" />
                     <h3 className="font-bold text-sm text-slate-700 dark:text-slate-200">Filter Log</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
@@ -85,7 +85,7 @@ export default function LogsTab({ logs, filters = {} }: { logs: PaginatedLogs; f
                     <div className="flex gap-2">
                         <button onClick={applyFilters}
                             className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold transition-colors">
-                            <Search className="w-3.5 h-3.5" /> Cari
+                            <Search weight="bold" className="w-3.5 h-3.5" /> Cari
                         </button>
                         {hasFilters && (
                             <button onClick={clearFilters}
@@ -115,7 +115,7 @@ export default function LogsTab({ logs, filters = {} }: { logs: PaginatedLogs; f
                     <div key={log.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 flex items-center justify-between hover:shadow-lg hover:border-indigo-200 dark:hover:border-indigo-800 transition-all duration-300 animate-fade-in-up" style={{ animationDelay: `${idx * 50}ms` }}>
                         <div className="flex items-center gap-4">
                             <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${config.color}`}>
-                                <IconComponent className="w-5 h-5" />
+                                <IconComponent weight="duotone" className="w-5 h-5" />
                             </div>
                             <div>
                                 <div className="flex items-center gap-2 flex-wrap">
@@ -143,7 +143,7 @@ export default function LogsTab({ logs, filters = {} }: { logs: PaginatedLogs; f
                 );
             }) : (
                 <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] p-16 text-center">
-                    <FileText className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
+                    <FileText weight="duotone" className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
                     <p className="text-lg font-bold text-slate-400">Belum ada log aktivitas</p>
                     <p className="text-sm text-slate-300 dark:text-slate-600 mt-1">Log akan muncul saat admin melakukan aksi seperti suspend user atau kelola kategori</p>
                 </div>
@@ -154,7 +154,7 @@ export default function LogsTab({ logs, filters = {} }: { logs: PaginatedLogs; f
                 <div className="flex items-center justify-center gap-2 pt-2">
                     <button onClick={() => goToPage(logs.links[0]?.url)} disabled={!logs.links[0]?.url}
                         className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-30 transition-colors">
-                        <ChevronLeft className="w-4 h-4" />
+                        <ChevronLeft weight="bold" className="w-4 h-4" />
                     </button>
                     {logs.links.slice(1, -1).map((link, i) => (
                         <button key={i} onClick={() => goToPage(link.url)}
@@ -167,7 +167,7 @@ export default function LogsTab({ logs, filters = {} }: { logs: PaginatedLogs; f
                     ))}
                     <button onClick={() => goToPage(logs.links[logs.links.length - 1]?.url)} disabled={!logs.links[logs.links.length - 1]?.url}
                         className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-30 transition-colors">
-                        <ChevronRight className="w-4 h-4" />
+                        <ChevronRight weight="bold" className="w-4 h-4" />
                     </button>
                 </div>
             )}

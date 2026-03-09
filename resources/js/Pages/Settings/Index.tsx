@@ -2,7 +2,9 @@ import AppLayout from '@/Layouts/AppLayout';
 import { Head, usePage, router } from '@inertiajs/react';
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { Moon, Sun, Bell, DollarSign, Globe, Shield, Database, Upload, Download, Users, Briefcase, Target, Plus, Trash2, ChevronRight, Save, Loader2, PiggyBank } from 'lucide-react';
+import { 
+    Moon, Sun, Bell, CurrencyDollar as DollarSign, Globe, Shield, Database, UploadSimple as Upload, DownloadSimple as Download, Users, Briefcase, Target, Plus, Trash as Trash2, CaretRight as ChevronRight, FloppyDisk as Save, SpinnerGap as Loader2, PiggyBank 
+} from '@phosphor-icons/react';
 import toast, { Toaster } from 'react-hot-toast';
 
 
@@ -142,7 +144,7 @@ export default function Settings() {
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -translate-y-10 translate-x-10 pointer-events-none" />
                     <div className="relative z-10">
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="p-2 bg-white/20 backdrop-blur-md rounded-xl"><Briefcase className="w-6 h-6" /></div>
+                            <div className="p-2 bg-white/20 backdrop-blur-md rounded-xl"><Briefcase weight="duotone" className="w-6 h-6" /></div>
                             <div>
                                 <h3 className="text-xl font-bold">Profil Finansial AI</h3>
                                 <p className="text-indigo-100 text-sm opacity-90">Lengkapi data ini agar AI dapat memberikan saran yang presisi.</p>
@@ -151,7 +153,7 @@ export default function Settings() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                             <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-5">
-                                <div className="flex items-center gap-2 mb-4 text-indigo-100"><Users className="w-4 h-4" /><span className="text-sm font-bold uppercase tracking-wider">Profil Keluarga</span></div>
+                                <div className="flex items-center gap-2 mb-4 text-indigo-100"><Users weight="duotone" className="w-4 h-4" /><span className="text-sm font-bold uppercase tracking-wider">Profil Keluarga</span></div>
                                 <div className="space-y-4">
                                     <div>
                                         <label className="block text-xs text-indigo-200 mb-1">Status Pernikahan</label>
@@ -168,7 +170,7 @@ export default function Settings() {
                             </div>
 
                             <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-5">
-                                <div className="flex items-center gap-2 mb-4 text-indigo-100"><Shield className="w-4 h-4" /><span className="text-sm font-bold uppercase tracking-wider">Pekerjaan & Risiko</span></div>
+                                <div className="flex items-center gap-2 mb-4 text-indigo-100"><Shield weight="duotone" className="w-4 h-4" /><span className="text-sm font-bold uppercase tracking-wider">Pekerjaan & Risiko</span></div>
                                 <div className="space-y-4">
                                     <div>
                                         <label className="block text-xs text-indigo-200 mb-1">Jenis Pekerjaan</label>
@@ -191,19 +193,19 @@ export default function Settings() {
                         {/* Financial Goals — Redirected to Savings Page */}
                         <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-6">
                             <div className="flex items-center gap-2 text-indigo-100 mb-4">
-                                <Target className="w-5 h-5" />
+                                <Target weight="duotone" className="w-5 h-5" />
                                 <span className="text-sm font-bold uppercase tracking-wider">Target Finansial</span>
                             </div>
                             <div className="bg-emerald-500/10 border border-emerald-400/20 rounded-xl p-4 flex items-center gap-4">
                                 <div className="p-3 bg-emerald-500/20 rounded-xl text-emerald-300 shrink-0">
-                                    <PiggyBank className="w-6 h-6" />
+                                    <PiggyBank weight="duotone" className="w-6 h-6" />
                                 </div>
                                 <div className="flex-1">
                                     <p className="text-sm font-bold text-white">Kelola di Halaman Tabungan & Impian</p>
                                     <p className="text-xs text-emerald-200/70 mt-0.5">Target finansial kini bisa dikelola lebih lengkap di halaman khusus.</p>
                                 </div>
                                 <a href={route('savings.index')} className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white text-sm font-bold rounded-xl transition-colors flex items-center gap-1 shrink-0">
-                                    Buka <ChevronRight className="w-4 h-4" />
+                                    Buka <ChevronRight weight="bold" className="w-4 h-4" />
                                 </a>
                             </div>
                         </div>
@@ -221,7 +223,7 @@ export default function Settings() {
                                     : 'bg-white/20 text-white/70 cursor-default'
                                     } disabled:opacity-50`}
                             >
-                                {savingProfile ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                                {savingProfile ? <Loader2 weight="bold" className="w-4 h-4 animate-spin" /> : <Save weight="bold" className="w-4 h-4" />}
                                 {savingProfile ? 'Menyimpan...' : 'Simpan Profil Finansial'}
                             </button>
                         </div>
@@ -238,7 +240,7 @@ export default function Settings() {
                         <div className="p-5 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                             <div className="flex items-center gap-4">
                                 <div className={`p-2.5 rounded-xl ${theme === 'dark' ? 'bg-indigo-100 text-indigo-600' : 'bg-amber-100 text-amber-600'}`}>
-                                    {theme === 'dark' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+                                    {theme === 'dark' ? <Moon weight="duotone" className="w-5 h-5" /> : <Sun weight="duotone" className="w-5 h-5" />}
                                 </div>
                                 <div>
                                     <p className="font-bold text-slate-800 dark:text-white">Mode Tampilan</p>
@@ -253,7 +255,7 @@ export default function Settings() {
                         {/* Currency */}
                         <div className="p-5 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                             <div className="flex items-center gap-4">
-                                <div className="p-2.5 rounded-xl bg-green-100 text-green-600"><DollarSign className="w-5 h-5" /></div>
+                                <div className="p-2.5 rounded-xl bg-green-100 text-green-600"><DollarSign weight="duotone" className="w-5 h-5" /></div>
                                 <div>
                                     <p className="font-bold text-slate-800 dark:text-white">Mata Uang Utama</p>
                                     <p className="text-xs text-slate-500 dark:text-slate-400">Mata uang default untuk laporan</p>
@@ -269,7 +271,7 @@ export default function Settings() {
                         {/* Notifications */}
                         <div className="p-5 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                             <div className="flex items-center gap-4">
-                                <div className="p-2.5 rounded-xl bg-rose-100 text-rose-600"><Bell className="w-5 h-5" /></div>
+                                <div className="p-2.5 rounded-xl bg-rose-100 text-rose-600"><Bell weight="duotone" className="w-5 h-5" /></div>
                                 <div>
                                     <p className="font-bold text-slate-800 dark:text-white">Notifikasi</p>
                                     <p className="text-xs text-slate-500 dark:text-slate-400">Terima pengingat tagihan & budget</p>
@@ -289,12 +291,12 @@ export default function Settings() {
                     </div>
                     <div className="p-6 space-y-4">
                         <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-xl text-sm mb-4">
-                            <Database className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                            <Database weight="duotone" className="w-5 h-5 mt-0.5 flex-shrink-0" />
                             <p>Data tersimpan di server. Lakukan backup secara berkala agar data tidak hilang.</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <button onClick={handleBackup} className="flex items-center justify-center p-4 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group text-left">
-                                <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-lg mr-4 group-hover:scale-110 transition-transform"><Download className="w-6 h-6" /></div>
+                                <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-lg mr-4 group-hover:scale-110 transition-transform"><Download weight="duotone" className="w-6 h-6" /></div>
                                 <div>
                                     <p className="font-bold text-slate-800 dark:text-white">Backup Data</p>
                                     <p className="text-xs text-slate-500 dark:text-slate-400">Unduh data ke file JSON</p>
@@ -306,7 +308,7 @@ export default function Settings() {
                                 className={`flex items-center justify-center p-4 border border-slate-200 dark:border-slate-700 rounded-xl transition-all group text-left ${isRestoring ? 'opacity-60 cursor-not-allowed' : 'hover:bg-slate-50 dark:hover:bg-slate-800'}`}
                             >
                                 <div className="p-3 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-lg mr-4 group-hover:scale-110 transition-transform">
-                                    {isRestoring ? <Loader2 className="w-6 h-6 animate-spin" /> : <Upload className="w-6 h-6" />}
+                                    {isRestoring ? <Loader2 weight="bold" className="w-6 h-6 animate-spin" /> : <Upload weight="duotone" className="w-6 h-6" />}
                                 </div>
                                 <div>
                                     <p className="font-bold text-slate-800 dark:text-white">
@@ -328,23 +330,23 @@ export default function Settings() {
                     <div className="divide-y divide-slate-100 dark:divide-slate-800">
                         <button className="w-full p-5 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-left group">
                             <div className="flex items-center gap-4">
-                                <div className="p-2.5 rounded-xl bg-blue-100 text-blue-600"><Shield className="w-5 h-5" /></div>
+                                <div className="p-2.5 rounded-xl bg-blue-100 text-blue-600"><Shield weight="duotone" className="w-5 h-5" /></div>
                                 <div>
                                     <p className="font-bold text-slate-800 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Keamanan Akun</p>
                                     <p className="text-xs text-slate-500 dark:text-slate-400">2FA dan riwayat login</p>
                                 </div>
                             </div>
-                            <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-indigo-500" />
+                            <ChevronRight weight="bold" className="w-5 h-5 text-slate-300 group-hover:text-indigo-500" />
                         </button>
                         <button className="w-full p-5 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-left group">
                             <div className="flex items-center gap-4">
-                                <div className="p-2.5 rounded-xl bg-purple-100 text-purple-600"><Globe className="w-5 h-5" /></div>
+                                <div className="p-2.5 rounded-xl bg-purple-100 text-purple-600"><Globe weight="duotone" className="w-5 h-5" /></div>
                                 <div>
                                     <p className="font-bold text-slate-800 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Bahasa</p>
                                     <p className="text-xs text-slate-500 dark:text-slate-400">Bahasa Indonesia (Default)</p>
                                 </div>
                             </div>
-                            <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-indigo-500" />
+                            <ChevronRight weight="bold" className="w-5 h-5 text-slate-300 group-hover:text-indigo-500" />
                         </button>
                     </div>
                 </div>

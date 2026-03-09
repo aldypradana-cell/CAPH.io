@@ -1,4 +1,4 @@
-import { Wallet as WalletIcon, ArrowUpRight, ArrowDownRight, TrendingUp, TrendingDown } from 'lucide-react';
+import { Wallet as WalletIcon, ArrowUpRight, ArrowDownRight, TrendUp as TrendingUp, TrendDown as TrendingDown } from '@phosphor-icons/react';
 import { Stats } from '@/types/dashboard';
 
 interface StatsCardsProps {
@@ -19,11 +19,11 @@ export default function StatsCards({ stats }: StatsCardsProps) {
                 </div>
                 <div className="relative z-10">
                     <div className="flex items-center justify-between mb-2 sm:mb-4">
-                        <div className="p-3 bg-white/20 text-white rounded-2xl backdrop-blur-sm">
-                            <WalletIcon className="w-6 h-6" />
+                        <div className="p-3 bg-white/20 text-white rounded-2xl backdrop-blur-sm shadow-sm">
+                            <WalletIcon weight="duotone" className="w-6 h-6" />
                         </div>
-                        <span className={`flex items-center text-xs font-bold px-2 py-1 rounded-full bg-white/20 text-white backdrop-blur-sm`}>
-                            {stats.netFlow >= 0 ? <ArrowUpRight className="w-3 h-3 mr-1" /> : <ArrowDownRight className="w-3 h-3 mr-1" />}
+                        <span className={`flex items-center text-xs font-bold px-2 py-1 rounded-full bg-white/20 text-white backdrop-blur-sm shadow-sm`}>
+                            {stats.netFlow >= 0 ? <ArrowUpRight weight="bold" className="w-3 h-3 mr-1" /> : <ArrowDownRight weight="bold" className="w-3 h-3 mr-1" />}
                             {stats.transactionCount} txn
                         </span>
                     </div>
@@ -40,11 +40,11 @@ export default function StatsCards({ stats }: StatsCardsProps) {
                 </div>
                 <div className="relative z-10">
                     <div className="flex items-center justify-between mb-2 sm:mb-4">
-                        <div className="p-3 bg-white/20 text-white rounded-2xl backdrop-blur-sm">
-                            <TrendingUp className="w-6 h-6" />
+                        <div className="p-3 bg-white/20 text-white rounded-2xl backdrop-blur-sm shadow-sm">
+                            <TrendingUp weight="duotone" className="w-6 h-6" />
                         </div>
-                        <span className="flex items-center text-xs font-bold px-2 py-1 rounded-full bg-white/20 text-white backdrop-blur-sm">
-                            <ArrowUpRight className="w-3 h-3 mr-1" /> Masuk
+                        <span className="flex items-center text-xs font-bold px-2 py-1 rounded-full bg-white/20 text-white backdrop-blur-sm shadow-sm">
+                            <ArrowUpRight weight="bold" className="w-3 h-3 mr-1" /> Masuk
                         </span>
                     </div>
                     <p className="text-[10px] font-bold text-emerald-100 uppercase tracking-widest mb-1 opacity-80">Pemasukan Bulan Ini</p>
@@ -60,11 +60,11 @@ export default function StatsCards({ stats }: StatsCardsProps) {
                 </div>
                 <div className="relative z-10">
                     <div className="flex items-center justify-between mb-2 sm:mb-4">
-                        <div className="p-3 bg-white/20 text-white rounded-2xl backdrop-blur-sm">
-                            <TrendingDown className="w-6 h-6" />
+                        <div className="p-3 bg-white/20 text-white rounded-2xl backdrop-blur-sm shadow-sm">
+                            <TrendingDown weight="duotone" className="w-6 h-6" />
                         </div>
-                        <span className="flex items-center text-xs font-bold px-2 py-1 rounded-full bg-white/20 text-white backdrop-blur-sm">
-                            <ArrowDownRight className="w-3 h-3 mr-1" /> Keluar
+                        <span className="flex items-center text-xs font-bold px-2 py-1 rounded-full bg-white/20 text-white backdrop-blur-sm shadow-sm">
+                            <ArrowDownRight weight="bold" className="w-3 h-3 mr-1" /> Keluar
                         </span>
                     </div>
                     <p className="text-[10px] font-bold text-rose-100 uppercase tracking-widest mb-1 opacity-80">Pengeluaran Bulan Ini</p>

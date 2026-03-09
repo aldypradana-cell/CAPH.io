@@ -3,9 +3,9 @@ import { Head, router } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { useState, useEffect } from 'react';
 import {
-    Search, Filter, ArrowUpRight, ArrowDownRight, ArrowRight,
-    AlertTriangle, ShieldAlert, CheckCircle, XCircle
-} from 'lucide-react';
+    MagnifyingGlass as Search, Funnel as Filter, ArrowUpRight, ArrowDownRight, ArrowRight,
+    Warning as AlertTriangle, ShieldWarning as ShieldAlert, CheckCircle, XCircle
+} from '@phosphor-icons/react';
 // import { useDebounce } from 'use-debounce';
 
 function useDebounce<T>(value: T, delay: number): [T] {
@@ -87,7 +87,7 @@ export default function AdminTransactionsIndex({ transactions, filters }: Props)
                 {/* Filters */}
                 <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-wrap gap-4 items-center justify-between">
                     <div className="relative w-full md:w-64">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        <Search weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                         <input
                             type="text"
                             placeholder="Cari user atau deskripsi..."
@@ -116,7 +116,7 @@ export default function AdminTransactionsIndex({ transactions, filters }: Props)
                                 : 'bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-400 hover:bg-slate-100'
                                 }`}
                         >
-                            <AlertTriangle className="w-4 h-4" /> Flagged
+                            <AlertTriangle weight="fill" className="w-4 h-4" /> Flagged
                         </button>
 
                         <button
@@ -126,7 +126,7 @@ export default function AdminTransactionsIndex({ transactions, filters }: Props)
                                 : 'bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-400 hover:bg-slate-100'
                                 }`}
                         >
-                            <ShieldAlert className="w-4 h-4" /> &gt; 10 Juta
+                            <ShieldAlert weight="duotone" className="w-4 h-4" /> &gt; 10 Juta
                         </button>
                     </div>
                 </div>
@@ -160,7 +160,7 @@ export default function AdminTransactionsIndex({ transactions, filters }: Props)
                                                 <span>{trx.wallet?.name}</span>
                                                 {trx.type === 'TRANSFER' && (
                                                     <>
-                                                        <ArrowRight className="w-3 h-3" />
+                                                        <ArrowRight weight="bold" className="w-3 h-3" />
                                                         <span>{trx.to_wallet?.name}</span>
                                                     </>
                                                 )}
@@ -185,11 +185,11 @@ export default function AdminTransactionsIndex({ transactions, filters }: Props)
                                         <td className="px-6 py-4">
                                             {trx.is_flagged ? (
                                                 <span className="flex items-center gap-1 text-red-500 font-bold text-xs bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded-full w-fit">
-                                                    <AlertTriangle className="w-3 h-3" /> Suspicious
+                                                    <AlertTriangle weight="fill" className="w-3 h-3" /> Suspicious
                                                 </span>
                                             ) : (
                                                 <span className="flex items-center gap-1 text-emerald-500 font-bold text-xs bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-full w-fit">
-                                                    <CheckCircle className="w-3 h-3" /> Verified
+                                                    <CheckCircle weight="fill" className="w-3 h-3" /> Verified
                                                 </span>
                                             )}
                                         </td>
@@ -197,7 +197,7 @@ export default function AdminTransactionsIndex({ transactions, filters }: Props)
                                 )) : (
                                     <tr>
                                         <td colSpan={6} className="px-6 py-12 text-center text-slate-400">
-                                            <Search className="w-12 h-12 mx-auto mb-3 opacity-20" />
+                                            <Search weight="duotone" className="w-12 h-12 mx-auto mb-3 opacity-20" />
                                             <p>Tidak ada transaksi yang ditemukan</p>
                                         </td>
                                     </tr>

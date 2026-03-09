@@ -4,8 +4,8 @@ import { PageProps } from '@/types';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
-    Plus, X, Tags, Trash2, Edit2, AlertTriangle, Eye, EyeOff
-} from 'lucide-react';
+    Plus, X, Tag as Tags, Trash as Trash2, PencilSimple as Edit2, Warning as AlertTriangle, Eye, EyeSlash as EyeOff
+} from '@phosphor-icons/react';
 import toast, { Toaster } from 'react-hot-toast';
 
 interface Category {
@@ -94,7 +94,7 @@ export default function CategoriesIndex({ auth, categories }: PageProps<{ catego
                         ))}
                     </div>
                     <button onClick={() => { setEditingCategory(null); reset(); setIsModalOpen(true); }} className="flex items-center px-5 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95 self-start">
-                        <Plus className="w-4 h-4 mr-2" /> Tambah Kategori
+                        <Plus weight="bold" className="w-4 h-4 mr-2" /> Tambah Kategori
                     </button>
                 </div>
 
@@ -104,7 +104,7 @@ export default function CategoriesIndex({ auth, categories }: PageProps<{ catego
                         <div key={c.id} className={`glass-card rounded-2xl p-4 flex items-center justify-between group hover:shadow-lg transition-all duration-300 animate-pop-in ${c.is_hidden ? 'opacity-60 grayscale-[50%]' : ''}`} style={{ animationDelay: `${idx * 50}ms` }}>
                             <div className="flex items-center gap-3">
                                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${c.type === 'INCOME' ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600' : 'bg-red-100 dark:bg-red-900/40 text-red-600'} shadow-sm ${c.is_hidden ? 'opacity-50' : ''}`}>
-                                    <Tags className="w-5 h-5" />
+                                    <Tags weight="duotone" className="w-5 h-5" />
                                 </div>
                                 <div>
                                     <p className="text-sm font-bold text-slate-800 dark:text-white">{c.name}</p>
@@ -113,7 +113,7 @@ export default function CategoriesIndex({ auth, categories }: PageProps<{ catego
                                             {c.type === 'INCOME' ? 'Masuk' : 'Keluar'}
                                         </span>
                                         {c.is_default && <span className="text-[10px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">Default</span>}
-                                        {c.is_hidden && <span className="text-[10px] font-bold text-slate-500 bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded-full flex items-center gap-1"><EyeOff className="w-3 h-3"/> Disembunyikan</span>}
+                                        {c.is_hidden && <span className="text-[10px] font-bold text-slate-500 bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded-full flex items-center gap-1"><EyeOff weight="bold" className="w-3 h-3"/> Disembunyikan</span>}
                                         {c.budget_rule && BUDGET_RULE_LABELS[c.budget_rule] && (
                                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${BUDGET_RULE_LABELS[c.budget_rule].color}`}>
                                                 {BUDGET_RULE_LABELS[c.budget_rule].label}
@@ -124,19 +124,19 @@ export default function CategoriesIndex({ auth, categories }: PageProps<{ catego
                             </div>
                             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button onClick={() => handleToggleHide(c)} title={c.is_hidden ? "Tampilkan Kategori" : "Sembunyikan Kategori"} className={`p-1.5 rounded-lg transition-all ${c.is_hidden ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/30' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
-                                    {c.is_hidden ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                                    {c.is_hidden ? <Eye weight="bold" className="w-4 h-4" /> : <EyeOff weight="bold" className="w-4 h-4" />}
                                 </button>
                                 {!c.is_default && (
                                     <>
-                                        <button onClick={() => handleEdit(c)} className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-all"><Edit2 className="w-4 h-4" /></button>
-                                        <button onClick={() => setDeleteId(c.id)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all"><Trash2 className="w-4 h-4" /></button>
+                                        <button onClick={() => handleEdit(c)} className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-all"><Edit2 weight="duotone" className="w-4 h-4" /></button>
+                                        <button onClick={() => setDeleteId(c.id)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all"><Trash2 weight="duotone" className="w-4 h-4" /></button>
                                     </>
                                 )}
                             </div>
                         </div>
                     )) : (
                         <div className="col-span-full glass-card rounded-[2rem] p-16 text-center">
-                            <Tags className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
+                            <Tags weight="duotone" className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
                             <p className="text-lg font-bold text-slate-400">Tidak ada kategori</p>
                         </div>
                     )}
@@ -148,7 +148,7 @@ export default function CategoriesIndex({ auth, categories }: PageProps<{ catego
                 <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setDeleteId(null)} />
                     <div className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-2xl animate-pop-in border border-slate-100 dark:border-slate-800">
-                        <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 mb-4 mx-auto"><AlertTriangle className="w-7 h-7" /></div>
+                        <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 mb-4 mx-auto"><AlertTriangle weight="fill" className="w-7 h-7" /></div>
                         <h3 className="text-xl font-bold text-center text-slate-900 dark:text-white mb-6">Hapus kategori ini?</h3>
                         <div className="flex gap-3">
                             <button onClick={() => setDeleteId(null)} className="flex-1 py-3 rounded-xl font-bold text-slate-600 bg-slate-100 dark:bg-slate-800 dark:text-slate-300">Batal</button>
@@ -167,7 +167,7 @@ export default function CategoriesIndex({ auth, categories }: PageProps<{ catego
                         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 z-10" />
                         <div className="p-5 pb-0 shrink-0 flex justify-between items-center">
                             <h3 className="text-lg font-bold text-slate-800 dark:text-white">{editingCategory ? 'Edit Kategori' : 'Kategori Baru'}</h3>
-                            <button onClick={() => setIsModalOpen(false)} className="text-slate-400 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"><X className="w-5 h-5" /></button>
+                            <button onClick={() => setIsModalOpen(false)} className="text-slate-400 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"><X weight="bold" className="w-5 h-5" /></button>
                         </div>
                         <div className="p-5 pt-4 overflow-y-auto scrollbar-hide">
                             <form onSubmit={handleSubmit} className="space-y-3">

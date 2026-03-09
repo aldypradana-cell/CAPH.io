@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { X, Plus, Hash } from 'lucide-react';
+import { X, Plus, Hash } from '@phosphor-icons/react';
 
 interface Tag {
     id: number;
@@ -137,14 +137,14 @@ export default function TagInput({ availableTags, selectedTags, onChange }: TagI
                         className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold text-white transition-all hover:scale-105 active:scale-95"
                         style={{ backgroundColor: getTagColor(tag) }}
                     >
-                        <Hash className="w-3 h-3 opacity-70" />
+                        <Hash weight="bold" className="w-3 h-3 opacity-70" />
                         {tag}
                         <button
                             type="button"
                             onClick={(e) => { e.stopPropagation(); removeTag(tag); }}
                             className="ml-0.5 hover:bg-white/20 rounded-full p-0.5 transition-colors"
                         >
-                            <X className="w-3 h-3" />
+                            <X weight="bold" className="w-3 h-3" />
                         </button>
                     </span>
                 ))}
@@ -189,7 +189,7 @@ export default function TagInput({ availableTags, selectedTags, onChange }: TagI
                                 </>
                             ) : (
                                 <>
-                                    <Plus className="w-4 h-4 text-indigo-500 shrink-0" />
+                                    <Plus weight="bold" className="w-4 h-4 text-indigo-500 shrink-0" />
                                     <span className="font-medium">
                                         Buat tag: <strong className="text-indigo-600 dark:text-indigo-400">"{opt.name}"</strong>
                                     </span>

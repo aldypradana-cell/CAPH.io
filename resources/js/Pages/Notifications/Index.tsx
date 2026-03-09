@@ -1,7 +1,9 @@
 import AppLayout from '@/Layouts/AppLayout';
 import { Head, router } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
-import { Bell, Check, Trash2, Info, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
+import { 
+    Bell, Check, Trash as Trash2, Info, Warning as AlertTriangle, CheckCircle, Clock 
+} from '@phosphor-icons/react';
 import toast, { Toaster } from 'react-hot-toast';
 
 interface NotificationItem {
@@ -69,10 +71,10 @@ export default function NotificationCenter({ notifications }: {
 
     const getIcon = (type: string) => {
         switch (type) {
-            case 'WARNING': return <AlertTriangle className="w-5 h-5 text-amber-500" />;
-            case 'ALERT': return <Clock className="w-5 h-5 text-red-500" />;
-            case 'SUCCESS': return <CheckCircle className="w-5 h-5 text-emerald-500" />;
-            default: return <Info className="w-5 h-5 text-blue-500" />;
+            case 'WARNING': return <AlertTriangle weight="fill" className="w-5 h-5 text-amber-500" />;
+            case 'ALERT': return <Clock weight="fill" className="w-5 h-5 text-red-500" />;
+            case 'SUCCESS': return <CheckCircle weight="fill" className="w-5 h-5 text-emerald-500" />;
+            default: return <Info weight="fill" className="w-5 h-5 text-blue-500" />;
         }
     };
 
@@ -119,7 +121,7 @@ export default function NotificationCenter({ notifications }: {
                     {/* Mobile Only: Mark All Read Action */}
                     <div className="sm:hidden border-b border-slate-100 dark:border-slate-800 p-3 bg-slate-50/50 dark:bg-slate-800/30 flex justify-end">
                         <button onClick={handleMarkAllRead} disabled={unreadCount === 0} className="px-4 py-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors disabled:opacity-50 flex items-center w-full justify-center">
-                            <Check className="w-3 h-3 mr-1.5" /> Tandai Semua Dibaca
+                            <Check weight="bold" className="w-3 h-3 mr-1.5" /> Tandai Semua Dibaca
                         </button>
                     </div>
 
@@ -127,7 +129,7 @@ export default function NotificationCenter({ notifications }: {
                     <div className="divide-y divide-slate-100 dark:divide-slate-800">
                         {filteredNotifications.length === 0 ? (
                             <div className="p-12 text-center flex flex-col items-center justify-center text-slate-400 dark:text-slate-500">
-                                <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4"><Bell className="w-8 h-8 opacity-50" /></div>
+                                <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4"><Bell weight="duotone" className="w-8 h-8 opacity-50" /></div>
                                 <p className="font-medium">Tidak ada notifikasi saat ini.</p>
                             </div>
                         ) : (
@@ -143,9 +145,9 @@ export default function NotificationCenter({ notifications }: {
                                     </div>
                                     <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                         {!notification.read_at && (
-                                            <button onClick={(e) => { e.stopPropagation(); handleMarkAsRead(notification.id); }} className="p-1.5 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors" title="Tandai dibaca"><Check className="w-4 h-4" /></button>
+                                            <button onClick={(e) => { e.stopPropagation(); handleMarkAsRead(notification.id); }} className="p-1.5 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors" title="Tandai dibaca"><Check weight="bold" className="w-4 h-4" /></button>
                                         )}
-                                        <button onClick={(e) => { e.stopPropagation(); handleDelete(notification.id); }} className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors" title="Hapus"><Trash2 className="w-4 h-4" /></button>
+                                        <button onClick={(e) => { e.stopPropagation(); handleDelete(notification.id); }} className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors" title="Hapus"><Trash2 weight="bold" className="w-4 h-4" /></button>
                                     </div>
                                 </div>
                             ))
@@ -219,7 +221,7 @@ const LayoutHeader = (page: any) => {
     return (
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full min-w-0">
             <div className="min-w-0 flex-1">
-                <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 truncate"><Bell className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600 dark:text-indigo-400 flex-shrink-0" /> <span className="truncate">Pusat Notifikasi</span></h1>
+                <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 truncate"><Bell weight="duotone" className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600 dark:text-indigo-400 flex-shrink-0" /> <span className="truncate">Pusat Notifikasi</span></h1>
                 <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 truncate">Anda memiliki <span className="font-bold text-indigo-600 dark:text-indigo-400">{unreadCount}</span> notifikasi baru.</p>
             </div>
             <button onClick={() => router.post(route('notifications.readAll'))} disabled={unreadCount === 0} className="hidden sm:flex px-4 py-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors disabled:opacity-50 items-center">

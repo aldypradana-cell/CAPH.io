@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, ArrowRightLeft, GripHorizontal, Clock } from 'lucide-react';
+import { TrendUp as TrendingUp, TrendDown as TrendingDown, ArrowsLeftRight as ArrowRightLeft, DotsSix as GripHorizontal, Clock } from '@phosphor-icons/react';
 import { Link } from '@inertiajs/react';
 import { Transaction } from '@/types/dashboard';
 
@@ -35,7 +35,7 @@ export default function RecentTransactionsWidget({
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 group cursor-grab active:cursor-grabbing">
                     <div className="relative">
-                        <GripHorizontal className="w-5 h-5 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
+                        <GripHorizontal weight="bold" className="w-5 h-5 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
                     </div>
                     Transaksi Terbaru
                 </h3>
@@ -46,8 +46,8 @@ export default function RecentTransactionsWidget({
                     transactions.slice(0, 5).map((t) => (
                         <div key={t.id} className="flex items-center justify-between py-2 border-b border-slate-50 dark:border-slate-800 last:border-0 transition-colors hover:bg-slate-50/50 dark:hover:bg-slate-800/30 rounded-lg px-2 -mx-2 animate-pop-in">
                             <div className="flex items-start sm:items-center gap-3 flex-1 min-w-0 pr-2 sm:pr-0">
-                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-sm shrink-0 ${t.type === 'INCOME' ? 'bg-emerald-500' : t.type === 'TRANSFER' ? 'bg-blue-500' : 'bg-red-500'}`}>
-                                    {t.type === 'INCOME' ? <TrendingUp className="w-4 h-4" /> : t.type === 'TRANSFER' ? <ArrowRightLeft className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-sm shrink-0 flex-shrink-0 ${t.type === 'INCOME' ? 'bg-emerald-500' : t.type === 'TRANSFER' ? 'bg-blue-500' : 'bg-red-500'}`}>
+                                    {t.type === 'INCOME' ? <TrendingUp weight="bold" className="w-5 h-5" /> : t.type === 'TRANSFER' ? <ArrowRightLeft weight="bold" className="w-5 h-5" /> : <TrendingDown weight="bold" className="w-5 h-5" />}
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 line-clamp-2 sm:truncate">{t.description}</p>
@@ -59,7 +59,7 @@ export default function RecentTransactionsWidget({
                                             <>
                                                 <span className="opacity-30">·</span>
                                                 <span className="text-amber-600 dark:text-amber-400 font-bold flex items-center gap-0.5 shrink-0">
-                                                    <Clock className="w-2 h-2" /> PayLater
+                                                    <Clock weight="fill" className="w-3 h-3" /> PayLater
                                                 </span>
                                             </>
                                         )}
