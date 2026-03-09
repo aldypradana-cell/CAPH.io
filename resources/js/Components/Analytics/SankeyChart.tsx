@@ -160,10 +160,16 @@ export default function SankeyChart({ data, isLoading }: SankeyChartProps) {
 
     return (
         <div className="flex flex-col h-full w-full min-h-[700px]">
-            <div className="w-full relative bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 overflow-hidden">
+            <div className="w-full relative bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 overflow-hidden flex flex-col">
                 {/* Decorative background gradients */}
                 <div className="absolute top-0 left-0 w-80 h-80 bg-emerald-500/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
                 <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-indigo-500/5 rounded-full blur-3xl translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
+
+                {/* Card Header for Title */}
+                <div className="px-6 sm:px-10 pt-8 pb-4 relative z-10">
+                    <h3 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white mb-2">Sankey Diagram</h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Visualisasi dari mana uang Anda berasal dan ke mana mengalirnya.</p>
+                </div>
 
                 {isLoading ? (
                     <div className="w-full h-[650px] flex flex-col items-center justify-center space-y-4">
@@ -193,37 +199,37 @@ export default function SankeyChart({ data, isLoading }: SankeyChartProps) {
                             <span className="text-xs font-semibold uppercase tracking-widest leading-none">Geser Horizontal Untuk Detail</span>
                         </div>
 
-                        <div className="overflow-x-auto scrollbar-hide -mx-4 sm:-mx-10 lg:-mx-14 px-4 sm:px-10 lg:px-14">
-                            <div className="min-w-[1200px] h-[650px] flex items-center justify-center">
-                                <Sankey
-                                    width={1200}
-                                    height={600}
-                                    data={{
-                                        // Inject consistent colors into nodes so links can use them
-                                        nodes: nodes.map((n, i) => ({ ...n, fill: getColorForIndex(i), index: i })),
-                                        links: links.map(l => ({ 
-                                            source: Number(l.source), 
-                                            target: Number(l.target), 
-                                            value: Number(l.value) 
-                                        }))
-                                    }}
-                                    node={<CustomNode containerWidth={1200} />}
-                                    nodePadding={45}
-                                    nodeWidth={16}
-                                    link={
-                                        <CustomLink 
-                                            containerWidth={1200} 
-                                            activeLink={activeLink} 
-                                            setActiveLink={setActiveLink} 
-                                        />
-                                    }
-                                    margin={{ top: 40, right: 220, bottom: 40, left: 220 }}
-                                    iterations={64}
-                                >
-                                    <Tooltip content={<CustomTooltip />} />
-                                </Sankey>
+                        <div className="overflow-x-auto scrollbar-hide -mx-4 flex justify-center w-full">
+                            <div className="min-w-[800px] w-full max-w-[1000px] h-[650px] flex justify-center mx-auto">
+                                <ResponsiveContainer width="100%" height={600}>
+                                    <Sankey
+                                        data={{
+                                            // Inject consistent colors into nodes so links can use them
+                                            nodes: nodes.map((n, i) => ({ ...n, fill: getColorForIndex(i), index: i })),
+                                            links: links.map(l => ({ 
+                                                source: Number(l.source), 
+                                                target: Number(l.target), 
+                                                value: Number(l.value) 
+                                            }))
+                                        }}
+                                        node={<CustomNode containerWidth={1000} />}
+                                        nodePadding={40}
+                                        nodeWidth={16}
+                                        link={
+                                            <CustomLink 
+                                                containerWidth={1000} 
+                                                activeLink={activeLink} 
+                                                setActiveLink={setActiveLink} 
+                                            />
+                                        }
+                                        margin={{ top: 20, right: 120, bottom: 20, left: 120 }}
+                                        iterations={64}
+                                    >
+                                        <Tooltip content={<CustomTooltip />} />
+                                    </Sankey>
+                                </ResponsiveContainer>
                             </div>
-                    </div>
+                        </div>
                 </div>
             )}
         </div>
