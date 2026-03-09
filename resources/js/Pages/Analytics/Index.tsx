@@ -4,9 +4,7 @@ import { Head } from '@inertiajs/react';
 import { Calendar, RefreshCw } from 'lucide-react';
 import axios from 'axios';
 import SankeyChart from '@/Components/Analytics/SankeyChart';
-import NetFlowChart from '@/Components/Analytics/NetFlowChart';
-import SummaryTable from '@/Components/Analytics/SummaryTable';
-import { SankeyData, NetFlowData } from '@/types/dashboard';
+import { SankeyData } from '@/types/dashboard';
 
 interface AnalyticsProps {
     defaultPeriod: {
@@ -22,12 +20,7 @@ export default function AnalyticsIndex({ defaultPeriod }: AnalyticsProps) {
     });
 
     const [sankeyData, setSankeyData] = useState<SankeyData | null>(null);
-    const [netFlowData, setNetFlowData] = useState<NetFlowData[]>([]);
-    const [summaryData, setSummaryData] = useState<any>(null);
-    
     const [isLoadingSankey, setIsLoadingSankey] = useState(true);
-    const [isLoadingFlow, setIsLoadingFlow] = useState(true);
-    const [isLoadingSummary, setIsLoadingSummary] = useState(true);
 
     const onDateChange = (type: 'start' | 'end', value: string) => {
         setDateRange(prev => ({
@@ -48,34 +41,8 @@ export default function AnalyticsIndex({ defaultPeriod }: AnalyticsProps) {
         }
     };
 
-    const fetchNetFlow = async () => {
-        setIsLoadingFlow(true);
-        try {
-            const res = await axios.get(route('api.analytics.netFlow', dateRange));
-            setNetFlowData(res.data.netFlowData);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setIsLoadingFlow(false);
-        }
-    };
-
-    const fetchSummary = async () => {
-        setIsLoadingSummary(true);
-        try {
-            const res = await axios.get(route('api.analytics.summary', dateRange));
-            setSummaryData(res.data.summaryData);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setIsLoadingSummary(false);
-        }
-    };
-
     const refreshAll = () => {
         fetchSankey();
-        fetchNetFlow();
-        fetchSummary();
     };
 
     useEffect(() => {
@@ -89,7 +56,7 @@ export default function AnalyticsIndex({ defaultPeriod }: AnalyticsProps) {
         <>
             <Head title="Analisis Arus Kas" />
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 px-pb-20">
                 {/* Filter */}
                 <div className="flex flex-col md:flex-row justify-end items-start md:items-center mb-8 gap-4">
 
@@ -120,26 +87,15 @@ export default function AnalyticsIndex({ defaultPeriod }: AnalyticsProps) {
                             className="p-3 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors active:scale-95"
                             title="Refresh Data"
                         >
-                            <RefreshCw className={`w-5 h-5 ${(isLoadingSankey || isLoadingFlow || isLoadingSummary) ? 'animate-spin' : ''}`} />
+                            <RefreshCw className={`w-5 h-5 ${isLoadingSankey ? 'animate-spin' : ''}`} />
                         </button>
                     </div>
                 </div>
 
-                <div className="space-y-6">
-                    {/* Top Section: Sankey Diagram */}
+                <div className="space-y-6 pb-20">
+                    {/* Main Content: Sankey Diagram */}
                     <div className="glass-card rounded-[2rem] p-4 sm:p-6 lg:p-8 animate-fade-in-up">
                         <SankeyChart data={sankeyData} isLoading={isLoadingSankey} />
-                    </div>
-
-                    {/* Bottom Section: Grid for Net Flow & Summary */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div className="glass-card rounded-[2rem] p-4 sm:p-6 lg:p-8 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-                            <NetFlowChart data={netFlowData} isLoading={isLoadingFlow} />
-                        </div>
-                        
-                        <div className="glass-card rounded-[2rem] p-4 sm:p-6 lg:p-8 animate-fade-in-up flex flex-col" style={{ animationDelay: '0.2s' }}>
-                            <SummaryTable data={summaryData} isLoading={isLoadingSummary} />
-                        </div>
                     </div>
                 </div>
             </div>
