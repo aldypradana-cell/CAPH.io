@@ -98,6 +98,10 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
                 setParsedTransactions([]);
                 setInput('');
                 toast.success('Semua transaksi berhasil disimpan!');
+            },
+            onError: (errs) => {
+                if (errs.message) toast.error(errs.message);
+                else toast.error('Gagal menyimpan transaksi. Periksa kembali saldo dompet atau input Anda.');
             }
         });
     };
