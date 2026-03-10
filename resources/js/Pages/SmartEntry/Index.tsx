@@ -134,12 +134,27 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
         recognition.interimResults = true;
 
         recognition.onresult = (event: any) => {
-            let sessionTranscript = '';
-            for (let i = 0; i < event.results.length; ++i) {
-                sessionTranscript += event.results[i][0].transcript;
+            let finalTranscript = '';
+            let interimTranscript = '';
+            
+            // Loop HANYA dari index terbaru, BUKAN dari awal (0)
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    finalTranscript += event.results[i][0].transcript;
+                } else {
+                    interimTranscript += event.results[i][0].transcript;
+                }
             }
-            const separator = originalInputRef.current.trim() ? ' ' : '';
-            setInput(originalInputRef.current + separator + sessionTranscript);
+            
+            // Perbarui original reference HANYA jika ada kata final BARD yang baru dikonfirmasi
+            if (finalTranscript) {
+                const separator = originalInputRef.current.trim() && finalTranscript.trim() ? ' ' : '';
+                originalInputRef.current = originalInputRef.current + separator + finalTranscript;
+            }
+
+            // Gabungkan teks asli (yang sudah final) dengan teks yang sedang diucapkan (interim)
+            const currentSeparator = originalInputRef.current.trim() && interimTranscript.trim() ? ' ' : '';
+            setInput(originalInputRef.current + currentSeparator + interimTranscript);
         };
 
         recognition.onerror = (event: any) => {
