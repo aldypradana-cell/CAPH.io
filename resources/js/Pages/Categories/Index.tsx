@@ -102,13 +102,13 @@ export default function CategoriesIndex({ auth, categories }: PageProps<{ catego
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {filtered.length > 0 ? filtered.map((c, idx) => (
                         <div key={c.id} className={`glass-card rounded-2xl p-4 flex items-center justify-between group hover:shadow-lg transition-all duration-300 animate-pop-in ${c.is_hidden ? 'opacity-60 grayscale-[50%]' : ''}`} style={{ animationDelay: `${idx * 50}ms` }}>
-                            <div className="flex items-center gap-3">
-                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${c.type === 'INCOME' ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600' : 'bg-red-100 dark:bg-red-900/40 text-red-600'} shadow-sm ${c.is_hidden ? 'opacity-50' : ''}`}>
+                            <div className="flex items-center gap-3 flex-1 min-w-0 pr-4">
+                                <div className={`w-10 h-10 shrink-0 rounded-xl flex items-center justify-center ${c.type === 'INCOME' ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600' : 'bg-red-100 dark:bg-red-900/40 text-red-600'} shadow-sm ${c.is_hidden ? 'opacity-50' : ''}`}>
                                     <Tags weight="duotone" className="w-5 h-5" />
                                 </div>
-                                <div>
-                                    <p className="text-sm font-bold text-slate-800 dark:text-white">{c.name}</p>
-                                    <div className="flex items-center gap-2">
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-sm font-bold text-slate-800 dark:text-white truncate">{c.name}</p>
+                                    <div className="flex items-center gap-2 mt-1 flex-wrap">
                                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${c.type === 'INCOME' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
                                             {c.type === 'INCOME' ? 'Masuk' : 'Keluar'}
                                         </span>
@@ -122,7 +122,7 @@ export default function CategoriesIndex({ auth, categories }: PageProps<{ catego
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="flex gap-1 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                                 <button onClick={() => handleToggleHide(c)} title={c.is_hidden ? "Tampilkan Kategori" : "Sembunyikan Kategori"} className={`p-1.5 rounded-lg transition-all ${c.is_hidden ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/30' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
                                     {c.is_hidden ? <Eye weight="bold" className="w-4 h-4" /> : <EyeOff weight="bold" className="w-4 h-4" />}
                                 </button>
