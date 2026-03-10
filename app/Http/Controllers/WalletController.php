@@ -75,6 +75,7 @@ class WalletController extends Controller
             'name' => 'required|string|max:255',
             'type' => 'required|in:CASH,BANK,E-WALLET,SAVING',
             'balance' => 'required|numeric|min:0',
+            'min_balance_alert' => 'nullable|numeric|min:0',
         ]);
         
         Wallet::create([
@@ -82,6 +83,7 @@ class WalletController extends Controller
             'name' => $validated['name'],
             'type' => $validated['type'],
             'balance' => $validated['balance'],
+            'min_balance_alert' => $validated['min_balance_alert'] ?? 0,
         ]);
         
         return redirect()->back()->with('success', 'Dompet berhasil ditambahkan');
@@ -97,6 +99,7 @@ class WalletController extends Controller
             'name' => 'required|string|max:255',
             'type' => 'required|in:CASH,BANK,E-WALLET,SAVING',
             'balance' => 'required|numeric|min:0',
+            'min_balance_alert' => 'nullable|numeric|min:0',
         ]);
         
         $wallet->update($validated);

@@ -19,6 +19,7 @@ interface Wallet {
     is_primary: boolean;
     is_archived: boolean;
     transactions_count: number;
+    min_balance_alert?: number;
 }
 
 const formatIDR = (amount: number) =>
@@ -46,19 +47,24 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
         name: '',
         type: 'CASH' as 'CASH' | 'BANK' | 'E-WALLET',
         balance: '',
+        min_balance_alert: '',
     });
 
-    const handleAmountChange = (val: string) => {
+    const handleAmountChange = (val: string, field: 'balance' | 'min_balance_alert' = 'balance') => {
         const rawValue = val.replace(/\D/g, '');
-        if (!rawValue) { setData('balance', ''); return; }
-        setData('balance', parseInt(rawValue).toLocaleString('id-ID'));
+        if (!rawValue) { setData(field, ''); return; }
+        setData(field, parseInt(rawValue).toLocaleString('id-ID'));
     };
 
     const parseAmount = (val: string) => parseFloat(val.replace(/\./g, '')) || 0;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const payload = { ...data, balance: parseAmount(data.balance).toString() };
+        const payload = { 
+            ...data, 
+            balance: parseAmount(data.balance).toString(),
+            min_balance_alert: parseAmount(data.min_balance_alert).toString()
+        };
 
         if (editingWallet) {
             router.put(route('wallets.update', editingWallet.id), payload, {
@@ -79,7 +85,12 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
 
     const handleEdit = (wallet: Wallet) => {
         setEditingWallet(wallet);
-        setData({ name: wallet.name, type: wallet.type as any, balance: Number(wallet.balance).toLocaleString('id-ID') });
+        setData({ 
+            name: wallet.name, 
+            type: wallet.type as any, 
+            balance: Number(wallet.balance).toLocaleString('id-ID'),
+            min_balance_alert: wallet.min_balance_alert ? Number(wallet.min_balance_alert).toLocaleString('id-ID') : ''
+        });
         setIsModalOpen(true);
     };
 
@@ -399,7 +410,11 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Saldo (Rp)</label>
-                                    <input type="text" required value={data.balance} onChange={(e) => handleAmountChange(e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="0" />
+                                    <input type="text" required value={data.balance} onChange={(e) => handleAmountChange(e.target.value, 'balance')} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="0" />
+                                </div>
+                                <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1 flex items-center gap-1">Peringatan Saldo Kritis (Rp) <span className="text-[8px] bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded text-slate-500 dark:text-slate-400 lowercase">opsional</span></label>
+                                    <input type="text" value={data.min_balance_alert} onChange={(e) => handleAmountChange(e.target.value, 'min_balance_alert')} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-amber-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="Biarkan kosong jika tidak perlu" />
                                 </div>
                                 <div className="flex space-x-3 pt-4">
                                     <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors active:scale-95">Batal</button>

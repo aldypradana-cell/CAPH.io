@@ -13,6 +13,7 @@ use App\Models\Installment;
 use App\Models\InstallmentPayment;
 use Illuminate\Support\Carbon;
 use App\Notifications\BudgetExceeded;
+use App\Notifications\LowBalanceAlert;
 
 class TransactionService
 {
@@ -55,6 +56,7 @@ class TransactionService
                     }
                     $wallet->decrement('balance', $data['amount']);
                     $this->checkBudget($transaction);
+                    $this->checkLowBalance($wallet);
 
                     // Create separate admin fee expense transaction if present
                     if ($adminFee > 0) {
@@ -93,6 +95,7 @@ class TransactionService
                         if ($adminFeeFrom === 'sender') {
                             // Deduct admin fee from sender wallet
                             $wallet->decrement('balance', $adminFee);
+                            $this->checkLowBalance($wallet);
                         } else {
                             // Deduct admin fee from receiver wallet
                             $receiverWallet->refresh();
@@ -100,6 +103,7 @@ class TransactionService
                                 throw new \Exception("Saldo dompet \"{$receiverWallet->name}\" tidak cukup untuk biaya admin. Saldo: Rp" . number_format($receiverWallet->balance, 0, ',', '.') . ", Biaya: Rp" . number_format($adminFee, 0, ',', '.'));
                             }
                             $receiverWallet->decrement('balance', $adminFee);
+                            $this->checkLowBalance($receiverWallet);
                         }
 
                         // Create separate EXPENSE transaction for admin fee
@@ -161,11 +165,13 @@ class TransactionService
                     }
                     $wallet->decrement('balance', $data['amount']);
                     $this->checkBudget($transaction);
+                    $this->checkLowBalance($wallet);
                 } elseif ($data['type'] === TransactionType::TRANSFER->value && isset($data['to_wallet_id'])) {
                     if ($wallet->balance < $data['amount']) {
                         throw new \Exception("Saldo dompet \"{$wallet->name}\" tidak cukup untuk transfer. Saldo: Rp" . number_format($wallet->balance, 0, ',', '.') . ", Dibutuhkan: Rp" . number_format($data['amount'], 0, ',', '.'));
                     }
                     $wallet->decrement('balance', $data['amount']);
+                    $this->checkLowBalance($wallet);
                     Wallet::where('id', $data['to_wallet_id'])->lockForUpdate()->firstOrFail()->increment('balance', $data['amount']);
                 }
             }
@@ -213,6 +219,7 @@ class TransactionService
 
                 if ($transaction->type === TransactionType::INCOME->value) {
                     $wallet->decrement('balance', $transaction->amount);
+                    $this->checkLowBalance($wallet);
                 } elseif ($transaction->type === TransactionType::EXPENSE->value) {
                     $wallet->increment('balance', $transaction->amount);
                 }
@@ -220,7 +227,9 @@ class TransactionService
 
             if ($transaction->type === TransactionType::TRANSFER->value && $transaction->wallet_id && $transaction->to_wallet_id) {
                 $wallet->increment('balance', $transaction->amount);
-                Wallet::where('id', $transaction->to_wallet_id)->lockForUpdate()->firstOrFail()->decrement('balance', $transaction->amount);
+                $receiverWallet = Wallet::where('id', $transaction->to_wallet_id)->lockForUpdate()->firstOrFail();
+                $receiverWallet->decrement('balance', $transaction->amount);
+                $this->checkLowBalance($receiverWallet);
             }
 
             // Sync with DebtPayment BEFORE deleting the transaction
@@ -256,6 +265,26 @@ class TransactionService
 
             $transaction->delete();
         });
+    }
+
+    protected function checkLowBalance(Wallet $wallet)
+    {
+        if ($wallet->min_balance_alert > 0 && $wallet->balance <= $wallet->min_balance_alert) {
+            // Check if a notification for this specific wallet has already been sent today
+            // to avoid spamming the user on every small transaction that keeps it below the limit
+            $alreadyNotified = DB::table('notifications')
+                ->where('notifiable_id', $wallet->user_id)
+                ->where('notifiable_type', 'App\Models\User')
+                ->where('type', LowBalanceAlert::class)
+                ->where('data', 'like', '%"title":"Saldo Dompet Kurang"%')
+                ->where('data', 'like', '%"Saldo dompet ' . $wallet->name . ' Anda sisa%')
+                ->whereDate('created_at', now()->toDateString())
+                ->exists();
+
+            if (!$alreadyNotified) {
+                $wallet->user->notify(new LowBalanceAlert($wallet));
+            }
+        }
     }
 
     protected function checkBudget(Transaction $transaction)

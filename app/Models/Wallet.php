@@ -16,6 +16,7 @@ class Wallet extends Model
         'balance',
         'is_primary',
         'is_archived',
+        'min_balance_alert',
     ];
 
     protected $casts = [
@@ -27,6 +28,7 @@ class Wallet extends Model
     {
         return [
             'balance' => 'decimal:2',
+            'min_balance_alert' => 'decimal:2',
         ];
     }
 

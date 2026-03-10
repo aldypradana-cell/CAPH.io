@@ -6,6 +6,8 @@ use Illuminate\Console\Command;
 use App\Models\RecurringTransaction;
 use App\Services\TransactionService;
 use Illuminate\Support\Carbon;
+use App\Notifications\RecurringPaymentDue;
+use App\Notifications\RecurringPaymentSuccess;
 
 class ProcessRecurringTransactions extends Command
 {
@@ -16,12 +18,12 @@ class ProcessRecurringTransactions extends Command
      */
     protected $signature = 'recurring:process';
 
-    /**
+     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Process recurring transactions that are due today (auto-cut only)';
+    protected $description = 'Process recurring transactions that are due today and send notifications';
 
     /**
      * Execute the console command.
@@ -30,9 +32,8 @@ class ProcessRecurringTransactions extends Command
     {
         $this->info('Starting recurring transaction processing...');
 
-        $dueTransactions = RecurringTransaction::where('next_run_date', '<=', now())
+        $dueTransactions = RecurringTransaction::with('user')->where('next_run_date', '<=', now())
             ->where('is_active', true)
-            ->where('auto_cut', true)
             ->get();
 
         $count = $dueTransactions->count();
@@ -40,7 +41,17 @@ class ProcessRecurringTransactions extends Command
 
         foreach ($dueTransactions as $recurring) {
             try {
-                $this->info("Processing: {$recurring->name} ({$recurring->amount})");
+                if (!$recurring->auto_cut) {
+                    $this->info("Manual Payment Required: {$recurring->name}");
+                    $recurring->user->notify(new RecurringPaymentDue($recurring, false));
+                    
+                    // Update Next Run Date so it doesn't notify every day
+                    $recurring->next_run_date = $recurring->calculateNextRunDate();
+                    $recurring->save();
+                    continue;
+                }
+
+                $this->info("Processing Auto-Cut: {$recurring->name} ({$recurring->amount})");
 
                 // Create Transaction
                 $transactionService->createTransactions(
@@ -60,10 +71,14 @@ class ProcessRecurringTransactions extends Command
                 $recurring->next_run_date = $recurring->calculateNextRunDate();
                 $recurring->save();
 
+                $recurring->user->notify(new RecurringPaymentSuccess($recurring));
                 $this->info("Success: {$recurring->name} processed.");
             }
             catch (\Exception $e) {
                 $this->error("Failed to process {$recurring->name}: " . $e->getMessage());
+                if ($recurring->auto_cut) {
+                    $recurring->user->notify(new RecurringPaymentDue($recurring, true));
+                }
             }
         }
 
