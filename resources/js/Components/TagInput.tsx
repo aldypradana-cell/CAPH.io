@@ -57,7 +57,9 @@ export default function TagInput({ availableTags, selectedTags, onChange }: TagI
         setInputValue('');
         setIsOpen(false);
         setHighlightIndex(0);
-        inputRef.current?.focus();
+        // Remove input focus so mobile keyboards don't stay up unnecessarily 
+        // and the dropdown properly registers as closed
+        inputRef.current?.blur();
     };
 
     const removeTag = (name: string) => {
@@ -165,9 +167,9 @@ export default function TagInput({ availableTags, selectedTags, onChange }: TagI
                 />
             </div>
 
-            {/* Dropdown */}
+            {/* Dropdown - changed from absolute to relative to push content down */}
             {isOpen && options.length > 0 && (
-                <div className="absolute z-50 left-0 right-0 mt-1.5 glass-heavy rounded-xl overflow-hidden animate-pop-in max-h-[180px] overflow-y-auto scrollbar-hide">
+                <div className="mt-2 glass-heavy rounded-xl overflow-hidden animate-pop-in max-h-[160px] overflow-y-auto scrollbar-hide border border-slate-200/50 dark:border-slate-700/50 shadow-sm">
                     {options.map((opt, idx) => (
                         <button
                             key={opt.type + opt.name}
