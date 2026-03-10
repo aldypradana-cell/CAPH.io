@@ -15,10 +15,12 @@ class Wallet extends Model
         'type',
         'balance',
         'is_primary',
+        'is_archived',
     ];
 
     protected $casts = [
         'is_primary' => 'boolean',
+        'is_archived' => 'boolean',
     ];
 
     protected function casts(): array

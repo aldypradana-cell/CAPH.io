@@ -17,6 +17,8 @@ interface Wallet {
     monthly_income: number;
     monthly_expense: number;
     is_primary: boolean;
+    is_archived: boolean;
+    transactions_count: number;
 }
 
 const formatIDR = (amount: number) =>
@@ -33,6 +35,7 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingWallet, setEditingWallet] = useState<Wallet | null>(null);
     const [deleteId, setDeleteId] = useState<number | null>(null);
+    const [archiveId, setArchiveId] = useState<number | null>(null);
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -83,10 +86,28 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
     const confirmDelete = () => {
         if (deleteId) {
             router.delete(route('wallets.destroy', deleteId), {
-                onSuccess: () => toast.success('Dompet berhasil dihapus')
+                onSuccess: () => toast.success('Dompet berhasil dihapus permanen'),
+                onError: (err: any) => err.message && toast.error(err.message)
             });
             setDeleteId(null);
         }
+    };
+
+    const confirmArchive = () => {
+        if (archiveId) {
+            router.put(route('wallets.archive', archiveId), {}, {
+                onSuccess: () => toast.success('Dompet diarsipkan. Transaksi masa lalu aman.'),
+                onError: (err: any) => err.message && toast.error(err.message)
+            });
+            setArchiveId(null);
+        }
+    };
+
+    const confirmUnarchive = (id: number) => {
+        router.put(route('wallets.unarchive', id), {}, {
+            onSuccess: () => toast.success('Dompet berhasil dikembalikan dari arsip.'),
+            onError: (err: any) => err.message && toast.error(err.message)
+        });
     };
 
     const handleSetPrimary = (walletId: number) => {
@@ -105,7 +126,11 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
 
     // Filter out SAVING wallets — they have their own page
     const dailyWallets = wallets.filter(w => w.type !== 'SAVING');
-    const totalBalance = dailyWallets.reduce((sum, w) => sum + safeParseFloat(w.balance), 0);
+    const activeWallets = dailyWallets.filter(w => !w.is_archived);
+    const archivedWallets = dailyWallets.filter(w => w.is_archived);
+    
+    // Only count balance from active wallets
+    const totalBalance = activeWallets.reduce((sum, w) => sum + safeParseFloat(w.balance), 0);
 
     const getWalletGradient = (type: string) => {
         switch (type) {
@@ -139,9 +164,9 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                     <p className="text-indigo-200 text-sm mt-2">{dailyWallets.length} dompet terdaftar</p>
                 </div>
 
-                {/* Wallet Cards Grid */}
+                {/* Active Wallet Cards Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {dailyWallets.map((wallet, idx) => {
+                    {activeWallets.map((wallet, idx) => {
                         const Icon = getWalletIcon(wallet.type);
                         return (
                             <div
@@ -214,13 +239,25 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                                         >
                                             <Edit2 weight="duotone" className="w-4 h-4" />
                                         </button>
-                                        <button 
-                                            onClick={(e) => { e.stopPropagation(); setDeleteId(wallet.id); }} 
-                                            className="p-2 sm:p-2 bg-white/20 sm:bg-white/10 hover:bg-white/30 rounded-xl transition-colors" 
-                                            title="Hapus"
-                                        >
-                                            <Trash2 weight="duotone" className="w-4 h-4" />
-                                        </button>
+                                        
+                                        {/* Show Archive if it has transactions, otherwise show Hard Delete */}
+                                        {wallet.transactions_count > 0 ? (
+                                            <button 
+                                                onClick={(e) => { e.stopPropagation(); setArchiveId(wallet.id); }} 
+                                                className="p-2 sm:p-2 bg-white/20 sm:bg-white/10 hover:bg-white/30 hover:bg-amber-500/30 hover:text-amber-100 rounded-xl transition-colors" 
+                                                title="Arsipkan"
+                                            >
+                                                <WalletIcon weight="duotone" className="w-4 h-4" />
+                                            </button>
+                                        ) : (
+                                            <button 
+                                                onClick={(e) => { e.stopPropagation(); setDeleteId(wallet.id); }} 
+                                                className="p-2 sm:p-2 bg-white/20 sm:bg-white/10 hover:bg-white/30 hover:bg-red-500/30 hover:text-red-100 rounded-xl transition-colors" 
+                                                title="Hapus Permanen"
+                                            >
+                                                <Trash2 weight="duotone" className="w-4 h-4" />
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
 
@@ -243,6 +280,51 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                         <p className="text-sm font-bold text-slate-400 dark:text-slate-500 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Tambah Dompet</p>
                     </div>
                 </div>
+
+                {/* Archived Wallets Section */}
+                {archivedWallets.length > 0 && (
+                    <div className="pt-8 border-t border-slate-200 dark:border-slate-800/60 mt-8 animate-fade-in-up">
+                        <div className="flex items-center gap-3 mb-6">
+                            <h3 className="text-xl font-bold text-slate-800 dark:text-white">Arsip Dompet</h3>
+                            <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                                Disembunyikan
+                            </span>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 opacity-75 grayscale-[30%] hover:grayscale-0 transition-all duration-300">
+                            {archivedWallets.map((wallet) => {
+                                const Icon = getWalletIcon(wallet.type);
+                                return (
+                                    <div
+                                        key={wallet.id}
+                                        className="bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 rounded-2xl p-4 sm:p-6 text-slate-600 dark:text-slate-300 relative h-48 flex flex-col justify-between overflow-hidden shadow-sm"
+                                    >
+                                        <div className="relative z-10 flex justify-between items-start">
+                                            <div>
+                                                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{wallet.type.replace('-', ' ')}</p>
+                                                <h3 className="text-lg font-bold mt-1 max-w-[150px] truncate">{wallet.name}</h3>
+                                            </div>
+                                            <Icon weight="duotone" className="w-8 h-8 opacity-40" />
+                                        </div>
+                                        <div className="relative z-10 flex justify-between items-end">
+                                            <div className="w-full">
+                                                <p className="text-[10px] font-medium opacity-60 uppercase tracking-widest mb-1">Saldo Terakhir</p>
+                                                <p className="text-xl font-bold tracking-tight">{formatIDR(safeParseFloat(wallet.balance))}</p>
+                                            </div>
+                                            <div className="relative z-20 shrink-0 ml-2">
+                                                <button 
+                                                    onClick={() => confirmUnarchive(wallet.id)} 
+                                                    className="px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-800/50 text-indigo-600 dark:text-indigo-400 rounded-xl text-xs font-bold transition-colors"
+                                                >
+                                                    Aktifkan
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Delete Confirmation Modal */}
@@ -253,11 +335,32 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                         <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 mb-4 mx-auto">
                             <AlertTriangle weight="fill" className="w-7 h-7" />
                         </div>
-                        <h3 className="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">Hapus Dompet?</h3>
-                        <p className="text-sm text-center text-slate-500 dark:text-slate-400 mb-6 px-4">Semua transaksi terkait dompet ini juga akan dihapus.</p>
+                        <h3 className="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">Hapus Permanen?</h3>
+                        <p className="text-sm text-center text-slate-500 dark:text-slate-400 mb-6 px-4">Dompet ini tidak memiliki transaksi sehingga aman dihapus selamanya.</p>
                         <div className="flex gap-3">
                             <button onClick={() => setDeleteId(null)} className="flex-1 py-3 rounded-xl font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Batal</button>
                             <button onClick={confirmDelete} className="flex-1 py-3 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 shadow-lg shadow-red-500/30 transition-colors">Ya, Hapus</button>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
+
+            {/* Archive Confirmation Modal */}
+            {archiveId && mounted && createPortal(
+                <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 animate-fade-in">
+                    <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setArchiveId(null)} />
+                    <div className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-2xl animate-pop-in border border-slate-100 dark:border-slate-800">
+                        <div className="w-14 h-14 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 dark:text-amber-400 mb-4 mx-auto">
+                            <WalletIcon weight="fill" className="w-7 h-7" />
+                        </div>
+                        <h3 className="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">Arsipkan Dompet?</h3>
+                        <p className="text-sm text-center text-slate-500 dark:text-slate-400 mb-6 px-4">
+                            Dompet ini memiliki riwayat transaksi aktif. Mengarsipkan dompet akan mengamankan saldo historis tanpa merusak grafik, tapi dompet ini tidak bisa digunakan lagi untuk transaksi baru.
+                        </p>
+                        <div className="flex gap-3">
+                            <button onClick={() => setArchiveId(null)} className="flex-1 py-3 rounded-xl font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Batal</button>
+                            <button onClick={confirmArchive} className="flex-1 py-3 rounded-xl font-bold text-white bg-amber-500 hover:bg-amber-600 shadow-lg shadow-amber-500/30 transition-colors">Ya, Arsipkan</button>
                         </div>
                     </div>
                 </div>,

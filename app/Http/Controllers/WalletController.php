@@ -17,6 +17,7 @@ class WalletController extends Controller
         $monthEnd = now()->endOfMonth()->format('Y-m-d');
 
         $wallets = Wallet::where('user_id', $userId)
+            ->withCount('transactions')
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($wallet) {
@@ -109,9 +110,18 @@ class WalletController extends Controller
             abort(403);
         }
         
+        // Minimum 1 Active Wallet Protection
+        $activeWalletsCount = Wallet::where('user_id', $request->user()->id)
+            ->where('is_archived', false)
+            ->count();
+
+        if ($activeWalletsCount <= 1) {
+            return redirect()->back()->withErrors(['message' => 'Anda harus memiliki minimal 1 dompet aktif. Buat dompet baru terlebih dahulu sebelum menghapus ini.']);
+        }
+
         // Check if wallet has transactions
         if ($wallet->transactions()->count() > 0) {
-            return redirect()->back()->withErrors(['message' => 'Tidak bisa menghapus dompet yang masih memiliki transaksi']);
+            return redirect()->back()->withErrors(['message' => 'Tidak bisa menghapus permanen dompet yang memiliki transaksi. Gunakan fitur Arsip.']);
         }
         
         $wallet->delete();
@@ -135,5 +145,36 @@ class WalletController extends Controller
         });
 
         return redirect()->back()->with('success', $wallet->name . ' berhasil diset sebagai dompet utama');
+    }
+
+    public function archive(Request $request, Wallet $wallet)
+    {
+        if ($request->user()->cannot('update', $wallet)) {
+            abort(403);
+        }
+
+        // Minimum 1 Active Wallet Protection
+        $activeWalletsCount = Wallet::where('user_id', $request->user()->id)
+            ->where('is_archived', false)
+            ->count();
+
+        if ($activeWalletsCount <= 1 && !$wallet->is_archived) {
+            return redirect()->back()->withErrors(['message' => 'Anda harus memiliki minimal 1 dompet aktif. Buat dompet baru terlebih dahulu sebelum mengarsipkan ini.']);
+        }
+
+        $wallet->update(['is_archived' => true, 'is_primary' => false]);
+
+        return redirect()->back()->with('success', 'Dompet berhasil diarsipkan. Transaksi masa lalu tetap aman.');
+    }
+
+    public function unarchive(Request $request, Wallet $wallet)
+    {
+        if ($request->user()->cannot('update', $wallet)) {
+            abort(403);
+        }
+
+        $wallet->update(['is_archived' => false]);
+
+        return redirect()->back()->with('success', 'Dompet berhasil dikembalikan dari arsip.');
     }
 }

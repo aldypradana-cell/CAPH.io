@@ -47,6 +47,8 @@ Route::middleware(['auth'])->group(function () {
         // Wallets
         Route::resource('wallets', WalletController::class)
             ->only(['index', 'store', 'update', 'destroy']);
+        Route::put('/wallets/{wallet}/archive', [WalletController::class, 'archive'])->name('wallets.archive');
+        Route::put('/wallets/{wallet}/unarchive', [WalletController::class, 'unarchive'])->name('wallets.unarchive');
         Route::post('/wallets/{wallet}/set-primary', [WalletController::class, 'setPrimary'])->name('wallets.setPrimary');
 
         // Savings & Goals

@@ -7,7 +7,7 @@ import {
 } from '@phosphor-icons/react';
 import toast, { Toaster } from 'react-hot-toast';
 
-interface Wallet { id: number; name: string; }
+interface Wallet { id: number; name: string; is_archived?: boolean; }
 interface Category { id: number; name: string; type: string; }
 interface ParsedTransaction {
     description: string;
@@ -288,7 +288,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Simpan ke Dompet</label>
                                 <select value={selectedWallet} onChange={(e) => setSelectedWallet(e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required>
                                     <option value="">Pilih Dompet</option>
-                                    {wallets.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
+                                    {wallets.filter(w => !w.is_archived).map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
                                 </select>
                             </div>
                             <div className="flex gap-3">
