@@ -68,7 +68,9 @@ export default function OverviewTab({ stats, recentLogs }: { stats: any, recentL
                                     <Activity weight="bold" className="w-3 h-3" />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-bold text-slate-800 dark:text-white truncate">{log.details || log.action}</p>
+                                    <p className="text-xs font-bold text-slate-800 dark:text-white truncate">
+                                        {typeof log.details === 'object' && log.details !== null ? JSON.stringify(log.details) : (log.details || log.action)}
+                                    </p>
                                     <p className="text-[10px] text-slate-400">{log.admin_name || 'System'} • {log.created_at}</p>
                                 </div>
                             </div>
