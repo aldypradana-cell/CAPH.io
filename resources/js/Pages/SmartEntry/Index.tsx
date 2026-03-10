@@ -1,7 +1,7 @@
 import AppLayout from '@/Layouts/AppLayout';
 import { Head, useForm } from '@inertiajs/react';
 import { PageProps } from '@/types';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
     Lightning as Zap, Sparkle as Sparkles, Check, X, SpinnerGap as Loader2, TrendUp as TrendingUp, TrendDown as TrendingDown, Hash, Microphone as Mic, MicrophoneSlash as MicOff
 } from '@phosphor-icons/react';
@@ -33,6 +33,8 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
     const [error, setError] = useState<string | null>(null);
     const [selectedWallet, setSelectedWallet] = useState(wallets.length > 0 ? wallets[0].id.toString() : '');
     const [aiQuota, setAiQuota] = useState(initialAiQuota);
+    const recognitionRef = useRef<any>(null);
+    const originalInputRef = useRef<string>('');
 
     const isQuotaExceeded = aiQuota ? aiQuota.used >= aiQuota.limit : false;
 
@@ -110,32 +112,30 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
             return;
         }
 
+        if (isListening) {
+            setIsListening(false);
+            if (recognitionRef.current) {
+                recognitionRef.current.stop();
+            }
+            return;
+        }
+
         const SpeechRecognition: any = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
+        recognitionRef.current = recognition;
+        originalInputRef.current = input;
 
         recognition.lang = 'id-ID';
         recognition.continuous = true;
         recognition.interimResults = true;
 
-        if (isListening) {
-            setIsListening(false);
-            recognition.stop();
-            return;
-        }
-
-        setIsListening(true);
-        recognition.start();
-
         recognition.onresult = (event: any) => {
-            let currentTranscript = '';
-            for (let i = event.resultIndex; i < event.results.length; ++i) {
-                if (event.results[i].isFinal) {
-                    currentTranscript += event.results[i][0].transcript;
-                }
+            let sessionTranscript = '';
+            for (let i = 0; i < event.results.length; ++i) {
+                sessionTranscript += event.results[i][0].transcript;
             }
-            if (currentTranscript) {
-                setInput((prev) => prev + (prev.trim() ? ' ' : '') + currentTranscript);
-            }
+            const separator = originalInputRef.current.trim() ? ' ' : '';
+            setInput(originalInputRef.current + separator + sessionTranscript);
         };
 
         recognition.onerror = (event: any) => {
@@ -151,6 +151,9 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
         recognition.onend = () => {
             setIsListening(false);
         };
+
+        setIsListening(true);
+        recognition.start();
     };
 
     return (
