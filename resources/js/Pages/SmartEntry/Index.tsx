@@ -134,27 +134,25 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
         recognition.interimResults = true;
 
         recognition.onresult = (event: any) => {
-            let finalTranscript = '';
+            // Loop dari 0 setiap kali — event.results di continuous mode
+            // sudah menyimpan SEMUA hasil sesi secara kumulatif, sehingga
+            // kita rebuild penuh tiap event, BUKAN incrementally append ke ref.
+            let sessionFinal = '';
             let interimTranscript = '';
-            
-            // Loop HANYA dari index terbaru, BUKAN dari awal (0)
-            for (let i = event.resultIndex; i < event.results.length; ++i) {
+
+            for (let i = 0; i < event.results.length; ++i) {
                 if (event.results[i].isFinal) {
-                    finalTranscript += event.results[i][0].transcript;
+                    sessionFinal += event.results[i][0].transcript;
                 } else {
                     interimTranscript += event.results[i][0].transcript;
                 }
             }
-            
-            // Perbarui original reference HANYA jika ada kata final BARD yang baru dikonfirmasi
-            if (finalTranscript) {
-                const separator = originalInputRef.current.trim() && finalTranscript.trim() ? ' ' : '';
-                originalInputRef.current = originalInputRef.current + separator + finalTranscript;
-            }
 
-            // Gabungkan teks asli (yang sudah final) dengan teks yang sedang diucapkan (interim)
-            const currentSeparator = originalInputRef.current.trim() && interimTranscript.trim() ? ' ' : '';
-            setInput(originalInputRef.current + currentSeparator + interimTranscript);
+            // Gabungkan: teks sebelum mic dinyalakan + hasil sesi ini (final + interim)
+            const base = originalInputRef.current;
+            const sessionText = (sessionFinal + interimTranscript).trimStart();
+            const separator = base.trim() && sessionText ? ' ' : '';
+            setInput(base + separator + sessionText);
         };
 
         recognition.onerror = (event: any) => {
