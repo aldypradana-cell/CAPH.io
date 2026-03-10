@@ -148,7 +148,7 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
                         <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Estimasi Nilai Emas</p>
                     </div>
                     
-                    <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold bg-gradient-to-br from-slate-900 via-slate-700 to-slate-800 dark:from-white dark:via-amber-100 dark:to-amber-200 bg-clip-text text-transparent tracking-tight leading-tight mb-2">
+                    <h2 className="text-3xl sm:text-4xl lg:text-4xl xl:text-5xl font-extrabold bg-gradient-to-br from-slate-900 via-slate-700 to-slate-800 dark:from-white dark:via-amber-100 dark:to-amber-200 bg-clip-text text-transparent tracking-tight leading-tight mb-2 shrink-0 truncate" title={formatIDR(stats.currentValue)}>
                         {formatIDR(stats.currentValue)}
                     </h2>
                     
@@ -179,7 +179,7 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
                                 <Edit2 weight="duotone" className="w-3 h-3 mr-1" /> Edit
                             </button>
                         </div>
-                        <p className="text-2xl font-black text-slate-800 dark:text-white">{formatIDR(currentPrice)}<span className="text-sm font-bold text-slate-400">/gr</span></p>
+                        <p className="text-xl sm:text-2xl lg:text-xl xl:text-2xl font-black text-slate-800 dark:text-white truncate" title={formatIDR(currentPrice)}>{formatIDR(currentPrice)}<span className="text-xs sm:text-sm font-bold text-slate-400">/gr</span></p>
                     </div>
 
                     {/* Floating P/L Box */}

@@ -156,7 +156,7 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
                             <h2 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Grand Total Aset</h2>
                             {/* Compact Formatting for extremely large numbers */}
                             <div className="group relative inline-block">
-                                <h3 className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-br from-slate-900 via-slate-700 to-slate-800 dark:from-white dark:via-slate-200 dark:to-slate-400 bg-clip-text text-transparent tracking-tight leading-tight">
+                                <h3 className="text-3xl md:text-4xl lg:text-5xl font-extrabold bg-gradient-to-br from-slate-900 via-slate-700 to-slate-800 dark:from-white dark:via-slate-200 dark:to-slate-400 bg-clip-text text-transparent tracking-tight leading-tight shrink-0">
                                     {grandTotalValue >= 1_000_000_000 ? formatCompactIDR(grandTotalValue) : formatIDR(grandTotalValue)}
                                 </h3>
                                 {grandTotalValue >= 1_000_000_000 && (
@@ -338,7 +338,7 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
                                                 {percentage.toFixed(1)}% PORTFOLIO
                                             </div>
                                         </div>
-                                        <p className="font-black text-slate-800 dark:text-white tracking-tight text-3xl truncate" title={formatIDR(a.value)}>
+                                        <p className="font-black text-slate-800 dark:text-white tracking-tight text-xl md:text-2xl lg:text-xl xl:text-2xl 2xl:text-3xl truncate" title={formatIDR(a.value)}>
                                             {formatIDR(a.value)}
                                         </p>
                                         {a.description && <p className={`text-slate-500 mt-2 line-clamp-2 text-sm ${isLargeBento && 'hidden sm:block'}`}>{a.description}</p>}
