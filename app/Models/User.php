@@ -26,6 +26,8 @@ class User extends Authenticatable
         'avatar',
         'preferences',
         'financial_profile',
+        'smart_entry_limit',
+        'insight_limit',
     ];
 
     /**

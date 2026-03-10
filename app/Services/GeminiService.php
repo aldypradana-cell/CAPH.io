@@ -32,7 +32,7 @@ Kembalikan array objek JSON dengan properti:
 - category (string): Kategori yang paling relevan (Contoh: Makanan, Transportasi, Gaji, dll)
 - date (string): Tanggal dalam format ISO (YYYY-MM-DD). Jika tidak disebutkan, gunakan tanggal hari ini: {$today}.";
 
-            $result = Gemini::generativeModel(env('GEMINI_MODEL', 'gemini-2.5-flash'))
+            $result = Gemini::generativeModel(config('services.gemini.model', 'gemini-2.5-flash'))
                 ->withGenerationConfig(
                     new GenerationConfig(
                         responseMimeType: ResponseMimeType::APPLICATION_JSON,
@@ -231,8 +231,8 @@ PENTING:
 - actionItems HARUS ada minimal 3 item (maksimal 5), berdasarkan seluruh data yang ada.
 - JSON HARUS valid. Jangan tambahkan komentar atau teks di luar JSON.";
 
-            $apiKey = env('GEMINI_API_KEY');
-            $model = env('GEMINI_MODEL', 'gemini-1.5-flash');
+            $apiKey = config('services.gemini.key');
+            $model = config('services.gemini.model', 'gemini-1.5-flash');
             $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}";
 
             $payload = [
