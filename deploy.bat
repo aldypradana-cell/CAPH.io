@@ -28,6 +28,11 @@ echo [4/4] Membuat file update.zip LENGKAP...
 if exist update.zip (
     del update.zip
 )
+:: Hapus cache bootstrap & hot file agar tidak terbawa ke server
+del /q bootstrap\cache\*.php
+if exist public\hot (
+    del public\hot
+)
 tar.exe -a -c -f update.zip app bootstrap config database public resources routes
 
 echo.
