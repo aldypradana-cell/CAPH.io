@@ -232,11 +232,20 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
 
                 {/* Error */}
                 {error && (
-                    <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-4 flex items-center gap-3 animate-pop-in">
-                        <div className="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center shrink-0">
-                            <X weight="bold" className="w-4 h-4 text-red-500" />
+                    <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-4 flex items-center justify-between gap-3 animate-pop-in">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center shrink-0">
+                                <X weight="bold" className="w-4 h-4 text-red-500" />
+                            </div>
+                            <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
                         </div>
-                        <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+                        <button 
+                            onClick={handleParse} 
+                            disabled={isParsing || isQuotaExceeded}
+                            className="px-3 py-1.5 bg-red-100 hover:bg-red-200 dark:bg-red-900/40 dark:hover:bg-red-900/60 text-red-700 dark:text-red-300 rounded-xl text-xs font-bold transition-colors whitespace-nowrap shrink-0"
+                        >
+                            Coba Lagi
+                        </button>
                     </div>
                 )}
 

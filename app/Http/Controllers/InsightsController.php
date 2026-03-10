@@ -387,9 +387,14 @@ class InsightsController extends Controller
                 ],
             ]);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('AI Insight Generation Error: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal menghasilkan analisis. ' . $e->getMessage(),
+                'message' => 'AI sedang sibuk atau mengalami kendala. Silakan coba kembali dalam beberapa saat.',
             ], 500);
         }
     }

@@ -105,11 +105,15 @@ class SmartEntryController extends Controller
                     'resetsAt' => Carbon::tomorrow()->startOfDay()->toIso8601String(),
                 ],
             ]);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('SmartEntry Parse Error: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage(),
+                'message' => 'AI sedang mengalami kendala jaringan atau format tidak terbaca. Silakan coba beberapa saat lagi.',
             ], 422);
         }
     }
@@ -153,9 +157,12 @@ class SmartEntryController extends Controller
             }
 
             return redirect()->route('dashboard')->with('success', 'Transaksi AI berhasil disimpan!');
-        }
-        catch (\Exception $e) {
-            return redirect()->back()->withErrors(['message' => $e->getMessage()]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('SmartEntry Confirm Error: ' . $e->getMessage(), [
+                'user_id' => $userId,
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return redirect()->back()->withErrors(['message' => 'Terjadi kesalahan sistem saat menyimpan transaksi. Silakan coba lagi.']);
         }
     }
 

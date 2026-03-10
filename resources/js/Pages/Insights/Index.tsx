@@ -141,6 +141,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
     const [insight, setInsight] = useState<InsightData | null>(latestInsight ? latestInsight.content : null);
     const [lastUpdated, setLastUpdated] = useState<string | null>(latestInsight ? latestInsight.created_at : null);
     const [aiQuota, setAiQuota] = useState(initialAiQuota);
+    const [error, setError] = useState<string | null>(null);
 
     const isQuotaExceeded = aiQuota ? aiQuota.used >= aiQuota.limit : false;
 
@@ -151,6 +152,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
 
     const handleGenerate = async () => {
         setIsLoading(true);
+        setError(null);
         try {
             // Determine dates based on period
             let startDate, endDate;
@@ -187,12 +189,12 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                 toast.success('Analisis selesai & tersimpan!');
                 if (result.quota) setAiQuota(result.quota);
             } else {
-                toast.error(result.message || 'Gagal menghasilkan analisis');
+                setError(result.message || 'Gagal menghasilkan analisis');
                 if (result.quota) setAiQuota(result.quota);
             }
         } catch (e: any) {
             console.error('Insight Error:', e);
-            toast.error(e.response?.data?.message || 'Terjadi kesalahan');
+            setError(e.response?.data?.message || 'Terjadi kendala jaringan saat menghubungi layanan AI.');
             if (e.response?.status === 429 && e.response?.data?.used !== undefined) {
                 setAiQuota({ used: e.response.data.used, limit: e.response.data.limit, resetsAt: e.response.data.resetsAt });
             }
@@ -323,6 +325,27 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                 </div>
                             ))}
                         </div>
+                    </div>
+                )}
+
+                {/* ── Error State ── */}
+                {error && !isLoading && (
+                    <div className="glass-card p-8 rounded-[2rem] text-center animate-fade-in-up border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-900/10">
+                        <div className="w-16 h-16 bg-red-100 dark:bg-red-900/40 rounded-2xl flex items-center justify-center text-red-500 mx-auto mb-4">
+                            <AlertTriangle weight="duotone" className="w-8 h-8" />
+                        </div>
+                        <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-2">Analisis AI Terkendala</h2>
+                        <p className="text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto mb-6">
+                            {error}
+                        </p>
+                        <button
+                            onClick={handleGenerate}
+                            disabled={isQuotaExceeded}
+                            className="inline-flex items-center justify-center px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-bold transition-colors shadow-lg shadow-red-500/30 active:scale-95 disabled:opacity-50"
+                        >
+                            <Zap weight="fill" className="w-4 h-4 mr-2" />
+                            Coba Sekali Lagi
+                        </button>
                     </div>
                 )}
 
