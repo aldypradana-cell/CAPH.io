@@ -41,6 +41,7 @@ class AnalyticsController extends Controller
             $incomeData = Transaction::forUser($user->id)
                 ->inDateRange($startDate, $endDate)
                 ->where('type', 'INCOME')
+                ->whereNotNull('wallet_id')
                 ->select('category', 'wallet_id', DB::raw('SUM(amount) as total'))
                 ->groupBy('category', 'wallet_id')
                 ->get();
@@ -49,6 +50,7 @@ class AnalyticsController extends Controller
             $expenseData = Transaction::forUser($user->id)
                 ->inDateRange($startDate, $endDate)
                 ->where('type', 'EXPENSE')
+                ->whereNotNull('wallet_id')
                 ->select('wallet_id', 'category', DB::raw('SUM(amount) as total'))
                 ->groupBy('wallet_id', 'category')
                 ->get();
