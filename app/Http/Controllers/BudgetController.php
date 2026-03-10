@@ -47,7 +47,13 @@ class BudgetController extends Controller
         foreach ($usedPeriods as $period) {
             $range = $periodRanges[$period] ?? $periodRanges['MONTHLY'];
             $expenseByPeriod[$period] = Transaction::where('user_id', $user->id)
-                ->where('type', 'EXPENSE')
+                ->where(function ($q) {
+                    $q->where('type', 'EXPENSE')
+                      ->orWhere(function ($sub) {
+                          $sub->where('type', 'TRANSFER')
+                              ->where('category', 'Tabungan');
+                      });
+                })
                 ->whereBetween('date', $range)
                 ->selectRaw('category, SUM(amount) as total')
                 ->groupBy('category')
@@ -88,7 +94,10 @@ class BudgetController extends Controller
         });
 
         $categories = Category::userCategories($user->id)
-            ->byType('EXPENSE')
+            ->where(function($q) {
+                $q->where('type', 'EXPENSE')
+                  ->orWhere('name', 'Tabungan');
+            })
             ->orderBy('name')
             ->get();
 

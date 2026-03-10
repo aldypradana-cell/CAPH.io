@@ -170,7 +170,7 @@ class SavingsController extends Controller
                 'type' => 'TRANSFER',
                 'amount' => $validated['amount'],
                 'description' => $validated['description'] ?? 'Setor ke ' . $toWallet->name,
-                'category' => 'Transfer Antar Dompet',
+                'category' => 'Tabungan',
                 'date' => now()->format('Y-m-d'),
             ]);
 
@@ -212,7 +212,7 @@ class SavingsController extends Controller
                 'type' => 'TRANSFER',
                 'amount' => $validated['amount'],
                 'description' => $validated['description'] ?? 'Tarik dari ' . $fromWallet->name,
-                'category' => 'Transfer Antar Dompet',
+                'category' => 'Tabungan',
                 'date' => now()->format('Y-m-d'),
             ]);
 

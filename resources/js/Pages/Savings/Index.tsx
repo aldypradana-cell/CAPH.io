@@ -87,7 +87,8 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
     };
     const parseAmount = (val: string) => parseFloat(val.replace(/\./g, '')) || 0;
 
-    const totalSavings = savingWallets.reduce((sum, w) => sum + w.balance, 0);
+    const totalSavings = savingWallets.reduce((sum, w) => sum + (parseFloat(w.balance as any) || 0), 0) + 
+                         goals.reduce((sum, g) => sum + (parseFloat(g.current_amount as any) || 0), 0);
 
     // --- Save Saving Wallet ---
     const handleSaveSaving = (e: React.FormEvent) => {

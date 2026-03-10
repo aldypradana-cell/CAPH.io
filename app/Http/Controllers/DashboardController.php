@@ -152,7 +152,13 @@ class DashboardController extends Controller
         foreach ($usedPeriods as $period) {
             $range = $periodRanges[$period] ?? $periodRanges['MONTHLY'];
             $expenseByPeriod[$period] = Transaction::forUser($user->id)
-                ->where('type', 'EXPENSE')
+                ->where(function ($q) {
+                    $q->where('type', 'EXPENSE')
+                      ->orWhere(function ($sub) {
+                          $sub->where('type', 'TRANSFER')
+                              ->where('category', 'Tabungan');
+                      });
+                })
                 ->inDateRange($range[0], $range[1])
                 ->selectRaw('category, SUM(amount) as total')
                 ->groupBy('category')
