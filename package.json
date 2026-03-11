@@ -34,6 +34,7 @@
         "@sentry/react": "^10.39.0",
         "date-fns": "^4.1.0",
         "dayjs": "^1.11.19",
+        "html2canvas": "^1.4.1",
         "lucide-react": "^0.563.0",
         "react-grid-layout": "^2.2.2",
         "react-hot-toast": "^2.6.0",

@@ -8,6 +8,7 @@ use App\Models\Debt;
 use App\Models\RecurringTransaction;
 use App\Models\Transaction;
 use App\Models\FinancialInsight;
+use App\Models\RoastHistory;
 use App\Models\Category;
 use App\Models\Installment;
 use App\Models\Wallet;
@@ -46,6 +47,21 @@ class InsightsController extends Controller
 
         $nextMonday = Carbon::now()->next(Carbon::MONDAY)->startOfDay();
 
+        // Roast Me data
+        $todayStart = Carbon::today();
+        $roastedToday = AiUsageLog::where('user_id', $user->id)
+            ->where('feature', 'roast_me')
+            ->where('used_at', '>=', $todayStart)
+            ->exists();
+
+        $latestRoast = RoastHistory::where('user_id', $user->id)->latest()->first();
+        $roastHistory = RoastHistory::where('user_id', $user->id)
+            ->latest()
+            ->limit(10)
+            ->get();
+
+        $tomorrow = Carbon::tomorrow()->startOfDay();
+
         return Inertia::render('Insights/Index', [
             'transactionCount' => $transactionCount,
             'hasProfile'       => !empty($user->financial_profile),
@@ -54,6 +70,12 @@ class InsightsController extends Controller
                 'used'     => $usedThisWeek,
                 'limit'    => $user->role === 'ADMIN' ? 999999 : $user->insight_limit,
                 'resetsAt' => $nextMonday->toIso8601String(),
+            ],
+            'roastData' => [
+                'latestRoast'  => $latestRoast,
+                'history'      => $roastHistory,
+                'roastedToday' => $roastedToday,
+                'cooldownEnds' => $tomorrow->toIso8601String(),
             ],
         ]);
     }
@@ -415,5 +437,240 @@ class InsightsController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Profil finansial berhasil diupdate');
+    }
+
+    /**
+     * Generate a humorous AI roast of the user's finances
+     */
+    public function roast(Request $request)
+    {
+        $request->validate([
+            'level' => 'required|in:MILD,MEDIUM,BRUTAL',
+        ]);
+
+        $user = $request->user();
+        $level = $request->input('level');
+
+        // Daily cooldown check
+        $todayStart = Carbon::today();
+        $alreadyRoasted = AiUsageLog::where('user_id', $user->id)
+            ->where('feature', 'roast_me')
+            ->where('used_at', '>=', $todayStart)
+            ->exists();
+
+        if ($alreadyRoasted && $user->role !== 'ADMIN') {
+            $tomorrow = Carbon::tomorrow()->startOfDay();
+            return response()->json([
+                'success'      => false,
+                'cooldown'     => true,
+                'message'      => 'Kamu sudah dipanggang hari ini. Istirahat dulu, panasnya masih terasa.',
+                'cooldownEnds' => $tomorrow->toIso8601String(),
+            ], 429);
+        }
+
+        // Quick check: enough transactions?
+        $now = Carbon::now();
+        $txCount = Transaction::forUser($user->id)
+            ->inDateRange($now->copy()->startOfMonth()->format('Y-m-d'), $now->copy()->endOfMonth()->format('Y-m-d'))
+            ->count();
+
+        if ($txCount < 3) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Transaksi bulan ini masih terlalu sedikit untuk dipanggang. Minimal 3 transaksi.',
+            ], 422);
+        }
+
+        // Build token-optimized context
+        $roastContext = $this->buildRoastContext($user);
+
+        try {
+            $result = $this->geminiService->generateRoast($user, $roastContext, $level);
+
+            // Save to history
+            $roast = RoastHistory::create([
+                'user_id'            => $user->id,
+                'level'              => $level,
+                'roast_text'         => $result['roast_text'],
+                'badge_name'         => $result['badge_name'],
+                'badge_emoji'        => $result['badge_emoji'],
+                'waste_score'        => $result['waste_score'],
+                'challenge'          => $result['challenge'],
+                'categories_roasted' => $result['categories_roasted'],
+            ]);
+
+            // Log usage
+            AiUsageLog::create([
+                'user_id' => $user->id,
+                'feature' => 'roast_me',
+                'used_at' => now(),
+            ]);
+
+            $tomorrow = Carbon::tomorrow()->startOfDay();
+
+            return response()->json([
+                'success'      => true,
+                'roast'        => $roast,
+                'cooldownEnds' => $tomorrow->toIso8601String(),
+            ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Roast Generation Error: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'level'   => $level,
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'AI sedang sibuk atau mengalami kendala. Silakan coba kembali dalam beberapa saat.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Build token-optimized context for roasting (~70% fewer tokens than full insight)
+     */
+    private function buildRoastContext($user): array
+    {
+        $now = Carbon::now();
+        $startDate = $now->copy()->startOfMonth();
+        $endDate = $now->copy()->endOfMonth();
+        $dateFrom = $startDate->format('Y-m-d');
+        $dateTo = $endDate->format('Y-m-d');
+
+        // 1. Total income & expense (2 numbers)
+        $monthlyTotals = Transaction::forUser($user->id)
+            ->inDateRange($dateFrom, $dateTo)
+            ->selectRaw('type, SUM(amount) as total')
+            ->groupBy('type')
+            ->pluck('total', 'type');
+
+        $income = (float) ($monthlyTotals['INCOME'] ?? 0);
+        $expense = (float) ($monthlyTotals['EXPENSE'] ?? 0);
+        $savingsRate = $income > 0 ? round((($income - $expense) / $income) * 100, 1) : 0;
+
+        // 2. Top 7 spending categories with frequency
+        $topCategories = Transaction::forUser($user->id)
+            ->inDateRange($dateFrom, $dateTo)
+            ->where('type', 'EXPENSE')
+            ->selectRaw('category, SUM(amount) as total, COUNT(*) as freq')
+            ->groupBy('category')
+            ->orderByDesc('total')
+            ->limit(7)
+            ->get();
+
+        $topCategoriesText = $topCategories->isEmpty()
+            ? 'Tidak ada pengeluaran.'
+            : $topCategories->map(function ($c) use ($expense) {
+                $pct = $expense > 0 ? round(($c->total / $expense) * 100, 1) : 0;
+                return "- {$c->category}: Rp" . number_format($c->total, 0, ',', '.') . " ({$c->freq}x, {$pct}%)";
+            })->join("\n");
+
+        // 3. Top 10 largest expenses (not 100)
+        $topExpenses = Transaction::forUser($user->id)
+            ->inDateRange($dateFrom, $dateTo)
+            ->where('type', 'EXPENSE')
+            ->orderByDesc('amount')
+            ->limit(10)
+            ->get(['category', 'description', 'amount']);
+
+        $topExpensesText = $topExpenses->isEmpty()
+            ? 'Tidak ada.'
+            : $topExpenses->map(function ($t) {
+                return "- {$t->category}: Rp" . number_format($t->amount, 0, ',', '.') . " ({$t->description})";
+            })->join("\n");
+
+        // 4. Budgets that are WARNING or OVER only
+        $budgets = Budget::where('user_id', $user->id)->get();
+        $overBudgetsText = 'Tidak ada budget yang bermasalah.';
+
+        if ($budgets->isNotEmpty()) {
+            $budgetExpenses = Transaction::forUser($user->id)
+                ->inDateRange($dateFrom, $dateTo)
+                ->where('type', 'EXPENSE')
+                ->selectRaw('category, SUM(amount) as total')
+                ->groupBy('category')
+                ->pluck('total', 'category');
+
+            $ruleCategoryNames = [];
+            $allUserCategories = Category::userCategories($user->id)
+                ->whereNotNull('budget_rule')
+                ->get();
+            foreach ($allUserCategories as $cat) {
+                $ruleCategoryNames[$cat->budget_rule][] = $cat->name;
+            }
+
+            $overLines = $budgets->map(function ($budget) use ($budgetExpenses, $ruleCategoryNames) {
+                $spent = 0;
+                if ($budget->is_master) {
+                    $rules = BudgetTemplate::SLOT_TO_RULES[$budget->category] ?? [$budget->category];
+                    $mappedCategories = collect($rules)
+                        ->flatMap(fn($rule) => $ruleCategoryNames[$rule] ?? [])
+                        ->toArray();
+                    foreach ($mappedCategories as $catName) {
+                        $spent += (float) ($budgetExpenses[$catName] ?? 0);
+                    }
+                } else {
+                    $spent = (float) ($budgetExpenses[$budget->category] ?? 0);
+                }
+                $pct = $budget->limit > 0 ? round(($spent / $budget->limit) * 100, 1) : 0;
+                if ($pct >= 80) {
+                    $status = $pct >= 100 ? 'JEBOL' : 'HAMPIR HABIS';
+                    return "- {$budget->category}: Budget Rp" . number_format($budget->limit, 0, ',', '.') . ", Terpakai Rp" . number_format($spent, 0, ',', '.') . " ({$pct}%) - {$status}";
+                }
+                return null;
+            })->filter()->values();
+
+            if ($overLines->isNotEmpty()) {
+                $overBudgetsText = $overLines->join("\n");
+            }
+        }
+
+        // 5. Total balance (1 number)
+        $totalBalance = Wallet::where('user_id', $user->id)->sum('balance');
+
+        // 6. Total debt (1 number)
+        $totalDebt = Debt::where('user_id', $user->id)
+            ->where('is_paid', false)
+            ->where('type', DebtType::DEBT->value)
+            ->sum('amount');
+
+        // 7. Trend 3 months (not 6)
+        $threeMonthLines = '';
+        for ($i = 2; $i >= 0; $i--) {
+            $mStart = $startDate->copy()->subMonths($i + 1)->startOfMonth();
+            $mEnd = $startDate->copy()->subMonths($i + 1)->endOfMonth();
+            if ($mStart->isFuture()) continue;
+
+            $mData = Transaction::forUser($user->id)
+                ->inDateRange($mStart->format('Y-m-d'), $mEnd->format('Y-m-d'))
+                ->selectRaw('type, SUM(amount) as total')
+                ->groupBy('type')
+                ->pluck('total', 'type');
+
+            if ($mData->isEmpty()) continue;
+            $mIncome = (float) ($mData['INCOME'] ?? 0);
+            $mExpense = (float) ($mData['EXPENSE'] ?? 0);
+            $mRate = $mIncome > 0 ? round((($mIncome - $mExpense) / $mIncome) * 100, 1) : 0;
+            $threeMonthLines .= $mStart->translatedFormat('M Y') . ": Income Rp" . number_format($mIncome, 0, ',', '.') . ", Expense Rp" . number_format($mExpense, 0, ',', '.') . ", Savings Rate {$mRate}%\n";
+        }
+
+        if (empty(trim($threeMonthLines))) {
+            $threeMonthLines = 'Belum ada data historis.';
+        }
+
+        // Build summary line
+        $ringkasan = "Income bulan ini: Rp" . number_format($income, 0, ',', '.')
+            . ", Expense: Rp" . number_format($expense, 0, ',', '.')
+            . ", Savings Rate: {$savingsRate}%"
+            . ", Saldo Total: Rp" . number_format($totalBalance, 0, ',', '.')
+            . ", Total Hutang: Rp" . number_format($totalDebt, 0, ',', '.');
+
+        return [
+            'ringkasan'    => $ringkasan,
+            'topKategori'  => $topCategoriesText,
+            'topTransaksi' => $topExpensesText,
+            'budgetJebol'  => $overBudgetsText,
+            'trendBulanan' => trim($threeMonthLines),
+        ];
     }
 }

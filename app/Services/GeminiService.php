@@ -289,4 +289,165 @@ PENTING:
             throw $e;
         }
     }
+
+    /**
+     * Generate a humorous financial roast based on user data
+     * Returns parsed JSON with roast_text, badge, waste_score, challenge
+     */
+    public function generateRoast(User $user, array $roastContext, string $level): array
+    {
+        try {
+            // System persona — same for all levels
+            $persona = "Kamu adalah komedian stand-up Indonesia yang AHLI di dunia keuangan.
+Gayamu seperti campuran Raditya Dika, Ernest Prakasa, dan Warren Buffett yang bisa bahasa gaul Jakarta.
+Kamu SANGAT jago membaca data keuangan dan mengubahnya jadi bahan roasting yang bikin ngakak tapi juga bikin mikir.
+
+ATURAN PENTING:
+1. SELALU gunakan DATA NYATA dari konteks — sebutkan angka spesifik, kategori spesifik, kebiasaan spesifik.
+2. JANGAN pernah membuat data palsu. Jika datanya bagus, tetap roast tapi dari sudut pandang lucu.
+3. Gunakan bahasa Indonesia GAUL tapi tetap bisa dibaca semua umur (tidak kasar/vulgar).
+4. Setiap paragraf HARUS mengandung minimal 1 referensi ke data aktual pengguna.
+5. Gunakan analogi absurd yang relate dengan kehidupan sehari-hari orang Indonesia.
+6. JANGAN menggunakan emoji di dalam roast_text (emoji hanya di badge_emoji).
+7. Tulis seolah kamu bicara langsung ke orangnya (\"kamu\", \"lo\", bukan \"pengguna\" atau \"user\").";
+
+            // Level-specific tone
+            $toneMap = [
+                'MILD' => "TONE: Seperti teman baik yang becanda di Warkop. Bicara sopan tapi tetap jujur.
+Pakai \"kamu\" bukan \"lo\". Akhiri dengan kalimat penyemangat.
+
+Contoh gaya bahasa yang diinginkan:
+\"Jadi kamu habiskan Rp850rb buat kopi bulan ini ya? Bukan masalah sih kalau gajimu di atas 50 juta. Tapi kalau belum... mungkin belajar bikin kopi sendiri bisa jadi skill baru yang menghemat sekaligus bikin keren.\"
+
+PANJANG: 2 paragraf (masing-masing 2-3 kalimat). Pisahkan paragraf dengan baris baru (\\n\\n).",
+
+                'MEDIUM' => "TONE: Seperti kakak kelas yang blak-blakan tapi sayang sama adiknya.
+Boleh pakai \"lo/gue\" atau \"kamu\". Jujur tanpa basa-basi. Gunakan perbandingan yang bikin ngilu.
+
+Contoh gaya bahasa yang diinginkan:
+\"Lo tahu nggak, Rp2.3jt yang lo habiskan buat makan di luar bulan ini itu setara dengan 5 bulan langganan gym yang nggak pernah lo pakai? Oh wait, lo juga bayar gym Rp350rb tapi cuma datang 2x. Efisiensi yang luar biasa.\"
+
+PANJANG: 3 paragraf (masing-masing 2-4 kalimat). Pisahkan paragraf dengan baris baru (\\n\\n).",
+
+                'BRUTAL' => "TONE: Seperti stand-up comedian yang roasting habis-habisan di panggung.
+Full \"lo/gue\". Savage tapi TETAP LUCU (bukan jahat). Bikin penonton ngakak sambil kasihan.
+Gunakan sarkasme berlapis, plot twist, dan punchline di akhir setiap paragraf.
+
+Contoh gaya bahasa yang diinginkan:
+\"Gue udah liat data keuangan lo dan honestly... gue kagum. Bukan karena lo hebat, tapi karena lo berhasil menghabiskan Rp1.8jt di kategori Hiburan padahal Netflix lo aja nonton setengah episode terus ketiduran. Lo basically bayar Rp50rb per episode yang nggak pernah lo tamatin. Reed Hastings harusnya kirim lo karangan bunga.\"
+
+PANJANG: 3-4 paragraf (masing-masing 3-5 kalimat, harus ada punchline di tiap paragraf). Pisahkan paragraf dengan baris baru (\\n\\n).",
+            ];
+
+            $tone = $toneMap[$level] ?? $toneMap['MEDIUM'];
+
+            $prompt = "{$persona}
+
+{$tone}
+
+=== DATA KEUANGAN KORBAN ===
+Ringkasan: {$roastContext['ringkasan']}
+
+Top Kategori Pengeluaran:
+{$roastContext['topKategori']}
+
+Transaksi Terbesar:
+{$roastContext['topTransaksi']}
+
+Budget yang Bermasalah:
+{$roastContext['budgetJebol']}
+
+Trend Bulanan:
+{$roastContext['trendBulanan']}
+
+=== INSTRUKSI OUTPUT ===
+Berdasarkan data di atas, ROAST orang ini tentang kebiasaan keuangannya.
+
+Fokus roasting pada:
+1. Kategori pengeluaran terbesar — apa yang mereka hamburkan?
+2. Rasio tabungan vs pengeluaran — apakah mereka menabung atau cuma mimpi?
+3. Kebiasaan berulang yang terlihat — langganan, makanan, impuls buying
+4. Budget yang jebol — kalau ada, ini WAJIB di-roast
+5. Perbandingan absurd — bandingkan pengeluaran mereka dengan sesuatu yang lucu
+
+Untuk badge: pilih SATU kebiasaan paling menonjol dan buat julukan kreatif.
+Untuk challenge: beri 1 tantangan SPESIFIK dan TERUKUR berdasarkan masalah terbesar mereka.
+Untuk waste_score: 0=sangat hemat, 50=normal, 100=boros parah. Hitung dari data nyata.
+
+Kembalikan HANYA JSON valid (tanpa markdown, tanpa backtick):
+{
+  \"roast_text\": \"string (roasting sesuai panjang level, pisahkan paragraf dengan baris baru)\",
+  \"badge_name\": \"string (julukan kreatif tanpa emoji, contoh: Raja Kopi)\",
+  \"badge_emoji\": \"string (1 emoji yang mewakili, contoh: ☕)\",
+  \"waste_score\": number (0-100),
+  \"challenge\": \"string (1 tantangan spesifik dan terukur)\",
+  \"categories_roasted\": [\"array kategori yang dibahas dalam roast\"]
+}
+
+PENTING: JSON HARUS valid. Jangan tambahkan komentar atau teks di luar JSON. Semua angka dalam Rupiah (angka murni tanpa simbol).";
+
+            $apiKey = config('services.gemini.key');
+            $model = config('services.gemini.model', 'gemini-1.5-flash');
+            $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}";
+
+            $payload = [
+                'contents' => [
+                    [
+                        'parts' => [
+                            ['text' => $prompt]
+                        ]
+                    ]
+                ],
+                'generationConfig' => [
+                    'response_mime_type' => 'application/json',
+                    'temperature' => 0.95,
+                ]
+            ];
+
+            $response = \Illuminate\Support\Facades\Http::timeout(60)
+                ->acceptJson()
+                ->post($url, $payload);
+
+            if ($response->failed()) {
+                $errorBody = $response->json('error');
+                $errMsg = $errorBody['message'] ?? ('HTTP ' . $response->status());
+                Log::error('Gemini API Error (Roast): ' . json_encode($errorBody));
+                throw new \Exception('AI Error: ' . $errMsg);
+            }
+
+            $data = $response->json();
+            $text = $data['candidates'][0]['content']['parts'][0]['text'] ?? null;
+
+            if (!$text) {
+                Log::warning('Gemini empty roast response: ' . $response->body());
+                throw new \Exception('AI tidak memberikan respons.');
+            }
+
+            // Clean potential markdown wrapping
+            $text = trim($text);
+            $text = preg_replace('/^```json\s*/i', '', $text);
+            $text = preg_replace('/\s*```$/i', '', $text);
+            $text = trim($text);
+
+            $parsed = json_decode($text, true);
+
+            if (!$parsed || !isset($parsed['roast_text'])) {
+                Log::warning('Gemini invalid JSON roast: ' . $text);
+                throw new \Exception('AI mengembalikan format yang tidak valid.');
+            }
+
+            // Ensure required keys exist with defaults
+            $parsed['badge_name'] = $parsed['badge_name'] ?? 'Si Boros';
+            $parsed['badge_emoji'] = $parsed['badge_emoji'] ?? '🔥';
+            $parsed['waste_score'] = (int) min(100, max(0, $parsed['waste_score'] ?? 50));
+            $parsed['challenge'] = $parsed['challenge'] ?? null;
+            $parsed['categories_roasted'] = $parsed['categories_roasted'] ?? [];
+
+            return $parsed;
+
+        } catch (\Exception $e) {
+            Log::error('Gemini AI roast exception: ' . $e->getMessage());
+            throw $e;
+        }
+    }
 }

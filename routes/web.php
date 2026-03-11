@@ -108,6 +108,9 @@ Route::middleware(['auth'])->group(function () {
             ->middleware('throttle:ai-insight-global')
             ->name('insights.generate');
         Route::post('/insights/profile', [InsightsController::class, 'updateProfile'])->name('insights.profile');
+        Route::post('/insights/roast', [InsightsController::class, 'roast'])
+            ->middleware('throttle:ai-insight-global')
+            ->name('insights.roast');
 
         // Profile
         Route::get('/profile', [ProfileController::class , 'edit'])->name('profile.edit');
