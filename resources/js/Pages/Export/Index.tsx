@@ -7,6 +7,7 @@ import {
     CheckCircle as CheckCircle2, SpinnerGap as Loader2, Wallet, TrendUp as TrendingUp, TrendDown as TrendingDown, ArrowsLeftRight as ArrowRightLeft,
 } from '@phosphor-icons/react';
 import toast, { Toaster } from 'react-hot-toast';
+import { todayString, startOfMonth } from '@/utils/date';
 
 interface WalletOption {
     id: number;
@@ -25,11 +26,8 @@ interface ExportPageProps extends PageProps {
 }
 
 export default function ExportPage({ wallets }: ExportPageProps) {
-    const [startDate, setStartDate] = useState(() => {
-        const d = new Date(); d.setDate(1);
-        return d.toISOString().split('T')[0];
-    });
-    const [endDate, setEndDate] = useState(() => new Date().toISOString().split('T')[0]);
+    const [startDate, setStartDate] = useState(() => startOfMonth());
+    const [endDate, setEndDate] = useState(() => todayString());
     const [format, setFormat] = useState<'excel' | 'pdf'>('excel');
     const [walletId, setWalletId] = useState<string>('');
     const [isExporting, setIsExporting] = useState(false);

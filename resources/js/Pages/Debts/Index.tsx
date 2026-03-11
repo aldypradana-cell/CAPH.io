@@ -10,6 +10,7 @@ import {
 import toast, { Toaster } from 'react-hot-toast';
 import InstallmentTab from './Partials/InstallmentTab';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { todayString, formatDateShort } from '@/utils/date';
 
 // --- Types ---
 interface RecurringTransaction {
@@ -155,14 +156,7 @@ function DebtFreedomCountdown({ data }: { data: { month: string; remaining: numb
 const formatIDR = (amount: number) =>
     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
 
-const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-};
-
-const getLocalYYYYMMDD = (date?: string | Date) => {
-    const d = date ? new Date(date) : new Date();
-    return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().split('T')[0];
-};
+const formatDate = formatDateShort;
 
 export default function DebtsIndex({ auth, debts, recurring, dueRecurring, wallets, categories, summary, installments, installmentSummary, debtProjection, filters }: Props) {
     const [activeTab, setActiveTab] = useState<'RECURRING' | 'INSTALLMENT' | 'DEBT'>('RECURRING');
@@ -190,7 +184,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
     const paymentForm = useForm({
         wallet_id: '',
         amount: '',
-        date: getLocalYYYYMMDD(),
+        date: todayString(),
         notes: '',
     });
 
@@ -208,7 +202,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
         type: 'EXPENSE',
         category: '',
         frequency: 'MONTHLY',
-        start_date: getLocalYYYYMMDD(),
+        start_date: todayString(),
         next_run_date: '',
         auto_cut: true,
         description: '',
@@ -217,7 +211,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
     const processForm = useForm({
         amount: '',
         wallet_id: '',
-        date: getLocalYYYYMMDD(),
+        date: todayString(),
     });
 
     // --- AMOUNT FORMATTER ---
@@ -277,7 +271,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
         paymentForm.setData({
             wallet_id: '',
             amount: Number(d.remaining_amount ?? d.amount).toLocaleString('id-ID'),
-            date: getLocalYYYYMMDD(),
+            date: todayString(),
             notes: '',
         });
     };
@@ -322,7 +316,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
             recurringForm.reset();
             recurringForm.setData({
                 name: '', amount: '', wallet_id: '', type: 'EXPENSE', category: '',
-                frequency: 'MONTHLY', start_date: getLocalYYYYMMDD(),
+                frequency: 'MONTHLY', start_date: todayString(),
                 next_run_date: '', auto_cut: true, description: ''
             });
         }
@@ -331,7 +325,19 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
 
     const handleRecurringSubmit: FormEventHandler = (e) => {
         e.preventDefault();
-        const payload = { ...recurringForm.data, amount: parseAmount(recurringForm.data.amount as string).toString() };
+        
+        // If editing and start_date changed, aggressively sync next_run_date
+        let finalNextRunDate = recurringForm.data.next_run_date;
+        if (editingRecurring && recurringForm.data.start_date !== editingRecurring.start_date) {
+            finalNextRunDate = recurringForm.data.start_date;
+        }
+
+        const payload = { 
+            ...recurringForm.data, 
+            amount: parseAmount(recurringForm.data.amount as string).toString(),
+            next_run_date: finalNextRunDate
+        };
+        
         if (editingRecurring) {
             router.put(route('recurring.update', editingRecurring.id), payload, {
                 onSuccess: () => setIsRecurringModalOpen(false),
@@ -357,7 +363,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
         processForm.setData({
             amount: Number(item.amount).toLocaleString('id-ID'),
             wallet_id: item.wallet_id.toString(),
-            date: getLocalYYYYMMDD(),
+            date: todayString(),
         });
         setIsProcessModalOpen(true);
     };
@@ -870,7 +876,6 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                                             : 'Jika aktif, transaksi dipotong otomatis saat hari H. Jika tidak, akan muncul notifikasi "Jatuh Tempo".'}
                                     </p>
                                 </div>
-
                                 <div className="mt-6 flex justify-end space-x-3">
                                     {editingRecurring && <button type="button" onClick={handleRecurringDelete} className="mr-auto text-red-500 hover:text-red-700 text-xs font-bold px-3 py-2 rounded-lg bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors">Hapus Jadwal</button>}
                                     <button type="button" onClick={() => setIsRecurringModalOpen(false)} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors active:scale-95">Batal</button>

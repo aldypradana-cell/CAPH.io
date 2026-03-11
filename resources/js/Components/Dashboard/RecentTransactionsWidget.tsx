@@ -1,6 +1,7 @@
 import { TrendUp as TrendingUp, TrendDown as TrendingDown, ArrowsLeftRight as ArrowRightLeft, DotsSix as GripHorizontal, Clock } from '@phosphor-icons/react';
 import { Link } from '@inertiajs/react';
 import { Transaction } from '@/types/dashboard';
+import { formatDateDayMonth } from '@/utils/date';
 
 interface RecentTransactionsWidgetProps {
     transactions: Transaction[];
@@ -54,7 +55,7 @@ export default function RecentTransactionsWidget({
                                     <p className="text-[10px] text-slate-400 flex items-center gap-1.5 mt-0.5 flex-wrap">
                                         <span>{t.category}</span>
                                         <span className="opacity-30">·</span>
-                                        <span className="shrink-0">{new Date(t.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
+                                        <span className="shrink-0">{formatDateDayMonth(t.date)}</span>
                                         {!t.wallet_id && (
                                             <>
                                                 <span className="opacity-30">·</span>

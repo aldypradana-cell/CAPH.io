@@ -9,6 +9,7 @@ import {
     CaretRight as ChevronRight, SpinnerGap as Loader2, Money as Banknote
 } from '@phosphor-icons/react';
 import toast, { Toaster } from 'react-hot-toast';
+import { formatDateShort, toDateString } from '@/utils/date';
 
 interface SavingWallet {
     id: number;
@@ -152,7 +153,7 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
         goalForm.setData({
             name: g.name,
             target_amount: Number(g.target_amount).toLocaleString('id-ID'),
-            deadline: g.deadline ? g.deadline.split('T')[0] : '',
+            deadline: g.deadline ? toDateString(g.deadline) : '',
             current_amount: Number(g.current_amount).toLocaleString('id-ID'),
             color: g.color || 'emerald',
             icon: g.icon || '',
@@ -393,7 +394,7 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
                                                                 {goal.deadline && (
                                                                     <div className="flex items-center gap-1 text-[11px] text-slate-400 mt-0.5">
                                                                         <Calendar weight="duotone" className="w-3 h-3" />
-                                                                        <span>{new Date(goal.deadline).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                                                                        <span>{formatDateShort(goal.deadline!)}</span>
                                                                         {monthsLeft !== null && <span className="ml-1 font-bold">({monthsLeft} bln lagi)</span>}
                                                                     </div>
                                                                 )}

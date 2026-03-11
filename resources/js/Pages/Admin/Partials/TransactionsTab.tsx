@@ -4,6 +4,7 @@ import {
     MagnifyingGlass as Search, ArrowRight,
     Warning as AlertTriangle, ShieldWarning as ShieldAlert, CheckCircle
 } from '@phosphor-icons/react';
+import { formatDateLocale } from '@/utils/date';
 
 function useDebounce<T>(value: T, delay: number): [T] {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -160,7 +161,7 @@ export default function TransactionsTab({ transactions, filters }: { transaction
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-slate-500 dark:text-slate-400">
-                                        {new Date(trx.date).toLocaleDateString('id-ID')}
+                                        {formatDateLocale(trx.date)}
                                     </td>
                                     <td className="px-6 py-4">
                                         {trx.is_flagged ? (

@@ -1,6 +1,7 @@
 import { Repeat, Sparkle as Sparkles, CalendarBlank as CalendarClock, DotsSix as GripHorizontal } from '@phosphor-icons/react';
 import { Link } from '@inertiajs/react';
 import { RecurringTransaction } from '@/types/dashboard';
+import { formatDateDayMonth } from '@/utils/date';
 
 interface RecurringWidgetProps {
     transactions: RecurringTransaction[];
@@ -91,7 +92,7 @@ export default function RecurringWidget({
                                     }`}>
                                     <span className="flex items-center gap-1">
                                         <CalendarClock weight="duotone" className="w-3 h-3" />
-                                        {nextDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                                        {formatDateDayMonth(rt.next_run_date)}
                                     </span>
                                     <span>
                                         {isToday ? 'Hari Ini!' : isOverdue ? `Lewat ${Math.abs(daysUntil)} hari` : `H-${daysUntil}`}

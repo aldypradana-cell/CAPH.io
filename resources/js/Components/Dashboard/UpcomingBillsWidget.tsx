@@ -1,6 +1,7 @@
 import { Warning as AlertTriangle, ArrowDownRight, ArrowUpRight, Receipt, Wallet as WalletIcon, DotsSix as GripHorizontal } from '@phosphor-icons/react';
 import { Link } from '@inertiajs/react';
 import { Debt } from '@/types/dashboard';
+import { formatDateDayMonth } from '@/utils/date';
 
 interface UpcomingBillsWidgetProps {
     bills: Debt[];
@@ -68,7 +69,7 @@ export default function UpcomingBillsWidget({
                                                 {isDebt ? 'Hutang' : isReceivable ? 'Piutang' : 'Tagihan'}
                                                 {dueDate && (
                                                     <span className={`flex items-center ml-1 ${isOverdue ? 'text-rose-500' : ''}`}>
-                                                        • {dueDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                                                        • {formatDateDayMonth(bill.due_date!)}
                                                     </span>
                                                 )}
                                             </p>

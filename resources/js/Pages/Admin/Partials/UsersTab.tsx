@@ -5,6 +5,7 @@ import {
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import toast from 'react-hot-toast';
+import { formatDateLocale } from '@/utils/date';
 
 interface User {
     id: number;
@@ -111,7 +112,7 @@ export default function UsersTab({ users, filters }: { users: { data: User[] }, 
                                 <div className="flex items-center gap-3 mt-1">
                                     <span className="text-[10px] text-slate-400">{user.transactions_count} transaksi</span>
                                     <span className="text-[10px] text-slate-400">{user.wallets_count} dompet</span>
-                                    <span className="text-[10px] text-slate-400">Bergabung: {new Date(user.created_at).toLocaleDateString('id-ID')}</span>
+                                    <span className="text-[10px] text-slate-400">Bergabung: {formatDateLocale(user.created_at)}</span>
                                 </div>
                             </div>
                         </div>

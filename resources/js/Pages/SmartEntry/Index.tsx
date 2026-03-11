@@ -6,6 +6,7 @@ import {
     Lightning as Zap, Sparkle as Sparkles, Check, X, SpinnerGap as Loader2, TrendUp as TrendingUp, TrendDown as TrendingDown, Hash, Microphone as Mic, MicrophoneSlash as MicOff
 } from '@phosphor-icons/react';
 import toast, { Toaster } from 'react-hot-toast';
+import { formatDateLocale } from '@/utils/date';
 
 interface Wallet { id: number; name: string; is_archived?: boolean; }
 interface Category { id: number; name: string; type: string; }
@@ -280,7 +281,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
                                         <div>
                                             <p className="text-sm font-bold text-slate-800 dark:text-white">{t.description}</p>
                                             <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                                                <span className="text-[10px] text-slate-400">{t.category} · {new Date(t.date).toLocaleDateString('id-ID')}</span>
+                                                <span className="text-[10px] text-slate-400">{t.category} · {formatDateLocale(t.date)}</span>
                                                 {t.tags && t.tags.length > 0 && t.tags.map((tag, ti) => (
                                                     <span key={ti} className="inline-flex items-center gap-0.5 text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-1.5 py-0.5 rounded-full">
                                                         <Hash weight="bold" className="w-2.5 h-2.5" />{tag}

@@ -1,4 +1,5 @@
 import { router, useForm } from '@inertiajs/react';
+import { todayString, toDateString, formatDateShort } from '@/utils/date';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
@@ -77,12 +78,6 @@ const INTEREST_LABELS: Record<string, string> = {
 
 // --- Helpers ---
 const formatIDR = (n: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n);
-const formatDate = (s: string) => new Date(s).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-
-const getLocalYYYYMMDD = (date?: string | Date) => {
-    const d = date ? new Date(date) : new Date();
-    return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().split('T')[0];
-};
 
 const formatInputAmount = (val: string) => {
     const rawValue = val.replace(/\D/g, '');
@@ -129,12 +124,12 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
         name: '', type: 'LOAN', interest_type: 'FLAT',
         total_amount: '', monthly_amount: '', total_tenor: '',
         paid_tenor: '0', interest_rate: '', fixed_tenor: '',
-        due_day: '1', start_date: getLocalYYYYMMDD(),
+        due_day: '1', start_date: todayString(),
         lender: '', wallet_id: '', notes: '', auto_debit: false,
     });
 
     const payForm = useForm({
-        amount: '', wallet_id: '', paid_at: getLocalYYYYMMDD(), notes: '',
+        amount: '', wallet_id: '', paid_at: todayString(), notes: '',
     });
 
     // --- Handlers ---
@@ -146,14 +141,14 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
                 total_amount: Number(item.total_amount).toLocaleString('id-ID'), monthly_amount: Number(item.monthly_amount).toLocaleString('id-ID'),
                 total_tenor: item.total_tenor.toString(), paid_tenor: item.paid_tenor.toString(),
                 interest_rate: item.interest_rate?.toString() || '', fixed_tenor: item.fixed_tenor?.toString() || '',
-                due_day: item.due_day.toString(), start_date: getLocalYYYYMMDD(item.start_date),
+                due_day: item.due_day.toString(), start_date: toDateString(item.start_date),
                 lender: item.lender, wallet_id: item.wallet_id?.toString() || '',
                 notes: item.notes || '', auto_debit: item.auto_debit,
             });
         } else {
             setEditingItem(null);
             form.reset();
-            form.setData('start_date', getLocalYYYYMMDD());
+            form.setData('start_date', todayString());
         }
         setIsFormOpen(true);
     };
@@ -178,7 +173,7 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
         payForm.setData({
             amount: isFloatingNow ? '' : Number(item.monthly_amount).toLocaleString('id-ID'),
             wallet_id: item.wallet_id?.toString() || '',
-            paid_at: getLocalYYYYMMDD(),
+            paid_at: todayString(),
             notes: '',
         });
         setIsPayOpen(true);
@@ -331,7 +326,7 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
                                                             </div>
                                                             <div className="flex-1">
                                                                 <span className="font-bold text-slate-700 dark:text-slate-200">Angsuran ke-{tenor}</span>
-                                                                {isPaid && <span className="text-slate-400 ml-2">• {formatDate(payment.paid_at)}</span>}
+                                                                {isPaid && <span className="text-slate-400 ml-2">• {formatDateShort(payment.paid_at)}</span>}
                                                                 {isCurrent && !isPaid && <span className="text-indigo-600 dark:text-indigo-400 ml-2 font-bold">← Bayar sekarang</span>}
                                                             </div>
                                                             {isPaid && <span className="font-bold text-emerald-600">{formatIDR(payment.amount)}</span>}

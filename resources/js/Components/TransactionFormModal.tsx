@@ -5,6 +5,7 @@ import { X, TrendDown as TrendingDown, TrendUp as TrendingUp, ArrowsLeftRight as
 import toast from 'react-hot-toast';
 import TagInput from '@/Components/TagInput';
 import { WalletData, CategoryData, TagData } from '@/types/dashboard';
+import { todayString } from '@/utils/date';
 
 interface EditableTransaction {
     id: number;
@@ -66,7 +67,7 @@ export default function TransactionFormModal({
     const { data, setData, processing, reset } = useForm({
         wallet_id: getPrimaryWalletId(),
         to_wallet_id: '',
-        date: new Date().toISOString().split('T')[0],
+        date: todayString(),
         description: '',
         amount: '',
         type: 'EXPENSE' as 'INCOME' | 'EXPENSE' | 'TRANSFER',

@@ -21,6 +21,7 @@ import TopTagsWidget from '@/Components/Dashboard/TopTagsWidget';
 import TransactionFormModal from '@/Components/TransactionFormModal';
 import NetWorthCard from '@/Components/Dashboard/NetWorthCard';
 import ErrorBoundary from '@/Components/ErrorBoundary';
+import { toDateString } from '@/utils/date';
 
 // Types
 import {
@@ -127,10 +128,7 @@ export default function Dashboard({
     }, []);
 
     // Helper for formatting local date strings
-    const getLocalDateString = (date: Date = new Date()) => {
-        const offset = date.getTimezoneOffset() * 60000;
-        return new Date(date.getTime() - offset).toISOString().split('T')[0];
-    };
+    const getLocalDateString = (date?: Date) => toDateString(date);
 
     const handleFilterChange = (filter: string) => {
         setActiveFilter(filter);

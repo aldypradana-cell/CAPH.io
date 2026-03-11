@@ -9,6 +9,7 @@ import {
     Sun, Moon, DotsThree as MoreHorizontal, Users, FileText, Database, ArrowsLeftRight as ArrowRightLeft, Plus, PiggyBank, ChartBar as BarChart3
 } from '@phosphor-icons/react';
 import { User } from '@/types';
+import { formatTime } from '@/utils/date';
 
 interface LayoutProps {
     header?: React.ReactNode;
@@ -304,7 +305,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                                         </div>
                                                         <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">{notif.data.message}</p>
                                                         <p className="text-[10px] text-slate-400 mt-1.5">
-                                                            {new Date(notif.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                            {formatTime(notif.created_at)}
                                                         </p>
                                                     </div>
                                                 </div>

@@ -8,6 +8,7 @@ import {
     ArrowUpRight, ArrowDownRight, CaretRight as ChevronRight, Info
 } from '@phosphor-icons/react';
 import toast, { Toaster } from 'react-hot-toast';
+import { toDateString, formatDateTime, formatWeekday } from '@/utils/date';
 
 // ── Types ────────────────────────────────────────────
 interface Cashflow {
@@ -175,7 +176,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
             }
 
             // Format YYYY-MM-DD
-            const formatDate = (d: Date) => d.toISOString().split('T')[0];
+            const formatDate = (d: Date) => toDateString(d);
 
             const response = await window.axios.post(route('insights.generate'), {
                 startDate: formatDate(startDate),
@@ -212,7 +213,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
 
             <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6 animate-fade-in-up">
                 {lastUpdated && (
-                    <p className="text-xs text-slate-400 -mt-2 mb-2">Terakhir diupdate: {new Date(lastUpdated).toLocaleString('id-ID')}</p>
+                    <p className="text-xs text-slate-400 -mt-2 mb-2">Terakhir diupdate: {formatDateTime(lastUpdated)}</p>
                 )}
 
                 {/* ── Profile Completion Banner ── */}
@@ -278,7 +279,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                             {aiQuota && (
                                 <span className={`text-[10px] font-bold px-2 py-1 rounded-full flex flex-col items-center justify-center text-center ${isQuotaExceeded ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
                                     {isQuotaExceeded ? (
-                                        <>🔴 Kuota Habis<span className="font-medium text-[8px] opacity-80">Reset: {new Date(aiQuota.resetsAt).toLocaleDateString('id-ID', { weekday: 'long' })}</span></>
+                                        <>🔴 Kuota Habis<span className="font-medium text-[8px] opacity-80">Reset: {formatWeekday(aiQuota.resetsAt)}</span></>
                                     ) : (
                                         <>{aiQuota.limit === 999999 ? '👑 Admin: Tanpa Batas' : `${aiQuota.used}/${aiQuota.limit} minggu ini`}</>
                                     )}

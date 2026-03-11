@@ -5,6 +5,7 @@ import {
     Plus, PencilSimple as Edit2, Trash as Trash2, Coins, TrendUp as TrendingUp, WarningCircle as AlertCircle, FloppyDisk as Save 
 } from '@phosphor-icons/react';
 import toast from 'react-hot-toast';
+import { todayString, formatDateShort } from '@/utils/date';
 
 interface GoldPurchase {
     id: number;
@@ -50,7 +51,7 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
     const form = useForm({
         grams: '',
         price_per_gram: '',
-        purchased_at: new Date().toISOString().split('T')[0],
+        purchased_at: todayString(),
         notes: '',
         wallet_id: '',
     });
@@ -233,7 +234,7 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
                                 return (
                                     <tr key={p.id} className="border-b border-slate-100 dark:border-slate-800/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors group">
                                         <td className="p-4 pl-6 lg:pl-8 whitespace-nowrap">
-                                            <p className="font-bold text-slate-800 dark:text-white text-sm">{new Date(p.purchased_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                                            <p className="font-bold text-slate-800 dark:text-white text-sm">{formatDateShort(p.purchased_at)}</p>
                                             {p.notes && <p className="text-xs text-slate-400 mt-0.5 truncate max-w-[150px]">{p.notes}</p>}
                                         </td>
                                         <td className="p-4 whitespace-nowrap">
@@ -286,7 +287,7 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
                                 <div key={p.id} className="p-5 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
                                     <div className="flex justify-between items-start mb-3">
                                         <div>
-                                            <p className="font-bold text-slate-800 dark:text-white text-sm">{new Date(p.purchased_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                                            <p className="font-bold text-slate-800 dark:text-white text-sm">{formatDateShort(p.purchased_at)}</p>
                                             {p.notes && <p className="text-xs text-slate-400 mt-0.5 truncate max-w-[200px]">{p.notes}</p>}
                                         </div>
                                         <div className="flex gap-1">

@@ -10,6 +10,7 @@ import {
 import toast, { Toaster } from 'react-hot-toast';
 import TransactionFormModal from '@/Components/TransactionFormModal';
 import AdvancedFilterSheet from '@/Components/AdvancedFilterSheet';
+import { todayString, formatDateDayMonth, formatDateShort, formatMonthYear, formatMonthYearLong } from '@/utils/date';
 
 interface TagData {
     id: number;
@@ -87,13 +88,13 @@ function TransactionHeatmap({ data, month, onDateSelect }: { data: Record<string
                 <button 
                     onClick={() => { onDateSelect(dateStr); setIsExpanded(false); }}
                     className={`w-full aspect-square rounded sm:rounded-md flex items-center justify-center text-[10px] font-bold transition-all hover:scale-110 active:scale-95 ${colorClass} ${
-                        new Date().toISOString().split('T')[0] === dateStr ? 'ring-2 ring-offset-1 ring-indigo-500 dark:ring-offset-slate-900' : ''
+                        todayString() === dateStr ? 'ring-2 ring-offset-1 ring-indigo-500 dark:ring-offset-slate-900' : ''
                     }`}
                 >
                     {i}
                 </button>
                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 w-max max-w-[150px] p-2 bg-slate-900 dark:bg-slate-800 text-white text-[10px] rounded-lg shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
-                    <p className="font-bold mb-1 border-b border-slate-700 pb-1">{i} {new Date(yearNum, monthNum).toLocaleString('id-ID', { month: 'short', year: 'numeric' })}</p>
+                    <p className="font-bold mb-1 border-b border-slate-700 pb-1">{i} {formatMonthYear({ year: yearNum, month: monthNum })}</p>
                     {dayData.expense > 0 && <p className="text-red-400 flex justify-between gap-2"><span>Keluar:</span> <span>{formatIDR(dayData.expense)}</span></p>}
                     {dayData.income > 0 && <p className="text-emerald-400 flex justify-between gap-2"><span>Masuk:</span> <span>{formatIDR(dayData.income)}</span></p>}
                     {dayData.expense === 0 && dayData.income === 0 && <p className="text-slate-400">Tak ada data</p>}
@@ -117,7 +118,7 @@ function TransactionHeatmap({ data, month, onDateSelect }: { data: Record<string
                     {/* Desktop: absolute dropdown */}
                     <div className="hidden lg:block absolute top-full mt-2 w-64 p-3 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 z-50 animate-pop-in right-0 origin-top-right">
                         <div className="flex justify-between items-center mb-2">
-                            <h4 className="text-xs font-bold text-slate-800 dark:text-white">{new Date(yearNum, monthNum).toLocaleString('id-ID', { month: 'short', year: 'numeric' })}</h4>
+                            <h4 className="text-xs font-bold text-slate-800 dark:text-white">{formatMonthYear({ year: yearNum, month: monthNum })}</h4>
                             <button onClick={() => setIsExpanded(false)} className="p-1 lg:hidden text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg transition-colors">
                                 <X weight="bold" className="w-4 h-4" />
                             </button>
@@ -143,7 +144,7 @@ function TransactionHeatmap({ data, month, onDateSelect }: { data: Record<string
                             <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={() => setIsExpanded(false)}></div>
                             <div className="relative w-full max-w-[300px] p-5 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 animate-pop-in" onClick={(e) => e.stopPropagation()}>
                                 <div className="flex justify-between items-center mb-4">
-                                    <h4 className="text-sm font-bold text-slate-800 dark:text-white">{new Date(yearNum, monthNum).toLocaleString('id-ID', { month: 'long', year: 'numeric' })}</h4>
+                                    <h4 className="text-sm font-bold text-slate-800 dark:text-white">{formatMonthYearLong({ year: yearNum, month: monthNum })}</h4>
                                     <button onClick={() => setIsExpanded(false)} className="p-1.5 bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl transition-colors active:scale-95">
                                         <X weight="bold" className="w-4 h-4" />
                                     </button>
@@ -313,7 +314,7 @@ export default function TransactionsIndex({
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `transaksi_${new Date().toISOString().split('T')[0]}.csv`;
+        a.download = `transaksi_${todayString()}.csv`;
         a.click();
         URL.revokeObjectURL(url);
         toast.success('Data berhasil diexport!');
@@ -494,7 +495,7 @@ export default function TransactionsIndex({
                                         <p className="text-sm font-bold text-slate-800 dark:text-white line-clamp-2 sm:truncate">{t.description}</p>
                                         <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                                             <span className="md:hidden text-[10px] font-medium text-slate-400">
-                                                {new Date(t.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                                                {formatDateDayMonth(t.date)}
                                             </span>
                                             <span className="md:hidden text-[10px] text-slate-300">•</span>
                                             <span className="text-[10px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">{t.category}</span>
@@ -520,7 +521,7 @@ export default function TransactionsIndex({
 
                                     {/* Date (hidden on mobile) */}
                                     <div className="hidden md:block text-xs text-slate-400 font-medium shrink-0 pr-12 lg:pr-20">
-                                        {new Date(t.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                        {formatDateShort(t.date)}
                                     </div>
                                 </div>
 
