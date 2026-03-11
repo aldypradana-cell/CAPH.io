@@ -159,6 +159,11 @@ const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
 };
 
+const getLocalYYYYMMDD = (date?: string | Date) => {
+    const d = date ? new Date(date) : new Date();
+    return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().split('T')[0];
+};
+
 export default function DebtsIndex({ auth, debts, recurring, dueRecurring, wallets, categories, summary, installments, installmentSummary, debtProjection, filters }: Props) {
     const [activeTab, setActiveTab] = useState<'RECURRING' | 'INSTALLMENT' | 'DEBT'>('RECURRING');
     const [mounted, setMounted] = useState(false);
@@ -185,7 +190,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
     const paymentForm = useForm({
         wallet_id: '',
         amount: '',
-        date: new Date().toISOString().split('T')[0],
+        date: getLocalYYYYMMDD(),
         notes: '',
     });
 
@@ -203,7 +208,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
         type: 'EXPENSE',
         category: '',
         frequency: 'MONTHLY',
-        start_date: new Date().toISOString().split('T')[0],
+        start_date: getLocalYYYYMMDD(),
         next_run_date: '',
         auto_cut: true,
         description: '',
@@ -212,7 +217,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
     const processForm = useForm({
         amount: '',
         wallet_id: '',
-        date: new Date().toISOString().split('T')[0],
+        date: getLocalYYYYMMDD(),
     });
 
     // --- AMOUNT FORMATTER ---
@@ -272,7 +277,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
         paymentForm.setData({
             wallet_id: '',
             amount: Number(d.remaining_amount ?? d.amount).toLocaleString('id-ID'),
-            date: new Date().toISOString().split('T')[0],
+            date: getLocalYYYYMMDD(),
             notes: '',
         });
     };
@@ -317,7 +322,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
             recurringForm.reset();
             recurringForm.setData({
                 name: '', amount: '', wallet_id: '', type: 'EXPENSE', category: '',
-                frequency: 'MONTHLY', start_date: new Date().toISOString().split('T')[0],
+                frequency: 'MONTHLY', start_date: getLocalYYYYMMDD(),
                 next_run_date: '', auto_cut: true, description: ''
             });
         }
@@ -352,7 +357,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
         processForm.setData({
             amount: Number(item.amount).toLocaleString('id-ID'),
             wallet_id: item.wallet_id.toString(),
-            date: new Date().toISOString().split('T')[0],
+            date: getLocalYYYYMMDD(),
         });
         setIsProcessModalOpen(true);
     };
