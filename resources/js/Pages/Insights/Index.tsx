@@ -372,254 +372,185 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
             <Head title="Analisis AI" />
             <Toaster position="top-right" />
 
-            <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6 animate-fade-in-up">
-                {/* ── Tab Switcher ── */}
-                <div className="flex bg-slate-100 dark:bg-slate-800/50 rounded-2xl p-1.5 gap-1">
-                    <button
-                        onClick={() => setActiveTab('insight')}
-                        className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${
-                            activeTab === 'insight'
-                                ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/25'
-                                : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-                        }`}
-                    >
-                        <Sparkles weight="fill" className="w-4 h-4" /> AI Insight
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('roast')}
-                        className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${
-                            activeTab === 'roast'
-                                ? 'bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-lg shadow-red-500/25'
-                                : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-                        }`}
-                    >
-                        <Fire weight="fill" className="w-4 h-4" /> Roast Me
-                    </button>
+            <div className={`max-w-5xl mx-auto space-y-4 sm:space-y-6 animate-fade-in-up transition-all duration-700 ease-in-out ${activeTab === 'roast' ? 'bg-[#0a0a0a] min-h-[80vh] rounded-[2rem] p-4 sm:p-8 shadow-[0_0_100px_rgba(220,38,38,0.1)] relative overflow-hidden ring-1 ring-white/5' : ''}`}>
+                {/* ── Header Area with Secret Toggle ── */}
+                <div className={`flex items-center justify-between rounded-2xl p-2 pl-4 transition-colors duration-500 z-10 relative ${activeTab === 'roast' ? 'bg-transparent' : 'bg-slate-100 dark:bg-slate-800/50'}`}>
+                    <h2 className={`text-sm font-bold flex items-center gap-2 transition-colors ${activeTab === 'roast' ? 'text-slate-500' : 'text-slate-700 dark:text-slate-300'}`}>
+                        <Sparkles weight="fill" className={`w-5 h-5 ${activeTab === 'roast' ? 'text-slate-600' : 'text-indigo-500'}`} /> 
+                        Analisis AI
+                    </h2>
+                    
+                    <div className="flex items-center gap-3 pr-1">
+                        <span className={`text-xs font-bold transition-colors ${activeTab === 'roast' ? 'text-red-500 drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]' : 'text-slate-500 dark:text-slate-400'}`}>
+                            🔥 Roast Me!!!
+                        </span>
+                        <button 
+                            onClick={() => setActiveTab(activeTab === 'insight' ? 'roast' : 'insight')}
+                            className={`relative inline-flex h-8 w-14 items-center rounded-full transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${activeTab === 'roast' ? 'bg-red-600 focus-visible:ring-red-500 shadow-[0_0_15px_rgba(220,38,38,0.5)] border-transparent' : 'bg-slate-300 dark:bg-slate-600 focus-visible:ring-slate-500 shadow-inner'}`}
+                        >
+                            <span className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-md transition-transform duration-300 flex items-center justify-center ${activeTab === 'roast' ? 'translate-x-7' : 'translate-x-1'}`}>
+                                {activeTab === 'roast' ? <Fire weight="fill" className="text-red-600 w-4 h-4" /> : <Sparkles weight="fill" className="text-slate-400 w-4 h-4" />}
+                            </span>
+                        </button>
+                    </div>
                 </div>
 
                 {activeTab === 'roast' ? (
                     /* ═══════════════════════════════════ ROAST ME TAB ═══════════════════════════════════ */
-                    <div className="space-y-6 animate-fade-in-up">
-                        {/* Loading State */}
+                    <div className="flex flex-col items-center justify-center min-h-[60vh] animate-fade-in-up relative z-10">
+                        {/* Dramatic Red Glow Background */}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-red-600/10 blur-[120px] rounded-full pointer-events-none" />
+
                         {isRoasting ? (
-                            <div className="glass-card rounded-[2rem] p-8 sm:p-12 flex flex-col items-center justify-center min-h-[400px] text-center">
+                            <div className="flex flex-col items-center text-center z-10 w-full max-w-sm">
                                 <div className="flex gap-2 mb-6">
-                                    <span className="text-4xl animate-bounce" style={{ animationDelay: '0ms' }}>🔥</span>
-                                    <span className="text-4xl animate-bounce" style={{ animationDelay: '150ms' }}>🔥</span>
-                                    <span className="text-4xl animate-bounce" style={{ animationDelay: '300ms' }}>🔥</span>
+                                    <span className="text-5xl animate-bounce" style={{ animationDelay: '0ms' }}>🔥</span>
+                                    <span className="text-5xl animate-bounce" style={{ animationDelay: '150ms' }}>🔥</span>
+                                    <span className="text-5xl animate-bounce" style={{ animationDelay: '300ms' }}>🔥</span>
                                 </div>
-                                <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-3">Sedang memanggang...</h3>
-                                <div className="w-full max-w-xs h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden mb-4">
-                                    <div className="h-full bg-gradient-to-r from-red-500 via-orange-400 to-yellow-400 rounded-full animate-pulse" style={{ width: '100%' }} />
+                                <div className="w-full h-1 bg-slate-800 rounded-full overflow-hidden mb-6">
+                                    <div className="h-full bg-red-600 rounded-full animate-pulse" style={{ width: '100%' }} />
                                 </div>
-                                <p className="text-sm text-slate-500 dark:text-slate-400 italic transition-all duration-500">
+                                <p className="text-sm font-mono text-red-500/80 animate-pulse tracking-widest uppercase">
                                     {LOADING_TEXTS[loadingTextIdx]}
                                 </p>
                             </div>
                         ) : roastResult && !roastError ? (
-                            /* Result Card */
-                            <div className="glass-card rounded-[2rem] overflow-hidden">
-                                {/* Gradient bar top */}
-                                <div className="h-2 bg-gradient-to-r from-red-500 via-orange-400 to-yellow-400" />
+                            <div className="z-10 w-full flex flex-col items-center animate-pop-in">
+                                {/* The exact share card rendered on screen */}
+                                <div 
+                                    className="w-full max-w-[420px] rounded-[1.5rem] overflow-hidden shadow-[0_20px_60px_-15px_rgba(220,38,38,0.2)] border border-white/5"
+                                    style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
+                                >
+                                    <div style={{ background: '#101010', color: '#F3F5F7', padding: '24px', position: 'relative' }}>
+                                        {/* Post Container */}
+                                        <div style={{ display: 'flex', gap: '12px' }}>
+                                            {/* Left Column: Avatar & Thread Line */}
+                                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                                <div style={{ 
+                                                    width: '42px', height: '42px', borderRadius: '50%', background: 'linear-gradient(135deg, #FF6B6B, #C0392B, #8E44AD)', 
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden'
+                                                }}>
+                                                    <span style={{ fontSize: '24px', lineHeight: 1, marginTop: '2px', display: 'flex' }}>🔥</span>
+                                                </div>
+                                                {/* Thread line */}
+                                                <div style={{ width: '2px', flexGrow: 1, backgroundColor: '#222', marginTop: '10px', marginBottom: '10px', borderRadius: '1px' }}></div>
+                                                {/* Small avatar */}
+                                                <div style={{ 
+                                                    width: '18px', height: '18px', borderRadius: '50%', background: '#1d9bf0', 
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                                                }}>
+                                                    <svg viewBox="0 0 24 24" fill="#ffffff" style={{ width: '10px', height: '10px' }}><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg>
+                                                </div>
+                                            </div>
 
-                                <div className="p-6 sm:p-10 space-y-6">
-                                    {/* Badge section */}
-                                    <div className="text-center">
-                                        <span className="text-5xl block mb-2">{roastResult.badge_emoji}</span>
-                                        <h3 className="text-2xl font-black text-slate-800 dark:text-white">{roastResult.badge_name}</h3>
-                                        <span className={`inline-flex items-center gap-1 mt-2 px-3 py-1 rounded-full text-xs font-bold text-white bg-gradient-to-r ${ROAST_LEVELS.find(l => l.key === roastResult.level)?.color ?? 'from-orange-400 to-orange-500'}`}>
-                                            {ROAST_LEVELS.find(l => l.key === roastResult.level)?.emoji} {ROAST_LEVELS.find(l => l.key === roastResult.level)?.label}
-                                        </span>
-                                    </div>
+                                            {/* Right Column: Content */}
+                                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingTop: '2px' }}>
+                                                {/* Header: Name, Verified, Time */}
+                                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                        <span style={{ fontSize: '15px', fontWeight: '600', color: '#F3F5F7', letterSpacing: '-0.2px' }}>caph_roast_ai</span>
+                                                        <svg viewBox="0 0 24 24" fill="#0095F6" style={{ width: '14px', height: '14px' }}>
+                                                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#777777', fontSize: '14px', fontWeight: '400' }}>
+                                                        <span>{new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>
+                                                        <svg aria-label="More" fill="currentColor" height="18" role="img" viewBox="0 0 24 24" width="18"><circle cx="12" cy="12" r="1.5"></circle><circle cx="6" cy="12" r="1.5"></circle><circle cx="18" cy="12" r="1.5"></circle></svg>
+                                                    </div>
+                                                </div>
 
-                                    {/* Waste Score Thermometer */}
-                                    <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Skor Keborosan</span>
-                                            <span className="text-lg font-black text-slate-800 dark:text-white">{roastResult.waste_score}/100</span>
-                                        </div>
-                                        <div className="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                                            <div
-                                                className="h-full rounded-full transition-all duration-1000 ease-out"
-                                                style={{
-                                                    width: `${roastResult.waste_score}%`,
-                                                    background: `linear-gradient(90deg, #60a5fa ${0}%, #facc15 ${50}%, #ef4444 ${100}%)`
-                                                }}
-                                            />
-                                        </div>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 text-center font-medium">{getWasteLabel(roastResult.waste_score)}</p>
-                                    </div>
+                                                {/* Post Text */}
+                                                <div style={{ marginBottom: '14px' }}>
+                                                    <p style={{ 
+                                                        fontSize: '15px', 
+                                                        fontWeight: '400', 
+                                                        color: '#F3F5F7', 
+                                                        lineHeight: '1.45', 
+                                                        margin: 0,
+                                                        whiteSpace: 'pre-wrap',
+                                                    }}>
+                                                        "{roastResult.roast_text.split('\n\n')[0]}"
+                                                    </p>
+                                                </div>
 
-                                    {/* Roast Text */}
-                                    <div className="space-y-4">
-                                        {roastResult.roast_text.split('\n\n').filter(Boolean).map((paragraph, i) => (
-                                            <p key={i} className="text-base leading-relaxed text-slate-700 dark:text-slate-300 font-medium">
-                                                {paragraph.trim()}
-                                            </p>
-                                        ))}
-                                    </div>
+                                                {/* Engagement Icons */}
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', color: '#F3F5F7', marginBottom: '12px' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px' }}>
+                                                        <svg aria-label="Like" fill="transparent" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ width: '100%', height: '100%' }}><path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z"></path></svg>
+                                                    </div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px' }}>
+                                                        <svg aria-label="Comment" fill="transparent" stroke="currentColor" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" style={{ width: '100%', height: '100%' }}><path d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615l1.455 2.853c.123.243.342.368.61.368a.634.634 0 0 0 .61-.368c.28-.548.564-1.104.848-1.659.284-.555.568-1.111.848-1.666a.637.637 0 0 0-.106-.723Z"></path></svg>
+                                                    </div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px' }}>
+                                                        <svg aria-label="Repost" fill="transparent" stroke="currentColor" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" style={{ width: '100%', height: '100%' }}><path d="M19.998 9.497a1 1 0 0 0-1 1v4.228a3.274 3.274 0 0 1-3.27 3.27h-5.313l1.791-1.787a1 1 0 0 0-1.412-1.416L7.29 18.287a1.004 1.004 0 0 0-.294.707v.001c0 .023.012.042.013.065a.923.923 0 0 0 .281.643l3.502 3.504a1 1 0 0 0 1.414-1.414l-1.797-1.798h5.318a5.276 5.276 0 0 0 5.27-5.27v-4.228a1 1 0 0 0-1-1Zm-6.41-3.496-1.795 1.795a1 1 0 1 0 1.414 1.414l3.5-3.504a.936.936 0 0 0 .28-.645v-.001c0-.022-.012-.041-.013-.065a1.004 1.004 0 0 0-.294-.707l-3.504-3.504a1 1 0 0 0-1.414 1.414l1.794 1.795H8.24A5.276 5.276 0 0 0 2.97 7.268v4.228a1 1 0 1 0 2 0V7.268a3.274 3.274 0 0 1 3.27-3.27h5.346Z"></path></svg>
+                                                    </div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px' }}>
+                                                        <svg aria-label="Share" fill="transparent" stroke="currentColor" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" style={{ width: '100%', height: '100%' }}><line fill="none" x1="22" x2="9.218" y1="3" y2="10.083"></line><polygon fill="none" points="11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334"></polygon></svg>
+                                                    </div>
+                                                </div>
 
-                                    {/* Challenge Card */}
-                                    {roastResult.challenge && (
-                                        <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/30 rounded-2xl">
-                                            <div className="flex items-start gap-3">
-                                                <Target weight="duotone" className="w-6 h-6 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-                                                <div>
-                                                    <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest mb-1">Tantangan Bulan Ini</p>
-                                                    <p className="text-sm text-amber-900 dark:text-amber-200 font-medium">{roastResult.challenge}</p>
+                                                {/* View Count */}
+                                                <div style={{ color: '#777777', fontSize: '15px' }}>
+                                                    4,2jt tayangan
                                                 </div>
                                             </div>
                                         </div>
-                                    )}
-
-                                    {/* Action Buttons */}
-                                    <div className="flex gap-3">
-                                        <button
-                                            onClick={handleRoast}
-                                            disabled={roastedToday || isRoasting}
-                                            className="flex-[2] flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-bold transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-red-600 to-orange-500 text-white shadow-lg shadow-red-500/30 hover:scale-[1.02]"
-                                        >
-                                            {roastedToday ? (
-                                                <><ClockIcon weight="bold" className="w-4 h-4" /> Sisa {cooldownStr}  </>
-                                            ) : (
-                                                <><ArrowCounterClockwise weight="bold" className="w-4 h-4" /> Panggang Lagi</>  
-                                            )}
-                                        </button>
-                                        <button
-                                            onClick={handleShare}
-                                            disabled={isLoadingShare}
-                                            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-bold transition-all active:scale-95 bg-white dark:bg-slate-800 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700"
-                                        >
-                                            {isLoadingShare ? <Loader2 className="w-4 h-4 animate-spin" /> : <><ShareNetwork weight="bold" className="w-4 h-4" /> Bagikan</>}
-                                        </button>
                                     </div>
-                                    {roastedToday && (
-                                        <p className="text-xs text-slate-400 italic text-center -mt-3">Istirahat dulu. Panasnya masih terasa.</p>
-                                    )}
+                                </div>
+                                {/* End of Share Card */}
+
+                                {/* Actions */}
+                                <div className="flex gap-3 mt-8 w-full max-w-[420px]">
+                                    <button
+                                        onClick={handleShare}
+                                        disabled={isLoadingShare}
+                                        className="flex-[2] flex items-center justify-center gap-2 py-4 rounded-xl text-sm font-bold bg-white text-black transition-transform hover:scale-105 active:scale-95 disabled:opacity-50"
+                                    >
+                                        {isLoadingShare ? <Loader2 className="w-5 h-5 animate-spin" /> : <><ShareNetwork weight="bold" className="w-5 h-5" /> Bagikan ke IG</>}
+                                    </button>
+                                    <button
+                                        onClick={() => { setRoastResult(null); setRoastedToday(false); }}
+                                        className="flex-1 flex items-center justify-center py-4 rounded-xl text-sm font-bold bg-[#1a1a1a] text-white border border-white/10 hover:bg-[#2a2a2a] transition-colors"
+                                    >
+                                        Sembunyikan
+                                    </button>
                                 </div>
                             </div>
                         ) : (
-                            /* Empty / Error State */
-                            <div className="glass-card rounded-[2rem] p-8 sm:p-12 flex flex-col items-center justify-center text-center">
-                                <div className="text-5xl mb-4 animate-pulse">🔥</div>
-                                <h3 className="text-2xl font-black text-slate-800 dark:text-white mb-2">Berani Lihat Realita Keuanganmu?</h3>
-                                <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mb-8">
-                                    AI akan menganalisis kebiasaan keuanganmu dan memberikan roasting yang pedas tapi jujur.
+                            /* Empty State - The Dark Room */
+                            <div className="z-10 flex flex-col items-center text-center max-w-sm w-full py-8">
+                                <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mb-6 ring-1 ring-red-500/20 shadow-[0_0_30px_rgba(239,68,68,0.2)]">
+                                    <Fire weight="duotone" className="w-10 h-10 text-red-500" />
+                                </div>
+                                <h3 className="text-2xl sm:text-3xl font-black text-white mb-4 leading-tight tracking-tight">Fakta Terdalam Keuanganmu.</h3>
+                                <p className="text-sm text-slate-400 mb-10 leading-relaxed font-medium">
+                                    AI akan memberikan roasting brutal tanpa filter tentang kebiasaan pengeluaranmu. Berani lihat realitanya?
                                 </p>
 
                                 {roastError && (
-                                    <div className="w-full max-w-md mb-6 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/30 rounded-xl text-sm text-red-600 dark:text-red-400 font-medium text-center">
+                                    <div className="w-full mb-6 p-4 bg-red-900/30 border border-red-500/30 rounded-xl text-sm text-red-400 font-medium">
                                         {roastError}
                                     </div>
                                 )}
-                            </div>
-                        )}
 
-                        {/* Level Selector + CTA (always visible when not loading) */}
-                        {!isRoasting && !(roastResult && !roastError) && (
-                            <div className="space-y-4">
-                                {/* Level Selector */}
-                                <div className="glass-card rounded-2xl p-4">
-                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 text-center">Pilih Level Kekejaman</p>
-                                    <div className="flex gap-2">
-                                        {ROAST_LEVELS.map(level => (
-                                            <button
-                                                key={level.key}
-                                                onClick={() => setRoastLevel(level.key)}
-                                                className={`flex-1 flex flex-col items-center gap-1 py-3 px-2 rounded-xl border-2 transition-all duration-200 ${
-                                                    roastLevel === level.key
-                                                        ? `border-transparent bg-gradient-to-br ${level.color} text-white scale-105 shadow-lg ring-2 ring-offset-2 dark:ring-offset-slate-900 ${level.ring}`
-                                                        : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
-                                                }`}
-                                            >
-                                                <span className="text-lg">{level.emoji}</span>
-                                                <span className="text-xs font-bold">{level.label}</span>
-                                                <span className={`text-[10px] ${roastLevel === level.key ? 'text-white/80' : 'text-slate-400'}`}>{level.desc}</span>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* CTA Button */}
                                 <button
                                     onClick={handleRoast}
                                     disabled={roastedToday || isRoasting}
-                                    className="w-full py-4 bg-gradient-to-r from-red-600 to-orange-500 text-white rounded-2xl text-lg font-black shadow-xl shadow-red-500/30 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                                    className="w-full relative group overflow-hidden rounded-[1.25rem] p-[2px] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                                 >
-                                    {roastedToday ? (
-                                        <><ClockIcon weight="bold" className="w-5 h-5" /> Sisa {cooldownStr} sebelum bisa dipanggang lagi</>
-                                    ) : (
-                                        <><Fire weight="fill" className="w-5 h-5" /> PANGGANG AKU!</>
-                                    )}
+                                    <span className="absolute inset-0 bg-gradient-to-r from-red-600 via-orange-500 to-red-600 rounded-[1.25rem] opacity-70 group-hover:opacity-100 animate-[pulse_3s_ease-in-out_infinite] transition-opacity" />
+                                    <div className="relative bg-[#050505] px-6 py-5 rounded-2xl flex items-center justify-center gap-3 transition-transform group-hover:scale-[0.99] group-active:scale-[0.97]">
+                                        {roastedToday ? (
+                                            <><ClockIcon weight="bold" className="w-5 h-5 text-slate-400" /> <span className="font-bold text-slate-300 text-lg">Istirahat {cooldownStr}</span></>
+                                        ) : (
+                                            <><Fire weight="fill" className="w-6 h-6 text-red-500" /> <span className="font-bold text-white text-lg tracking-wide uppercase">Panggang Saya</span></>
+                                        )}
+                                    </div>
                                 </button>
                                 {roastedToday && (
-                                    <p className="text-xs text-slate-400 italic text-center">Istirahat dulu. Panasnya masih terasa.</p>
+                                    <p className="text-xs text-slate-500 mt-5 font-medium">Jangan nangis. Evaluasi dompetmu.</p>
                                 )}
-                            </div>
-                        )}
-
-                        {/* If has result, show level selector + CTA below result */}
-                        {!isRoasting && roastResult && !roastError && !roastedToday && (
-                            <div className="glass-card rounded-2xl p-4">
-                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 text-center">Ganti Level & Panggang Lagi</p>
-                                <div className="flex gap-2 mb-4">
-                                    {ROAST_LEVELS.map(level => (
-                                        <button
-                                            key={level.key}
-                                            onClick={() => setRoastLevel(level.key)}
-                                            className={`flex-1 flex flex-col items-center gap-1 py-3 px-2 rounded-xl border-2 transition-all duration-200 ${
-                                                roastLevel === level.key
-                                                    ? `border-transparent bg-gradient-to-br ${level.color} text-white scale-105 shadow-lg`
-                                                    : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
-                                            }`}
-                                        >
-                                            <span className="text-lg">{level.emoji}</span>
-                                            <span className="text-xs font-bold">{level.label}</span>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Roast History Timeline */}
-                        {roastHistory.length > 0 && (
-                            <div className="glass-card rounded-[2rem] p-6">
-                                <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                    <Fire weight="duotone" className="w-4 h-4" /> Riwayat Panggang
-                                </h4>
-                                <div className="space-y-2">
-                                    {roastHistory.map((item) => {
-                                        const isExpanded = expandedHistory === item.id;
-                                        const scoreColor = item.waste_score <= 30 ? 'text-blue-500' : item.waste_score <= 60 ? 'text-amber-500' : 'text-red-500';
-                                        const levelConf = ROAST_LEVELS.find(l => l.key === item.level);
-                                        return (
-                                            <div key={item.id}>
-                                                <button
-                                                    onClick={() => setExpandedHistory(isExpanded ? null : item.id)}
-                                                    className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors text-left"
-                                                >
-                                                    <span className="text-2xl">{item.badge_emoji}</span>
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className="text-sm font-bold text-slate-800 dark:text-white truncate">{item.badge_name}</p>
-                                                        <p className="text-xs text-slate-400">{formatDateTime(item.created_at)}</p>
-                                                    </div>
-                                                    <span className={`text-sm font-black ${scoreColor}`}>{item.waste_score}</span>
-                                                    <span className="text-xs">{levelConf?.emoji}</span>
-                                                    <ChevronRight weight="bold" className={`w-4 h-4 text-slate-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-                                                </button>
-                                                {isExpanded && (
-                                                    <div className="px-3 pb-3 pt-1 animate-fade-in">
-                                                        <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl space-y-2">
-                                                            {item.roast_text.split('\n\n').filter(Boolean).map((p, i) => (
-                                                                <p key={i} className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{p.trim()}</p>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
                             </div>
                         )}
                     </div>
@@ -1083,110 +1014,87 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                 const r = roastResult;
                 return (
                 <div style={{ position: 'absolute', left: '-9999px', top: '0', zIndex: -100 }}>
-                    <div
+                    <div 
                         ref={shareRef}
                         id="share-card-container"
-                        style={{ display: 'none', width: '400px', fontFamily: 'system-ui, -apple-system, sans-serif' }}
+                        style={{ display: 'none', width: '420px', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
                     >
-                        {/* Premium Dark Gradient Background */}
-                        <div style={{ background: '#0B0F19', position: 'relative', overflow: 'hidden' }}>
-                            {/* Accent Gradients for depth */}
-                            <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 60%)', borderRadius: '50%' }} />
-                            <div style={{ position: 'absolute', bottom: '-80px', left: '-80px', width: '250px', height: '250px', background: 'radial-gradient(circle, rgba(239,68,68,0.12) 0%, transparent 60%)', borderRadius: '50%' }} />
-
-                            <div style={{ padding: '24px 32px 32px', position: 'relative', zIndex: 10 }}>
-                                {/* Hero Section: Emoji & Badge Name */}
-                                <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                                    {/* Glowing Frame for Emoji */}
+                        {/* Threads Dark Mode Style Background */}
+                        <div style={{ background: '#101010', color: '#F3F5F7', padding: '24px', position: 'relative' }}>
+                            {/* Post Container */}
+                            <div style={{ display: 'flex', gap: '12px' }}>
+                                {/* Left Column: Avatar & Thread Line */}
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                     <div style={{ 
-                                        position: 'relative',
-                                        width: '120px',
-                                        height: '120px',
-                                        margin: '0 auto 20px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        background: 'rgba(255, 255, 255, 0.03)',
-                                        borderRadius: '30px',
-                                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                                        boxShadow: '0 0 40px rgba(99, 102, 241, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.05)'
+                                        width: '42px', height: '42px', borderRadius: '50%', background: 'linear-gradient(135deg, #FF6B6B, #C0392B, #8E44AD)', 
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden'
                                     }}>
-                                        <div style={{
-                                            fontSize: '72px',
-                                            lineHeight: '1',
-                                            filter: 'drop-shadow(0px 8px 16px rgba(0,0,0,0.5))'
-                                        }}>
-                                            {r.badge_emoji}
+                                        <span style={{ fontSize: '24px', lineHeight: 1, marginTop: '2px', display: 'flex' }}>🔥</span>
+                                    </div>
+                                    {/* Thread line */}
+                                    <div style={{ width: '2px', flexGrow: 1, backgroundColor: '#333638', marginTop: '10px', marginBottom: '10px', borderRadius: '1px' }}></div>
+                                    {/* Small avatar */}
+                                    <div style={{ 
+                                        width: '18px', height: '18px', borderRadius: '50%', background: '#1d9bf0', 
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                                    }}>
+                                        <svg viewBox="0 0 24 24" fill="#ffffff" style={{ width: '10px', height: '10px' }}><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg>
+                                    </div>
+                                </div>
+
+                                {/* Right Column: Content */}
+                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingTop: '2px' }}>
+                                    {/* Header: Name, Verified, Time */}
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <span style={{ fontSize: '15px', fontWeight: '600', color: '#F3F5F7', letterSpacing: '-0.2px' }}>caph_roast_ai</span>
+                                            {/* Threads Blue Check */}
+                                            <svg viewBox="0 0 24 24" fill="#0095F6" style={{ width: '14px', height: '14px' }}>
+                                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
+                                            </svg>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#777777', fontSize: '14px', fontWeight: '400' }}>
+                                            <span>{new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>
+                                            <svg aria-label="More" fill="currentColor" height="18" role="img" viewBox="0 0 24 24" width="18"><circle cx="12" cy="12" r="1.5"></circle><circle cx="6" cy="12" r="1.5"></circle><circle cx="18" cy="12" r="1.5"></circle></svg>
                                         </div>
                                     </div>
 
-                                    <h3 style={{
-                                        fontSize: '32px',
-                                        fontWeight: '900',
-                                        color: '#ffffff',
-                                        letterSpacing: '-1px',
-                                        lineHeight: '1.1',
-                                        margin: '0',
-                                        textTransform: 'uppercase'
-                                    }}>
-                                        {r.badge_name}
-                                    </h3>
-                                    {/* Subtitle / Separator */}
-                                    <div style={{
-                                        width: '40px',
-                                        height: '4px',
-                                        background: 'linear-gradient(90deg, #6366f1, #ec4899)',
-                                        margin: '16px auto 0',
-                                        borderRadius: '2px'
-                                    }} />
-                                </div>
+                                    {/* Post Text */}
+                                    <div style={{ marginBottom: '14px' }}>
+                                        <p style={{ 
+                                            fontSize: '15px', 
+                                            fontWeight: '400', 
+                                            color: '#F3F5F7', 
+                                            lineHeight: '1.45', 
+                                            margin: 0,
+                                            whiteSpace: 'pre-wrap',
+                                        }}>
+                                            "{r.roast_text.split('\n\n')[0]}"
+                                        </p>
+                                    </div>
 
-                                {/* Roast Text Card (Glassmorphism) */}
-                                <div style={{
-                                    background: 'rgba(255, 255, 255, 0.03)',
-                                    backdropFilter: 'blur(10px)',
-                                    borderRadius: '20px',
-                                    padding: '24px',
-                                    marginBottom: '32px',
-                                    border: '1px solid rgba(255, 255, 255, 0.05)',
-                                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
-                                }}>
-                                    <p style={{
-                                        fontSize: '15px',
-                                        fontWeight: '500',
-                                        color: '#cbd5e1',
-                                        lineHeight: '1.6',
-                                        textAlign: 'center',
-                                        margin: 0
-                                    }}>
-                                        "{r.roast_text.split('\n\n')[0]}"
-                                    </p>
-                                </div>
+                                    {/* Engagement Icons */}
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', color: '#F3F5F7', marginBottom: '12px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px' }}>
+                                            <svg aria-label="Like" fill="transparent" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ width: '100%', height: '100%' }}><path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z"></path></svg>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px' }}>
+                                            <svg aria-label="Comment" fill="transparent" stroke="currentColor" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" style={{ width: '100%', height: '100%' }}><path d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615l1.455 2.853c.123.243.342.368.61.368a.634.634 0 0 0 .61-.368c.28-.548.564-1.104.848-1.659.284-.555.568-1.111.848-1.666a.637.637 0 0 0-.106-.723Z"></path></svg>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px' }}>
+                                            <svg aria-label="Repost" fill="transparent" stroke="currentColor" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" style={{ width: '100%', height: '100%' }}><path d="M19.998 9.497a1 1 0 0 0-1 1v4.228a3.274 3.274 0 0 1-3.27 3.27h-5.313l1.791-1.787a1 1 0 0 0-1.412-1.416L7.29 18.287a1.004 1.004 0 0 0-.294.707v.001c0 .023.012.042.013.065a.923.923 0 0 0 .281.643l3.502 3.504a1 1 0 0 0 1.414-1.414l-1.797-1.798h5.318a5.276 5.276 0 0 0 5.27-5.27v-4.228a1 1 0 0 0-1-1Zm-6.41-3.496-1.795 1.795a1 1 0 1 0 1.414 1.414l3.5-3.504a.936.936 0 0 0 .28-.645v-.001c0-.022-.012-.041-.013-.065a1.004 1.004 0 0 0-.294-.707l-3.504-3.504a1 1 0 0 0-1.414 1.414l1.794 1.795H8.24A5.276 5.276 0 0 0 2.97 7.268v4.228a1 1 0 1 0 2 0V7.268a3.274 3.274 0 0 1 3.27-3.27h5.346Z"></path></svg>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px' }}>
+                                            <svg aria-label="Share" fill="transparent" stroke="currentColor" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" style={{ width: '100%', height: '100%' }}><line fill="none" x1="22" x2="9.218" y1="3" y2="10.083"></line><polygon fill="none" points="11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334"></polygon></svg>
+                                        </div>
+                                    </div>
 
-                                {/* Footer Area */}
-                                <div style={{ textAlign: 'center' }}>
-                                    <p style={{
-                                        fontSize: '12px',
-                                        fontWeight: '800',
-                                        color: '#ffffff',
-                                        letterSpacing: '3px',
-                                        textTransform: 'uppercase',
-                                        margin: '0 0 8px'
-                                    }}>
-                                        Berani di Roasting?
-                                    </p>
-                                </div>
-                                <div style={{ 
-                                    textAlign: 'center', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.08)'
-                                }}>
-                                    <span style={{ fontSize: '10px', fontWeight: '700', color: '#64748b', letterSpacing: '2px', textTransform: 'uppercase' }}>
-                                        caph.io • Roast Me AI
-                                    </span>
+                                    {/* View Count */}
+                                    <div style={{ color: '#777777', fontSize: '15px' }}>
+                                        4,2jt tayangan
+                                    </div>
                                 </div>
                             </div>
-
-                            {/* Bottom accent bar */}
-                            <div style={{ height: '4px', background: 'linear-gradient(90deg, #eab308, #f97316, #ef4444)' }} />
                         </div>
                     </div>
                 </div>
