@@ -373,23 +373,29 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
             <Toaster position="top-right" />
 
             <div className={`max-w-5xl mx-auto space-y-4 sm:space-y-6 animate-fade-in-up transition-all duration-700 ease-in-out ${activeTab === 'roast' ? 'bg-[#0a0a0a] min-h-[80vh] rounded-[2rem] p-4 sm:p-8 shadow-[0_0_100px_rgba(220,38,38,0.1)] relative overflow-hidden ring-1 ring-white/5' : ''}`}>
-                {/* ── Header Area with Secret Toggle ── */}
-                <div className={`flex items-center justify-between rounded-2xl p-2 pl-4 transition-colors duration-500 z-10 relative ${activeTab === 'roast' ? 'bg-transparent' : 'bg-slate-100 dark:bg-slate-800/50'}`}>
-                    <h2 className={`text-sm font-bold flex items-center gap-2 transition-colors ${activeTab === 'roast' ? 'text-slate-500' : 'text-slate-700 dark:text-slate-300'}`}>
-                        <Sparkles weight="fill" className={`w-5 h-5 ${activeTab === 'roast' ? 'text-slate-600' : 'text-indigo-500'}`} /> 
-                        Analisis AI
-                    </h2>
-                    
+                {/* ── Header Area with Secret Toggle & Timestamp ── */}
+                <div className="flex items-center justify-between transition-colors duration-500 z-10 relative mb-4">
+                    <div className="flex-1">
+                        {activeTab !== 'roast' && lastUpdated && (
+                            <p className="text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 font-medium">Terakhir diupdate: {formatDateTime(lastUpdated)}</p>
+                        )}
+                    </div>
                     <div className="flex items-center gap-3 pr-1">
-                        <span className={`text-xs font-bold transition-colors ${activeTab === 'roast' ? 'text-red-500 drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]' : 'text-slate-500 dark:text-slate-400'}`}>
-                            🔥 Roast Me!!!
-                        </span>
+                        <div className={`flex items-center gap-1.5 transition-colors ${activeTab === 'roast' ? 'text-red-500' : 'text-slate-400 dark:text-slate-500'}`}>
+                            <Fire 
+                                weight={activeTab === 'roast' ? "fill" : "bold"} 
+                                className={`w-3.5 h-3.5 ${activeTab === 'roast' ? 'drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]' : ''}`} 
+                            />
+                            <span className="text-[10px] sm:text-xs font-black tracking-widest uppercase">
+                                Roast Me
+                            </span>
+                        </div>
                         <button 
                             onClick={() => setActiveTab(activeTab === 'insight' ? 'roast' : 'insight')}
-                            className={`relative inline-flex h-8 w-14 items-center rounded-full transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${activeTab === 'roast' ? 'bg-red-600 focus-visible:ring-red-500 shadow-[0_0_15px_rgba(220,38,38,0.5)] border-transparent' : 'bg-slate-300 dark:bg-slate-600 focus-visible:ring-slate-500 shadow-inner'}`}
+                            className={`relative inline-flex h-7 w-12 sm:h-8 sm:w-14 items-center rounded-full transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${activeTab === 'roast' ? 'bg-red-600 focus-visible:ring-red-500 shadow-[0_0_15px_rgba(220,38,38,0.5)] border-transparent' : 'bg-slate-300 dark:bg-slate-600 focus-visible:ring-slate-500 shadow-inner'}`}
                         >
-                            <span className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-md transition-transform duration-300 flex items-center justify-center ${activeTab === 'roast' ? 'translate-x-7' : 'translate-x-1'}`}>
-                                {activeTab === 'roast' ? <Fire weight="fill" className="text-red-600 w-4 h-4" /> : <Sparkles weight="fill" className="text-slate-400 w-4 h-4" />}
+                            <span className={`inline-block h-5 w-5 sm:h-6 sm:w-6 transform rounded-full bg-white shadow-md transition-transform duration-300 flex items-center justify-center ${activeTab === 'roast' ? 'translate-x-6 sm:translate-x-7' : 'translate-x-1'}`}>
+                                {activeTab === 'roast' ? <Fire weight="fill" className="text-red-600 w-3 h-3 sm:w-4 sm:h-4" /> : <Sparkles weight="fill" className="text-slate-400 w-3 h-3 sm:w-4 sm:h-4" />}
                             </span>
                         </button>
                     </div>
@@ -557,9 +563,6 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                 ) : (
                     /* ═══════════════════════════════════ AI INSIGHT TAB ═══════════════════════════════════ */
                     <>
-                {lastUpdated && (
-                    <p className="text-xs text-slate-400 -mt-2 mb-2">Terakhir diupdate: {formatDateTime(lastUpdated)}</p>
-                )}
 
                 {/* ── Profile Completion Banner ── */}
                 {!hasProfile && (
