@@ -199,8 +199,8 @@ export default function SankeyChart({ data, isLoading }: SankeyChartProps) {
                             <span className="text-xs font-semibold uppercase tracking-widest leading-none">Geser Horizontal Untuk Detail</span>
                         </div>
 
-                        <div className="overflow-x-auto scrollbar-hide -mx-4 flex justify-center w-full">
-                            <div className="min-w-[800px] w-full max-w-[1000px] h-[650px] flex justify-center mx-auto">
+                        <div className="overflow-x-auto scrollbar-hide pb-2">
+                            <div className="min-w-[800px] w-full max-w-[1000px] h-[650px] mx-auto">
                                 <ResponsiveContainer width="100%" height={600}>
                                     <Sankey
                                         data={{
