@@ -106,12 +106,12 @@ export default function TrendChart({
                 
                 {/* Row 2: Time Filter and Range */}
                 <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-                    <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl w-max">
+                    <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl w-full sm:w-max overflow-x-auto scrollbar-hide">
                         {(['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY', 'CUSTOM'] as const).map(filter => (
                             <button
                                 key={filter}
                                 onClick={() => onFilterChange(filter)}
-                                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all whitespace-nowrap active:scale-95 ${activeFilter === filter
+                                className={`px-2 py-1.5 sm:px-3 text-[10px] sm:text-xs font-bold rounded-lg transition-all whitespace-nowrap active:scale-95 flex-1 sm:flex-none ${activeFilter === filter
                                     ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm'
                                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
                                     }`}
