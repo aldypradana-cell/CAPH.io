@@ -546,7 +546,7 @@ class InsightsController extends Controller
                 'roast'        => $roast,
                 'cooldownEnds' => $tomorrow->toIso8601String(),
                 'quota'        => [
-                    'used'     => $user->role === 'ADMIN' ? 0 : clone $usedThisWeek + 1,
+                    'used'     => $user->role === 'ADMIN' ? 0 : $usedThisWeek + 1,
                     'limit'    => $user->role === 'ADMIN' ? 999999 : $user->roast_limit,
                     'resetsAt' => $nextMonday->toIso8601String(),
                 ],

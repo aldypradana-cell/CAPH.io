@@ -200,7 +200,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
     // Roast state
     const [roastLevel, setRoastLevel] = useState<RoastLevel>('MEDIUM');
     const [isRoasting, setIsRoasting] = useState(false);
-    const [roastResult, setRoastResult] = useState<RoastResult | null>(initialRoastData?.latestRoast ?? null);
+    const [roastResult, setRoastResult] = useState<RoastResult | null>(initialRoastData?.roastedToday ? (initialRoastData.latestRoast ?? null) : null);
     const [roastHistory, setRoastHistory] = useState<RoastResult[]>(initialRoastData?.history ?? []);
     const [roastedToday, setRoastedToday] = useState(initialRoastData?.roastedToday ?? false);
     const [cooldownEnds, setCooldownEnds] = useState(initialRoastData?.cooldownEnds ?? '');
@@ -598,7 +598,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                     </div>
                                 </button>
 
-                                {roastedToday && initialRoastData?.latestRoast && !roastResult && (
+                                {initialRoastData?.latestRoast && !roastResult && (
                                     <button 
                                         onClick={() => setRoastResult(initialRoastData.latestRoast)}
                                         className="w-full mt-4 flex items-center justify-center gap-2 py-3 bg-red-950/20 hover:bg-red-950/40 border border-red-900/30 text-red-400 rounded-xl text-xs font-bold transition-all animate-fade-in-up"
