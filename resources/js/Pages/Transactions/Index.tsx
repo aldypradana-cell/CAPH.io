@@ -435,7 +435,7 @@ export default function TransactionsIndex({
                         )}
 
                         {/* CSV Export */}
-                        <button onClick={handleExportCSV} className="hidden sm:flex p-2 sm:p-3 glass-card rounded-xl sm:rounded-2xl text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md transition-all active:scale-95" title="Export CSV">
+                        <button onClick={handleExportCSV} className="flex p-2 sm:p-3 glass-card rounded-xl sm:rounded-2xl text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md transition-all active:scale-95" title="Export CSV">
                             <Download weight="bold" className="w-4 h-4" />
                         </button>
 
@@ -446,7 +446,7 @@ export default function TransactionsIndex({
                                     setIsSelectionMode(!isSelectionMode);
                                     if (isSelectionMode) setSelectedIds([]);
                                 }} 
-                                className={`hidden sm:flex p-2 sm:p-3 rounded-xl sm:rounded-2xl transition-all active:scale-95 ${isSelectionMode ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800' : 'glass-card text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md'}`} 
+                                className={`flex p-2 sm:p-3 rounded-xl sm:rounded-2xl transition-all active:scale-95 ${isSelectionMode ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800' : 'glass-card text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md'}`} 
                                 title="Pilih Beberapa"
                             >
                                 <ListChecks weight={isSelectionMode ? "fill" : "bold"} className="w-4 h-4" />

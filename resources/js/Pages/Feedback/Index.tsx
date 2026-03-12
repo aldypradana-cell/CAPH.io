@@ -230,7 +230,7 @@ FeedbackIndex.layout = (page: any) => (
             </div>
             <div>
                 <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Kotak Saran</h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
+                <p className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
                     Kirim saran, laporan, atau pertanyaan
                 </p>
             </div>

@@ -598,9 +598,9 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                     </div>
                                 </button>
 
-                                {initialRoastData?.latestRoast && !roastResult && (
+                                {roastHistory.length > 0 && !roastResult && (
                                     <button 
-                                        onClick={() => setRoastResult(initialRoastData.latestRoast)}
+                                        onClick={() => setRoastResult(roastHistory[0])}
                                         className="w-full mt-4 flex items-center justify-center gap-2 py-3 bg-red-950/20 hover:bg-red-950/40 border border-red-900/30 text-red-400 rounded-xl text-xs font-bold transition-all animate-fade-in-up"
                                     >
                                         <Eye weight="bold" className="w-4 h-4" />
