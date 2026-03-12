@@ -312,7 +312,7 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
                                     {isExpanded && (
                                         <div className="mt-5 pt-5 border-t border-slate-100 dark:border-slate-800 animate-fade-in-up">
                                             <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Riwayat Pembayaran</h4>
-                                            <div className="space-y-2 max-h-60 overflow-y-auto scrollbar-hide">
+                                            <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
                                                 {Array.from({ length: inst.total_tenor }, (_, i) => i + 1).map(tenor => {
                                                     const payment = inst.payments.find(p => p.tenor_number === tenor);
                                                     const isCurrent = tenor === inst.paid_tenor + 1;
@@ -414,7 +414,7 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
                             </div>
                             <button onClick={() => setIsPayOpen(false)} className="text-slate-400 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"><X weight="bold" className="w-5 h-5" /></button>
                         </div>
-                        <div className="p-5 pt-4 overflow-y-auto scrollbar-hide">
+                        <div className="p-5 pt-4 overflow-y-auto">
                             <form onSubmit={handlePaySubmit} className="space-y-4">
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Nominal (Rp)</label>
@@ -463,7 +463,7 @@ export default function InstallmentTab({ installments, wallets, summary }: Props
                             <h3 className="text-lg font-bold text-slate-800 dark:text-white">{editingItem ? 'Edit Cicilan' : 'Tambah Cicilan Baru'}</h3>
                             <button onClick={() => setIsFormOpen(false)} className="text-slate-400 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"><X weight="bold" className="w-5 h-5" /></button>
                         </div>
-                        <div className="p-5 pt-4 overflow-y-auto scrollbar-hide">
+                        <div className="p-5 pt-4 overflow-y-auto">
                             <form onSubmit={handleFormSubmit} className="space-y-4">
                                 {/* Name */}
                                 <div>

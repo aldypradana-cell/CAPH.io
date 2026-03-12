@@ -41,6 +41,24 @@ class InstallmentController extends Controller
             'auto_debit' => $validated['auto_debit'] ?? false,
         ]);
 
+        if ($installment->paid_tenor > 0) {
+            $paymentsToInsert = [];
+            for ($i = 1; $i <= $installment->paid_tenor; $i++) {
+                $paymentsToInsert[] = [
+                    'installment_id' => $installment->id,
+                    'tenor_number'   => $i,
+                    'amount'         => $installment->monthly_amount,
+                    'paid_at'        => $installment->start_date,
+                    'wallet_id'      => null,
+                    'transaction_id' => null,
+                    'notes'          => 'Riwayat awal (Sudah dibayar sebelum menggunakan aplikasi)',
+                    'created_at'     => now(),
+                    'updated_at'     => now(),
+                ];
+            }
+            InstallmentPayment::insert($paymentsToInsert);
+        }
+
         return redirect()->back()->with('success', 'Cicilan berhasil ditambahkan');
     }
 
@@ -57,6 +75,7 @@ class InstallmentController extends Controller
             'total_amount'   => 'required|numeric|min:0',
             'monthly_amount' => 'required|numeric|min:1',
             'total_tenor'    => 'required|integer|min:1',
+            'paid_tenor'     => 'nullable|integer|min:0',
             'interest_rate'  => 'nullable|numeric|min:0|max:100',
             'fixed_tenor'    => 'nullable|integer|min:0',
             'due_day'        => 'required|integer|min:1|max:31',
@@ -68,7 +87,50 @@ class InstallmentController extends Controller
         ]);
 
         DB::transaction(function () use ($installment, $validated) {
+            $oldPaidTenor = $installment->paid_tenor;
+
+            // Ensure defaults
+            $validated['paid_tenor'] = $validated['paid_tenor'] ?? 0;
+            $validated['auto_debit'] = $validated['auto_debit'] ?? false;
+
             $installment->update($validated);
+            $newPaidTenor = $installment->paid_tenor;
+
+            // Sync dummy payments if paid_tenor changed
+            if ($newPaidTenor !== $oldPaidTenor) {
+                if ($newPaidTenor > $oldPaidTenor) {
+                    $paymentsToInsert = [];
+                    for ($i = $oldPaidTenor + 1; $i <= $newPaidTenor; $i++) {
+                        if (!InstallmentPayment::where('installment_id', $installment->id)->where('tenor_number', $i)->exists()) {
+                            $paymentsToInsert[] = [
+                                'installment_id' => $installment->id,
+                                'tenor_number'   => $i,
+                                'amount'         => $installment->monthly_amount,
+                                'paid_at'        => now(),
+                                'wallet_id'      => null,
+                                'transaction_id' => null,
+                                'notes'          => 'Riwayat awal (Sudah dibayar sebelum menggunakan aplikasi)',
+                                'created_at'     => now(),
+                                'updated_at'     => now(),
+                            ];
+                        }
+                    }
+                    if (!empty($paymentsToInsert)) {
+                        InstallmentPayment::insert($paymentsToInsert);
+                    }
+                } elseif ($newPaidTenor < $oldPaidTenor) {
+                    // Only delete dummy payments (those without a real wallet/transaction attached)
+                    InstallmentPayment::where('installment_id', $installment->id)
+                        ->where('tenor_number', '>', $newPaidTenor)
+                        ->whereNull('transaction_id')
+                        ->delete();
+                }
+            }
+
+            // Sync amount for all dummy payments so the remaining calculation stays relevant if monthly_amount changed
+            InstallmentPayment::where('installment_id', $installment->id)
+                ->whereNull('transaction_id')
+                ->update(['amount' => $installment->monthly_amount]);
 
             // Sync with parent transaction if it exists (PayLater sync)
             if ($installment->transaction_id) {
