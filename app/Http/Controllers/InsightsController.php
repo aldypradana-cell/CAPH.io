@@ -400,19 +400,21 @@ class InsightsController extends Controller
                 'content' => $insight,
             ]);
 
-            // Log AI usage for quota tracking
-            AiUsageLog::create([
-                'user_id' => $user->id,
-                'feature' => 'ai_insight',
-                'used_at' => now(),
-            ]);
+            // Log AI usage for quota tracking only if not ADMIN
+            if ($user->role !== 'ADMIN') {
+                AiUsageLog::create([
+                    'user_id' => $user->id,
+                    'feature' => 'ai_insight',
+                    'used_at' => now(),
+                ]);
+            }
 
             return response()->json([
                 'success'  => true,
                 'insight'  => $insight,
                 'saved_at' => $storedInsight->created_at,
                 'quota'    => [
-                    'used'     => $usedThisWeek + 1,
+                    'used'     => $user->role === 'ADMIN' ? 0 : $usedThisWeek + 1,
                     'limit'    => $user->role === 'ADMIN' ? 999999 : $user->insight_limit,
                     'resetsAt' => $nextMonday->toIso8601String(),
                 ],
@@ -527,19 +529,27 @@ class InsightsController extends Controller
                 'categories_roasted' => $result['categories_roasted'],
             ]);
 
-            // Log usage
-            AiUsageLog::create([
-                'user_id' => $user->id,
-                'feature' => 'roast_me',
-                'used_at' => now(),
-            ]);
+            // Log usage only if not ADMIN
+            if ($user->role !== 'ADMIN') {
+                AiUsageLog::create([
+                    'user_id' => $user->id,
+                    'feature' => 'roast_me',
+                    'used_at' => now(),
+                ]);
+            }
 
             $tomorrow = Carbon::tomorrow()->startOfDay();
+            $nextMonday = Carbon::now()->next(Carbon::MONDAY)->startOfDay();
 
             return response()->json([
                 'success'      => true,
                 'roast'        => $roast,
                 'cooldownEnds' => $tomorrow->toIso8601String(),
+                'quota'        => [
+                    'used'     => $user->role === 'ADMIN' ? 0 : clone $usedThisWeek + 1,
+                    'limit'    => $user->role === 'ADMIN' ? 999999 : $user->roast_limit,
+                    'resetsAt' => $nextMonday->toIso8601String(),
+                ],
             ]);
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Roast Generation Error: ' . $e->getMessage(), [

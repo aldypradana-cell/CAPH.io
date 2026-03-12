@@ -6,7 +6,7 @@ import {
     Sparkle as Sparkles, SpinnerGap as Loader2, Heart, TrendUp as TrendingUp, TrendDown as TrendingDown,
     Shield, Target, Warning as AlertTriangle, CheckCircle as CheckCircle2, Lightning as Zap,
     ArrowUpRight, ArrowDownRight, CaretRight as ChevronRight, Info,
-    Fire, Clock as ClockIcon, ArrowCounterClockwise, ShareNetwork
+    Fire, Clock as ClockIcon, ArrowCounterClockwise, ShareNetwork, Eye
 } from '@phosphor-icons/react';
 import toast, { Toaster } from 'react-hot-toast';
 import { toDateString, formatDateTime, formatWeekday } from '@/utils/date';
@@ -210,9 +210,9 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
     const [expandedHistory, setExpandedHistory] = useState<number | null>(null);
     const [cooldownStr, setCooldownStr] = useState('');
     const [isLoadingShare, setIsLoadingShare] = useState(false);
-    const shareRef = useRef<HTMLDivElement>(null);
-
+    
     const isQuotaExceeded = aiQuota ? aiQuota.used >= aiQuota.limit : false;
+    const shareRef = useRef<HTMLDivElement>(null);
 
     // Period Filter State
     const [period, setPeriod] = useState<'THIS_MONTH' | 'LAST_MONTH' | 'CUSTOM'>('THIS_MONTH');
@@ -297,6 +297,11 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
         const interval = setInterval(update, 60000);
         return () => clearInterval(interval);
     }, [roastedToday, cooldownEnds]);
+
+    const handleGetSolution = () => {
+        setActiveTab('insight');
+        toast('Beralih ke Analisis Finansial serius... ✨');
+    };
 
     const handleRoast = async () => {
         setIsRoasting(true);
@@ -424,12 +429,8 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
 
                         {isRoasting ? (
                             <div className="flex flex-col items-center text-center z-10 w-full max-w-sm">
-                                <div className="flex gap-2 mb-6">
-                                    <span className="text-5xl animate-bounce" style={{ animationDelay: '0ms' }}>🔥</span>
-                                    <span className="text-5xl animate-bounce" style={{ animationDelay: '150ms' }}>🔥</span>
-                                    <span className="text-5xl animate-bounce" style={{ animationDelay: '300ms' }}>🔥</span>
-                                </div>
-                                <div className="w-full h-1 bg-slate-800 rounded-full overflow-hidden mb-6">
+                                {/* Loading text block without fire icons */}
+                                <div className="w-full h-1 bg-slate-800 rounded-full overflow-hidden mb-6 mt-4">
                                     <div className="h-full bg-red-600 rounded-full animate-pulse" style={{ width: '100%' }} />
                                 </div>
                                 <p className="text-sm font-mono text-red-500/80 animate-pulse tracking-widest uppercase">
@@ -524,19 +525,29 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                 {/* End of Share Card */}
 
                                 {/* Actions */}
-                                <div className="flex gap-3 mt-8 w-full max-w-[420px]">
+                                <div className="flex flex-col gap-3 mt-8 w-full max-w-[420px]">
+                                    <div className="flex gap-3">
+                                        <button
+                                            onClick={handleShare}
+                                            disabled={isLoadingShare}
+                                            className="flex-[2] flex items-center justify-center gap-2 py-4 rounded-xl text-sm font-bold bg-white text-black transition-transform hover:scale-105 active:scale-95 disabled:opacity-50"
+                                        >
+                                            {isLoadingShare ? <Loader2 className="w-5 h-5 animate-spin" /> : <><ShareNetwork weight="bold" className="w-5 h-5" /> Bagikan ke IG</>}
+                                        </button>
+                                        <button
+                                            onClick={() => { setRoastResult(null); }}
+                                            className="flex-1 flex items-center justify-center py-4 rounded-xl text-sm font-bold bg-[#1a1a1a] text-white border border-white/10 hover:bg-[#2a2a2a] transition-colors"
+                                        >
+                                            Sembunyikan
+                                        </button>
+                                    </div>
+                                    
                                     <button
-                                        onClick={handleShare}
-                                        disabled={isLoadingShare}
-                                        className="flex-[2] flex items-center justify-center gap-2 py-4 rounded-xl text-sm font-bold bg-white text-black transition-transform hover:scale-105 active:scale-95 disabled:opacity-50"
+                                        onClick={handleGetSolution}
+                                        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:shadow-lg hover:shadow-indigo-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
                                     >
-                                        {isLoadingShare ? <Loader2 className="w-5 h-5 animate-spin" /> : <><ShareNetwork weight="bold" className="w-5 h-5" /> Bagikan ke IG</>}
-                                    </button>
-                                    <button
-                                        onClick={() => { setRoastResult(null); setRoastedToday(false); }}
-                                        className="flex-1 flex items-center justify-center py-4 rounded-xl text-sm font-bold bg-[#1a1a1a] text-white border border-white/10 hover:bg-[#2a2a2a] transition-colors"
-                                    >
-                                        Sembunyikan
+                                        <Sparkles weight="fill" className="w-4 h-4" />
+                                        Minta Solusi Penyelamat (AI Analysis)
                                     </button>
                                 </div>
                             </div>
@@ -574,18 +585,29 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
 
                                 <button
                                     onClick={handleRoast}
-                                    disabled={roastedToday || isRoasting || (roastQuota && roastQuota.used >= roastQuota.limit && auth.user.role !== 'ADMIN')}
+                                    disabled={auth.user.role === 'ADMIN' ? isRoasting : (roastedToday || isRoasting || (roastQuota && roastQuota.used >= roastQuota.limit))}
                                     className="w-full relative group overflow-hidden rounded-[1.25rem] p-[2px] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                                 >
                                     <span className="absolute inset-0 bg-gradient-to-r from-red-600 via-orange-500 to-red-600 rounded-[1.25rem] opacity-70 group-hover:opacity-100 animate-[pulse_3s_ease-in-out_infinite] transition-opacity" />
                                     <div className="relative bg-[#050505] px-6 py-5 rounded-2xl flex items-center justify-center gap-3 transition-transform group-hover:scale-[0.99] group-active:scale-[0.97]">
-                                        {roastedToday ? (
+                                        {roastedToday && auth.user.role !== 'ADMIN' ? (
                                             <><ClockIcon weight="bold" className="w-5 h-5 text-slate-400" /> <span className="font-bold text-slate-300 text-lg">Istirahat {cooldownStr}</span></>
                                         ) : (
                                             <span className="font-black text-white text-lg tracking-widest uppercase">ROASTING SAYA</span>
                                         )}
                                     </div>
                                 </button>
+
+                                {roastedToday && initialRoastData?.latestRoast && !roastResult && (
+                                    <button 
+                                        onClick={() => setRoastResult(initialRoastData.latestRoast)}
+                                        className="w-full mt-4 flex items-center justify-center gap-2 py-3 bg-red-950/20 hover:bg-red-950/40 border border-red-900/30 text-red-400 rounded-xl text-xs font-bold transition-all animate-fade-in-up"
+                                    >
+                                        <Eye weight="bold" className="w-4 h-4" />
+                                        Lihat Roasting Terakhir
+                                    </button>
+                                )}
+
                                 {roastedToday && (
                                     <p className="text-xs text-slate-500 mt-5 font-medium">Jangan nangis. Evaluasi dompetmu.</p>
                                 )}
