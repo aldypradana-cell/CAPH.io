@@ -22,11 +22,16 @@ export default function OverviewTab({ stats, recentLogs }: { stats: any, recentL
         <div className="space-y-6">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {statCards.map((card, i) => (
-                    <div key={i} className={`relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br ${card.color} text-white shadow-xl ${card.shadowColor} animate-fade-in-up`} style={{ animationDelay: `${i * 0.1}s` }}>
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-6 translate-x-6" />
-                        <card.icon weight="duotone" className="w-8 h-8 opacity-80 mb-3" />
-                        <p className="text-3xl font-bold">{card.value.toLocaleString('id-ID')}</p>
-                        <p className="text-sm text-white/70 mt-1">{card.label}</p>
+                    <div key={i} className={`relative overflow-hidden rounded-2xl p-5 glass-card shadow-xl animate-fade-in-up group`} style={{ animationDelay: `${i * 0.1}s` }}>
+                        <div className={`absolute inset-0 bg-gradient-to-br ${card.color} opacity-20 dark:opacity-30 -z-10 blur-2xl group-hover:opacity-40 transition-opacity duration-500`} />
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-white/20 dark:bg-white/10 rounded-full -translate-y-6 translate-x-6 backdrop-blur-sm" />
+                        
+                        <div className={`inline-flex p-2.5 rounded-xl bg-gradient-to-br ${card.color} text-white mb-3 shadow-lg ${card.shadowColor}`}>
+                            <card.icon weight="duotone" className="w-6 h-6" />
+                        </div>
+                        
+                        <p className="text-3xl font-bold text-slate-800 dark:text-white drop-shadow-sm">{card.value.toLocaleString('id-ID')}</p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mt-1">{card.label}</p>
                     </div>
                 ))}
             </div>

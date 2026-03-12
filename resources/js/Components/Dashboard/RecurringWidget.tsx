@@ -27,12 +27,18 @@ export default function RecurringWidget({
 }: RecurringWidgetProps) {
     return (
         <div
-            className={`glass-card p-3 sm:p-6 rounded-[2rem] flex flex-col transition-all hover:shadow-lg duration-500 animate-fade-in-up h-full ${className || ''}`}
+            className={`glass-card p-3 sm:p-6 rounded-[2rem] flex flex-col transition-all hover:shadow-2xl hover:shadow-indigo-500/10 duration-500 animate-fade-in-up h-full group relative overflow-hidden ${className || ''}`}
             style={style}
             onMouseDown={onMouseDown}
             onMouseUp={onMouseUp}
             onTouchEnd={onTouchEnd}
         >
+            {/* Ambient Glows */}
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 -z-10 pointer-events-none">
+                <div className="absolute -right-20 -top-20 w-80 h-80 bg-indigo-500/10 rounded-full blur-[100px]" />
+                <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-blue-500/10 rounded-full blur-[100px]" />
+            </div>
+
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 group cursor-grab active:cursor-grabbing">
                     <div className="relative">

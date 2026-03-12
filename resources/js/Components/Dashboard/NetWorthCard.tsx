@@ -9,28 +9,34 @@ const formatIDR = (amount: number) =>
 
 export default function NetWorthCard({ amount }: NetWorthCardProps) {
     return (
-        <div className="bg-gradient-to-r from-[#2e1065] via-[#4c1d95] to-[#7c3aed] p-3 px-3 sm:p-5 sm:px-8 rounded-[2rem] shadow-2xl shadow-violet-900/40 flex items-center gap-4 sm:gap-6 hover:scale-[1.01] active:scale-[0.99] transition-all duration-500 animate-fade-in-up group relative overflow-hidden h-fit w-full md:w-auto md:min-w-[380px] border border-violet-500/20">
-            {/* Background Effects */}
-            <div className="absolute inset-0 opacity-20">
-                <div className="absolute -right-10 -top-20 w-40 h-40 bg-fuchsia-500 rounded-full blur-3xl group-hover:bg-fuchsia-400 transition-colors duration-500" />
-                <div className="absolute -left-10 -bottom-20 w-40 h-40 bg-indigo-500 rounded-full blur-3xl group-hover:bg-indigo-400 transition-colors duration-500" />
+        <div 
+            className="glass-premium-heavy p-4 px-4 sm:p-6 sm:px-10 rounded-[2.5rem] shadow-2xl shadow-indigo-500/30 flex items-center gap-5 sm:gap-8 hover:scale-[1.01] active:scale-[0.99] transition-all duration-700 animate-fade-in-up group relative overflow-hidden h-fit w-full md:w-auto md:min-w-[420px] isolate"
+            style={{ transform: 'translateZ(0)' }} // Force GPU layer for perfect clipping
+        >
+            {/* Elegant Background Refraction */}
+            <div className="absolute inset-0 opacity-40 dark:opacity-50 -z-20">
+                <div className="absolute -right-20 -top-20 w-80 h-80 bg-fuchsia-600/30 rounded-full blur-[100px] group-hover:bg-fuchsia-500/40 transition-all duration-1000" />
+                <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-indigo-600/30 rounded-full blur-[100px] group-hover:bg-indigo-50/10 transition-all duration-1000" />
             </div>
 
-            {/* Shine Effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out" />
+            {/* Premium Shine Layer - Fixed Clipping with explicit container */}
+            <div className="absolute inset-0 z-[-10] rounded-[2.5rem] overflow-hidden pointer-events-none">
+                <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/20 to-white/0 translate-y-full group-hover:translate-y-[-100%] transition-transform duration-1000 ease-in-out will-change-transform" />
+            </div>
 
-            <div className="p-2.5 sm:p-3.5 bg-gradient-to-br from-white/20 to-white/5 text-white rounded-2xl backdrop-blur-md relative z-10 shadow-inner border border-white/10">
-                <Gem weight="duotone" className="w-6 h-6 text-violet-100" />
+            <div className="p-3.5 sm:p-4.5 bg-gradient-to-br from-white/30 to-white/5 text-white rounded-[1.5rem] backdrop-blur-xl relative z-10 shadow-2xl ring-2 ring-white/50 dark:ring-white/20 group-hover:scale-110 transition-transform duration-500">
+                <Gem weight="duotone" className="w-8 h-8 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
             </div>
 
             <div className="relative z-10 flex flex-col">
-                <p className="text-[11px] font-bold text-violet-200 uppercase tracking-[0.2em] mb-1 opacity-90 drop-shadow-sm">Total Kekayaan Bersih</p>
+                <p className="text-[10px] font-black text-indigo-800 dark:text-violet-100 uppercase tracking-[0.3em] mb-1.5 opacity-80 drop-shadow-sm">Net Worth Total</p>
                 <div className="flex items-baseline gap-1">
-                    <p className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-lg filter">{formatIDR(amount)}</p>
+                    <p className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tighter drop-shadow-md select-all">{formatIDR(amount)}</p>
                 </div>
             </div>
 
-            <div className="absolute right-0 top-0 h-full w-32 bg-gradient-to-l from-black/10 to-transparent pointer-events-none" />
+            {/* Mirrored Edge Reflection */}
+            <div className="absolute right-0 top-0 h-full w-48 bg-gradient-to-l from-white/20 dark:from-white/5 to-transparent pointer-events-none" />
         </div>
     );
 }

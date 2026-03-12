@@ -12,63 +12,60 @@ export default function StatsCards({ stats }: StatsCardsProps) {
     return (
         <div className="-mx-6 px-6 flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide md:mx-0 md:px-0 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible md:pb-0">
             {/* Balance */}
-            <div className="min-w-[220px] sm:min-w-[280px] snap-center md:min-w-0 bg-gradient-to-br from-[#1e3a8a] via-[#2563eb] to-[#3b82f6] shadow-xl shadow-blue-500/20 p-3 sm:p-4 md:p-6 rounded-[2rem] hover:scale-[1.02] active:scale-[0.98] transition-all duration-500 group relative overflow-hidden animate-fade-in-up" style={{ animationDelay: '100ms' }}>
-                <div className="absolute inset-0 opacity-10">
-                    <div className="absolute -right-10 -top-10 w-32 h-32 bg-white rounded-full blur-2xl" />
-                    <div className="absolute -left-10 -bottom-10 w-32 h-32 bg-white rounded-full blur-2xl" />
+            <div className="min-w-[220px] sm:min-w-[280px] snap-center md:min-w-0 glass-premium p-4 sm:p-5 md:p-7 rounded-[2.5rem] hover:scale-[1.02] active:scale-[0.98] transition-all duration-500 group relative overflow-hidden animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+                <div className="absolute inset-0 opacity-20 dark:opacity-30">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-500 to-transparent blur-3xl -z-10" />
                 </div>
                 <div className="relative z-10">
-                    <div className="flex items-center justify-between mb-2 sm:mb-4">
-                        <div className="p-3 bg-white/20 text-white rounded-2xl backdrop-blur-sm shadow-sm">
-                            <WalletIcon weight="duotone" className="w-6 h-6" />
+                    <div className="flex items-center justify-between mb-4 sm:mb-6">
+                        <div className="p-3 bg-blue-500/15 text-blue-600 dark:text-blue-200 rounded-2xl backdrop-blur-md shadow-inner ring-1 ring-white/30 dark:ring-white/10">
+                            <WalletIcon weight="duotone" className="w-7 h-7" />
                         </div>
-                        <span className={`flex items-center text-xs font-bold px-2 py-1 rounded-full bg-white/20 text-white backdrop-blur-sm shadow-sm`}>
+                        <span className={`flex items-center text-[10px] font-black px-2.5 py-1.5 rounded-xl bg-white/40 dark:bg-white/5 text-blue-700 dark:text-blue-100 backdrop-blur-md shadow-sm ring-1 ring-white/50 dark:ring-white/10 italic tracking-tighter`}>
                             {stats.netFlow >= 0 ? <ArrowUpRight weight="bold" className="w-3 h-3 mr-1" /> : <ArrowDownRight weight="bold" className="w-3 h-3 mr-1" />}
-                            {stats.transactionCount} txn
+                            {stats.transactionCount} TXN
                         </span>
                     </div>
-                    <p className="text-[10px] font-bold text-blue-100 uppercase tracking-widest mb-1 opacity-80">Total Saldo</p>
-                    <p className="text-2xl sm:text-3xl font-bold text-white tracking-tight break-words">{formatIDR(stats.balance)}</p>
+                    <p className="text-[10px] font-black text-slate-400 dark:text-blue-200 uppercase tracking-[0.2em] mb-1.5 opacity-70">Sisa Saldo</p>
+                    <p className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-white tracking-tighter break-words drop-shadow-sm">{formatIDR(stats.balance)}</p>
                 </div>
             </div>
 
             {/* Income */}
-            <div className="min-w-[220px] sm:min-w-[280px] snap-center md:min-w-0 bg-gradient-to-br from-[#059669] via-[#10b981] to-[#34d399] shadow-xl shadow-emerald-500/20 p-3 sm:p-4 md:p-6 rounded-[2rem] hover:scale-[1.02] active:scale-[0.98] transition-all duration-500 group relative overflow-hidden animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-                <div className="absolute inset-0 opacity-10">
-                    <div className="absolute -right-10 -top-10 w-32 h-32 bg-white rounded-full blur-2xl" />
-                    <div className="absolute -left-10 -bottom-10 w-32 h-32 bg-white rounded-full blur-2xl" />
+            <div className="min-w-[220px] sm:min-w-[280px] snap-center md:min-w-0 glass-premium p-4 sm:p-5 md:p-7 rounded-[2.5rem] hover:scale-[1.02] active:scale-[0.98] transition-all duration-500 group relative overflow-hidden animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+                <div className="absolute inset-0 opacity-20 dark:opacity-30">
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-teal-400 to-transparent blur-3xl -z-10" />
                 </div>
                 <div className="relative z-10">
-                    <div className="flex items-center justify-between mb-2 sm:mb-4">
-                        <div className="p-3 bg-white/20 text-white rounded-2xl backdrop-blur-sm shadow-sm">
-                            <TrendingUp weight="duotone" className="w-6 h-6" />
+                    <div className="flex items-center justify-between mb-4 sm:mb-6">
+                        <div className="p-3 bg-emerald-500/15 text-emerald-600 dark:text-emerald-200 rounded-2xl backdrop-blur-md shadow-inner ring-1 ring-white/30 dark:ring-white/10">
+                            <TrendingUp weight="duotone" className="w-7 h-7" />
                         </div>
-                        <span className="flex items-center text-xs font-bold px-2 py-1 rounded-full bg-white/20 text-white backdrop-blur-sm shadow-sm">
-                            <ArrowUpRight weight="bold" className="w-3 h-3 mr-1" /> Masuk
+                        <span className="flex items-center text-[10px] font-black px-2.5 py-1.5 rounded-xl bg-white/40 dark:bg-white/5 text-emerald-700 dark:text-emerald-100 backdrop-blur-md shadow-sm ring-1 ring-white/50 dark:ring-white/10 italic tracking-tighter">
+                            <ArrowUpRight weight="bold" className="w-3 h-3 mr-1" /> MASUK
                         </span>
                     </div>
-                    <p className="text-[10px] font-bold text-emerald-100 uppercase tracking-widest mb-1 opacity-80">Pemasukan Bulan Ini</p>
-                    <p className="text-2xl sm:text-3xl font-bold text-white tracking-tight break-words">{formatIDR(stats.totalIncome)}</p>
+                    <p className="text-[10px] font-black text-slate-400 dark:text-emerald-200 uppercase tracking-[0.2em] mb-1.5 opacity-70">Pemasukan Bulan Ini</p>
+                    <p className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-white tracking-tighter break-words drop-shadow-sm">{formatIDR(stats.totalIncome)}</p>
                 </div>
             </div>
 
             {/* Expense */}
-            <div className="min-w-[220px] sm:min-w-[280px] snap-center md:min-w-0 bg-gradient-to-br from-[#9f1239] via-[#e11d48] to-[#f43f5e] shadow-xl shadow-rose-500/20 p-3 sm:p-4 md:p-6 rounded-[2rem] hover:scale-[1.02] active:scale-[0.98] transition-all duration-500 group relative overflow-hidden animate-fade-in-up" style={{ animationDelay: '300ms' }}>
-                <div className="absolute inset-0 opacity-10">
-                    <div className="absolute -right-10 -top-10 w-32 h-32 bg-white rounded-full blur-2xl" />
-                    <div className="absolute -left-10 -bottom-10 w-32 h-32 bg-white rounded-full blur-2xl" />
+            <div className="min-w-[220px] sm:min-w-[280px] snap-center md:min-w-0 glass-premium p-4 sm:p-5 md:p-7 rounded-[2.5rem] hover:scale-[1.02] active:scale-[0.98] transition-all duration-500 group relative overflow-hidden animate-fade-in-up" style={{ animationDelay: '300ms' }}>
+                <div className="absolute inset-0 opacity-20 dark:opacity-30">
+                    <div className="absolute inset-0 bg-gradient-to-br from-rose-500 via-pink-400 to-transparent blur-3xl -z-10" />
                 </div>
                 <div className="relative z-10">
-                    <div className="flex items-center justify-between mb-2 sm:mb-4">
-                        <div className="p-3 bg-white/20 text-white rounded-2xl backdrop-blur-sm shadow-sm">
-                            <TrendingDown weight="duotone" className="w-6 h-6" />
+                    <div className="flex items-center justify-between mb-4 sm:mb-6">
+                        <div className="p-3 bg-rose-500/15 text-rose-600 dark:text-rose-200 rounded-2xl backdrop-blur-md shadow-inner ring-1 ring-white/30 dark:ring-white/10">
+                            <TrendingDown weight="duotone" className="w-7 h-7" />
                         </div>
-                        <span className="flex items-center text-xs font-bold px-2 py-1 rounded-full bg-white/20 text-white backdrop-blur-sm shadow-sm">
-                            <ArrowDownRight weight="bold" className="w-3 h-3 mr-1" /> Keluar
+                        <span className="flex items-center text-[10px] font-black px-2.5 py-1.5 rounded-xl bg-white/40 dark:bg-white/5 text-rose-700 dark:text-rose-100 backdrop-blur-md shadow-sm ring-1 ring-white/50 dark:ring-white/10 italic tracking-tighter">
+                            <ArrowDownRight weight="bold" className="w-3 h-3 mr-1" /> KELUAR
                         </span>
                     </div>
-                    <p className="text-[10px] font-bold text-rose-100 uppercase tracking-widest mb-1 opacity-80">Pengeluaran Bulan Ini</p>
-                    <p className="text-2xl sm:text-3xl font-bold text-white tracking-tight break-words">{formatIDR(stats.totalExpense)}</p>
+                    <p className="text-[10px] font-black text-slate-400 dark:text-rose-200 uppercase tracking-[0.2em] mb-1.5 opacity-70">Pengeluaran Bulan Ini</p>
+                    <p className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-white tracking-tighter break-words drop-shadow-sm">{formatIDR(stats.totalExpense)}</p>
                 </div>
             </div>
         </div>
