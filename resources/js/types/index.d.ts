@@ -19,3 +19,19 @@ export type PageProps<
     };
     ziggy: Config & { location: string };
 };
+
+export interface Feedback {
+    id: number;
+    user_id: number;
+    user_name?: string;
+    user_email?: string;
+    category: 'SUGGESTION' | 'BUG' | 'QUESTION' | 'OTHER';
+    subject: string;
+    message: string;
+    status: 'OPEN' | 'IN_REVIEW' | 'RESOLVED' | 'CLOSED';
+    priority: 'LOW' | 'MEDIUM' | 'HIGH';
+    admin_reply: string | null;
+    replied_at: string | null;
+    created_at: string;
+    updated_at?: string;
+}

@@ -99,4 +99,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Goal::class);
     }
+
+    public function feedbacks()
+    {
+        return $this->hasMany(Feedback::class);
+    }
 }

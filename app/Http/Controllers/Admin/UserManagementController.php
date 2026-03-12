@@ -152,6 +152,7 @@ class UserManagementController extends Controller
         \App\Models\FinancialInsight::where('user_id', $user->id)->delete();
         \App\Models\Tag::where('user_id', $user->id)->delete();
         AiUsageLog::where('user_id', $user->id)->delete();
+        \App\Models\Feedback::where('user_id', $user->id)->delete();
 
         $user->delete();
 

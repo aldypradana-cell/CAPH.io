@@ -2,7 +2,8 @@ import AppLayout from '@/Layouts/AppLayout';
 import { Head, usePage, router, Link } from '@inertiajs/react';
 import {
     SquaresFour as LayoutDashboard, Users, Pulse as Activity, Database,
-    Shield, ArrowsLeftRight as ArrowRightLeft, FileText, List as Menu
+    Shield, ArrowsLeftRight as ArrowRightLeft, FileText, List as Menu,
+    ChatCircleDots
 } from '@phosphor-icons/react';
 import { Toaster } from 'react-hot-toast';
 
@@ -12,6 +13,7 @@ import UsersTab from './Partials/UsersTab';
 import TransactionsTab from './Partials/TransactionsTab';
 import MasterTab from './Partials/MasterTab';
 import LogsTab from './Partials/LogsTab';
+import FeedbacksTab from './Partials/FeedbacksTab';
 
 export default function AdminDashboard() {
     const { props } = usePage();
@@ -24,6 +26,8 @@ export default function AdminDashboard() {
         transactions = { data: [] },
         categories = [],
         logs = { data: [] },
+        feedbacks = { data: [] },
+        feedbackStats = { total: 0, open: 0, inReview: 0, resolved: 0 },
         filters = {}
     } = props as any;
 
@@ -33,6 +37,7 @@ export default function AdminDashboard() {
         { id: 'transactions', label: 'Transaksi', icon: ArrowRightLeft, route: 'admin.transactions.index' },
         { id: 'master', label: 'Master Data', icon: Database, route: 'admin.master.index' },
         { id: 'logs', label: 'System Logs', icon: FileText, route: 'admin.logs.index' },
+        { id: 'feedbacks', label: 'Feedback', icon: ChatCircleDots, route: 'admin.feedbacks.index' },
     ];
 
     const activeTabInfo = tabs.find(t => t.id === tab) || tabs[0];
@@ -47,6 +52,8 @@ export default function AdminDashboard() {
                 return <MasterTab categories={categories} />;
             case 'logs':
                 return <LogsTab logs={logs} filters={filters} />;
+            case 'feedbacks':
+                return <FeedbacksTab feedbacks={feedbacks} feedbackStats={feedbackStats} filters={filters} />;
             case 'overview':
             default:
                 // Pass processed stats for Overview

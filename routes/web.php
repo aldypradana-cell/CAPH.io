@@ -16,7 +16,9 @@ use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\SystemLogController;
 use App\Http\Controllers\Admin\TransactionController as AdminTransactionController;
 use App\Http\Controllers\Admin\MasterDataController;
+use App\Http\Controllers\Admin\FeedbackController as AdminFeedbackController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\RecurringTransactionController;
 use App\Http\Controllers\BackupController;
 use Illuminate\Support\Facades\Route;
@@ -130,6 +132,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/notifications-page', [NotificationController::class , 'page'])->name('notifications.page');
         Route::get('/help', fn() => \Inertia\Inertia::render('Help/Index'))->name('help.index');
 
+        // Feedback / Kotak Saran
+        Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
+        Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+
         // Backup & Restore
         Route::get('/backup/download', [BackupController::class , 'download'])->name('backup.download');
         Route::post('/backup/restore', [BackupController::class , 'restore'])->name('backup.restore');
@@ -152,6 +158,12 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/master/categories', [MasterDataController::class , 'storeCategory'])->name('master.categories.store');
             Route::put('/master/categories/{category}', [MasterDataController::class , 'updateCategory'])->name('master.categories.update');
             Route::delete('/master/categories/{category}', [MasterDataController::class , 'destroyCategory'])->name('master.categories.destroy');
+
+            // Admin Feedback
+            Route::get('/feedbacks', [AdminFeedbackController::class, 'index'])->name('feedbacks.index');
+            Route::post('/feedbacks/{feedback}/reply', [AdminFeedbackController::class, 'reply'])->name('feedbacks.reply');
+            Route::patch('/feedbacks/{feedback}/status', [AdminFeedbackController::class, 'updateStatus'])->name('feedbacks.updateStatus');
+            Route::delete('/feedbacks/{feedback}', [AdminFeedbackController::class, 'destroy'])->name('feedbacks.destroy');
         }
         );
         Route::get('/analytics', [\App\Http\Controllers\AnalyticsController::class, 'index'])->name('analytics.index');

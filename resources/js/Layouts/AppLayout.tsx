@@ -6,7 +6,8 @@ import {
     Target, Diamond as Gem, CreditCard, Tag as Tags, User as UserIcon,
     Gear as Settings, DownloadSimple as FileDown, Bell, Question as HelpCircle, List as Menu, X,
     ShieldCheck, Check, Warning as AlertTriangle, Info, CheckCircle,
-    Sun, Moon, DotsThree as MoreHorizontal, Users, FileText, Database, ArrowsLeftRight as ArrowRightLeft, Plus, PiggyBank, ChartBar as BarChart3
+    Sun, Moon, DotsThree as MoreHorizontal, Users, FileText, Database, ArrowsLeftRight as ArrowRightLeft, Plus, PiggyBank, ChartBar as BarChart3,
+    ChatCircleDots
 } from '@phosphor-icons/react';
 import { User } from '@/types';
 import { formatTime } from '@/utils/date';
@@ -193,6 +194,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                     <NavItem href={route('settings.index')} icon={Settings} label="Pengaturan" active={currentRoute?.startsWith('settings') ?? false} />
                                     <NavItem href={route('export.index')} icon={FileDown} label="Export Data" active={currentRoute?.startsWith('export') ?? false} />
                                     <NavItem href={route('notifications.page')} icon={Bell} label="Notifikasi" active={currentRoute?.startsWith('notifications') ?? false} />
+                                    <NavItem href={route('feedback.index')} icon={ChatCircleDots} label="Kotak Saran" active={currentRoute?.startsWith('feedback') ?? false} />
                                     <NavItem href={route('help.index')} icon={HelpCircle} label="Bantuan" active={currentRoute?.startsWith('help') ?? false} />
                                 </div>
                             </div>
@@ -415,7 +417,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                             <button
                                 onClick={() => setIsMoreOpen(true)}
                                 className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-300 min-w-[50px] ${[
-                                    'wallets', 'debts', 'insights', 'budgets', 'assets', 'categories', 'settings', 'export', 'help', 'notifications', 'profile'
+                                    'wallets', 'debts', 'insights', 'budgets', 'assets', 'categories', 'settings', 'export', 'help', 'notifications', 'profile', 'feedback'
                                 ].some(r => currentRoute?.startsWith(r))
                                     ? 'text-indigo-600 dark:text-indigo-400'
                                     : 'text-slate-400 dark:text-slate-500 active:text-indigo-600 dark:active:text-indigo-400'
@@ -452,6 +454,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                     { href: route('assets.index'), icon: Gem, label: 'Aset', color: 'bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400' },
                                     { href: route('categories.index'), icon: Tags, label: 'Kategori', color: 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400' },
                                     { href: route('settings.index'), icon: Settings, label: 'Pengaturan', color: 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400' },
+                                    { href: route('feedback.index'), icon: ChatCircleDots, label: 'Saran', color: 'bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400' },
                                     { href: route('profile.edit'), icon: UserIcon, label: 'Profil', color: 'bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400' },
                                 ].map((item) => (
                                     <Link
