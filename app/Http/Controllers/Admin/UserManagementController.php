@@ -41,6 +41,8 @@ class UserManagementController extends Controller
                 ->where('feature', 'smart_entry')->where('used_at', '>=', $today)->count();
             $user->insight_used_this_week = AiUsageLog::where('user_id', $user->id)
                 ->where('feature', 'ai_insight')->where('used_at', '>=', $week)->count();
+            $user->roast_used_this_week = AiUsageLog::where('user_id', $user->id)
+                ->where('feature', 'roast_me')->where('used_at', '>=', $week)->count();
             return $user;
         });
 
@@ -94,6 +96,7 @@ class UserManagementController extends Controller
         $validated = $request->validate([
             'smart_entry_limit' => 'required|integer|min:1|max:100',
             'insight_limit'     => 'required|integer|min:0|max:10',
+            'roast_limit'       => 'required|integer|min:0|max:20',
         ]);
 
         $user->update($validated);
@@ -106,6 +109,7 @@ class UserManagementController extends Controller
                 'user_id'           => $user->id,
                 'smart_entry_limit' => $validated['smart_entry_limit'],
                 'insight_limit'     => $validated['insight_limit'],
+                'roast_limit'       => $validated['roast_limit'],
             ],
         ]);
 

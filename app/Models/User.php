@@ -28,6 +28,7 @@ class User extends Authenticatable
         'financial_profile',
         'smart_entry_limit',
         'insight_limit',
+        'roast_limit',
     ];
 
     /**

@@ -59,8 +59,12 @@ class InsightsController extends Controller
             ->latest()
             ->limit(10)
             ->get();
-
         $tomorrow = Carbon::tomorrow()->startOfDay();
+
+        $roastsThisWeek = AiUsageLog::where('user_id', $user->id)
+            ->where('feature', 'roast_me')
+            ->where('used_at', '>=', $weekStart)
+            ->count();
 
         return Inertia::render('Insights/Index', [
             'transactionCount' => $transactionCount,
@@ -76,6 +80,11 @@ class InsightsController extends Controller
                 'history'      => $roastHistory,
                 'roastedToday' => $roastedToday,
                 'cooldownEnds' => $tomorrow->toIso8601String(),
+                'quota'        => [
+                    'used'     => $roastsThisWeek,
+                    'limit'    => $user->role === 'ADMIN' ? 999999 : $user->roast_limit,
+                    'resetsAt' => $nextMonday->toIso8601String(),
+                ],
             ],
         ]);
     }
@@ -465,6 +474,25 @@ class InsightsController extends Controller
                 'cooldown'     => true,
                 'message'      => 'Kamu sudah dipanggang hari ini. Istirahat dulu, panasnya masih terasa.',
                 'cooldownEnds' => $tomorrow->toIso8601String(),
+            ], 429);
+        }
+
+        // Weekly Quota Check
+        $weekStart = Carbon::now()->startOfWeek(Carbon::MONDAY);
+        $usedThisWeek = AiUsageLog::where('user_id', $user->id)
+            ->where('feature', 'roast_me')
+            ->where('used_at', '>=', $weekStart)
+            ->count();
+
+        if ($user->role !== 'ADMIN' && $usedThisWeek >= $user->roast_limit) {
+            $nextMonday = Carbon::now()->next(Carbon::MONDAY)->startOfDay();
+            return response()->json([
+                'success' => false,
+                'quota'   => true,
+                'message' => 'Kuota Roast Me Anda minggu ini sudah habis.',
+                'used'    => $usedThisWeek,
+                'limit'   => $user->roast_limit,
+                'resetsAt'=> $nextMonday->toIso8601String(),
             ], 429);
         }
 

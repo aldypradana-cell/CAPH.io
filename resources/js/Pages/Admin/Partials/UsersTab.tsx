@@ -18,8 +18,10 @@ interface User {
     created_at: string;
     smart_entry_limit: number;
     insight_limit: number;
+    roast_limit: number;
     smart_entry_used_today: number;
     insight_used_this_week: number;
+    roast_used_this_week: number;
 }
 
 export default function UsersTab({ users, filters }: { users: { data: User[] }, filters: any }) {
@@ -53,6 +55,7 @@ export default function UsersTab({ users, filters }: { users: { data: User[] }, 
     const { data: quotaData, setData: setQuotaData, patch: patchQuota, processing: processingQuota, reset: resetQuota } = useForm({
         smart_entry_limit: 5,
         insight_limit: 1,
+        roast_limit: 3,
     });
 
     const handleEditQuota = (user: User) => {
@@ -60,6 +63,7 @@ export default function UsersTab({ users, filters }: { users: { data: User[] }, 
         setQuotaData({
             smart_entry_limit: user.smart_entry_limit ?? 5,
             insight_limit: user.insight_limit ?? 1,
+            roast_limit: user.roast_limit ?? 3,
         });
     };
 
@@ -187,21 +191,29 @@ export default function UsersTab({ users, filters }: { users: { data: User[] }, 
                         </div>
 
                         {/* Usage Stats Display */}
-                        <div className="grid grid-cols-2 gap-3 mb-6">
+                        <div className="grid grid-cols-3 gap-3 mb-6">
                             <div className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide flex items-center gap-1 mb-1">
-                                    <Activity weight="bold" className="w-3 h-3 text-indigo-500" /> Penggunaan Hari Ini
+                                    <Activity weight="bold" className="w-3 h-3 text-indigo-500" /> Hari Ini
                                 </p>
                                 <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
-                                    {editQuotaUser.smart_entry_used_today} <span className="text-xs text-slate-400 font-medium">Smart Entry</span>
+                                    {editQuotaUser.smart_entry_used_today} <span className="text-xs text-slate-400 font-medium">Smart</span>
                                 </p>
                             </div>
                             <div className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide flex items-center gap-1 mb-1">
-                                    <Activity weight="bold" className="w-3 h-3 text-purple-500" /> Penggunaan Minggu Ini
+                                    <Activity weight="bold" className="w-3 h-3 text-purple-500" /> Minggu
                                 </p>
                                 <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
-                                    {editQuotaUser.insight_used_this_week} <span className="text-xs text-slate-400 font-medium">AI Insight</span>
+                                    {editQuotaUser.insight_used_this_week} <span className="text-xs text-slate-400 font-medium">Insight</span>
+                                </p>
+                            </div>
+                            <div className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide flex items-center gap-1 mb-1">
+                                    <Activity weight="bold" className="w-3 h-3 text-red-500" /> Minggu
+                                </p>
+                                <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
+                                    {editQuotaUser.roast_used_this_week} <span className="text-xs text-slate-400 font-medium">Roast</span>
                                 </p>
                             </div>
                         </div>
@@ -228,6 +240,17 @@ export default function UsersTab({ users, filters }: { users: { data: User[] }, 
                                     className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700/50 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50"
                                 />
                                 <p className="text-[10px] text-slate-400 mt-1">Standar: 1</p>
+                            </div>
+                            <div>
+                                <label className="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-1">Limit Roast Me Per Minggu</label>
+                                <input 
+                                    type="number" 
+                                    min="0" max="20" required
+                                    value={quotaData.roast_limit}
+                                    onChange={e => setQuotaData('roast_limit', parseInt(e.target.value) || 0)}
+                                    className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700/50 rounded-xl text-sm focus:ring-2 focus:ring-red-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50"
+                                />
+                                <p className="text-[10px] text-slate-400 mt-1">Standar: 3</p>
                             </div>
 
                             <div className="flex gap-3 pt-4">

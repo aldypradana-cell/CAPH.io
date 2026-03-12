@@ -105,6 +105,7 @@ interface RoastData {
     history: RoastResult[];
     roastedToday: boolean;
     cooldownEnds: string;
+    quota: { used: number; limit: number; resetsAt: string };
 }
 
 type RoastLevel = 'MILD' | 'MEDIUM' | 'BRUTAL';
@@ -203,6 +204,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
     const [roastHistory, setRoastHistory] = useState<RoastResult[]>(initialRoastData?.history ?? []);
     const [roastedToday, setRoastedToday] = useState(initialRoastData?.roastedToday ?? false);
     const [cooldownEnds, setCooldownEnds] = useState(initialRoastData?.cooldownEnds ?? '');
+    const [roastQuota, setRoastQuota] = useState(initialRoastData?.quota);
     const [roastError, setRoastError] = useState<string | null>(null);
     const [loadingTextIdx, setLoadingTextIdx] = useState(0);
     const [expandedHistory, setExpandedHistory] = useState<number | null>(null);
@@ -313,9 +315,17 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                 setRoastError(data.message || 'Gagal memanggang.');
             }
         } catch (e: any) {
-            if (e.response?.status === 429 && e.response?.data?.cooldown) {
-                setRoastedToday(true);
-                setCooldownEnds(e.response.data.cooldownEnds);
+            if (e.response?.status === 429) {
+                if (e.response?.data?.cooldown) {
+                    setRoastedToday(true);
+                    setCooldownEnds(e.response.data.cooldownEnds);
+                } else if (e.response?.data?.quota) {
+                    setRoastQuota({
+                        used: e.response.data.used,
+                        limit: e.response.data.limit,
+                        resetsAt: e.response.data.resetsAt
+                    });
+                }
                 setRoastError(e.response.data.message);
             } else {
                 setRoastError(e.response?.data?.message || 'Terjadi kendala saat memanggang. Coba lagi nanti.');
@@ -331,13 +341,18 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
         const loadingToast = toast.loading('Menyiapkan gambar...');
         try {
             const canvas = await html2canvas(shareRef.current, {
-                backgroundColor: null,
+                backgroundColor: '#0a0a0a',
                 scale: 3, // High quality
                 logging: false,
                 useCORS: true,
+                allowTaint: true,
+                imageTimeout: 15000,
                 onclone: (clonedDoc) => {
                     const el = clonedDoc.getElementById('share-card-container');
-                    if (el) el.style.display = 'block';
+                    if (el) {
+                        el.style.display = 'block';
+                        el.style.position = 'relative';
+                    }
                 }
             });
             const dataUrl = canvas.toDataURL('image/png');
@@ -437,7 +452,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                                     width: '42px', height: '42px', borderRadius: '50%', background: 'linear-gradient(135deg, #FF6B6B, #C0392B, #8E44AD)', 
                                                     display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden'
                                                 }}>
-                                                    <span style={{ fontSize: '24px', lineHeight: 1, marginTop: '2px', display: 'flex' }}>🔥</span>
+                                                    <span style={{ fontSize: '24px', lineHeight: 1, marginTop: '0px', display: 'flex' }}>🔥</span>
                                                 </div>
                                                 {/* Thread line */}
                                                 <div style={{ width: '2px', flexGrow: 1, backgroundColor: '#222', marginTop: '10px', marginBottom: '10px', borderRadius: '1px' }}></div>
@@ -460,9 +475,11 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                                              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
                                                         </svg>
                                                     </div>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#777777', fontSize: '14px', fontWeight: '400' }}>
-                                                        <span>{new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>
-                                                        <svg aria-label="More" fill="currentColor" height="18" role="img" viewBox="0 0 24 24" width="18"><circle cx="12" cy="12" r="1.5"></circle><circle cx="6" cy="12" r="1.5"></circle><circle cx="18" cy="12" r="1.5"></circle></svg>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#777777', fontSize: '14px', fontWeight: '400', lineHeight: 1 }}>
+                                                        <span style={{ display: 'flex', alignItems: 'center' }}>{new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>
+                                                        <div style={{ display: 'flex', alignItems: 'center', marginTop: '2px' }}>
+                                                            <svg aria-label="More" fill="currentColor" height="18" role="img" viewBox="0 0 24 24" width="18"><circle cx="12" cy="12" r="1.5"></circle><circle cx="6" cy="12" r="1.5"></circle><circle cx="18" cy="12" r="1.5"></circle></svg>
+                                                        </div>
                                                     </div>
                                                 </div>
 
@@ -540,9 +557,24 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                     </div>
                                 )}
 
+                                {/* Quota Display (Option 1) */}
+                                {!roastedToday && !isRoasting && roastQuota && (
+                                    <div className="mb-3">
+                                        {roastQuota.used >= roastQuota.limit && auth.user.role !== 'ADMIN' ? (
+                                            <span className="text-xs font-bold text-red-500 bg-red-500/10 px-3 py-1 rounded-full border border-red-500/20">
+                                                🔴 Kuota Habis
+                                            </span>
+                                        ) : (
+                                            <span className="text-xs font-medium text-slate-500">
+                                                ( Sisa Kuota: {roastQuota.limit === 999999 ? '∞' : roastQuota.limit - roastQuota.used}/{roastQuota.limit === 999999 ? '∞' : roastQuota.limit} )
+                                            </span>
+                                        )}
+                                    </div>
+                                )}
+
                                 <button
                                     onClick={handleRoast}
-                                    disabled={roastedToday || isRoasting}
+                                    disabled={roastedToday || isRoasting || (roastQuota && roastQuota.used >= roastQuota.limit && auth.user.role !== 'ADMIN')}
                                     className="w-full relative group overflow-hidden rounded-[1.25rem] p-[2px] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                                 >
                                     <span className="absolute inset-0 bg-gradient-to-r from-red-600 via-orange-500 to-red-600 rounded-[1.25rem] opacity-70 group-hover:opacity-100 animate-[pulse_3s_ease-in-out_infinite] transition-opacity" />
@@ -550,7 +582,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                         {roastedToday ? (
                                             <><ClockIcon weight="bold" className="w-5 h-5 text-slate-400" /> <span className="font-bold text-slate-300 text-lg">Istirahat {cooldownStr}</span></>
                                         ) : (
-                                            <><Fire weight="fill" className="w-6 h-6 text-red-500" /> <span className="font-bold text-white text-lg tracking-wide uppercase">Panggang Saya</span></>
+                                            <span className="font-black text-white text-lg tracking-widest uppercase">ROASTING SAYA</span>
                                         )}
                                     </div>
                                 </button>
@@ -1020,81 +1052,102 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                     <div 
                         ref={shareRef}
                         id="share-card-container"
-                        style={{ display: 'none', width: '420px', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
+                        style={{ display: 'none', width: '500px', padding: '40px', background: '#0a0a0a', position: 'relative', overflow: 'hidden' }}
                     >
-                        {/* Threads Dark Mode Style Background */}
-                        <div style={{ background: '#101010', color: '#F3F5F7', padding: '24px', position: 'relative' }}>
-                            {/* Post Container */}
-                            <div style={{ display: 'flex', gap: '12px' }}>
-                                {/* Left Column: Avatar & Thread Line */}
-                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                    <div style={{ 
-                                        width: '42px', height: '42px', borderRadius: '50%', background: 'linear-gradient(135deg, #FF6B6B, #C0392B, #8E44AD)', 
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden'
-                                    }}>
-                                        <span style={{ fontSize: '24px', lineHeight: 1, marginTop: '2px', display: 'flex' }}>🔥</span>
-                                    </div>
-                                    {/* Thread line */}
-                                    <div style={{ width: '2px', flexGrow: 1, backgroundColor: '#333638', marginTop: '10px', marginBottom: '10px', borderRadius: '1px' }}></div>
-                                    {/* Small avatar */}
-                                    <div style={{ 
-                                        width: '18px', height: '18px', borderRadius: '50%', background: '#1d9bf0', 
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
-                                    }}>
-                                        <svg viewBox="0 0 24 24" fill="#ffffff" style={{ width: '10px', height: '10px' }}><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg>
-                                    </div>
-                                </div>
+                        {/* Dramatic Red Glow Background for Share Card */}
+                        <div style={{ 
+                            position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+                            width: '400px', height: '400px', background: 'rgba(220, 38, 38, 0.15)', 
+                            filter: 'blur(80px)', borderRadius: '50%', pointerEvents: 'none', zIndex: 0 
+                        }} />
 
-                                {/* Right Column: Content */}
-                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingTop: '2px' }}>
-                                    {/* Header: Name, Verified, Time */}
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                            <span style={{ fontSize: '15px', fontWeight: '600', color: '#F3F5F7', letterSpacing: '-0.2px' }}>caph_roast_ai</span>
-                                            {/* Threads Blue Check */}
-                                            <svg viewBox="0 0 24 24" fill="#0095F6" style={{ width: '14px', height: '14px' }}>
-                                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
-                                            </svg>
-                                        </div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#777777', fontSize: '14px', fontWeight: '400' }}>
-                                            <span>{new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>
-                                            <svg aria-label="More" fill="currentColor" height="18" role="img" viewBox="0 0 24 24" width="18"><circle cx="12" cy="12" r="1.5"></circle><circle cx="6" cy="12" r="1.5"></circle><circle cx="18" cy="12" r="1.5"></circle></svg>
-                                        </div>
-                                    </div>
-
-                                    {/* Post Text */}
-                                    <div style={{ marginBottom: '14px' }}>
-                                        <p style={{ 
-                                            fontSize: '15px', 
-                                            fontWeight: '400', 
-                                            color: '#F3F5F7', 
-                                            lineHeight: '1.45', 
-                                            margin: 0,
-                                            whiteSpace: 'pre-wrap',
+                        <div 
+                            style={{ 
+                                position: 'relative', zIndex: 1, width: '100%', maxWidth: '420px', margin: '0 auto',
+                                borderRadius: '1.5rem', overflow: 'hidden', 
+                                border: '1px solid rgba(255, 255, 255, 0.05)',
+                                boxShadow: '0 20px 60px -15px rgba(220, 38, 38, 0.25)',
+                                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' 
+                            }}
+                        >
+                            <div style={{ background: '#101010', color: '#F3F5F7', padding: '24px', position: 'relative' }}>
+                                {/* Post Container */}
+                                <div style={{ display: 'flex', gap: '12px' }}>
+                                    {/* Left Column: Avatar & Thread Line */}
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                        <div style={{ 
+                                            width: '42px', height: '42px', borderRadius: '50%', background: 'linear-gradient(135deg, #FF6B6B, #C0392B, #8E44AD)', 
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden'
                                         }}>
-                                            "{r.roast_text.split('\n\n')[0]}"
-                                        </p>
-                                    </div>
-
-                                    {/* Engagement Icons */}
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', color: '#F3F5F7', marginBottom: '12px' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px' }}>
-                                            <svg aria-label="Like" fill="transparent" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ width: '100%', height: '100%' }}><path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z"></path></svg>
+                                            <span style={{ fontSize: '24px', lineHeight: 1, marginTop: '0px', display: 'flex' }}>🔥</span>
                                         </div>
-                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px' }}>
-                                            <svg aria-label="Comment" fill="transparent" stroke="currentColor" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" style={{ width: '100%', height: '100%' }}><path d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615l1.455 2.853c.123.243.342.368.61.368a.634.634 0 0 0 .61-.368c.28-.548.564-1.104.848-1.659.284-.555.568-1.111.848-1.666a.637.637 0 0 0-.106-.723Z"></path></svg>
-                                        </div>
-                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px' }}>
-                                            <svg aria-label="Repost" fill="transparent" stroke="currentColor" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" style={{ width: '100%', height: '100%' }}><path d="M19.998 9.497a1 1 0 0 0-1 1v4.228a3.274 3.274 0 0 1-3.27 3.27h-5.313l1.791-1.787a1 1 0 0 0-1.412-1.416L7.29 18.287a1.004 1.004 0 0 0-.294.707v.001c0 .023.012.042.013.065a.923.923 0 0 0 .281.643l3.502 3.504a1 1 0 0 0 1.414-1.414l-1.797-1.798h5.318a5.276 5.276 0 0 0 5.27-5.27v-4.228a1 1 0 0 0-1-1Zm-6.41-3.496-1.795 1.795a1 1 0 1 0 1.414 1.414l3.5-3.504a.936.936 0 0 0 .28-.645v-.001c0-.022-.012-.041-.013-.065a1.004 1.004 0 0 0-.294-.707l-3.504-3.504a1 1 0 0 0-1.414 1.414l1.794 1.795H8.24A5.276 5.276 0 0 0 2.97 7.268v4.228a1 1 0 1 0 2 0V7.268a3.274 3.274 0 0 1 3.27-3.27h5.346Z"></path></svg>
-                                        </div>
-                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px' }}>
-                                            <svg aria-label="Share" fill="transparent" stroke="currentColor" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" style={{ width: '100%', height: '100%' }}><line fill="none" x1="22" x2="9.218" y1="3" y2="10.083"></line><polygon fill="none" points="11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334"></polygon></svg>
+                                        <div style={{ width: '2px', flexGrow: 1, backgroundColor: '#222', marginTop: '10px', marginBottom: '10px', borderRadius: '1px' }}></div>
+                                        <div style={{ 
+                                            width: '18px', height: '18px', borderRadius: '50%', background: '#1d9bf0', 
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                                        }}>
+                                            <svg viewBox="0 0 24 24" fill="#ffffff" style={{ width: '10px', height: '10px' }}><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg>
                                         </div>
                                     </div>
 
-                                    {/* View Count */}
-                                    <div style={{ color: '#777777', fontSize: '15px' }}>
-                                        4,2jt tayangan
+                                    {/* Right Column: Content */}
+                                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingTop: '2px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                <span style={{ fontSize: '15px', fontWeight: '600', color: '#F3F5F7', letterSpacing: '-0.2px' }}>caph_roast_ai</span>
+                                                <svg viewBox="0 0 24 24" fill="#0095F6" style={{ width: '14px', height: '14px' }}>
+                                                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
+                                                </svg>
+                                            </div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#777777', fontSize: '14px', fontWeight: '400', lineHeight: 1 }}>
+                                                <span style={{ display: 'flex', alignItems: 'center' }}>{new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>
+                                                <div style={{ display: 'flex', alignItems: 'center', marginTop: '2px' }}>
+                                                    <svg aria-label="More" fill="currentColor" height="18" role="img" viewBox="0 0 24 24" width="18"><circle cx="12" cy="12" r="1.5"></circle><circle cx="6" cy="12" r="1.5"></circle><circle cx="18" cy="12" r="1.5"></circle></svg>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div style={{ marginBottom: '14px' }}>
+                                            <p style={{ 
+                                                fontSize: '15px', 
+                                                fontWeight: '400', 
+                                                color: '#F3F5F7', 
+                                                lineHeight: '1.45', 
+                                                margin: 0,
+                                                whiteSpace: 'pre-wrap',
+                                            }}>
+                                                "{r.roast_text.split('\n\n')[0]}"
+                                            </p>
+                                        </div>
+
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', color: '#F3F5F7', marginBottom: '12px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px' }}>
+                                                <svg aria-label="Like" fill="transparent" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ width: '100%', height: '100%' }}><path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z"></path></svg>
+                                            </div>
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px' }}>
+                                                <svg aria-label="Comment" fill="transparent" stroke="currentColor" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" style={{ width: '100%', height: '100%' }}><path d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615l1.455 2.853c.123.243.342.368.61.368a.634.634 0 0 0 .61-.368c.28-.548.564-1.104.848-1.659.284-.555.568-1.111.848-1.666a.637.637 0 0 0-.106-.723Z"></path></svg>
+                                            </div>
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px' }}>
+                                                <svg aria-label="Repost" fill="transparent" stroke="currentColor" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" style={{ width: '100%', height: '100%' }}><path d="M19.998 9.497a1 1 0 0 0-1 1v4.228a3.274 3.274 0 0 1-3.27 3.27h-5.313l1.791-1.787a1 1 0 0 0-1.412-1.416L7.29 18.287a1.004 1.004 0 0 0-.294.707v.001c0 .023.012.042.013.065a.923.923 0 0 0 .281.643l3.502 3.504a1 1 0 0 0 1.414-1.414l-1.797-1.798h5.318a5.276 5.276 0 0 0 5.27-5.27v-4.228a1 1 0 0 0-1-1Zm-6.41-3.496-1.795 1.795a1 1 0 1 0 1.414 1.414l3.5-3.504a.936.936 0 0 0 .28-.645v-.001c0-.022-.012-.041-.013-.065a1.004 1.004 0 0 0-.294-.707l-3.504-3.504a1 1 0 0 0-1.414 1.414l1.794 1.795H8.24A5.276 5.276 0 0 0 2.97 7.268v4.228a1 1 0 1 0 2 0V7.268a3.274 3.274 0 0 1 3.27-3.27h5.346Z"></path></svg>
+                                            </div>
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px' }}>
+                                                <svg aria-label="Share" fill="transparent" stroke="currentColor" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" style={{ width: '100%', height: '100%' }}><line fill="none" x1="22" x2="9.218" y1="3" y2="10.083"></line><polygon fill="none" points="11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334"></polygon></svg>
+                                            </div>
+                                        </div>
+
+                                        <div style={{ color: '#777777', fontSize: '15px' }}>
+                                            4,2jt tayangan
+                                        </div>
+                                        
+                                        {/* Branding footer inside the box */}
+                                        <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px solid #222', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                            <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#444', textTransform: 'uppercase', letterSpacing: '2px' }}>CAPH.io AI Roast</span>
+                                            <div style={{ display: 'flex', gap: '4px' }}>
+                                                <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#333' }}></div>
+                                                <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#333' }}></div>
+                                                <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#333' }}></div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
