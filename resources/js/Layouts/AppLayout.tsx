@@ -162,7 +162,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                         </div>
 
                         {/* Navigation */}
-                        <nav className="flex-1 px-4 py-6 overflow-y-auto space-y-8 scrollbar-hide">
+                        <nav className="flex-1 px-4 py-6 overflow-y-auto space-y-8 scrollbar-hide overscroll-contain">
                             <div className="animate-slide-in-right" style={{ animationDelay: '0.1s' }}>
                                 <p className="px-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">Menu Utama</p>
                                 <div className="space-y-1">
