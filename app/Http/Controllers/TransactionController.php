@@ -202,5 +202,29 @@ class TransactionController extends Controller
         return redirect()->back()->with('success', 'Transaksi berhasil dihapus');
     }
 
+    public function bulkDestroy(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer|exists:transactions,id',
+        ]);
 
+        $user = $request->user();
+        $ids = $validated['ids'];
+
+        try {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($user, $ids) {
+                foreach ($ids as $id) {
+                    $transaction = Transaction::where('id', $id)->where('user_id', $user->id)->first();
+                    if ($transaction) {
+                        $this->transactionService->deleteTransaction($transaction);
+                    }
+                }
+            });
+
+            return redirect()->back()->with('success', count($ids) . ' transaksi berhasil dihapus');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['message' => 'Gagal menghapus beberapa transaksi: ' . $e->getMessage()]);
+        }
+    }
 }

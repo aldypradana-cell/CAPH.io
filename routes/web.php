@@ -34,6 +34,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class , 'index'])->name('dashboard');
 
     // Transactions
+    Route::post('/transactions/bulk-destroy', [TransactionController::class, 'bulkDestroy'])->name('transactions.bulk-destroy');
     Route::resource('transactions', TransactionController::class)
         ->only(['index', 'store', 'update', 'destroy']);
 

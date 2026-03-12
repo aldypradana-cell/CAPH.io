@@ -5,7 +5,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import {
     Plus, PencilSimple as Pencil, Trash as Trash2, X, MagnifyingGlass as Search, Faders as Filter, DownloadSimple as Download, ArrowsDownUp as ArrowDownUp,
-    TrendUp as TrendingUp, TrendDown as TrendingDown, ArrowsLeftRight as ArrowRightLeft, Warning as AlertTriangle, CalendarBlank as Calendar, Hash, Clock
+    TrendUp as TrendingUp, TrendDown as TrendingDown, ArrowsLeftRight as ArrowRightLeft, Warning as AlertTriangle, CalendarBlank as Calendar, Hash, Clock,
+    Checks, Check, ListChecks
 } from '@phosphor-icons/react';
 import toast, { Toaster } from 'react-hot-toast';
 import TransactionFormModal from '@/Components/TransactionFormModal';
@@ -201,6 +202,9 @@ export default function TransactionsIndex({
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
     const [deleteId, setDeleteId] = useState<number | null>(null);
+    const [selectedIds, setSelectedIds] = useState<number[]>([]);
+    const [isSelectionMode, setIsSelectionMode] = useState(false);
+    const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -287,6 +291,7 @@ export default function TransactionsIndex({
         setFilterWallet(advFilters.wallet_id);
         setFilterCategory(advFilters.category);
         setFilterTag(advFilters.tag);
+        setSelectedIds([]); // Clear selection when filtering
         router.get(route('transactions.index'), {
             search: searchTerm || undefined,
             type: advFilters.type || undefined,
@@ -339,6 +344,32 @@ export default function TransactionsIndex({
             case 'TRANSFER': return 'bg-blue-500 text-white';
             default: return 'bg-slate-500 text-white';
         }
+    };
+
+    const toggleSelectAll = () => {
+        if (selectedIds.length === filteredTransactions.length) {
+            setSelectedIds([]);
+        } else {
+            setSelectedIds(filteredTransactions.map(t => t.id));
+        }
+    };
+
+    const handleSelect = (id: number) => {
+        setSelectedIds(prev => 
+            prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+        );
+    };
+
+    const handleBulkDelete = () => {
+        router.post(route('transactions.bulk-destroy'), { ids: selectedIds }, {
+            preserveState: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                setSelectedIds([]);
+                setIsBulkDeleteModalOpen(false);
+                toast.success(`${selectedIds.length} transaksi berhasil dihapus`);
+            }
+        });
     };
 
     return (
@@ -408,6 +439,20 @@ export default function TransactionsIndex({
                             <Download weight="bold" className="w-4 h-4" />
                         </button>
 
+                        {/* Selection Mode Toggle */}
+                        {filteredTransactions.length > 0 && (
+                            <button 
+                                onClick={() => {
+                                    setIsSelectionMode(!isSelectionMode);
+                                    if (isSelectionMode) setSelectedIds([]);
+                                }} 
+                                className={`hidden sm:flex p-2 sm:p-3 rounded-xl sm:rounded-2xl transition-all active:scale-95 ${isSelectionMode ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800' : 'glass-card text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md'}`} 
+                                title="Pilih Beberapa"
+                            >
+                                <ListChecks weight={isSelectionMode ? "fill" : "bold"} className="w-4 h-4" />
+                            </button>
+                        )}
+
                         {/* Heatmap Calendar Popover */}
                         <TransactionHeatmap 
                             data={heatmapData} 
@@ -433,6 +478,45 @@ export default function TransactionsIndex({
                         </button>
                     </div>
                 </div>
+
+                {/* Bulk Actions Bar */}
+                {filteredTransactions.length > 0 && isSelectionMode && (
+                    <div className="flex items-center justify-between px-4 py-2 bg-indigo-50 dark:bg-indigo-900/10 rounded-xl border border-indigo-200 dark:border-indigo-800/50 shadow-sm animate-fade-in-up">
+                        <div className="flex items-center gap-3">
+                            <button 
+                                onClick={toggleSelectAll}
+                                className={`w-5 h-5 rounded flex items-center justify-center border-2 transition-all ${
+                                    selectedIds.length > 0 && selectedIds.length === filteredTransactions.length
+                                    ? 'bg-indigo-600 border-indigo-600 text-white'
+                                    : selectedIds.length > 0
+                                    ? 'bg-indigo-600/20 border-indigo-600 text-indigo-600'
+                                    : 'border-slate-300 dark:border-slate-700 hover:border-indigo-400'
+                                }`}
+                            >
+                                {selectedIds.length === filteredTransactions.length ? <Checks weight="bold" className="w-3.5 h-3.5" /> : selectedIds.length > 0 ? <div className="w-2 h-0.5 bg-indigo-600 rounded-full" /> : null}
+                            </button>
+                            <span className="text-[10px] sm:text-xs font-bold text-slate-500">
+                                {selectedIds.length > 0 ? `${selectedIds.length} terpilih` : 'Pilih Semua'}
+                            </span>
+                        </div>
+
+                        {selectedIds.length > 0 ? (
+                            <button 
+                                onClick={() => setIsBulkDeleteModalOpen(true)}
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-red-600 text-white rounded-lg text-xs font-bold hover:bg-red-700 shadow-md shadow-red-500/20 transition-all active:scale-95"
+                            >
+                                <Trash2 weight="bold" className="w-3.5 h-3.5" /> Hapus
+                            </button>
+                        ) : (
+                            <button 
+                                onClick={() => setIsSelectionMode(false)}
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg text-xs font-bold hover:bg-slate-300 dark:hover:bg-slate-700 transition-all active:scale-95"
+                            >
+                                Batal
+                            </button>
+                        )}
+                    </div>
+                )}
 
                 {/* Filter Stats Widget (Inline Pill Bar) */}
                 {typeof filterStats !== 'undefined' && (
@@ -481,10 +565,24 @@ export default function TransactionsIndex({
                         filteredTransactions.map((t, idx) => (
                             <div
                                 key={t.id}
-                                className="glass-card rounded-2xl p-4 flex items-center justify-between group hover:shadow-lg transition-all duration-300 animate-fade-in-up"
+                                onClick={() => { if (isSelectionMode) handleSelect(t.id); }}
+                                className={`glass-card rounded-2xl p-4 flex items-center justify-between group transition-all duration-300 animate-fade-in-up ${isSelectionMode ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50' : ''} ${selectedIds.includes(t.id) ? 'ring-2 ring-indigo-500 bg-indigo-500/5 shadow-md' : 'hover:shadow-lg'}`}
                                 style={{ animationDelay: `${idx * 50}ms` }}
                             >
-                                <div className="flex items-start sm:items-center gap-4 flex-1 min-w-0">
+                                <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                                    {/* Checkbox (Individual) */}
+                                    {isSelectionMode && (
+                                        <div 
+                                            className={`w-5 h-5 mt-2.5 sm:mt-0 rounded flex items-center justify-center border-2 shrink-0 transition-all ${
+                                                selectedIds.includes(t.id)
+                                                ? 'bg-indigo-600 border-indigo-600 text-white'
+                                                : 'border-slate-300 dark:border-slate-700 group-hover:border-indigo-400 bg-white dark:bg-slate-900'
+                                            }`}
+                                        >
+                                            {selectedIds.includes(t.id) && <Check weight="bold" className="w-3.5 h-3.5" />}
+                                        </div>
+                                    )}
+
                                     {/* Type Icon */}
                                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${getTypeColor(t.type)} shadow-sm transition-transform group-hover:scale-110 shrink-0`}>
                                         {getTypeIcon(t.type)}
@@ -536,17 +634,19 @@ export default function TransactionsIndex({
                                         {t.type === 'INCOME' ? '+' : (!t.wallet ? '' : '-')}{formatIDR(t.amount)}
                                     </span>
 
-                                    {t.category !== 'Investasi Emas' ? (
-                                        <div className="flex items-center gap-2 sm:gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                                            <button onClick={() => handleEdit(t)} className="p-2 text-indigo-500 dark:text-indigo-400 sm:text-slate-300 md:hover:text-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/20 sm:bg-transparent md:hover:bg-indigo-50 md:dark:hover:bg-indigo-900/30 rounded-lg transition-all md:hover:scale-110 active:scale-90 flex items-center justify-center">
-                                                <Pencil weight="duotone" className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                                            </button>
-                                            <button onClick={() => setDeleteId(t.id)} className="p-2 text-red-500 dark:text-red-400 sm:text-slate-300 md:hover:text-red-500 bg-red-50/50 dark:bg-red-900/20 sm:bg-transparent md:hover:bg-red-50 md:dark:hover:bg-red-900/30 rounded-lg transition-all md:hover:scale-110 active:scale-90 flex items-center justify-center">
-                                                <Trash2 weight="duotone" className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <div className="text-[10px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800/50 px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700/50">Edit via Menu Aset</div>
+                                    {!isSelectionMode && (
+                                        t.category !== 'Investasi Emas' ? (
+                                            <div className="flex items-center gap-2 sm:gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                                                <button onClick={(e) => { e.stopPropagation(); handleEdit(t); }} className="p-2 text-indigo-500 dark:text-indigo-400 sm:text-slate-300 md:hover:text-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/20 sm:bg-transparent md:hover:bg-indigo-50 md:dark:hover:bg-indigo-900/30 rounded-lg transition-all md:hover:scale-110 active:scale-90 flex items-center justify-center">
+                                                    <Pencil weight="duotone" className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                                </button>
+                                                <button onClick={(e) => { e.stopPropagation(); setDeleteId(t.id); }} className="p-2 text-red-500 dark:text-red-400 sm:text-slate-300 md:hover:text-red-500 bg-red-50/50 dark:bg-red-900/20 sm:bg-transparent md:hover:bg-red-50 md:dark:hover:bg-red-900/30 rounded-lg transition-all md:hover:scale-110 active:scale-90 flex items-center justify-center">
+                                                    <Trash2 weight="duotone" className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="text-[10px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800/50 px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700/50">Edit via Menu Aset</div>
+                                        )
                                     )}
                                 </div>
                             </div>
@@ -620,6 +720,29 @@ export default function TransactionsIndex({
                                     }
                                 });
                             }} className="flex-1 py-3 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 shadow-lg shadow-red-500/30 transition-colors">Ya, Hapus</button>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
+
+            {/* Bulk Delete Confirmation Modal */}
+            {isBulkDeleteModalOpen && mounted && createPortal(
+                <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 animate-fade-in">
+                    <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setIsBulkDeleteModalOpen(false)} />
+                    <div className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-2xl animate-pop-in border border-slate-100 dark:border-slate-800">
+                        <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 mb-4 mx-auto">
+                            <Trash2 weight="fill" className="w-7 h-7" />
+                        </div>
+                        <h3 className="text-xl font-bold text-center text-slate-900 dark:text-white mb-2">Hapus {selectedIds.length} Transaksi?</h3>
+                        <p className="text-sm text-center text-slate-500 dark:text-slate-400 mb-6 px-4">
+                            Semua transaksi yang dipilih akan dihapus permanen. Tindakan ini akan mengupdate saldo seluruh dompet terkait.
+                        </p>
+                        <div className="flex gap-3">
+                            <button onClick={() => setIsBulkDeleteModalOpen(false)} className="flex-1 py-3 rounded-xl font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                                Batal
+                            </button>
+                            <button onClick={handleBulkDelete} className="flex-1 py-3 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 shadow-lg shadow-red-500/30 transition-colors">Ya, Hapus Semua</button>
                         </div>
                     </div>
                 </div>,
