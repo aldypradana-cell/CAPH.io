@@ -380,16 +380,37 @@ export default function TransactionsIndex({
             <div className="space-y-3 sm:space-y-6 animate-fade-in-up">
                 {/* Toolbar */}
                 <div className="flex flex-col lg:flex-row gap-2 sm:gap-4 items-stretch lg:items-center justify-between mb-2 sm:mb-0">
-                    {/* Search */}
-                    <div className="relative flex-1 max-w-md">
-                        <Search weight="bold" className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
-                        <input
-                            type="text"
-                            placeholder="Cari transaksi..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-11 pr-4 py-3 glass-card rounded-2xl text-sm outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-slate-700 dark:text-slate-200 placeholder-slate-400 border-none"
-                        />
+                    {/* Search + Mobile Action Buttons row */}
+                    <div className="flex items-center gap-2 flex-1 w-full lg:max-w-md">
+                        <div className="relative flex-1">
+                            <Search weight="bold" className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                            <input
+                                type="text"
+                                placeholder="Cari transaksi..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full pl-11 pr-4 py-3 glass-card rounded-2xl text-sm outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-slate-700 dark:text-slate-200 placeholder-slate-400 border-none"
+                            />
+                        </div>
+
+                        {/* Mobile-only: CSV Export */}
+                        <button onClick={handleExportCSV} className="flex sm:hidden items-center justify-center py-2.5 px-2.5 glass-card rounded-xl text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md transition-all active:scale-95 shrink-0" title="Export CSV">
+                            <Download weight="bold" className="w-4 h-4" />
+                        </button>
+
+                        {/* Mobile-only: Selection Mode Toggle */}
+                        {filteredTransactions.length > 0 && (
+                            <button 
+                                onClick={() => {
+                                    setIsSelectionMode(!isSelectionMode);
+                                    if (isSelectionMode) setSelectedIds([]);
+                                }} 
+                                className={`flex sm:hidden items-center justify-center py-2.5 px-2.5 rounded-xl transition-all active:scale-95 shrink-0 ${isSelectionMode ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800' : 'glass-card text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md'}`} 
+                                title="Pilih Beberapa"
+                            >
+                                <ListChecks weight={isSelectionMode ? "fill" : "bold"} className="w-4 h-4" />
+                            </button>
+                        )}
                     </div>
 
                     {/* Filter & Actions */}
@@ -434,19 +455,19 @@ export default function TransactionsIndex({
                             </button>
                         )}
 
-                        {/* CSV Export */}
-                        <button onClick={handleExportCSV} className="flex p-2 sm:p-3 glass-card rounded-xl sm:rounded-2xl text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md transition-all active:scale-95" title="Export CSV">
+                        {/* CSV Export — desktop only */}
+                        <button onClick={handleExportCSV} className="hidden sm:flex p-2 sm:p-3 glass-card rounded-xl sm:rounded-2xl text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md transition-all active:scale-95" title="Export CSV">
                             <Download weight="bold" className="w-4 h-4" />
                         </button>
 
-                        {/* Selection Mode Toggle */}
+                        {/* Selection Mode Toggle — desktop only */}
                         {filteredTransactions.length > 0 && (
                             <button 
                                 onClick={() => {
                                     setIsSelectionMode(!isSelectionMode);
                                     if (isSelectionMode) setSelectedIds([]);
                                 }} 
-                                className={`flex p-2 sm:p-3 rounded-xl sm:rounded-2xl transition-all active:scale-95 ${isSelectionMode ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800' : 'glass-card text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md'}`} 
+                                className={`hidden sm:flex p-2 sm:p-3 rounded-xl sm:rounded-2xl transition-all active:scale-95 ${isSelectionMode ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800' : 'glass-card text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md'}`} 
                                 title="Pilih Beberapa"
                             >
                                 <ListChecks weight={isSelectionMode ? "fill" : "bold"} className="w-4 h-4" />
