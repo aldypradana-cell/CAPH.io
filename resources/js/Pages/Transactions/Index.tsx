@@ -379,9 +379,9 @@ export default function TransactionsIndex({
 
             <div className="space-y-3 sm:space-y-6 animate-fade-in-up">
                 {/* Toolbar */}
-                <div className="flex flex-col lg:flex-row gap-2 sm:gap-4 items-stretch lg:items-center justify-between mb-2 sm:mb-0">
+                <div className="flex flex-col 2xl:flex-row gap-3 sm:gap-4 items-stretch 2xl:items-center justify-between mb-2 sm:mb-0">
                     {/* Search + Mobile Action Buttons row */}
-                    <div className="flex items-center gap-2 flex-1 w-full lg:max-w-md">
+                    <div className="flex items-center gap-2 flex-1 w-full 2xl:max-w-md">
                         <div className="relative flex-1">
                             <Search weight="bold" className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
                             <input
