@@ -316,7 +316,14 @@ export default function TransactionFormModal({
                             <div className="pt-1 pb-2 border-b border-slate-100 dark:border-slate-800">
                                 <label 
                                     className="flex items-center gap-2 cursor-pointer group"
-                                    onClick={() => setData('is_paylater', !data.is_paylater)}
+                                    onClick={() => {
+                                        const nextValue = !data.is_paylater;
+                                        setData(d => ({
+                                            ...d,
+                                            is_paylater: nextValue,
+                                            wallet_id: nextValue ? '' : d.wallet_id
+                                        }));
+                                    }}
                                 >
                                     <div className={`w-5 h-5 rounded flex items-center justify-center transition-colors ${data.is_paylater ? 'bg-amber-500' : 'bg-slate-200 dark:bg-slate-700 group-hover:bg-slate-300 dark:group-hover:bg-slate-600'}`}>
                                         {data.is_paylater && <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>}

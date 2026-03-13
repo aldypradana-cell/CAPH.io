@@ -145,7 +145,7 @@ class TransactionService
 
             // 2. Update Transaction
             $transaction->update([
-                'wallet_id' => $data['wallet_id'] ?? null,
+                'wallet_id' => !empty($data['is_paylater']) ? null : ($data['wallet_id'] ?? null),
                 'to_wallet_id' => $data['to_wallet_id'] ?? null,
                 'amount' => $data['amount'],
                 'type' => $data['type'],
@@ -154,8 +154,8 @@ class TransactionService
                 'date' => $data['date'],
             ]);
 
-            // 3. Lock & apply new balance (if wallet exists)
-            if ($data['wallet_id']) {
+            // 3. Lock & apply new balance (if wallet exists and NOT paylater)
+            if (empty($data['is_paylater']) && $data['wallet_id']) {
                 $wallet = Wallet::where('id', $data['wallet_id'])->lockForUpdate()->firstOrFail();
                 if ($data['type'] === TransactionType::INCOME->value) {
                     $wallet->increment('balance', $data['amount']);
@@ -193,16 +193,48 @@ class TransactionService
                 }
             }
 
-            // Sync with Installment (PayLater sync)
+            // Sync with Installment (PayLater conversion/sync)
             $installment = Installment::where('transaction_id', $transaction->id)->first();
-            if ($installment) {
-                $newMonthlyAmount = (float) $data['amount'] / (int) $installment->total_tenor;
-                $installment->update([
-                    'name' => 'PayLater - ' . $data['description'],
-                    'total_amount' => $data['amount'],
-                    'monthly_amount' => $newMonthlyAmount,
-                    'start_date' => $data['date'],
-                ]);
+            
+            if (!empty($data['is_paylater'])) {
+                if ($installment) {
+                    // Update existing installment
+                    $newMonthlyAmount = (float) $data['amount'] / (int) ($data['paylater_tenor'] ?? $installment->total_tenor);
+                    $installment->update([
+                        'name' => 'PayLater - ' . $data['description'],
+                        'total_amount' => $data['amount'],
+                        'monthly_amount' => $newMonthlyAmount,
+                        'total_tenor' => $data['paylater_tenor'] ?? $installment->total_tenor,
+                        'due_day' => $data['paylater_due_day'] ?? $installment->due_day,
+                        'start_date' => $data['date'],
+                        'lender' => $data['paylater_lender'] ?? $installment->lender,
+                    ]);
+                } else {
+                    // Create NEW installment (Conversion from regular expense)
+                    $tenor = (int) ($data['paylater_tenor'] ?? 1);
+                    $monthlyAmount = (float) $data['amount'] / $tenor;
+                    Installment::create([
+                        'user_id' => $transaction->user_id,
+                        'transaction_id' => $transaction->id,
+                        'name' => 'PayLater - ' . $data['description'],
+                        'type' => 'OTHER',
+                        'interest_type' => \App\Enums\InterestType::FLAT->value,
+                        'total_amount' => $data['amount'],
+                        'monthly_amount' => $monthlyAmount,
+                        'total_tenor' => $tenor,
+                        'paid_tenor' => 0,
+                        'interest_rate' => 0,
+                        'due_day' => $data['paylater_due_day'] ?? 1,
+                        'start_date' => $data['date'],
+                        'lender' => $data['paylater_lender'] ?? 'N/A',
+                        'wallet_id' => null,
+                        'is_completed' => false,
+                        'notes' => 'Otomatis dibuat dari konversi PayLater pada ' . date('d M Y'),
+                    ]);
+                }
+            } elseif ($installment) {
+                // Conversion from Paylater back to regular expense: DELETE installment
+                $installment->delete();
             }
 
             return $transaction;
