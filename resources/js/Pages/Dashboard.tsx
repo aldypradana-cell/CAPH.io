@@ -20,6 +20,7 @@ import RecentTransactionsWidget from '@/Components/Dashboard/RecentTransactionsW
 import TopTagsWidget from '@/Components/Dashboard/TopTagsWidget';
 import TransactionFormModal from '@/Components/TransactionFormModal';
 import NetWorthCard from '@/Components/Dashboard/NetWorthCard';
+import HabitTrackerWidget from '@/Components/Dashboard/HabitTrackerWidget';
 import ErrorBoundary from '@/Components/ErrorBoundary';
 import { toDateString } from '@/utils/date';
 
@@ -248,32 +249,38 @@ export default function Dashboard({
 
             <div className="space-y-4 sm:space-y-8">
                 {/* Header Action Bar */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 animate-fade-in-up" style={{ animationDelay: '0ms' }}>
+                <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 animate-fade-in-up" style={{ animationDelay: '0ms' }}>
                     <div className="w-full md:w-auto">
                         <NetWorthCard amount={stats.netWorth} />
                     </div>
-                    <div className="hidden sm:flex items-center gap-3 ml-auto">
-                        <button
-                            onClick={resetLayout}
-                            className="hidden sm:flex p-3 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-2xl border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all hover:scale-105 active:scale-95"
-                            title="Reset Layout"
-                        >
-                            <RotateCcw className="w-4 h-4" />
-                        </button>
-                        <Link
-                            href={route('smart-entry.index')}
-                            className="hidden sm:flex items-center px-5 py-3 bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 rounded-2xl text-sm font-bold hover:bg-indigo-50 dark:hover:bg-slate-700 transition-all border border-indigo-100 dark:border-slate-700 shadow-sm hover:shadow-md hover:scale-105 active:scale-95"
-                        >
-                            <Sparkles className="w-4 h-4 mr-2 text-indigo-500 dark:text-indigo-400" />
-                            AI Input
-                        </Link>
-                        <button
-                            onClick={() => setIsAddModalOpen(true)}
-                            className="flex items-center px-5 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95"
-                        >
-                            <Plus className="w-4 h-4 mr-2" />
-                            Transaksi Baru
-                        </button>
+                    
+                    <div className="flex flex-col items-end gap-3 w-full md:w-auto mt-2 md:mt-0">
+                        <div className="w-full sm:w-auto flex justify-end">
+                            <HabitTrackerWidget onDateClick={(dateStr) => setIsAddModalOpen(true)} />
+                        </div>
+                        <div className="hidden sm:flex items-center gap-3 justify-end w-full">
+                            <button
+                                onClick={resetLayout}
+                                className="hidden sm:flex p-3 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-2xl border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all hover:scale-105 active:scale-95"
+                                title="Reset Layout"
+                            >
+                                <RotateCcw className="w-4 h-4" />
+                            </button>
+                            <Link
+                                href={route('smart-entry.index')}
+                                className="hidden sm:flex items-center px-5 py-3 bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 rounded-2xl text-sm font-bold hover:bg-indigo-50 dark:hover:bg-slate-700 transition-all border border-indigo-100 dark:border-slate-700 shadow-sm hover:shadow-md hover:scale-105 active:scale-95"
+                            >
+                                <Sparkles className="w-4 h-4 mr-2 text-indigo-500 dark:text-indigo-400" />
+                                AI Input
+                            </Link>
+                            <button
+                                onClick={() => setIsAddModalOpen(true)}
+                                className="flex items-center px-5 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95"
+                            >
+                                <Plus className="w-4 h-4 mr-2" />
+                                Transaksi Baru
+                            </button>
+                        </div>
                     </div>
                 </div>
 

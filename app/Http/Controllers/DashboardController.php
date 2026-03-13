@@ -362,4 +362,99 @@ class DashboardController extends Controller
             ];
         })->values()->toArray();
     }
+
+    /**
+     * API endpoint: Get transaction streak and daily recording status.
+     */
+    public function streakApi(Request $request)
+    {
+        $user = $request->user();
+        
+        $month = $request->input('month');
+        $year = $request->input('year');
+        
+        if ($month && $year) {
+            $startDate = Carbon::createFromDate($year, $month, 1)->startOfMonth();
+            $endDate = $startDate->copy()->endOfMonth();
+        } else {
+            $days = (int) $request->input('days', 7);
+            $endDate = Carbon::now()->endOfDay();
+            $startDate = Carbon::now()->subDays($days - 1)->startOfDay();
+        }
+        
+        // For history display (last N days)
+        $historyRaw = Transaction::forUser($user->id)
+            ->where('date', '>=', $startDate->format('Y-m-d'))
+            ->where('date', '<=', $endDate->format('Y-m-d'))
+            ->selectRaw('DISTINCT DATE(date) as d')
+            ->pluck('d')
+            ->map(fn($d) => (string) $d)
+            ->toArray();
+            
+        $history = [];
+        $currentDate = $startDate->copy();
+        while ($currentDate->lte($endDate)) {
+            $dateStr = $currentDate->format('Y-m-d');
+            $history[$dateStr] = in_array($dateStr, $historyRaw);
+            $currentDate->addDay();
+        }
+        
+        // For calculating the current streak, get all distinct dates DESC as strings
+        $allDatesDesc = Transaction::forUser($user->id)
+            ->selectRaw('DISTINCT DATE(date) as d')
+            ->orderByRaw('d DESC')
+            ->pluck('d')
+            ->map(fn($d) => (string) $d)
+            ->toArray();
+        
+        $streak = 0;
+        $maxStreak = 0;
+        $tempStreak = 0;
+        
+        if (!empty($allDatesDesc)) {
+            $today = Carbon::now()->format('Y-m-d');
+            $yesterday = Carbon::now()->subDay()->format('Y-m-d');
+            
+            // Current Streak Calculation
+            if (in_array($today, $allDatesDesc) || in_array($yesterday, $allDatesDesc)) {
+                $checkDate = in_array($today, $allDatesDesc) ? Carbon::now() : Carbon::now()->subDay();
+                foreach ($allDatesDesc as $dateStr) {
+                    if ($dateStr > $today) continue;
+                    if ($dateStr === $checkDate->format('Y-m-d')) {
+                        $streak++;
+                        $checkDate->subDay();
+                    } else if ($dateStr < $checkDate->format('Y-m-d')) {
+                        break;
+                    }
+                }
+            }
+
+            // Max Streak Calculation (Longest Gap-less Sequence)
+            $sortedDates = collect($allDatesDesc)->sort()->values();
+            if ($sortedDates->isNotEmpty()) {
+                $tempStreak = 1;
+                $maxStreak = 1;
+                for ($i = 1; $i < $sortedDates->count(); $i++) {
+                    $prev = Carbon::parse((string)$sortedDates[$i - 1]);
+                    $curr = Carbon::parse((string)$sortedDates[$i]);
+                    
+                    if ($prev->addDay()->format('Y-m-d') === $curr->format('Y-m-d')) {
+                        $tempStreak++;
+                    } else {
+                        $maxStreak = max($maxStreak, $tempStreak);
+                        $tempStreak = 1;
+                    }
+                }
+                $maxStreak = max($maxStreak, $tempStreak);
+            }
+        }
+
+        return response()->json([
+            'history' => $history,
+            'current_streak' => $streak,
+            'max_streak' => $maxStreak,
+            'startDate' => $startDate->format('Y-m-d'),
+            'endDate' => $endDate->format('Y-m-d'),
+        ]);
+    }
 }
