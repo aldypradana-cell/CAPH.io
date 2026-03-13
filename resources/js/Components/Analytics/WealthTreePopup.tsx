@@ -73,27 +73,47 @@ export default function WealthTreePopup({ isOpen, onClose }: WealthTreePopupProp
 
     const getLevelName = (level: number) => {
         switch (level) {
-            case 1: return 'Tunas Kestabilan';
-            case 2: return 'Pohon Pertumbuhan';
-            case 3: return 'Rimbun Keamanan';
-            case 4: return 'Hutan Kebebasan';
-            case 5: return 'Emas Kemakmuran';
-            default: return 'Tunas';
+            case 1: return 'Benih Harapan';
+            case 2: return 'Tunas Pertama';
+            case 3: return 'Anakan Tumbuh';
+            case 4: return 'Pohon Muda';
+            case 5: return 'Pohon Berkembang';
+            case 6: return 'Pohon Subur';
+            case 7: return 'Pohon Matang';
+            case 8: return 'Pohon Agung';
+            case 9: return 'Pohon Berkilau';
+            case 10: return 'Emas Dewa';
+            default: return 'Benih';
         }
     };
 
     const getLevelColor = (level: number) => {
         if (data?.isWithering) return { from: 'from-amber-600', to: 'to-orange-700', text: 'text-amber-500', bg: 'bg-amber-500', shadow: 'shadow-amber-500/20' };
         switch (level) {
-            case 5: return { from: 'from-yellow-400', to: 'to-amber-500', text: 'text-yellow-500', bg: 'bg-yellow-500', shadow: 'shadow-yellow-500/20' };
-            case 4: return { from: 'from-emerald-400', to: 'to-teal-600', text: 'text-emerald-400', bg: 'bg-emerald-500', shadow: 'shadow-emerald-500/20' };
-            case 3: return { from: 'from-emerald-400', to: 'to-green-600', text: 'text-emerald-400', bg: 'bg-emerald-500', shadow: 'shadow-emerald-500/20' };
-            case 2: return { from: 'from-teal-400', to: 'to-cyan-600', text: 'text-teal-400', bg: 'bg-teal-500', shadow: 'shadow-teal-500/20' };
-            default: return { from: 'from-green-400', to: 'to-emerald-600', text: 'text-green-400', bg: 'bg-green-500', shadow: 'shadow-green-500/20' };
+            case 10: return { from: 'from-yellow-300', to: 'to-amber-500', text: 'text-yellow-400', bg: 'bg-yellow-400', shadow: 'shadow-yellow-400/30' };
+            case 9: return { from: 'from-yellow-400', to: 'to-amber-600', text: 'text-yellow-500', bg: 'bg-yellow-500', shadow: 'shadow-yellow-500/20' };
+            case 8: return { from: 'from-emerald-300', to: 'to-teal-500', text: 'text-emerald-300', bg: 'bg-emerald-400', shadow: 'shadow-emerald-400/20' };
+            case 7: return { from: 'from-emerald-400', to: 'to-teal-600', text: 'text-emerald-400', bg: 'bg-emerald-500', shadow: 'shadow-emerald-500/20' };
+            case 6: return { from: 'from-emerald-400', to: 'to-green-600', text: 'text-emerald-400', bg: 'bg-emerald-500', shadow: 'shadow-emerald-500/20' };
+            case 5: return { from: 'from-green-400', to: 'to-emerald-600', text: 'text-green-400', bg: 'bg-green-500', shadow: 'shadow-green-500/20' };
+            case 4: return { from: 'from-green-400', to: 'to-green-600', text: 'text-green-400', bg: 'bg-green-500', shadow: 'shadow-green-500/20' };
+            case 3: return { from: 'from-teal-400', to: 'to-cyan-600', text: 'text-teal-400', bg: 'bg-teal-500', shadow: 'shadow-teal-500/20' };
+            case 2: return { from: 'from-teal-400', to: 'to-green-600', text: 'text-teal-400', bg: 'bg-teal-500', shadow: 'shadow-teal-500/20' };
+            default: return { from: 'from-green-500', to: 'to-emerald-700', text: 'text-green-500', bg: 'bg-green-600', shadow: 'shadow-green-600/20' };
         }
     };
 
     const colors = getLevelColor(data?.level || 1);
+
+    // Dynamic Modal Size based on Level to emphasize progression
+    const getModalSizeCss = (level: number) => {
+        if (level <= 3) return { width: 'max-w-sm', treeHeight: 'h-[300px]' };
+        if (level <= 6) return { width: 'max-w-md', treeHeight: 'h-[400px]' };
+        if (level <= 8) return { width: 'max-w-lg', treeHeight: 'h-[500px]' };
+        return { width: 'max-w-2xl', treeHeight: 'h-[600px]' }; // Lvl 9-10 are massive
+    };
+
+    const sizeConfig = getModalSizeCss(data?.level || 1);
 
     return (
         <Transition.Root show={isOpen} as={Fragment}>
@@ -121,7 +141,7 @@ export default function WealthTreePopup({ isOpen, onClose }: WealthTreePopupProp
                             leaveFrom="opacity-100 translate-y-0 scale-100"
                             leaveTo="opacity-0 translate-y-24 scale-95"
                         >
-                            <Dialog.Panel className="relative w-full max-w-md overflow-hidden">
+                            <Dialog.Panel className={`relative w-full ${sizeConfig.width} overflow-hidden transition-all duration-700`}>
                                 {/* Close Button */}
                                 <button
                                     onClick={onClose}

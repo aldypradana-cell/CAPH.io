@@ -339,37 +339,72 @@ class AnalyticsController extends Controller
             $avgMonthlyExpense = max(1000000, $currentMonthExpense);
         }
 
-        // 3. Determine Level (Ratio based)
+        // 3. Determine Level (10-level system, ratio based)
         $ratio = $avgMonthlyExpense > 0 ? ($netWorth / $avgMonthlyExpense) : 0;
         
         $level = 1;
-        if ($ratio >= 12) $level = 5;
-        elseif ($ratio >= 6) $level = 4;
-        elseif ($ratio >= 3) $level = 3;
-        elseif ($ratio >= 1) $level = 2;
+        if ($ratio >= 120) $level = 10;
+        elseif ($ratio >= 60) $level = 9;
+        elseif ($ratio >= 30) $level = 8;
+        elseif ($ratio >= 15) $level = 7;
+        elseif ($ratio >= 8) $level = 6;
+        elseif ($ratio >= 4) $level = 5;
+        elseif ($ratio >= 2) $level = 4;
+        elseif ($ratio >= 1) $level = 3;
+        elseif ($ratio >= 0.5) $level = 2;
 
-        // 4. Milestone Logic (XP like)
+        // 4. Milestone Logic (XP like) — 10 levels
         $milestones = [
             1 => 0,
-            2 => 1,  // 1x Monthly Expense
-            3 => 3,  // 3x Monthly Expense
-            4 => 6,  // 6x Monthly Expense
-            5 => 12, // 12x Monthly Expense
+            2 => 0.5,   // 0.5x Monthly Expense
+            3 => 1,     // 1x Monthly Expense
+            4 => 2,     // 2x Monthly Expense
+            5 => 4,     // 4x Monthly Expense
+            6 => 8,     // 8x Monthly Expense
+            7 => 15,    // 15x Monthly Expense
+            8 => 30,    // 30x Monthly Expense
+            9 => 60,    // 60x Monthly Expense
+            10 => 120,  // 120x Monthly Expense (Financial Freedom)
         ];
 
         $currentMilestone = $milestones[$level];
-        $nextMilestone = $level < 5 ? $milestones[$level + 1] : $milestones[5];
+        $nextMilestone = $level < 10 ? $milestones[$level + 1] : $milestones[10];
         
         // Progress within current level (XP%)
         $range = $nextMilestone - $currentMilestone;
         $progress = $range > 0 ? (($ratio - $currentMilestone) / $range) * 100 : 100;
         $progress = max(0, min(100, $progress));
 
-        // 5. Update Max Level & Check Withering
+        // 5. Update Max Level & Check Withering (New Logic)
         if ($level > $user->max_wealth_level) {
             $user->update(['max_wealth_level' => $level]);
         }
-        $isWithering = $level < $user->max_wealth_level;
+
+        // New Wither Logic: Cashflow deficit OR insufficient balance for installments
+        $currentMonthIncome = Transaction::forUser($user->id)
+            ->where('type', 'INCOME')
+            ->whereBetween('date', [now()->startOfMonth()->format('Y-m-d'), now()->endOfMonth()->format('Y-m-d')])
+            ->sum('amount');
+
+        $currentMonthExpense = Transaction::forUser($user->id)
+            ->where('type', 'EXPENSE')
+            ->whereBetween('date', [now()->startOfMonth()->format('Y-m-d'), now()->endOfMonth()->format('Y-m-d')])
+            ->sum('amount');
+
+        $monthlyInstallmentDue = 0;
+        foreach ($activeInstallments as $installment) {
+            $monthlyInstallmentDue += (float) $installment->monthly_amount;
+        }
+
+        $isWithering = false;
+        // Trigger 1: Cashflow negatif bulan ini (pengeluaran > pemasukan)
+        if ($currentMonthExpense > 0 && $currentMonthIncome > 0 && $currentMonthExpense > $currentMonthIncome) {
+            $isWithering = true;
+        }
+        // Trigger 2: Saldo tidak cukup untuk cicilan bulan depan
+        if ($monthlyInstallmentDue > 0 && $balance < $monthlyInstallmentDue) {
+            $isWithering = true;
+        }
 
         $neededForNext = max(0, ($nextMilestone * $avgMonthlyExpense) - $netWorth);
 
@@ -382,7 +417,7 @@ class AnalyticsController extends Controller
             'maxLevel' => $user->max_wealth_level,
             'isWithering' => $isWithering,
             'neededForNext' => $neededForNext,
-            'nextLevel' => $level < 5 ? $level + 1 : 5,
+            'nextLevel' => $level < 10 ? $level + 1 : 10,
         ]);
     }
 }

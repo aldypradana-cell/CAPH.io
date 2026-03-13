@@ -80,9 +80,9 @@ export default function WealthTreeVoxel({ level, isWithering, className }: Wealt
     const [isReady, setIsReady] = useState(false);
 
     const getImagePath = (lvl: number) => {
-        const v = '4.0';
-        if (isWithering) return `/images/trees/withered.png?v=${v}`;
-        return `/images/trees/level${Math.min(5, Math.max(1, lvl))}.png?v=${v}`;
+        const v = '5.0';
+        // Always show the current level's tree — withering uses CSS filter instead
+        return `/images/trees/level${Math.min(10, Math.max(1, lvl))}.png?v=${v}`;
     };
 
     // Load and process image through canvas
@@ -114,10 +114,26 @@ export default function WealthTreeVoxel({ level, isWithering, className }: Wealt
         })), [level]
     );
 
-    const particleColor = level >= 5 ? '#FBBF24' : (isWithering ? '#D97706' : '#34D399');
+    const particleColor = isWithering ? '#92400E' : (level >= 9 ? '#FBBF24' : '#34D399');
     const glowColor = isWithering
-        ? 'rgba(217,119,6,0.15)'
-        : level >= 5 ? 'rgba(251,191,36,0.2)' : 'rgba(16,185,129,0.15)';
+        ? 'rgba(120,53,15,0.12)'
+        : level >= 9 ? 'rgba(251,191,36,0.2)' : 'rgba(16,185,129,0.15)';
+
+    // Wither visual effect: desaturate + sepia + dim
+    const witherFilter = isWithering
+        ? 'grayscale(60%) sepia(40%) brightness(0.6) saturate(0.7)'
+        : 'none';
+
+    // Dynamic Scaling based on Level
+    // Lvl 1-3: Smallest, Lvl 4-6: Medium, Lvl 7-8: Large, Lvl 9-10: Largest
+    const getScaleConfig = () => {
+        if (level <= 3) return { scale: 0.8, yBase: 10 };
+        if (level <= 6) return { scale: 0.95, yBase: 5 };
+        if (level <= 8) return { scale: 1.1, yBase: 0 };
+        return { scale: 1.25, yBase: -5 };
+    };
+    
+    const treeConfig = getScaleConfig();
 
     return (
         <div className={`relative flex items-center justify-center ${className} select-none`}>
@@ -136,20 +152,21 @@ export default function WealthTreeVoxel({ level, isWithering, className }: Wealt
                         <motion.img
                             key={`tree-${level}-${isWithering}`}
                             src={canvasDataUrl}
-                            initial={{ opacity: 0, scale: 0.85, y: 20 }}
+                            initial={{ opacity: 0, scale: treeConfig.scale - 0.15, y: treeConfig.yBase + 20 }}
                             animate={{
                                 opacity: 1,
-                                scale: [1.05, 1.07, 1.05],
-                                y: [0, -4, 0],
+                                scale: [treeConfig.scale, treeConfig.scale + 0.02, treeConfig.scale],
+                                y: [treeConfig.yBase, treeConfig.yBase - 4, treeConfig.yBase],
                             }}
-                            exit={{ opacity: 0, scale: 1.1, y: -15 }}
+                            exit={{ opacity: 0, scale: treeConfig.scale + 0.1, y: treeConfig.yBase - 15 }}
                             transition={{
                                 opacity: { type: "spring", stiffness: 200, damping: 20 },
                                 scale: { duration: 4, repeat: Infinity, ease: "easeInOut" },
                                 y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
                             }}
                             alt={`Wealth Tree Level ${level}`}
-                            className="w-full h-full object-contain"
+                            className="w-full h-full object-contain transition-[filter] duration-1000"
+                            style={{ filter: witherFilter }}
                             draggable={false}
                         />
                     )}
