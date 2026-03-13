@@ -152,7 +152,7 @@ export default function WealthTreeVoxel({ level, isWithering, className }: Wealt
             />
 
             {/* Tree */}
-            <div className="relative w-full h-full flex items-center justify-center z-10">
+            <div className="relative w-full h-full flex items-end justify-center z-10">
                 <AnimatePresence mode="wait">
                     {isReady && canvasDataUrl && (
                         <motion.img
@@ -171,8 +171,8 @@ export default function WealthTreeVoxel({ level, isWithering, className }: Wealt
                                 y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
                             }}
                             alt={`Wealth Tree Level ${level}`}
-                            className="w-full h-full object-contain transition-[filter] duration-1000"
-                            style={{ filter: witherFilter }}
+                            className="w-full h-full object-contain object-bottom transition-[filter] duration-1000"
+                            style={{ filter: witherFilter, transformOrigin: 'bottom center' }}
                             draggable={false}
                         />
                     )}
