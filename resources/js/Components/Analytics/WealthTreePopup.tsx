@@ -283,8 +283,13 @@ export default function WealthTreePopup({ isOpen, onClose }: WealthTreePopupProp
                                             <p className="text-xs font-black text-white truncate">{formatIDR(data?.netWorth || 0)}</p>
                                         </div>
                                         <div className="flex-1 bg-white/[0.04] rounded-xl px-3 py-2.5 border border-white/[0.06]">
-                                            <p className="text-[8px] font-bold text-white/25 uppercase tracking-wider mb-0.5">Runway</p>
-                                            <p className="text-xs font-black text-white">{data?.ratio?.toFixed(1) || '0.0'}x Biaya</p>
+                                            <div className="flex items-center gap-1 mb-0.5">
+                                                <p className="text-[8px] font-bold text-white/25 uppercase tracking-wider">Runway</p>
+                                                <span className="text-[7px] text-white/10 uppercase tracking-widest">(Ketahanan)</span>
+                                            </div>
+                                            <p className="text-xs font-black text-white">
+                                                {data?.ratio?.toFixed(1) || '0.0'}<span className="text-[9px] text-white/40 ml-0.5 font-bold uppercase tracking-wider">x Bln Nafas Hidup</span>
+                                            </p>
                                         </div>
                                     </div>
 
