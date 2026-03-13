@@ -176,6 +176,10 @@ class DashboardController extends Controller
                     ->flatMap(fn($rule) => $ruleCategoryNames[$rule] ?? [])
                     ->toArray();
                 
+                if (in_array('SAVINGS', $rules) || in_array('SAVINGS_PLUS', $rules)) {
+                    $mappedCategories[] = 'Tabungan';
+                }
+                
                 $spent = 0;
                 foreach ($mappedCategories as $cat) {
                     $spent += (float) ($categoryExpenses[$cat] ?? 0);

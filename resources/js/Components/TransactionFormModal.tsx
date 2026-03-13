@@ -384,7 +384,7 @@ export default function TransactionFormModal({
                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Ke Dompet</label>
                                 <select value={data.to_wallet_id} onChange={(e) => setData('to_wallet_id', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200/60 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm" required>
                                     <option value="">Pilih Dompet Tujuan</option>
-                                    {(allWallets || wallets).filter(w => w.id.toString() !== data.wallet_id && !(w as any).is_archived).map(w => (
+                                    {wallets.filter(w => w.id.toString() !== data.wallet_id && !(w as any).is_archived).map(w => (
                                         <option key={w.id} value={w.id}>
                                             {w.name} {(w as any).balance !== undefined ? `(Rp ${Number((w as any).balance).toLocaleString('id-ID')})` : ''}
                                         </option>
@@ -478,7 +478,7 @@ export default function TransactionFormModal({
                                 >
                                     <option value="">Pilih</option>
                                     {categories
-                                        .filter((c: any) => c.type === inputType && c.name !== 'Investasi Emas')
+                                        .filter((c: any) => c.type === inputType && c.name !== 'Investasi Emas' && c.name !== 'Tabungan')
                                         .map((cat: any) => (
                                             <option key={cat.id} value={cat.name}>{cat.name}</option>
                                         ))
