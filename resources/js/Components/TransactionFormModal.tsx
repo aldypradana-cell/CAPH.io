@@ -5,7 +5,7 @@ import { X, TrendDown as TrendingDown, TrendUp as TrendingUp, ArrowsLeftRight as
 import toast from 'react-hot-toast';
 import TagInput from '@/Components/TagInput';
 import { WalletData, CategoryData, TagData } from '@/types/dashboard';
-import { todayString } from '@/utils/date';
+import { todayString, toDateString } from '@/utils/date';
 
 interface EditableTransaction {
     id: number;
@@ -90,7 +90,7 @@ export default function TransactionFormModal({
                 setData({
                     wallet_id: editingTransaction.wallet?.id?.toString() || '',
                     to_wallet_id: editingTransaction.to_wallet?.id?.toString() || '',
-                    date: editingTransaction.date,
+                    date: editingTransaction.date ? toDateString(editingTransaction.date) : todayString(),
                     description: editingTransaction.description,
                     amount: Number(editingTransaction.amount).toLocaleString('id-ID'),
                     type: editingTransaction.type,

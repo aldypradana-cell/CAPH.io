@@ -3,14 +3,13 @@ import { Head, useForm, router } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import { useState, FormEventHandler, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import {
-    Plus, X, HandCoins, Warning as AlertTriangle, Trash as Trash2, PencilSimple as Edit2, Check, CalendarBlank as Calendar,
+import { Plus, X, HandCoins, Warning as AlertTriangle, Trash as Trash2, PencilSimple as Edit2, Check, CalendarBlank as Calendar,
     TrendUp as TrendingUp, TrendDown as TrendingDown, Receipt, Repeat, Wallet, Clock, CheckCircle, ArrowRight, CreditCard
 } from '@phosphor-icons/react';
 import toast, { Toaster } from 'react-hot-toast';
 import InstallmentTab from './Partials/InstallmentTab';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { todayString, formatDateShort } from '@/utils/date';
+import { todayString, formatDateShort, toDateString } from '@/utils/date';
 
 // --- Types ---
 interface RecurringTransaction {
@@ -249,7 +248,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                 person: d.person,
                 amount: Number(d.amount).toLocaleString('id-ID'),
                 description: d.description || '',
-                due_date: d.due_date || ''
+                due_date: d.due_date ? toDateString(d.due_date) : ''
             });
         } else {
             setEditingDebt(null);
@@ -306,8 +305,8 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                 type: item.type,
                 category: item.category,
                 frequency: item.frequency,
-                start_date: item.start_date,
-                next_run_date: item.next_run_date,
+                start_date: item.start_date ? toDateString(item.start_date) : todayString(),
+                next_run_date: item.next_run_date ? toDateString(item.next_run_date) : '',
                 auto_cut: item.auto_cut,
                 description: item.description || '',
             });
