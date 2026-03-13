@@ -42,9 +42,14 @@ class RecurringPaymentSuccess extends Notification
 
     public function toArray(object $notifiable): array
     {
+        $isIncome = $this->recurringTransaction->type === 'INCOME';
+        $formattedAmount = "Rp" . number_format($this->recurringTransaction->amount, 0, ',', '.');
+
         return [
-            'title' => 'Pembayaran Langganan Sukses',
-            'message' => "Sistem berhasil memotong " . number_format($this->recurringTransaction->amount, 0, ',', '.') . " untuk langganan '{$this->recurringTransaction->name}'.",
+            'title' => $isIncome ? 'Pemasukan Rutin Berhasil' : 'Pembayaran Langganan Sukses',
+            'message' => $isIncome 
+                ? "Sistem berhasil menambahkan {$formattedAmount} dari pemasukan '{$this->recurringTransaction->name}'."
+                : "Sistem berhasil memotong {$formattedAmount} untuk langganan '{$this->recurringTransaction->name}'.",
             'type' => 'SUCCESS',
             'link' => route('recurring.index'),
         ];

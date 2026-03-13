@@ -42,18 +42,25 @@ class RecurringPaymentDue extends Notification
 
     public function toArray(object $notifiable): array
     {
+        $isIncome = $this->recurringTransaction->type === 'INCOME';
+        $formattedAmount = "Rp" . number_format($this->recurringTransaction->amount, 0, ',', '.');
+        
         if ($this->isFailed) {
             return [
-                'title' => 'Pembayaran Otomatis Gagal',
-                'message' => "Sistem gagal memotong saldo untuk langganan '{$this->recurringTransaction->name}'. Pastikan saldo dompet cukup.",
+                'title' => $isIncome ? 'Pemasukan Otomatis Gagal' : 'Pembayaran Otomatis Gagal',
+                'message' => $isIncome 
+                    ? "Sistem gagal menambah saldo untuk jadwal pemasukan '{$this->recurringTransaction->name}'."
+                    : "Sistem gagal memotong saldo untuk langganan '{$this->recurringTransaction->name}'. Pastikan saldo dompet cukup.",
                 'type' => 'ALERT',
                 'link' => route('recurring.index'),
             ];
         }
 
         return [
-            'title' => 'Tagihan Langganan',
-            'message' => "Tagihan '{$this->recurringTransaction->name}' sebesar Rp" . number_format($this->recurringTransaction->amount, 0, ',', '.') . " harus dibayar hari ini.",
+            'title' => $isIncome ? 'Pemasukan Terjadwal' : 'Tagihan Langganan',
+            'message' => $isIncome 
+                ? "Pemasukan '{$this->recurringTransaction->name}' sebesar {$formattedAmount} dijadwalkan hari ini. Silakan konfirmasi."
+                : "Tagihan '{$this->recurringTransaction->name}' sebesar {$formattedAmount} harus dibayar hari ini.",
             'type' => 'WARNING',
             'link' => route('recurring.index'),
         ];

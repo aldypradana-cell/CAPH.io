@@ -13,5 +13,6 @@ use Illuminate\Support\Facades\Schedule;
 // But calling Schedule::command here might not work if not in a service provider or bootstrap/app.php in newer Laravel.
 // However, 'routes/console.php' is loaded by the framework. Let's register it.
 Schedule::command('recurring:process')->dailyAt('07:00');
+Schedule::command('installments:process')->dailyAt('07:05');
 Schedule::command('reminders:send')->dailyAt('07:15');
 Schedule::command('budgets:check-milestones')->dailyAt('23:55');

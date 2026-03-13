@@ -414,17 +414,17 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                     </div>
                 </div>
 
-                {/* DUE BILLS WIDGET */}
-                {dueRecurring.length > 0 && (
+                {/* DUE BILLS WIDGET (EXPENSE) */}
+                {dueRecurring.filter(r => r.type !== 'INCOME').length > 0 && (
                     <div className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/10 rounded-[2rem] p-6 border border-orange-100 dark:border-orange-500/20 shadow-lg shadow-orange-500/5">
                         <h3 className="text-lg font-bold text-orange-800 dark:text-orange-400 mb-4 flex items-center">
                             <div className="p-2 bg-orange-100 dark:bg-orange-900/40 rounded-xl mr-3">
                                 <AlertTriangle weight="fill" className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                             </div>
-                            Tagihan Jatuh Tempo ({dueRecurring.length})
+                            Tagihan Jatuh Tempo ({dueRecurring.filter(r => r.type !== 'INCOME').length})
                         </h3>
                         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                            {dueRecurring.map(bill => (
+                            {dueRecurring.filter(r => r.type !== 'INCOME').map(bill => (
                                 <div key={bill.id} className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-orange-100 dark:border-slate-800 flex flex-col justify-between group hover:shadow-lg transition-all">
                                     <div className="mb-4">
                                         <div className="flex justify-between items-start mb-2">
@@ -446,6 +446,45 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                                         className="w-full justify-center bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl py-3 flex items-center transition-colors"
                                     >
                                         Bayar Sekarang <ArrowRight weight="bold" className="w-4 h-4 ml-2" />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* DUE INCOMES WIDGET */}
+                {dueRecurring.filter(r => r.type === 'INCOME').length > 0 && (
+                    <div className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/10 rounded-[2rem] p-6 border border-emerald-100 dark:border-emerald-500/20 shadow-lg shadow-emerald-500/5">
+                        <h3 className="text-lg font-bold text-emerald-800 dark:text-emerald-400 mb-4 flex items-center">
+                            <div className="p-2 bg-emerald-100 dark:bg-emerald-900/40 rounded-xl mr-3">
+                                <AlertTriangle weight="fill" className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                            </div>
+                            Pemasukan Terjadwal ({dueRecurring.filter(r => r.type === 'INCOME').length})
+                        </h3>
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                            {dueRecurring.filter(r => r.type === 'INCOME').map(income => (
+                                <div key={income.id} className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-emerald-100 dark:border-slate-800 flex flex-col justify-between group hover:shadow-lg transition-all">
+                                    <div className="mb-4">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <div className="text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded-lg">
+                                                {formatDate(income.next_run_date)}
+                                            </div>
+                                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+                                                <TrendingUp weight="bold" className="w-4 h-4 text-emerald-500" />
+                                            </div>
+                                        </div>
+                                        <h4 className="font-bold text-slate-800 dark:text-white text-lg mb-1">{income.name}</h4>
+                                        <div className="text-2xl font-bold text-slate-900 dark:text-gray-100">{formatIDR(income.amount)}</div>
+                                        <div className="flex items-center gap-2 mt-2 text-xs text-slate-500">
+                                            <Wallet weight="duotone" className="w-3 h-3" /> {income.wallet.name}
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => openProcessModal(income)}
+                                        className="w-full justify-center bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl py-3 flex items-center transition-colors"
+                                    >
+                                        Terima Sekarang <Check weight="bold" className="w-4 h-4 ml-2" />
                                     </button>
                                 </div>
                             ))}
@@ -509,7 +548,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                                                 <Repeat weight="bold" className="w-6 h-6" />
                                             </div>
                                             <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${item.auto_cut ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400'}`}>
-                                                {item.auto_cut ? 'Auto Cut' : 'Manual'}
+                                                {item.auto_cut ? (item.type === 'INCOME' ? 'Auto Income' : 'Auto Cut') : 'Manual'}
                                             </div>
                                         </div>
 
@@ -898,7 +937,9 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
 
                         <div className="p-5 pb-0 shrink-0">
                             <div className="flex justify-between items-center mb-4">
-                                <h2 className="text-lg font-bold text-gray-900 dark:text-white">Bayar Tagihan: {selectedProcessRecurring?.name}</h2>
+                                <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                                    {selectedProcessRecurring?.type === 'INCOME' ? 'Terima Pemasukan' : 'Bayar Tagihan'}: {selectedProcessRecurring?.name}
+                                </h2>
                                 <button onClick={() => setIsProcessModalOpen(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
                                     <X weight="bold" className="w-5 h-5" />
                                 </button>
@@ -913,19 +954,25 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                                     <input type="tel" inputMode="numeric" autoComplete="off" value={processForm.data.amount} onChange={(e) => processForm.setData('amount', formatInputAmount(e.target.value))} className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-2xl text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 text-center" required />
                                 </div>
                                 <div>
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Bayar Menggunakan</label>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">
+                                        {selectedProcessRecurring?.type === 'INCOME' ? 'Dompet Penerima' : 'Bayar Menggunakan'}
+                                    </label>
                                     <select value={processForm.data.wallet_id} onChange={(e) => processForm.setData('wallet_id', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required>
                                         <option value="">Pilih Dompet</option>
                                         {wallets.map(w => (<option key={w.id} value={w.id}>{w.name} ({formatIDR(w.balance)})</option>))}
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Tanggal Bayar</label>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">
+                                        {selectedProcessRecurring?.type === 'INCOME' ? 'Tanggal Penerimaan' : 'Tanggal Bayar'}
+                                    </label>
                                     <input type="date" value={processForm.data.date} onChange={(e) => processForm.setData('date', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required />
                                 </div>
                                 <div className="flex space-x-3 pt-4">
                                     <button type="button" onClick={() => setIsProcessModalOpen(false)} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors active:scale-95">Batal</button>
-                                    <button type="submit" disabled={processForm.processing} className="flex-1 py-3 bg-gradient-to-r from-orange-600 to-amber-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-orange-500/30 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50">Konfirmasi Pembayaran</button>
+                                    <button type="submit" disabled={processForm.processing} className={`flex-1 py-3 text-white rounded-2xl text-sm font-bold shadow-lg transition-transform hover:scale-105 active:scale-95 disabled:opacity-50 ${selectedProcessRecurring?.type === 'INCOME' ? 'bg-gradient-to-r from-emerald-600 to-teal-600 shadow-emerald-500/30' : 'bg-gradient-to-r from-orange-600 to-amber-600 shadow-orange-500/30'}`}>
+                                        {selectedProcessRecurring?.type === 'INCOME' ? 'Konfirmasi Pemasukan' : 'Konfirmasi Pembayaran'}
+                                    </button>
                                 </div>
                             </form>
                         </div>
