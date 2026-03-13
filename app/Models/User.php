@@ -29,6 +29,7 @@ class User extends Authenticatable
         'smart_entry_limit',
         'insight_limit',
         'roast_limit',
+        'max_wealth_level',
     ];
 
     /**

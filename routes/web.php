@@ -171,6 +171,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/api/analytics/sankey', [\App\Http\Controllers\AnalyticsController::class, 'sankeyApi'])->name('api.analytics.sankey');
         Route::get('/api/analytics/net-flow', [\App\Http\Controllers\AnalyticsController::class, 'netFlowApi'])->name('api.analytics.netFlow');
         Route::get('/api/analytics/summary', [\App\Http\Controllers\AnalyticsController::class, 'summaryApi'])->name('api.analytics.summary');
+        Route::get('/api/analytics/wealth-tree', [\App\Http\Controllers\AnalyticsController::class, 'wealthTreeDataApi'])->name('api.analytics.wealthTree');
     });
 
 require __DIR__ . '/auth.php';

@@ -274,4 +274,115 @@ class AnalyticsController extends Controller
             ]
         ]);
     }
+
+    public function wealthTreeDataApi(Request $request)
+    {
+        $user = $request->user();
+
+        // 1. Calculate Net Worth (Consistent with Dashboard)
+        $allWallets = Wallet::where('user_id', $user->id)->get();
+        $balance = (float) $allWallets->sum('balance');
+        
+        $debtStats = \App\Models\Debt::where('user_id', $user->id)
+            ->where('is_paid', false)
+            ->withSum('payments', 'amount')
+            ->get()
+            ->groupBy('type');
+            
+        $totalReceivables = $debtStats->get(\App\Enums\DebtType::RECEIVABLE->value, collect())
+            ->sum(fn($d) => max(0, (float) $d->amount - (float) ($d->payments_sum_amount ?? 0)));
+            
+        $totalDebts = $debtStats->get(\App\Enums\DebtType::DEBT->value, collect())
+            ->sum(fn($d) => max(0, (float) $d->amount - (float) ($d->payments_sum_amount ?? 0)));
+            
+        $totalAssetsValue = (float) \App\Models\Asset::where('user_id', $user->id)->sum('value');
+
+        // Gold Value
+        $goldPurchases = \App\Models\GoldPurchase::where('user_id', $user->id)->get();
+        $goldPriceToday = (float) \Illuminate\Support\Facades\Cache::get('gold_price_today_' . $user->id, 1400000);
+        $totalGoldValue = $goldPurchases->sum('grams') * $goldPriceToday;
+
+        $activeInstallments = \App\Models\Installment::where('user_id', $user->id)
+            ->where('is_completed', false)
+            ->get();
+        
+        $totalInstallmentDebts = 0;
+        foreach ($activeInstallments as $installment) {
+            $totalInstallmentDebts += (float) $installment->remaining_amount;
+        }
+        
+        $netWorth = ($balance + $totalReceivables + $totalAssetsValue + $totalGoldValue) - ($totalDebts + $totalInstallmentDebts);
+
+        // 2. Average Monthly Expense (Last 3 full months)
+        $threeMonthsAgo = now()->subMonths(3)->startOfMonth();
+        $lastMonthEnd = now()->subMonth()->endOfMonth();
+
+        $totalExpensesLast3Months = Transaction::forUser($user->id)
+            ->where('type', 'EXPENSE')
+            ->whereBetween('date', [$threeMonthsAgo->format('Y-m-d'), $lastMonthEnd->format('Y-m-d')])
+            ->sum('amount');
+
+        $oldestTransactionDate = Transaction::forUser($user->id)->orderBy('date')->value('date');
+        $monthsCount = 3;
+        if ($oldestTransactionDate) {
+            $monthsAvailable = Carbon::parse($oldestTransactionDate)->diffInMonths(now());
+            $monthsCount = min(3, max(1, $monthsAvailable));
+        }
+        
+        $avgMonthlyExpense = $totalExpensesLast3Months / max(1, $monthsCount);
+        
+        if ($avgMonthlyExpense <= 0) {
+            $currentMonthExpense = Transaction::forUser($user->id)
+                ->where('type', 'EXPENSE')
+                ->whereBetween('date', [now()->startOfMonth()->format('Y-m-d'), now()->endOfMonth()->format('Y-m-d')])
+                ->sum('amount');
+            $avgMonthlyExpense = max(1000000, $currentMonthExpense);
+        }
+
+        // 3. Determine Level (Ratio based)
+        $ratio = $avgMonthlyExpense > 0 ? ($netWorth / $avgMonthlyExpense) : 0;
+        
+        $level = 1;
+        if ($ratio >= 12) $level = 5;
+        elseif ($ratio >= 6) $level = 4;
+        elseif ($ratio >= 3) $level = 3;
+        elseif ($ratio >= 1) $level = 2;
+
+        // 4. Milestone Logic (XP like)
+        $milestones = [
+            1 => 0,
+            2 => 1,  // 1x Monthly Expense
+            3 => 3,  // 3x Monthly Expense
+            4 => 6,  // 6x Monthly Expense
+            5 => 12, // 12x Monthly Expense
+        ];
+
+        $currentMilestone = $milestones[$level];
+        $nextMilestone = $level < 5 ? $milestones[$level + 1] : $milestones[5];
+        
+        // Progress within current level (XP%)
+        $range = $nextMilestone - $currentMilestone;
+        $progress = $range > 0 ? (($ratio - $currentMilestone) / $range) * 100 : 100;
+        $progress = max(0, min(100, $progress));
+
+        // 5. Update Max Level & Check Withering
+        if ($level > $user->max_wealth_level) {
+            $user->update(['max_wealth_level' => $level]);
+        }
+        $isWithering = $level < $user->max_wealth_level;
+
+        $neededForNext = max(0, ($nextMilestone * $avgMonthlyExpense) - $netWorth);
+
+        return response()->json([
+            'netWorth' => $netWorth,
+            'avgMonthlyExpense' => $avgMonthlyExpense,
+            'ratio' => $ratio,
+            'level' => $level,
+            'progress' => $progress,
+            'maxLevel' => $user->max_wealth_level,
+            'isWithering' => $isWithering,
+            'neededForNext' => $neededForNext,
+            'nextLevel' => $level < 5 ? $level + 1 : 5,
+        ]);
+    }
 }
