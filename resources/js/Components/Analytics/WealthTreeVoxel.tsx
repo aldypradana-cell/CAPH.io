@@ -136,13 +136,13 @@ export default function WealthTreeVoxel({ level, isWithering, className }: Wealt
                         <motion.img
                             key={`tree-${level}-${isWithering}`}
                             src={canvasDataUrl}
-                            initial={{ opacity: 0, scale: 0.8, y: 25 }}
+                            initial={{ opacity: 0, scale: 0.85, y: 20 }}
                             animate={{
                                 opacity: 1,
-                                scale: [1, 1.015, 1],
+                                scale: [1.05, 1.07, 1.05],
                                 y: [0, -4, 0],
                             }}
-                            exit={{ opacity: 0, scale: 1.1, y: -20 }}
+                            exit={{ opacity: 0, scale: 1.1, y: -15 }}
                             transition={{
                                 opacity: { type: "spring", stiffness: 200, damping: 20 },
                                 scale: { duration: 4, repeat: Infinity, ease: "easeInOut" },

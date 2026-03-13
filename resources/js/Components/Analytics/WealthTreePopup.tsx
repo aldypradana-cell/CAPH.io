@@ -1,9 +1,10 @@
 import { Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { X, TrendUp, Warning, Trophy, ChartBar, Coins } from '@phosphor-icons/react';
+import { X, TrendUp, Warning, Trophy, ChartBar, Coins, CaretDown, CaretUp } from '@phosphor-icons/react';
 import axios from 'axios';
 import WealthTreeVoxel from './WealthTreeVoxel';
 import confetti from 'canvas-confetti';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface WealthTreePopupProps {
     isOpen: boolean;
@@ -28,10 +29,12 @@ const formatIDR = (amount: number) =>
 export default function WealthTreePopup({ isOpen, onClose }: WealthTreePopupProps) {
     const [data, setData] = useState<WealthData | null>(null);
     const [loading, setLoading] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
             fetchData();
+            setIsExpanded(false); // Reset on open
         }
     }, [isOpen]);
 
@@ -104,7 +107,7 @@ export default function WealthTreePopup({ isOpen, onClose }: WealthTreePopupProp
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <div className="fixed inset-0 bg-black/70 backdrop-blur-2xl" />
+                    <div className="fixed inset-0 bg-black/80 backdrop-blur-3xl" />
                 </Transition.Child>
 
                 <div className="fixed inset-0 z-10 overflow-y-auto">
@@ -112,133 +115,157 @@ export default function WealthTreePopup({ isOpen, onClose }: WealthTreePopupProp
                         <Transition.Child
                             as={Fragment}
                             enter="ease-out duration-600"
-                            enterFrom="opacity-0 translate-y-12 scale-90"
+                            enterFrom="opacity-0 translate-y-24 scale-95"
                             enterTo="opacity-100 translate-y-0 scale-100"
                             leave="ease-in duration-300"
                             leaveFrom="opacity-100 translate-y-0 scale-100"
-                            leaveTo="opacity-0 translate-y-12 scale-90"
+                            leaveTo="opacity-0 translate-y-24 scale-95"
                         >
                             <Dialog.Panel className="relative w-full max-w-md overflow-hidden">
                                 {/* Close Button */}
                                 <button
                                     onClick={onClose}
-                                    className="absolute top-4 right-4 p-2.5 rounded-full bg-white/10 backdrop-blur-md text-white/60 hover:text-white hover:bg-white/20 transition-all z-50 border border-white/10"
+                                    className="absolute top-6 right-6 p-2.5 rounded-full bg-white/10 backdrop-blur-md text-white/60 hover:text-white hover:bg-white/20 transition-all z-50 border border-white/10 shadow-xl"
                                 >
-                                    <X weight="bold" className="w-4 h-4" />
+                                    <X weight="bold" className="w-5 h-5" />
                                 </button>
 
-                                {/* ======= TREE SECTION (Full Width, Big) ======= */}
-                                <div className="relative w-full h-[340px] flex items-center justify-center">
-                                    {/* Subtle ambient background */}
-                                    <div className={`absolute inset-0 bg-gradient-to-b ${colors.from} ${colors.to} opacity-[0.06] rounded-t-[2rem]`} />
-                                    
+                                {/* ======= TREE SECTION ======= */}
+                                <div className="relative w-full h-[400px] flex items-center justify-center pt-8">
+                                    <div className={`absolute inset-0 bg-gradient-to-b ${colors.from} ${colors.to} opacity-[0.08] rounded-t-[3rem]`} />
                                     {loading ? (
-                                        <div className="animate-pulse w-32 h-32 rounded-full bg-white/5 blur-2xl" />
+                                        <div className="animate-pulse w-32 h-32 rounded-full bg-white/5 blur-3xl" />
                                     ) : (
-                                        <WealthTreeVoxel 
-                                            level={data?.level || 1} 
-                                            isWithering={data?.isWithering}
-                                            className="w-full h-full"
-                                        />
+                                        <WealthTreeVoxel level={data?.level || 1} isWithering={data?.isWithering} className="w-full h-full" />
                                     )}
                                     
                                     {/* Withering Badge */}
                                     {data?.isWithering && (
-                                        <div className="absolute top-4 left-4 px-3 py-1.5 bg-amber-500/15 backdrop-blur-md rounded-xl border border-amber-500/30 flex items-center gap-2">
-                                            <Warning weight="fill" className="w-4 h-4 text-amber-400" />
-                                            <span className="text-[11px] font-bold text-amber-300">Pohon Layu!</span>
+                                        <div className="absolute top-10 left-8 px-4 py-2 bg-amber-500/20 backdrop-blur-xl rounded-2xl border border-amber-500/40 flex items-center gap-2 shadow-2xl">
+                                            <Warning weight="fill" className="w-5 h-5 text-amber-400" />
+                                            <span className="text-xs font-black text-amber-300 tracking-wider">POHON LAYU</span>
                                         </div>
                                     )}
                                 </div>
 
                                 {/* ======= INFO CARD (Glassmorphism) ======= */}
-                                <div className="relative bg-white/[0.08] dark:bg-white/[0.04] backdrop-blur-2xl rounded-[2rem] border border-white/10 mx-2 -mt-8 p-6 pb-7 shadow-2xl">
-                                    {/* Level Badge & Title */}
-                                    <div className="flex flex-col items-center text-center mb-5">
-                                        <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r ${colors.from} ${colors.to} text-white text-[10px] font-black uppercase tracking-[0.2em] mb-2 shadow-lg ${colors.shadow}`}>
+                                <motion.div 
+                                    layout
+                                    className="relative bg-white/[0.08] dark:bg-white/[0.03] backdrop-blur-3xl rounded-[2rem] border border-white/10 mx-4 -mt-12 p-6 shadow-2xl overflow-hidden cursor-pointer group"
+                                    onClick={() => setIsExpanded(!isExpanded)}
+                                >
+                                    {/* Handle/Indicator */}
+                                    <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-10 h-1 bg-white/10 rounded-full group-hover:bg-white/20 transition-colors" />
+
+                                    {/* Compact Header */}
+                                    <div className="flex flex-col items-center text-center">
+                                        <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r ${colors.from} ${colors.to} text-white text-[9px] font-black uppercase tracking-[0.2em] mb-3 shadow-xl ${colors.shadow}`}>
                                             <Trophy weight="fill" className="w-3 h-3" />
                                             Level {data?.level || 1}
                                         </div>
-                                        <h3 className="text-xl font-black text-white tracking-tight">
+                                        <h3 className="text-xl font-black text-white tracking-tight mb-0.5">
                                             {getLevelName(data?.level || 1)}
                                         </h3>
-                                        <p className="text-white/40 text-xs font-medium mt-0.5">
-                                            Evolusi Kekayaan Berdasarkan Gaya Hidup
+                                        <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-5">
+                                            Evolusi Kekayaan
                                         </p>
-                                    </div>
 
-                                    {/* Progress Bar */}
-                                    <div className="mb-5">
-                                        <div className="flex justify-between items-center mb-2 px-0.5">
-                                            <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">
-                                                Menuju Level {data?.nextLevel || 2}
-                                            </span>
-                                            <span className={`text-sm font-black ${colors.text}`}>
-                                                {Math.round(data?.progress || 0)}%
-                                            </span>
-                                        </div>
-                                        <div className="h-2.5 w-full bg-white/[0.06] rounded-full overflow-hidden border border-white/[0.08]">
-                                            <div 
-                                                className={`h-full bg-gradient-to-r ${colors.from} ${colors.to} rounded-full transition-all duration-1000 shadow-[0_0_12px_rgba(16,185,129,0.4)]`}
-                                                style={{ width: `${data?.progress || 0}%` }}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* Stats Grid */}
-                                    <div className="grid grid-cols-2 gap-3 mb-4">
-                                        <div className="p-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.06]">
-                                            <div className="flex items-center gap-1.5 text-white/30 text-[9px] font-black uppercase tracking-wider mb-1">
-                                                <ChartBar weight="duotone" className="w-3 h-3" /> Net Worth
+                                        {/* Simplified Progress */}
+                                        <div className="w-full mb-2">
+                                            <div className="flex justify-between items-center mb-2 px-1">
+                                                <span className="text-[10px] font-black text-white/30 tracking-widest uppercase">Progress Berikutnya</span>
+                                                <span className={`text-sm font-black ${colors.text}`}>{Math.round(data?.progress || 0)}%</span>
                                             </div>
-                                            <p className="text-sm font-bold text-white truncate">
-                                                {formatIDR(data?.netWorth || 0)}
-                                            </p>
-                                        </div>
-                                        <div className="p-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.06]">
-                                            <div className="flex items-center gap-1.5 text-white/30 text-[9px] font-black uppercase tracking-wider mb-1">
-                                                <TrendUp weight="duotone" className="w-3 h-3" /> Skor Rasio
+                                            <div className="h-2.5 w-full bg-white/[0.05] rounded-full overflow-hidden border border-white/[0.08]">
+                                                <div 
+                                                    className={`h-full bg-gradient-to-r ${colors.from} ${colors.to} rounded-full transition-all duration-1000 shadow-[0_0_15px_rgba(16,185,129,0.5)]`}
+                                                    style={{ width: `${data?.progress || 0}%` }}
+                                                />
                                             </div>
-                                            <p className="text-sm font-bold text-white">
-                                                {data?.ratio?.toFixed(1) || '0.0'}x Biaya/Bln
-                                            </p>
                                         </div>
+
+                                        {!isExpanded && (
+                                            <div className="flex items-center gap-1.5 text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mt-2 group-hover:text-white/50 transition-colors">
+                                                Lihat Detail <CaretDown weight="bold" />
+                                            </div>
+                                        )}
                                     </div>
 
-                                    {/* Goal Card */}
-                                    {data && data.level < 5 && (
-                                        <div className={`p-4 rounded-2xl bg-gradient-to-r ${colors.from} ${colors.to} shadow-xl ${colors.shadow} flex items-center justify-between`}>
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
-                                                    <Trophy weight="fill" className="w-4 h-4 text-white" />
+                                    {/* Expanded Details */}
+                                    <AnimatePresence>
+                                        {isExpanded && (
+                                            <motion.div
+                                                initial={{ height: 0, opacity: 0 }}
+                                                animate={{ height: 'auto', opacity: 1 }}
+                                                exit={{ height: 0, opacity: 0 }}
+                                                transition={{ duration: 0.4, ease: "circOut" }}
+                                                className="mt-8 space-y-6"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                {/* Stats Grid */}
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div className="p-5 rounded-3xl bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.05] transition-colors">
+                                                        <div className="flex items-center gap-2 text-white/30 text-[9px] font-black uppercase tracking-wider mb-2">
+                                                            <ChartBar weight="duotone" className="w-4 h-4" /> Net Worth
+                                                        </div>
+                                                        <p className="text-[15px] font-black text-white truncate">
+                                                            {formatIDR(data?.netWorth || 0)}
+                                                        </p>
+                                                    </div>
+                                                    <div className="p-5 rounded-3xl bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.05] transition-colors">
+                                                        <div className="flex items-center gap-2 text-white/30 text-[9px] font-black uppercase tracking-wider mb-2">
+                                                            <TrendUp weight="duotone" className="w-4 h-4" /> Skor Rasio
+                                                        </div>
+                                                        <p className="text-[15px] font-black text-white">
+                                                            {data?.ratio?.toFixed(1) || '0.0'}x Biaya
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <p className="text-[9px] font-black uppercase tracking-[0.15em] text-white/70">Target Berikutnya</p>
-                                                    <p className="text-xs font-bold text-white truncate max-w-[160px]">+{formatIDR(data.neededForNext)}</p>
-                                                </div>
-                                            </div>
-                                            <div className="text-right flex-shrink-0 ml-2">
-                                                <p className="text-[10px] font-black text-white">LV.{data.nextLevel}</p>
-                                                <p className="text-[9px] text-white/60 font-bold">NEXT</p>
-                                            </div>
-                                        </div>
-                                    )}
 
-                                    {data?.level === 5 && (
-                                        <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 shadow-xl shadow-amber-500/20 flex items-center gap-3">
-                                            <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
-                                                <Coins weight="fill" className="w-4 h-4 text-white" />
-                                            </div>
-                                            <div>
-                                                <p className="text-[9px] font-black uppercase tracking-[0.15em] text-white/70">Puncak Kekayaan</p>
-                                                <p className="text-xs font-bold text-white">Kapitalis Keuangan Tercapai! 🎉</p>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
+                                                {/* Goal Section */}
+                                                {data && data.level < 5 && (
+                                                    <div className={`p-5 rounded-[2rem] bg-gradient-to-br ${colors.from} ${colors.to} shadow-2xl ${colors.shadow} flex items-center justify-between group/goal`}>
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="w-11 h-11 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0 animate-pulse">
+                                                                <Trophy weight="fill" className="w-5 h-5 text-white" />
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-[10px] font-black uppercase tracking-[0.15em] text-white/70">Mencapai Level {data.nextLevel}</p>
+                                                                <p className="text-sm font-black text-white truncate max-w-[150px]">+{formatIDR(data.neededForNext)}</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="text-right flex-shrink-0 bg-black/10 px-3 py-1.5 rounded-xl border border-white/10">
+                                                            <p className="text-[11px] font-black text-white uppercase tracking-tighter">LV.{data.nextLevel}</p>
+                                                            <p className="text-[8px] text-white/60 font-black uppercase">Next</p>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {data?.level === 5 && (
+                                                    <div className="p-6 rounded-[2rem] bg-gradient-to-r from-yellow-400 to-amber-600 shadow-2xl shadow-yellow-500/30 flex items-center gap-4">
+                                                        <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0">
+                                                            <Coins weight="fill" className="w-6 h-6 text-white" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-white/80">Puncak Kekayaan</p>
+                                                            <p className="text-[15px] font-black text-white">Financial Freedom Terwujud! 🎉</p>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                <button 
+                                                    onClick={() => setIsExpanded(false)}
+                                                    className="w-full py-3 flex items-center justify-center gap-2 text-[10px] font-black text-white/20 uppercase tracking-[0.3em] hover:text-white/40 transition-colors mt-2"
+                                                >
+                                                    Luncurkan Kembali <CaretUp weight="bold" />
+                                                </button>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </motion.div>
 
                                 {/* Bottom spacing */}
-                                <div className="h-2" />
+                                <div className="h-6" />
                             </Dialog.Panel>
                         </Transition.Child>
                     </div>
