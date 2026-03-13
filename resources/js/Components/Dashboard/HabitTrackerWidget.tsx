@@ -45,15 +45,17 @@ export default function HabitTrackerWidget({ onDateClick }: Props) {
         <>
             <div 
                 onClick={() => setIsModalOpen(true)}
-                className="cursor-pointer hover:scale-105 transition-all flex items-center justify-center relative group max-w-[220px] ml-auto h-12"
+                className="cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center relative group max-w-[240px] ml-auto h-14 pointer-events-auto"
                 style={{
-                    maskImage: 'linear-gradient(to right, transparent, rgba(0,0,0,1) 15%, rgba(0,0,0,1) 85%, transparent)',
-                    WebkitMaskImage: 'linear-gradient(to right, transparent, rgba(0,0,0,1) 15%, rgba(0,0,0,1) 85%, transparent)'
+                    maskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent), linear-gradient(to bottom, transparent, black 30%, black 70%, transparent)',
+                    WebkitMaskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent), linear-gradient(to bottom, transparent, black 30%, black 70%, transparent)',
+                    maskComposite: 'intersect',
+                    WebkitMaskComposite: 'source-in'
                 }}
             >
                 {/* Blocks Container */}
                 <div 
-                    className={`flex-1 flex items-center justify-center gap-1.5 z-0 overflow-hidden transition-opacity duration-300 ${isLoading ? 'opacity-50' : 'opacity-100'}`}
+                    className={`flex-1 flex items-center justify-center gap-2 z-0 transition-opacity duration-300 ${isLoading ? 'opacity-50' : 'opacity-100'}`}
                 >
                     {datesArr.map((dateStr) => {
                         const hasTransaction = history[dateStr] ?? false;
@@ -64,13 +66,16 @@ export default function HabitTrackerWidget({ onDateClick }: Props) {
                         return (
                             <div 
                                 key={dateStr}
-                                className={`shrink-0 w-6 h-8 rounded-lg flex flex-col items-center justify-center transition-all duration-300 ${
+                                className={`shrink-0 w-7 h-9 rounded-lg flex flex-col items-center justify-center transition-all duration-300 relative ${
                                     hasTransaction 
-                                        ? 'bg-indigo-600 dark:bg-indigo-500 text-white shadow-lg shadow-indigo-500/40 scale-105 z-10' 
+                                        ? 'bg-indigo-600 dark:bg-indigo-500 text-white shadow-xl shadow-indigo-500/40 scale-105 z-10' 
                                         : 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500'
-                                } ${isToday && !hasTransaction ? 'ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-slate-950 scale-110 z-10' : ''}`}
+                                } ${isToday && !hasTransaction ? 'ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-slate-950 scale-110 z-10' : ''} ${isToday && hasTransaction ? 'ring-2 ring-white/50 ring-offset-1 dark:ring-offset-slate-900 shadow-2xl' : ''}`}
                             >
-                                <span className={`text-[10px] font-black leading-none ${hasTransaction ? 'text-white' : ''}`}>{dateNum}</span>
+                                <span className={`text-[11px] font-black tracking-tight leading-none ${hasTransaction ? 'text-white' : ''} ${isToday ? 'mb-0.5' : ''}`}>{dateNum}</span>
+                                {isToday && (
+                                    <div className={`absolute bottom-1 w-1.5 h-1.5 rounded-full ${hasTransaction ? 'bg-white' : 'bg-indigo-500 shadow-sm shadow-indigo-500/50'}`} />
+                                )}
                             </div>
                         );
                     })}

@@ -207,10 +207,13 @@ export default function TrackerModal({ isOpen, onClose, onDateClick }: Props) {
                                                 type="button" 
                                                 onClick={() => handleCellClick(dateStr, isRecorded, isFuture)}
                                                 disabled={isFuture || isRecorded || !onDateClick}
-                                                className={`aspect-square rounded-xl flex items-center justify-center transition-all ${bgClass} ${!isFuture && !isRecorded && onDateClick ? 'hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer hover:ring-2 hover:ring-indigo-400 hover:text-indigo-500 active:scale-95' : ''}`}
+                                                className={`aspect-square rounded-xl flex items-center justify-center transition-all relative ${bgClass} ${!isFuture && !isRecorded && onDateClick ? 'hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer hover:ring-2 hover:ring-indigo-400 hover:text-indigo-500 active:scale-95' : ''}`}
                                                 title={isRecorded ? 'Tercatat' : isFuture ? '' : 'Klik untuk isi catatan hari ini'}
                                             >
-                                                {dateNum}
+                                                <span className={isToday ? 'mb-1' : ''}>{dateNum}</span>
+                                                {isToday && (
+                                                    <div className={`absolute bottom-2 w-1.5 h-1.5 rounded-full ${isRecorded ? 'bg-white' : 'bg-indigo-500'}`} />
+                                                )}
                                             </button>
                                         );
                                     })}
