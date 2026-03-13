@@ -1,6 +1,6 @@
 import { Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { X, TrendUp, Warning, Trophy, ChartBar, Coins, CaretDown, CaretUp } from '@phosphor-icons/react';
+import { X, TrendUp, Warning, Trophy, ChartBar, Coins, CaretDown, CaretUp, Info } from '@phosphor-icons/react';
 import axios from 'axios';
 import WealthTreeVoxel from './WealthTreeVoxel';
 import confetti from 'canvas-confetti';
@@ -30,6 +30,7 @@ export default function WealthTreePopup({ isOpen, onClose }: WealthTreePopupProp
     const [data, setData] = useState<WealthData | null>(null);
     const [loading, setLoading] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
+    const [showInfo, setShowInfo] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
@@ -132,14 +133,26 @@ export default function WealthTreePopup({ isOpen, onClose }: WealthTreePopupProp
                             leaveFrom="opacity-100 translate-y-0 scale-100"
                             leaveTo="opacity-0 translate-y-24 scale-95"
                         >
-                            <Dialog.Panel className="relative w-full max-w-lg overflow-hidden">
-                                {/* Close Button */}
-                                <button
-                                    onClick={onClose}
-                                    className="absolute top-6 right-6 p-2.5 rounded-full bg-white/10 backdrop-blur-md text-white/60 hover:text-white hover:bg-white/20 transition-all z-50 border border-white/10 shadow-xl"
-                                >
-                                    <X weight="bold" className="w-5 h-5" />
-                                </button>
+                            <Dialog.Panel className="relative w-full max-w-lg rounded-[2rem] overflow-hidden">
+                                {/* Action Buttons */}
+                                <div className="absolute top-6 right-6 flex items-center gap-3 z-50">
+                                    <button
+                                        onClick={() => setShowInfo(!showInfo)}
+                                        className={`p-2.5 rounded-full backdrop-blur-md transition-all border shadow-xl ${
+                                            showInfo 
+                                            ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' 
+                                            : 'bg-white/10 text-white/60 hover:text-white hover:bg-white/20 border-white/10'
+                                        }`}
+                                    >
+                                        <Info weight="bold" className="w-5 h-5" />
+                                    </button>
+                                    <button
+                                        onClick={onClose}
+                                        className="p-2.5 rounded-full bg-white/10 backdrop-blur-md text-white/60 hover:text-white hover:bg-white/20 transition-all border border-white/10 shadow-xl"
+                                    >
+                                        <X weight="bold" className="w-5 h-5" />
+                                    </button>
+                                </div>
 
                                 {/* ======= TREE SECTION ======= */}
                                 <div className="relative w-full h-[450px] flex items-end justify-center pt-8">
@@ -157,7 +170,94 @@ export default function WealthTreePopup({ isOpen, onClose }: WealthTreePopupProp
                                             <span className="text-xs font-black text-amber-300 tracking-wider">POHON LAYU</span>
                                         </div>
                                     )}
+
                                 </div>
+
+                                {/* ======= INFO OVERLAY (Full Modal Coverage) ======= */}
+                                <AnimatePresence>
+                                    {showInfo && (
+                                        <motion.div
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            transition={{ duration: 0.3 }}
+                                            className="absolute inset-0 z-40 bg-black/90 backdrop-blur-2xl rounded-[2rem] overflow-y-auto"
+                                        >
+                                            <div className="p-8 pt-20">
+                                                <h3 className="text-lg font-black text-white tracking-tight mb-1">Panduan Evolusi</h3>
+                                                <p className="text-white/50 text-xs mb-6 leading-relaxed">
+                                                    Pohon ini hidup berdasarkan <strong className="text-white/70">Financial Runway</strong> — seberapa lama Anda bisa bertahan tanpa penghasilan baru.
+                                                </p>
+
+                                                <div className="space-y-4">
+                                                    {/* Concept */}
+                                                    <div className="bg-white/[0.04] border border-white/[0.08] p-4 rounded-2xl">
+                                                        <div className="flex items-center gap-2.5 mb-2">
+                                                            <div className="w-7 h-7 rounded-xl bg-emerald-500/20 flex items-center justify-center">
+                                                                <ChartBar weight="duotone" className="w-3.5 h-3.5 text-emerald-400" />
+                                                            </div>
+                                                            <h4 className="text-white text-sm font-bold">Rumus Pertumbuhan</h4>
+                                                        </div>
+                                                        <p className="text-xs text-white/40 leading-relaxed ml-[38px]">
+                                                            Level = <span className="text-emerald-400 font-bold bg-emerald-400/10 px-1.5 py-0.5 rounded">Net Worth ÷ Pengeluaran Bulanan</span>
+                                                        </p>
+                                                    </div>
+
+                                                    {/* Target */}
+                                                    <div className="bg-white/[0.04] border border-white/[0.08] p-4 rounded-2xl">
+                                                        <div className="flex items-center gap-2.5 mb-3">
+                                                            <div className="w-7 h-7 rounded-xl bg-yellow-500/20 flex items-center justify-center">
+                                                                <Trophy weight="duotone" className="w-3.5 h-3.5 text-yellow-500" />
+                                                            </div>
+                                                            <h4 className="text-white text-sm font-bold">10 Level Target</h4>
+                                                        </div>
+                                                        <div className="space-y-2 ml-[38px]">
+                                                            <div className="flex items-start gap-2">
+                                                                <div className="w-1.5 h-1.5 rounded-full bg-white/20 mt-1.5 flex-shrink-0" />
+                                                                <p className="text-xs text-white/40"><strong className="text-white/70">Lvl 1-3:</strong> Rawan. Ketahanan {'<'} 1 bulan.</p>
+                                                            </div>
+                                                            <div className="flex items-start gap-2">
+                                                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400/50 mt-1.5 flex-shrink-0" />
+                                                                <p className="text-xs text-white/40"><strong className="text-white/70">Lvl 4-6:</strong> Aman. Cadangan 2-8 bulan.</p>
+                                                            </div>
+                                                            <div className="flex items-start gap-2">
+                                                                <div className="w-1.5 h-1.5 rounded-full bg-teal-400/70 mt-1.5 flex-shrink-0" />
+                                                                <p className="text-xs text-white/40"><strong className="text-white/70">Lvl 7-9:</strong> Sangat Aman. Nafas 1-5 tahun.</p>
+                                                            </div>
+                                                            <div className="flex items-start gap-2">
+                                                                <div className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-1.5 flex-shrink-0 shadow-[0_0_6px_rgba(250,204,21,0.6)]" />
+                                                                <p className="text-xs text-yellow-400/80"><strong className="text-yellow-400">Lvl 10:</strong> Merdeka Finansial (120x biaya).</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Withering */}
+                                                    <div className="bg-amber-500/[0.04] border border-amber-500/15 p-4 rounded-2xl">
+                                                        <div className="flex items-center gap-2.5 mb-2">
+                                                            <div className="w-7 h-7 rounded-xl bg-amber-500/20 flex items-center justify-center">
+                                                                <Warning weight="duotone" className="w-3.5 h-3.5 text-amber-500" />
+                                                            </div>
+                                                            <h4 className="text-amber-400 text-sm font-bold">Pohon Layu</h4>
+                                                        </div>
+                                                        <p className="text-xs text-amber-500/50 leading-relaxed mb-2.5 ml-[38px]">
+                                                            Pohon layu jika terkena krisis jangka pendek:
+                                                        </p>
+                                                        <div className="space-y-1.5 ml-[38px]">
+                                                            <div className="flex items-start gap-2">
+                                                                <div className="w-1.5 h-1.5 rounded-full bg-amber-500/40 mt-1.5 flex-shrink-0" />
+                                                                <p className="text-xs text-amber-500/50">Pengeluaran {'>'} Pemasukan bulan ini</p>
+                                                            </div>
+                                                            <div className="flex items-start gap-2">
+                                                                <div className="w-1.5 h-1.5 rounded-full bg-amber-500/40 mt-1.5 flex-shrink-0" />
+                                                                <p className="text-xs text-amber-500/50">Saldo Dompet {'<'} Total Cicilan bulan depan</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
 
                                 {/* ======= INFO CARD (Glassmorphism) ======= */}
                                 <motion.div 
@@ -234,7 +334,7 @@ export default function WealthTreePopup({ isOpen, onClose }: WealthTreePopupProp
                                                 </div>
 
                                                 {/* Goal Section */}
-                                                {data && data.level < 5 && (
+                                                {data && data.level < 10 && (
                                                     <div className={`p-5 rounded-[2rem] bg-gradient-to-br ${colors.from} ${colors.to} shadow-2xl ${colors.shadow} flex items-center justify-between group/goal`}>
                                                         <div className="flex items-center gap-4">
                                                             <div className="w-11 h-11 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0 animate-pulse">
@@ -252,7 +352,7 @@ export default function WealthTreePopup({ isOpen, onClose }: WealthTreePopupProp
                                                     </div>
                                                 )}
 
-                                                {data?.level === 5 && (
+                                                {data?.level === 10 && (
                                                     <div className="p-6 rounded-[2rem] bg-gradient-to-r from-yellow-400 to-amber-600 shadow-2xl shadow-yellow-500/30 flex items-center gap-4">
                                                         <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0">
                                                             <Coins weight="fill" className="w-6 h-6 text-white" />
