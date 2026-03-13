@@ -296,6 +296,9 @@ class AnalyticsController extends Controller
             ->sum(fn($d) => max(0, (float) $d->amount - (float) ($d->payments_sum_amount ?? 0)));
             
         $totalAssetsValue = (float) \App\Models\Asset::where('user_id', $user->id)->sum('value');
+        $liquidAssetsValue = (float) \App\Models\Asset::where('user_id', $user->id)
+            ->where('type', '!=', 'PROPERTY')
+            ->sum('value');
 
         // Gold Value
         $goldPurchases = \App\Models\GoldPurchase::where('user_id', $user->id)->get();
@@ -311,7 +314,8 @@ class AnalyticsController extends Controller
             $totalInstallmentDebts += (float) $installment->remaining_amount;
         }
         
-        $netWorth = ($balance + $totalReceivables + $totalAssetsValue + $totalGoldValue) - ($totalDebts + $totalInstallmentDebts);
+        $totalNetWorth = ($balance + $totalReceivables + $totalAssetsValue + $totalGoldValue) - ($totalDebts + $totalInstallmentDebts);
+        $liquidNetWorth = ($balance + $totalReceivables + $liquidAssetsValue + $totalGoldValue) - ($totalDebts + $totalInstallmentDebts);
 
         // 2. Average Monthly Expense (Last 3 full months)
         $threeMonthsAgo = now()->subMonths(3)->startOfMonth();
@@ -339,8 +343,8 @@ class AnalyticsController extends Controller
             $avgMonthlyExpense = max(1000000, $currentMonthExpense);
         }
 
-        // 3. Determine Level (10-level system, ratio based)
-        $ratio = $avgMonthlyExpense > 0 ? ($netWorth / $avgMonthlyExpense) : 0;
+        // 3. Determine Level (10-level system, ratio based on LIQUID net worth)
+        $ratio = $avgMonthlyExpense > 0 ? ($liquidNetWorth / $avgMonthlyExpense) : 0;
         
         $level = 1;
         if ($ratio >= 120) $level = 10;
@@ -406,10 +410,11 @@ class AnalyticsController extends Controller
             $isWithering = true;
         }
 
-        $neededForNext = max(0, ($nextMilestone * $avgMonthlyExpense) - $netWorth);
+        $neededForNext = max(0, ($nextMilestone * $avgMonthlyExpense) - $liquidNetWorth);
 
         return response()->json([
-            'netWorth' => $netWorth,
+            'totalNetWorth' => $totalNetWorth,
+            'liquidNetWorth' => $liquidNetWorth,
             'avgMonthlyExpense' => $avgMonthlyExpense,
             'ratio' => $ratio,
             'level' => $level,

@@ -12,7 +12,9 @@ interface WealthTreePopupProps {
 }
 
 interface WealthData {
-    netWorth: number;
+    totalNetWorth: number;
+    liquidNetWorth: number;
+    netWorth?: number; // Fallback
     avgMonthlyExpense: number;
     ratio: number;
     level: number;
@@ -133,7 +135,7 @@ export default function WealthTreePopup({ isOpen, onClose }: WealthTreePopupProp
                             leaveFrom="opacity-100 translate-y-0 scale-100"
                             leaveTo="opacity-0 translate-y-24 scale-95"
                         >
-                            <Dialog.Panel className="relative w-full max-w-lg rounded-[2rem] overflow-hidden">
+                            <Dialog.Panel className="relative w-full max-w-xl rounded-[2rem] overflow-hidden">
                                 {/* Action Buttons */}
                                 <div className="absolute top-6 right-6 flex items-center gap-3 z-50">
                                     <button
@@ -155,7 +157,7 @@ export default function WealthTreePopup({ isOpen, onClose }: WealthTreePopupProp
                                 </div>
 
                                 {/* ======= TREE SECTION ======= */}
-                                <div className="relative w-full h-[450px] flex items-end justify-center pt-8">
+                                <div className="relative w-full h-[550px] flex items-end justify-center pt-8">
                                     <div className={`absolute inset-0 bg-gradient-to-b ${colors.from} ${colors.to} opacity-[0.08] rounded-t-[3rem]`} />
                                     {loading ? (
                                         <div className="animate-pulse w-32 h-32 rounded-full bg-white/5 blur-3xl" />
@@ -259,68 +261,107 @@ export default function WealthTreePopup({ isOpen, onClose }: WealthTreePopupProp
                                     )}
                                 </AnimatePresence>
 
-                                {/* ======= INFO CARD (Simplified) ======= */}
-                                <div className="relative bg-white/[0.06] backdrop-blur-3xl rounded-[2rem] border border-white/[0.08] mx-4 -mt-10 p-5 shadow-2xl">
+                                {/* ======= INFO CARD (Expandable Glassmorphism) ======= */}
+                                <motion.div 
+                                    layout
+                                    className="relative bg-white/[0.08] dark:bg-white/[0.03] backdrop-blur-3xl rounded-[2rem] border border-white/10 mx-4 -mt-12 p-5 shadow-2xl overflow-hidden cursor-pointer group"
+                                    onClick={() => setIsExpanded(!isExpanded)}
+                                >
+                                    {/* Handle/Indicator */}
+                                    <div className="absolute top-2 left-1/2 -translate-x-1/2 w-10 h-1 bg-white/10 rounded-full group-hover:bg-white/20 transition-colors" />
 
-                                    {/* Level Badge + Name */}
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r ${colors.from} ${colors.to} shadow-lg ${colors.shadow}`}>
-                                            <Trophy weight="fill" className="w-3.5 h-3.5 text-white" />
-                                            <span className="text-[10px] font-black text-white uppercase tracking-wider">Lv.{data?.level || 1}</span>
-                                        </div>
-                                        <div>
-                                            <h3 className="text-base font-black text-white tracking-tight leading-tight">
-                                                {getLevelName(data?.level || 1)}
-                                            </h3>
-                                            <p className="text-[9px] text-white/30 font-bold uppercase tracking-widest">Evolusi Kekayaan</p>
-                                        </div>
-                                    </div>
-
-                                    {/* Stats Row */}
-                                    <div className="flex gap-2 mb-4">
-                                        <div className="flex-1 bg-white/[0.04] rounded-xl px-3 py-2.5 border border-white/[0.06]">
-                                            <p className="text-[8px] font-bold text-white/25 uppercase tracking-wider mb-0.5">Net Worth</p>
-                                            <p className="text-xs font-black text-white truncate">{formatIDR(data?.netWorth || 0)}</p>
-                                        </div>
-                                        <div className="flex-1 bg-white/[0.04] rounded-xl px-3 py-2.5 border border-white/[0.06]">
-                                            <div className="flex items-center gap-1 mb-0.5">
-                                                <p className="text-[8px] font-bold text-white/25 uppercase tracking-wider">Runway</p>
-                                                <span className="text-[7px] text-white/10 uppercase tracking-widest">(Ketahanan)</span>
+                                    {/* Compact Header */}
+                                    <div className="flex items-center justify-between mt-2">
+                                        <div className="flex items-center gap-3">
+                                            <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r ${colors.from} ${colors.to} shadow-lg ${colors.shadow}`}>
+                                                <Trophy weight="fill" className="w-3.5 h-3.5 text-white" />
+                                                <span className="text-[10px] font-black text-white uppercase tracking-wider">Lv.{data?.level || 1}</span>
                                             </div>
-                                            <p className="text-xs font-black text-white">
-                                                {data?.ratio?.toFixed(1) || '0.0'}<span className="text-[9px] text-white/40 ml-0.5 font-bold uppercase tracking-wider">x Bln Nafas Hidup</span>
-                                            </p>
+                                            <div>
+                                                <h3 className="text-base font-black text-white tracking-tight leading-tight">
+                                                    {getLevelName(data?.level || 1)}
+                                                </h3>
+                                                <p className="text-[9px] text-white/30 font-bold uppercase tracking-widest">Wealth Tree</p>
+                                            </div>
                                         </div>
+                                        
+                                        <motion.div 
+                                            animate={{ rotate: isExpanded ? 180 : 0 }}
+                                            className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-white/10 transition-colors"
+                                        >
+                                            <CaretDown weight="bold" className="w-4 h-4 text-white/40 group-hover:text-white/70" />
+                                        </motion.div>
                                     </div>
 
-                                    {/* Progress Bar */}
-                                    <div className="mb-3">
-                                        <div className="flex justify-between items-center mb-1.5">
-                                            <span className="text-[9px] font-bold text-white/25 uppercase tracking-wider">
-                                                {data?.level === 10 ? 'Level Maksimum' : `Menuju Level ${data?.nextLevel || 2}`}
-                                            </span>
-                                            <span className={`text-[11px] font-black ${colors.text}`}>{Math.round(data?.progress || 0)}%</span>
-                                        </div>
-                                        <div className="h-2 w-full bg-white/[0.04] rounded-full overflow-hidden border border-white/[0.06]">
-                                            <div
-                                                className={`h-full bg-gradient-to-r ${colors.from} ${colors.to} rounded-full transition-all duration-1000`}
-                                                style={{ width: `${data?.level === 10 ? 100 : (data?.progress || 0)}%` }}
-                                            />
-                                        </div>
-                                    </div>
+                                    {/* Expanded Details */}
+                                    <AnimatePresence>
+                                        {isExpanded && (
+                                            <motion.div
+                                                initial={{ height: 0, opacity: 0, marginTop: 0 }}
+                                                animate={{ height: 'auto', opacity: 1, marginTop: 24 }}
+                                                exit={{ height: 0, opacity: 0, marginTop: 0 }}
+                                                transition={{ duration: 0.3, ease: "easeInOut" }}
+                                                className="overflow-hidden"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                {/* Stats Grid */}
+                                                <div className="grid grid-cols-2 gap-3 mb-5">
+                                                    {/* Liquid Net Worth */}
+                                                    <div className="col-span-2 bg-gradient-to-r from-white/[0.06] to-white/[0.02] rounded-2xl px-4 py-3 border border-white/[0.08]">
+                                                        <div className="flex items-center gap-1.5 mb-1">
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400/80 shadow-[0_0_6px_rgba(52,211,153,0.8)]" />
+                                                            <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Aset Liquid (Tunai & Investasi)</p>
+                                                        </div>
+                                                        <p className="text-[15px] font-black text-white truncate pl-3">{formatIDR(data?.liquidNetWorth || data?.netWorth || 0)}</p>
+                                                    </div>
 
-                                    {/* Goal Hint */}
-                                    {data && data.level < 10 && (
-                                        <p className="text-[10px] text-white/30 text-center">
-                                            Kumpulkan <span className={`font-black ${colors.text}`}>+{formatIDR(data.neededForNext)}</span> lagi untuk naik level
-                                        </p>
-                                    )}
-                                    {data?.level === 10 && (
-                                        <p className="text-[10px] text-center font-black text-yellow-400/80">
-                                            🎉 Financial Freedom Terwujud!
-                                        </p>
-                                    )}
-                                </div>
+                                                    {/* Avg Expense & Runway */}
+                                                    <div className="bg-white/[0.04] rounded-xl px-3 py-2.5 border border-white/[0.06]">
+                                                        <p className="text-[8px] font-bold text-white/25 uppercase tracking-wider mb-0.5">Rata-rata Pengeluaran</p>
+                                                        <p className="text-xs font-black text-rose-300/80 truncate">{formatIDR(data?.avgMonthlyExpense || 0)}<span className="text-[8px] text-white/20 font-normal ml-1">/bln</span></p>
+                                                    </div>
+                                                    <div className="bg-white/[0.04] rounded-xl px-3 py-2.5 border border-white/[0.06]">
+                                                        <div className="flex items-center gap-1 mb-0.5">
+                                                            <p className="text-[8px] font-bold text-white/25 uppercase tracking-wider">Runway</p>
+                                                            <span className="text-[7px] text-white/10 uppercase tracking-widest">(Ketahanan)</span>
+                                                        </div>
+                                                        <p className="text-xs font-black text-white">
+                                                            {data?.ratio?.toFixed(1) || '0.0'}<span className="text-[9px] text-white/40 ml-0.5 font-bold uppercase tracking-wider">x Bln Nafas Hidup</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Progress Bar Section */}
+                                                <div className="bg-white/[0.02] rounded-2xl p-4 border border-white/[0.04]">
+                                                    <div className="flex justify-between items-center mb-2">
+                                                        <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
+                                                            {data?.level === 10 ? 'Level Maksimum' : `Menuju Level ${data?.nextLevel || 2}`}
+                                                        </span>
+                                                        <span className={`text-[12px] font-black ${colors.text}`}>{Math.round(data?.progress || 0)}%</span>
+                                                    </div>
+                                                    <div className="h-2.5 w-full bg-black/20 rounded-full overflow-hidden border border-white/[0.05] mb-3">
+                                                        <div
+                                                            className={`h-full bg-gradient-to-r ${colors.from} ${colors.to} rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(255,255,255,0.2)]`}
+                                                            style={{ width: `${data?.level === 10 ? 100 : (data?.progress || 0)}%` }}
+                                                        />
+                                                    </div>
+                                                    
+                                                    {/* Goal Hint */}
+                                                    {data && data.level < 10 && (
+                                                        <p className="text-[10px] text-white/40 text-center leading-relaxed">
+                                                            Kumpulkan <span className={`font-black ${colors.text} bg-${colors.bg}/10 px-1 py-0.5 rounded`}>+{formatIDR(data.neededForNext)}</span> aset liquid lagi
+                                                        </p>
+                                                    )}
+                                                    {data?.level === 10 && (
+                                                        <p className="text-[10px] text-center font-black text-yellow-400/80">
+                                                            🎉 Merdeka secara finansial!
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </motion.div>
 
                                 {/* Bottom spacing */}
                                 <div className="h-6" />
