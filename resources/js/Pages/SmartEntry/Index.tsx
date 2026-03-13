@@ -36,6 +36,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
     const [aiQuota, setAiQuota] = useState(initialAiQuota);
     const recognitionRef = useRef<any>(null);
     const originalInputRef = useRef<string>('');
+    const sessionFinalRef = useRef<string>(''); // Stores final text for current session incrementally
 
     const isQuotaExceeded = aiQuota ? aiQuota.used >= aiQuota.limit : false;
 
@@ -129,31 +130,32 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
         const recognition = new SpeechRecognition();
         recognitionRef.current = recognition;
         originalInputRef.current = input;
+        sessionFinalRef.current = ''; // Reset for new session
 
         recognition.lang = 'id-ID';
         recognition.continuous = true;
         recognition.interimResults = true;
 
         recognition.onresult = (event: any) => {
-            // Loop dari 0 setiap kali — event.results di continuous mode
-            // sudah menyimpan SEMUA hasil sesi secara kumulatif, sehingga
-            // kita rebuild penuh tiap event, BUKAN incrementally append ke ref.
-            let sessionFinal = '';
+            // Android Chrome often sends duplicate or cumulative results.
+            // Using resultIndex ensures we only process NEW results since the last event.
             let interimTranscript = '';
-
-            for (let i = 0; i < event.results.length; ++i) {
+            
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                const transcript = event.results[i][0].transcript;
                 if (event.results[i].isFinal) {
-                    sessionFinal += event.results[i][0].transcript;
+                    sessionFinalRef.current += transcript;
                 } else {
-                    interimTranscript += event.results[i][0].transcript;
+                    interimTranscript += transcript;
                 }
             }
 
-            // Gabungkan: teks sebelum mic dinyalakan + hasil sesi ini (final + interim)
+            // Gabungkan: teks sebelum mic dinyalakan + hasil sesi ini yang sudah FINAL + hasil yang masih INTERIM
             const base = originalInputRef.current;
-            const sessionText = (sessionFinal + interimTranscript).trimStart();
-            const separator = base.trim() && sessionText ? ' ' : '';
-            setInput(base + separator + sessionText);
+            const currentSessionText = (sessionFinalRef.current + interimTranscript).trimStart();
+            const separator = base.trim() && currentSessionText ? ' ' : '';
+            
+            setInput(base + separator + currentSessionText);
         };
 
         recognition.onerror = (event: any) => {
