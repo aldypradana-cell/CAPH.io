@@ -1,6 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useState, useEffect } from 'react';
-import { CaretLeft, CaretRight, X, Lightning, Crown, CalendarCheck } from '@phosphor-icons/react';
+import { CaretLeft, CaretRight, X, Lightning, Crown, CalendarCheck, Fire } from '@phosphor-icons/react';
 import axios from 'axios';
 import { formatMonthYearLong, todayString } from '@/utils/date';
 
@@ -133,7 +133,7 @@ export default function TrackerModal({ isOpen, onClose, onDateClick }: Props) {
                                     
                                     <div className="flex-1 relative z-10 border-r border-white/10 pr-6">
                                         <div className="flex items-center gap-1.5 text-indigo-100 text-[10px] font-bold uppercase tracking-widest mb-2 opacity-90">
-                                            <Lightning weight="fill" className="w-3 h-3 text-amber-300" />
+                                            <Fire weight="fill" className="w-3 h-3 text-orange-400" />
                                             Beruntun
                                         </div>
                                         <div className="flex items-baseline gap-1.5">

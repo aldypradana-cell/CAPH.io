@@ -9,6 +9,7 @@ import {
     Sun, Moon, DotsThree as MoreHorizontal, Users, FileText, Database, ArrowsLeftRight as ArrowRightLeft, Plus, PiggyBank, ChartBar as BarChart3,
     ChatCircleDots
 } from '@phosphor-icons/react';
+import HabitTrackerWidget from '@/Components/Dashboard/HabitTrackerWidget';
 import { User } from '@/types';
 import { formatTime } from '@/utils/date';
 
@@ -255,6 +256,11 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
 
                     {/* Notifications & Help */}
                     <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0 ml-2">
+                        {/* Streak Indicator (Mobile Only) */}
+                        <div className="lg:hidden">
+                            <HabitTrackerWidget variant="minimal" />
+                        </div>
+
                         {/* Notification Dropdown */}
                         <div className="relative" ref={notifRef}>
                             <button

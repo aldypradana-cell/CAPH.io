@@ -255,7 +255,7 @@ export default function Dashboard({
                     </div>
                     
                     <div className="flex flex-col items-end gap-3 w-full md:w-auto mt-2 md:mt-0">
-                        <div className="w-full sm:w-auto flex justify-end">
+                        <div className="hidden sm:flex justify-end">
                             <HabitTrackerWidget onDateClick={(dateStr) => setIsAddModalOpen(true)} />
                         </div>
                         <div className="hidden sm:flex items-center gap-3 justify-end w-full">

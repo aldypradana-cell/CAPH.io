@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import TrackerModal from './TrackerModal';
-import { Target } from '@phosphor-icons/react';
+import { CaretLeft, CaretRight, X, Lightning, Crown, CalendarCheck, Fire } from '@phosphor-icons/react';
 import axios from 'axios';
 import { todayString } from '@/utils/date';
 
@@ -13,22 +13,52 @@ interface HabitData {
 
 interface Props {
     onDateClick?: (dateStr: string) => void;
+    variant?: 'default' | 'minimal';
 }
 
-export default function HabitTrackerWidget({ onDateClick }: Props) {
+export default function HabitTrackerWidget({ onDateClick, variant = 'default' }: Props) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [data, setData] = useState<HabitData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const todayStr = todayString();
 
     useEffect(() => {
-        axios.get('/api/dashboard/streak?days=10')
+        // Fetch streak data
+        axios.get('/api/dashboard/streak?days=35')
             .then(res => setData(res.data))
             .catch(err => console.error(err))
             .finally(() => setIsLoading(false));
     }, []);
 
-    // Generate 7 slots, placing today at "middle-right" (index 4 of 0-6)
+    const { history, current_streak } = data || { history: {} as Record<string, boolean>, current_streak: 0 };
+
+    if (variant === 'minimal') {
+        return (
+            <>
+                <div 
+                    onClick={() => setIsModalOpen(true)}
+                    className="flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md transition-all active:scale-95 relative cursor-pointer"
+                    title={`Streak: ${current_streak} Hari`}
+                >
+                    <div className="relative">
+                        <Fire weight="duotone" className="w-5 h-5 text-slate-500 dark:text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
+                        {current_streak > 0 && (
+                            <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[14px] h-3.5 px-0.5 bg-orange-600 text-white text-[8px] font-black rounded-full border border-white dark:border-slate-800 shadow-lg">
+                                {current_streak}
+                            </span>
+                        )}
+                    </div>
+                </div>
+                <TrackerModal 
+                    isOpen={isModalOpen} 
+                    onClose={() => setIsModalOpen(false)} 
+                    onDateClick={onDateClick}
+                />
+            </>
+        );
+    }
+
+    // Default Desktop View Logic
     const totalSlots = 7;
     const todayIndex = 4; 
     const datesArr: string[] = [];
@@ -39,13 +69,12 @@ export default function HabitTrackerWidget({ onDateClick }: Props) {
         datesArr.push(df);
     }
 
-    const { history, current_streak } = data || { history: {} as Record<string, boolean>, current_streak: 0 };
-
     return (
         <>
+            {/* Desktop View: Floating Date Blocks */}
             <div 
                 onClick={() => setIsModalOpen(true)}
-                className="cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center relative group max-w-[240px] ml-auto h-14 pointer-events-auto"
+                className="hidden sm:flex cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all items-center justify-center relative group max-w-[240px] ml-auto h-14 pointer-events-auto"
                 style={{
                     maskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent), linear-gradient(to bottom, transparent, black 30%, black 70%, transparent)',
                     WebkitMaskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent), linear-gradient(to bottom, transparent, black 30%, black 70%, transparent)',
