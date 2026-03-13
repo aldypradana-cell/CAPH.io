@@ -259,121 +259,63 @@ export default function WealthTreePopup({ isOpen, onClose }: WealthTreePopupProp
                                     )}
                                 </AnimatePresence>
 
-                                {/* ======= INFO CARD (Glassmorphism) ======= */}
-                                <motion.div 
-                                    layout
-                                    className="relative bg-white/[0.08] dark:bg-white/[0.03] backdrop-blur-3xl rounded-[2rem] border border-white/10 mx-4 -mt-12 p-6 shadow-2xl overflow-hidden cursor-pointer group"
-                                    onClick={() => setIsExpanded(!isExpanded)}
-                                >
-                                    {/* Handle/Indicator */}
-                                    <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-10 h-1 bg-white/10 rounded-full group-hover:bg-white/20 transition-colors" />
+                                {/* ======= INFO CARD (Simplified) ======= */}
+                                <div className="relative bg-white/[0.06] backdrop-blur-3xl rounded-[2rem] border border-white/[0.08] mx-4 -mt-10 p-5 shadow-2xl">
 
-                                    {/* Compact Header */}
-                                    <div className="flex flex-col items-center text-center">
-                                        <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r ${colors.from} ${colors.to} text-white text-[9px] font-black uppercase tracking-[0.2em] mb-3 shadow-xl ${colors.shadow}`}>
-                                            <Trophy weight="fill" className="w-3 h-3" />
-                                            Level {data?.level || 1}
+                                    {/* Level Badge + Name */}
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r ${colors.from} ${colors.to} shadow-lg ${colors.shadow}`}>
+                                            <Trophy weight="fill" className="w-3.5 h-3.5 text-white" />
+                                            <span className="text-[10px] font-black text-white uppercase tracking-wider">Lv.{data?.level || 1}</span>
                                         </div>
-                                        <h3 className="text-xl font-black text-white tracking-tight mb-0.5">
-                                            {getLevelName(data?.level || 1)}
-                                        </h3>
-                                        <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-5">
-                                            Evolusi Kekayaan
-                                        </p>
-
-                                        {/* Simplified Progress */}
-                                        <div className="w-full mb-2">
-                                            <div className="flex justify-between items-center mb-2 px-1">
-                                                <span className="text-[10px] font-black text-white/30 tracking-widest uppercase">Progress Berikutnya</span>
-                                                <span className={`text-sm font-black ${colors.text}`}>{Math.round(data?.progress || 0)}%</span>
-                                            </div>
-                                            <div className="h-2.5 w-full bg-white/[0.05] rounded-full overflow-hidden border border-white/[0.08]">
-                                                <div 
-                                                    className={`h-full bg-gradient-to-r ${colors.from} ${colors.to} rounded-full transition-all duration-1000 shadow-[0_0_15px_rgba(16,185,129,0.5)]`}
-                                                    style={{ width: `${data?.progress || 0}%` }}
-                                                />
-                                            </div>
+                                        <div>
+                                            <h3 className="text-base font-black text-white tracking-tight leading-tight">
+                                                {getLevelName(data?.level || 1)}
+                                            </h3>
+                                            <p className="text-[9px] text-white/30 font-bold uppercase tracking-widest">Evolusi Kekayaan</p>
                                         </div>
-
-                                        {!isExpanded && (
-                                            <div className="flex items-center gap-1.5 text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mt-2 group-hover:text-white/50 transition-colors">
-                                                Lihat Detail <CaretDown weight="bold" />
-                                            </div>
-                                        )}
                                     </div>
 
-                                    {/* Expanded Details */}
-                                    <AnimatePresence>
-                                        {isExpanded && (
-                                            <motion.div
-                                                initial={{ height: 0, opacity: 0 }}
-                                                animate={{ height: 'auto', opacity: 1 }}
-                                                exit={{ height: 0, opacity: 0 }}
-                                                transition={{ duration: 0.4, ease: "circOut" }}
-                                                className="mt-8 space-y-6"
-                                                onClick={(e) => e.stopPropagation()}
-                                            >
-                                                {/* Stats Grid */}
-                                                <div className="grid grid-cols-2 gap-4">
-                                                    <div className="p-5 rounded-3xl bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.05] transition-colors">
-                                                        <div className="flex items-center gap-2 text-white/30 text-[9px] font-black uppercase tracking-wider mb-2">
-                                                            <ChartBar weight="duotone" className="w-4 h-4" /> Net Worth
-                                                        </div>
-                                                        <p className="text-[15px] font-black text-white truncate">
-                                                            {formatIDR(data?.netWorth || 0)}
-                                                        </p>
-                                                    </div>
-                                                    <div className="p-5 rounded-3xl bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.05] transition-colors">
-                                                        <div className="flex items-center gap-2 text-white/30 text-[9px] font-black uppercase tracking-wider mb-2">
-                                                            <TrendUp weight="duotone" className="w-4 h-4" /> Skor Rasio
-                                                        </div>
-                                                        <p className="text-[15px] font-black text-white">
-                                                            {data?.ratio?.toFixed(1) || '0.0'}x Biaya
-                                                        </p>
-                                                    </div>
-                                                </div>
+                                    {/* Stats Row */}
+                                    <div className="flex gap-2 mb-4">
+                                        <div className="flex-1 bg-white/[0.04] rounded-xl px-3 py-2.5 border border-white/[0.06]">
+                                            <p className="text-[8px] font-bold text-white/25 uppercase tracking-wider mb-0.5">Net Worth</p>
+                                            <p className="text-xs font-black text-white truncate">{formatIDR(data?.netWorth || 0)}</p>
+                                        </div>
+                                        <div className="flex-1 bg-white/[0.04] rounded-xl px-3 py-2.5 border border-white/[0.06]">
+                                            <p className="text-[8px] font-bold text-white/25 uppercase tracking-wider mb-0.5">Runway</p>
+                                            <p className="text-xs font-black text-white">{data?.ratio?.toFixed(1) || '0.0'}x Biaya</p>
+                                        </div>
+                                    </div>
 
-                                                {/* Goal Section */}
-                                                {data && data.level < 10 && (
-                                                    <div className={`p-5 rounded-[2rem] bg-gradient-to-br ${colors.from} ${colors.to} shadow-2xl ${colors.shadow} flex items-center justify-between group/goal`}>
-                                                        <div className="flex items-center gap-4">
-                                                            <div className="w-11 h-11 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0 animate-pulse">
-                                                                <Trophy weight="fill" className="w-5 h-5 text-white" />
-                                                            </div>
-                                                            <div>
-                                                                <p className="text-[10px] font-black uppercase tracking-[0.15em] text-white/70">Mencapai Level {data.nextLevel}</p>
-                                                                <p className="text-sm font-black text-white truncate max-w-[150px]">+{formatIDR(data.neededForNext)}</p>
-                                                            </div>
-                                                        </div>
-                                                        <div className="text-right flex-shrink-0 bg-black/10 px-3 py-1.5 rounded-xl border border-white/10">
-                                                            <p className="text-[11px] font-black text-white uppercase tracking-tighter">LV.{data.nextLevel}</p>
-                                                            <p className="text-[8px] text-white/60 font-black uppercase">Next</p>
-                                                        </div>
-                                                    </div>
-                                                )}
+                                    {/* Progress Bar */}
+                                    <div className="mb-3">
+                                        <div className="flex justify-between items-center mb-1.5">
+                                            <span className="text-[9px] font-bold text-white/25 uppercase tracking-wider">
+                                                {data?.level === 10 ? 'Level Maksimum' : `Menuju Level ${data?.nextLevel || 2}`}
+                                            </span>
+                                            <span className={`text-[11px] font-black ${colors.text}`}>{Math.round(data?.progress || 0)}%</span>
+                                        </div>
+                                        <div className="h-2 w-full bg-white/[0.04] rounded-full overflow-hidden border border-white/[0.06]">
+                                            <div
+                                                className={`h-full bg-gradient-to-r ${colors.from} ${colors.to} rounded-full transition-all duration-1000`}
+                                                style={{ width: `${data?.level === 10 ? 100 : (data?.progress || 0)}%` }}
+                                            />
+                                        </div>
+                                    </div>
 
-                                                {data?.level === 10 && (
-                                                    <div className="p-6 rounded-[2rem] bg-gradient-to-r from-yellow-400 to-amber-600 shadow-2xl shadow-yellow-500/30 flex items-center gap-4">
-                                                        <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center flex-shrink-0">
-                                                            <Coins weight="fill" className="w-6 h-6 text-white" />
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-white/80">Puncak Kekayaan</p>
-                                                            <p className="text-[15px] font-black text-white">Financial Freedom Terwujud! 🎉</p>
-                                                        </div>
-                                                    </div>
-                                                )}
-
-                                                <button 
-                                                    onClick={() => setIsExpanded(false)}
-                                                    className="w-full py-3 flex items-center justify-center gap-2 text-[10px] font-black text-white/20 uppercase tracking-[0.3em] hover:text-white/40 transition-colors mt-2"
-                                                >
-                                                    Luncurkan Kembali <CaretUp weight="bold" />
-                                                </button>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </motion.div>
+                                    {/* Goal Hint */}
+                                    {data && data.level < 10 && (
+                                        <p className="text-[10px] text-white/30 text-center">
+                                            Kumpulkan <span className={`font-black ${colors.text}`}>+{formatIDR(data.neededForNext)}</span> lagi untuk naik level
+                                        </p>
+                                    )}
+                                    {data?.level === 10 && (
+                                        <p className="text-[10px] text-center font-black text-yellow-400/80">
+                                            🎉 Financial Freedom Terwujud!
+                                        </p>
+                                    )}
+                                </div>
 
                                 {/* Bottom spacing */}
                                 <div className="h-6" />
