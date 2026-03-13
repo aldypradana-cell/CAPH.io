@@ -46,13 +46,22 @@ class AnalyticsController extends Controller
                 ->groupBy('category', 'wallet_id')
                 ->get();
 
-            // 2. Expense Data (Grouped by Wallet and Category)
             $expenseData = Transaction::forUser($user->id)
                 ->inDateRange($startDate, $endDate)
                 ->where('type', 'EXPENSE')
                 ->whereNotNull('wallet_id')
                 ->select('wallet_id', 'category', DB::raw('SUM(amount) as total'))
                 ->groupBy('wallet_id', 'category')
+                ->get();
+
+            // 3. Transfer Data (Internal Movement)
+            $transferData = Transaction::forUser($user->id)
+                ->inDateRange($startDate, $endDate)
+                ->where('type', 'TRANSFER')
+                ->whereNotNull('wallet_id')
+                ->whereNotNull('to_wallet_id')
+                ->select('wallet_id', 'to_wallet_id', DB::raw('SUM(amount) as total'))
+                ->groupBy('wallet_id', 'to_wallet_id')
                 ->get();
 
             $wallets = Wallet::where('user_id', $user->id)->pluck('name', 'id');
@@ -76,7 +85,7 @@ class AnalyticsController extends Controller
                 $catName = "IN: " . ($item->category ?: 'Pendapatan Lain');
                 $walletName = $wallets[$item->wallet_id] ?? 'Dompet Tidak Diketahui';
                 if ($item->total > 0) {
-                    $rawLinks[] = ['source' => $catName, 'target' => $walletName, 'value' => (float) $item->total];
+                    $rawLinks[] = ['source' => $catName, 'target' => $walletName, 'value' => (float) $item->total, 'isInternal' => false];
                 }
             }
 
@@ -102,7 +111,22 @@ class AnalyticsController extends Controller
                 }
                 
                 if ($item->total > 0) {
-                    $rawLinks[] = ['source' => $walletName, 'target' => "OUT: " . $catName, 'value' => (float) $item->total];
+                    $rawLinks[] = ['source' => $walletName, 'target' => "OUT: " . $catName, 'value' => (float) $item->total, 'isInternal' => false];
+                }
+            }
+
+            // Transfer Links (Internal)
+            foreach ($transferData as $item) {
+                $sourceWallet = $wallets[$item->wallet_id] ?? 'Dompet Tidak Diketahui';
+                $targetWallet = $wallets[$item->to_wallet_id] ?? 'Dompet Tidak Diketahui';
+                
+                if ($item->total > 0) {
+                    $rawLinks[] = [
+                        'source' => $sourceWallet, 
+                        'target' => $targetWallet, 
+                        'value' => (float) $item->total,
+                        'isInternal' => true
+                    ];
                 }
             }
 
@@ -122,10 +146,20 @@ class AnalyticsController extends Controller
                 $sourceIdx = $addNode($sourceName);
                 $targetIdx = $addNode($targetName);
                 
+                // Find if this specific link was originally internal
+                $wasInternal = false;
+                foreach ($rawLinks as $rl) {
+                    if ($rl['source'] === $sourceName && $rl['target'] === $targetName) {
+                        $wasInternal = $rl['isInternal'] ?? false;
+                        break;
+                    }
+                }
+
                 $links[] = [
                     'source' => $sourceIdx,
                     'target' => $targetIdx,
-                    'value' => $value
+                    'value' => $value,
+                    'isInternal' => $wasInternal
                 ];
             }
 

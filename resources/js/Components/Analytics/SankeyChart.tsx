@@ -34,13 +34,20 @@ const getColorForIndex = (index: number) => {
 const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
         const data = payload[0].payload;
+        const isInternal = data.isInternal || (data.source?.isInternal) || false;
+        
         return (
             <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 max-w-[200px]">
+                {isInternal && (
+                    <div className="inline-block px-2 py-0.5 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-wider mb-2">
+                        Transfer Internal
+                    </div>
+                )}
                 <p className="font-bold text-slate-800 dark:text-white capitalize text-sm mb-1 line-clamp-2">
                     {data.source?.name ? `${data.source.name} → ${data.target.name}` : data.name}
                 </p>
                 <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: '#6366f1' }}></span>
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: isInternal ? '#818cf8' : '#6366f1' }}></span>
                     <p className="text-slate-600 dark:text-slate-300 font-bold text-sm">
                         {formatShortIDR(data.value)}
                     </p>
@@ -51,16 +58,19 @@ const CustomTooltip = ({ active, payload }: any) => {
     return null;
 };
 
-const CustomNode = ({ x, y, width, height, index, payload, containerWidth }: any) => {
+const CustomNode = ({ x, y, width, height, index, payload, containerWidth, onNodeClick, selectedWallet }: any) => {
     const rawName = payload.name || '';
+    const isWallet = !rawName.startsWith('IN: ') && !rawName.startsWith('OUT: ');
     // Strip prefix for display
     const displayName = typeof rawName === 'string' ? rawName.replace('IN: ', '').replace('OUT: ', '') : rawName;
+    
+    const isSelected = selectedWallet === displayName;
 
     // Distinct color for each node
     const fill = payload.fill || getColorForIndex(index);
     
     // Calculate contrast text color using Tailwind text utilities combined with currentColor fill
-    const labelColor = 'text-slate-800 dark:text-white';
+    const labelColor = isSelected ? 'text-indigo-600 dark:text-indigo-400 font-black scale-110' : 'text-slate-800 dark:text-white';
 
     // Still use ratio for physical positioning of the text label
     const ratio = x / (containerWidth || 1100);
@@ -74,23 +84,28 @@ const CustomNode = ({ x, y, width, height, index, payload, containerWidth }: any
                 height={height}
                 fill={fill}
                 fillOpacity={1}
-                stroke={fill}
-                strokeWidth={2}
+                stroke={isSelected ? '#6366f1' : fill}
+                strokeWidth={isSelected ? 4 : 2}
                 rx={6}
                 ry={6}
-                className="transition-all duration-300 hover:opacity-80"
-                style={{ filter: `drop-shadow(0 4px 6px ${fill}33)` }}
+                className={`transition-all duration-300 ${isWallet ? 'cursor-pointer hover:brightness-110 hover:stroke-indigo-400' : 'pointer-events-none'}`}
+                style={{ 
+                    filter: isSelected 
+                        ? `drop-shadow(0 0 12px ${fill})` 
+                        : `drop-shadow(0 4px 6px ${fill}33)` 
+                }}
+                onClick={() => isWallet && onNodeClick(displayName)}
             />
             {/* Elegant label positioning with better typography */}
             <text
                 textAnchor={ratio < 0.2 ? 'end' : ratio > 0.8 ? 'start' : 'middle'}
                 x={ratio < 0.2 ? x - 16 : ratio > 0.8 ? x + width + 16 : x + width / 2}
                 y={y + height / 2 - 6}
-                fontSize={13}
+                fontSize={isSelected ? 14 : 13}
                 fontFamily="'Inter', sans-serif"
-                fontWeight="700"
+                fontWeight={isSelected ? "900" : "700"}
                 fill="currentColor"
-                className={`${labelColor} pointer-events-none drop-shadow-sm`}
+                className={`${labelColor} pointer-events-none drop-shadow-sm transition-all duration-300`}
             >
                 {displayName.length > 25 ? displayName.substring(0, 23) + '...' : displayName}
             </text>
@@ -102,7 +117,7 @@ const CustomNode = ({ x, y, width, height, index, payload, containerWidth }: any
                 fontFamily="'Inter', sans-serif"
                 fontWeight="500"
                 fill="currentColor"
-                className="text-slate-500 dark:text-slate-300 uppercase tracking-wider pointer-events-none"
+                className={`${isSelected ? 'text-indigo-500' : 'text-slate-500 dark:text-slate-300'} uppercase tracking-wider pointer-events-none transition-all duration-300`}
             >
                 {formatShortIDR(payload.value)}
             </text>
@@ -112,12 +127,13 @@ const CustomNode = ({ x, y, width, height, index, payload, containerWidth }: any
 
 const CustomLink = ({ sourceX, targetX, sourceY, targetY, sourceControlX, targetControlX, linkWidth, index, payload, activeLink, setActiveLink }: any) => {
     // Gradient Flow Strategy
-    const sourceColor = payload.source?.fill || getColorForIndex(payload.source?.index || 0);
-    const targetColor = payload.target?.fill || getColorForIndex(payload.target?.index || 0);
+    const isInternal = payload.isInternal || false;
+    const sourceColor = isInternal ? '#94a3b8' : (payload.source?.fill || getColorForIndex(payload.source?.index || 0));
+    const targetColor = isInternal ? '#cbd5e1' : (payload.target?.fill || getColorForIndex(payload.target?.index || 0));
     const gradientId = `linkGradient-${index}`;
 
     // Opacity Logic based on Interaction
-    let strokeOpacity = 0.35; // Default
+    let strokeOpacity = isInternal ? 0.4 : 0.35; 
     if (activeLink !== null) {
         strokeOpacity = activeLink === index ? 0.8 : 0.05; // Highlight active, dim others greatly
     }
@@ -138,6 +154,7 @@ const CustomLink = ({ sourceX, targetX, sourceY, targetY, sourceControlX, target
                 stroke={`url(#${gradientId})`}
                 strokeOpacity={strokeOpacity}
                 strokeWidth={Math.max(linkWidth, 2)}
+                strokeDasharray={isInternal ? "5,5" : "none"}
                 fill="none"
                 className="transition-all duration-300 cursor-pointer"
                 onMouseEnter={() => setActiveLink(index)}
@@ -151,12 +168,38 @@ const CustomLink = ({ sourceX, targetX, sourceY, targetY, sourceControlX, target
 
 export default function SankeyChart({ data, isLoading }: SankeyChartProps) {
     const [activeLink, setActiveLink] = React.useState<number | null>(null);
+    const [selectedWallet, setSelectedWallet] = React.useState<string | null>(null);
 
     // Check if we have valid nodes and links
-    const nodes = (Array.isArray(data?.nodes) ? data?.nodes : (data?.nodes ? Object.values(data.nodes) : [])) as any[];
-    const links = (Array.isArray(data?.links) ? data?.links : (data?.links ? Object.values(data.links) : [])) as any[];
+    const rawNodes = (Array.isArray(data?.nodes) ? data?.nodes : (data?.nodes ? Object.values(data.nodes) : [])) as any[];
+    const rawLinks = (Array.isArray(data?.links) ? data?.links : (data?.links ? Object.values(data.links) : [])) as any[];
+    
+    // Process nodes with colors
+    const nodes = rawNodes.map((n, i) => ({ 
+        ...n, 
+        fill: getColorForIndex(i), 
+        index: i 
+    }));
+
+    // Filtering internal links
+    const links = rawLinks.filter(l => {
+        if (!l.isInternal) return true;
+        
+        // If internal, only show if one of the nodes is the selected wallet
+        const sourceName = nodes[l.source]?.name || '';
+        const targetName = nodes[l.target]?.name || '';
+        const cleanSource = sourceName.replace('IN: ', '').replace('OUT: ', '');
+        const cleanTarget = targetName.replace('IN: ', '').replace('OUT: ', '');
+        
+        return cleanSource === selectedWallet || cleanTarget === selectedWallet;
+    });
+
     const hasData = nodes.length > 0 && links.length > 0;
     const chartData = hasData ? { nodes, links } : null;
+
+    const handleNodeClick = (name: string) => {
+        setSelectedWallet(prev => prev === name ? null : name);
+    };
 
     return (
         <div className="flex flex-col h-full w-full min-h-[700px]">
@@ -166,9 +209,17 @@ export default function SankeyChart({ data, isLoading }: SankeyChartProps) {
                 <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-indigo-500/5 rounded-full blur-3xl translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
 
                 {/* Card Header for Title */}
-                <div className="px-6 sm:px-10 pt-8 pb-4 relative z-10">
-                    <h3 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white mb-2">Sankey Diagram</h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Visualisasi dari mana uang Anda berasal dan ke mana mengalirnya.</p>
+                <div className="px-6 sm:px-10 pt-8 pb-4 relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h3 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white mb-2">Sankey Diagram</h3>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">Visualisasi dari mana uang Anda berasal dan ke mana mengalirnya.</p>
+                    </div>
+                    {hasData && (
+                        <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl border border-slate-100 dark:border-slate-700 animate-fade-in whitespace-nowrap">
+                            <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
+                            <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Tip: Klik Dompet Untuk Lihat Transfer Internal</span>
+                        </div>
+                    )}
                 </div>
 
                 {isLoading ? (
@@ -204,15 +255,21 @@ export default function SankeyChart({ data, isLoading }: SankeyChartProps) {
                                 <ResponsiveContainer width="100%" height={600}>
                                     <Sankey
                                         data={{
-                                            // Inject consistent colors into nodes so links can use them
-                                            nodes: nodes.map((n, i) => ({ ...n, fill: getColorForIndex(i), index: i })),
+                                            nodes: nodes,
                                             links: links.map(l => ({ 
+                                                ...l,
                                                 source: Number(l.source), 
                                                 target: Number(l.target), 
                                                 value: Number(l.value) 
                                             }))
                                         }}
-                                        node={<CustomNode containerWidth={1000} />}
+                                        node={
+                                            <CustomNode 
+                                                containerWidth={1000} 
+                                                onNodeClick={handleNodeClick}
+                                                selectedWallet={selectedWallet}
+                                            />
+                                        }
                                         nodePadding={40}
                                         nodeWidth={16}
                                         link={
