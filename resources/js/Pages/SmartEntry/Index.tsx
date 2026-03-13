@@ -36,7 +36,6 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
     const [aiQuota, setAiQuota] = useState(initialAiQuota);
     const recognitionRef = useRef<any>(null);
     const originalInputRef = useRef<string>('');
-    const sessionFinalRef = useRef<string>(''); // Stores final text for current session incrementally
 
     const isQuotaExceeded = aiQuota ? aiQuota.used >= aiQuota.limit : false;
 
@@ -130,31 +129,32 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
         const recognition = new SpeechRecognition();
         recognitionRef.current = recognition;
         originalInputRef.current = input;
-        sessionFinalRef.current = ''; // Reset for new session
 
         recognition.lang = 'id-ID';
         recognition.continuous = true;
         recognition.interimResults = true;
 
         recognition.onresult = (event: any) => {
-            // Android Chrome often sends duplicate or cumulative results.
-            // Using resultIndex ensures we only process NEW results since the last event.
-            let interimTranscript = '';
+            let sessionText = '';
             
-            for (let i = event.resultIndex; i < event.results.length; ++i) {
+            for (let i = 0; i < event.results.length; i++) {
                 const transcript = event.results[i][0].transcript;
-                if (event.results[i].isFinal) {
-                    sessionFinalRef.current += transcript;
+                const currentTextTrimmed = sessionText.trim().toLowerCase();
+                const newTranscriptTrimmed = transcript.trim().toLowerCase();
+
+                // Android Chrome cumulative fix: 
+                // Jika hasil baru diawali dengan hasil sebelumnya (prefix), kita gunakan yang baru saja.
+                // Ini mencegah duplikasi teks yang sering terjadi di Android.
+                if (currentTextTrimmed && newTranscriptTrimmed.startsWith(currentTextTrimmed)) {
+                    sessionText = transcript;
                 } else {
-                    interimTranscript += transcript;
+                    sessionText += (sessionText ? ' ' : '') + transcript;
                 }
             }
 
-            // Gabungkan: teks sebelum mic dinyalakan + hasil sesi ini yang sudah FINAL + hasil yang masih INTERIM
             const base = originalInputRef.current;
-            const currentSessionText = (sessionFinalRef.current + interimTranscript).trimStart();
+            const currentSessionText = sessionText.trimStart();
             const separator = base.trim() && currentSessionText ? ' ' : '';
-            
             setInput(base + separator + currentSessionText);
         };
 
