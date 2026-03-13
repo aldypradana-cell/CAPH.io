@@ -105,15 +105,6 @@ export default function WealthTreePopup({ isOpen, onClose }: WealthTreePopupProp
 
     const colors = getLevelColor(data?.level || 1);
 
-    // Dynamic Modal Size based on Level to emphasize progression
-    const getModalSizeCss = (level: number) => {
-        if (level <= 3) return { width: 'max-w-sm', treeHeight: 'h-[300px]' };
-        if (level <= 6) return { width: 'max-w-md', treeHeight: 'h-[400px]' };
-        if (level <= 8) return { width: 'max-w-lg', treeHeight: 'h-[500px]' };
-        return { width: 'max-w-2xl', treeHeight: 'h-[600px]' }; // Lvl 9-10 are massive
-    };
-
-    const sizeConfig = getModalSizeCss(data?.level || 1);
 
     return (
         <Transition.Root show={isOpen} as={Fragment}>
@@ -141,7 +132,7 @@ export default function WealthTreePopup({ isOpen, onClose }: WealthTreePopupProp
                             leaveFrom="opacity-100 translate-y-0 scale-100"
                             leaveTo="opacity-0 translate-y-24 scale-95"
                         >
-                            <Dialog.Panel className={`relative w-full ${sizeConfig.width} overflow-hidden transition-all duration-700`}>
+                            <Dialog.Panel className="relative w-full max-w-lg overflow-hidden">
                                 {/* Close Button */}
                                 <button
                                     onClick={onClose}
@@ -151,7 +142,7 @@ export default function WealthTreePopup({ isOpen, onClose }: WealthTreePopupProp
                                 </button>
 
                                 {/* ======= TREE SECTION ======= */}
-                                <div className="relative w-full h-[400px] flex items-center justify-center pt-8">
+                                <div className="relative w-full h-[450px] flex items-end justify-center pt-8">
                                     <div className={`absolute inset-0 bg-gradient-to-b ${colors.from} ${colors.to} opacity-[0.08] rounded-t-[3rem]`} />
                                     {loading ? (
                                         <div className="animate-pulse w-32 h-32 rounded-full bg-white/5 blur-3xl" />

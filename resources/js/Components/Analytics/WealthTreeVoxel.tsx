@@ -124,19 +124,25 @@ export default function WealthTreeVoxel({ level, isWithering, className }: Wealt
         ? 'grayscale(60%) sepia(40%) brightness(0.6) saturate(0.7)'
         : 'none';
 
-    // Dynamic Scaling based on Level
-    // Lvl 1-3: Smallest, Lvl 4-6: Medium, Lvl 7-8: Large, Lvl 9-10: Largest
+    // Dynamic Scaling based on Level — dramatic differences
+    // Small trees sit at the bottom; big trees fill upward
     const getScaleConfig = () => {
-        if (level <= 3) return { scale: 0.8, yBase: 10 };
-        if (level <= 6) return { scale: 0.95, yBase: 5 };
-        if (level <= 8) return { scale: 1.1, yBase: 0 };
-        return { scale: 1.25, yBase: -5 };
+        if (level <= 1) return { scale: 0.45, yBase: 0 };
+        if (level <= 2) return { scale: 0.55, yBase: 0 };
+        if (level <= 3) return { scale: 0.65, yBase: 0 };
+        if (level <= 4) return { scale: 0.75, yBase: 0 };
+        if (level <= 5) return { scale: 0.82, yBase: 0 };
+        if (level <= 6) return { scale: 0.9, yBase: 0 };
+        if (level <= 7) return { scale: 0.97, yBase: -5 };
+        if (level <= 8) return { scale: 1.05, yBase: -8 };
+        if (level <= 9) return { scale: 1.12, yBase: -10 };
+        return { scale: 1.2, yBase: -12 };
     };
-    
+
     const treeConfig = getScaleConfig();
 
     return (
-        <div className={`relative flex items-center justify-center ${className} select-none`}>
+        <div className={`relative flex items-end justify-center ${className} select-none`}>
             {/* Ambient Glow */}
             <motion.div
                 animate={{ scale: [1, 1.12, 1], opacity: [0.3, 0.6, 0.3] }}
