@@ -380,8 +380,18 @@ class AnalyticsController extends Controller
         $progress = max(0, min(100, $progress));
 
         // 5. Update Max Level & Check Withering (New Logic)
-        if ($level > $user->max_wealth_level) {
-            $user->update(['max_wealth_level' => $level]);
+        $maxLevel = (int) ($user->max_wealth_level ?? 1);
+        if ($level > $maxLevel) {
+            try {
+                $user->update(['max_wealth_level' => $level]);
+                $maxLevel = $level;
+            } catch (\Throwable $e) {
+                Log::warning('Failed to update max_wealth_level for wealth tree.', [
+                    'user_id' => $user->id,
+                    'level' => $level,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
         // New Wither Logic: Cashflow deficit OR insufficient balance for installments
@@ -419,7 +429,7 @@ class AnalyticsController extends Controller
             'ratio' => $ratio,
             'level' => $level,
             'progress' => $progress,
-            'maxLevel' => $user->max_wealth_level,
+            'maxLevel' => $maxLevel,
             'isWithering' => $isWithering,
             'neededForNext' => $neededForNext,
             'nextLevel' => $level < 10 ? $level + 1 : 10,
