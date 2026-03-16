@@ -44,19 +44,31 @@ class PayLaterReminder extends Notification
     {
         $message = "";
         $alertType = 'WARNING';
-        
+
+        $rawName = trim((string) ($this->installment->name ?? ''));
+        $cleanName = preg_replace('/^PayLater\s*-\s*/i', '', $rawName) ?: $rawName;
+        $lender = trim((string) ($this->installment->lender ?? ''));
+        $isPayLater = str_starts_with(strtolower($rawName), 'paylater -')
+            || str_contains(strtolower($lender), 'paylater');
+
+        $entityLabel = $isPayLater ? 'Tagihan PayLater' : 'Cicilan';
+        $title = $isPayLater
+            ? ($lender ? "Pengingat Tagihan {$lender}" : 'Pengingat Tagihan PayLater')
+            : 'Pengingat Cicilan';
+        $displayName = $cleanName ?: ($lender ?: 'Tanpa Nama');
+
         if ($this->daysRemaining < 0) {
-            $message = "Tagihan PayLater '{$this->installment->name}' sudah TERLAMBAT " . abs($this->daysRemaining) . " hari!";
+            $message = "{$entityLabel} '{$displayName}' sudah TERLAMBAT " . abs($this->daysRemaining) . " hari!";
             $alertType = 'ALERT';
         } elseif ($this->daysRemaining === 0) {
-            $message = "Tagihan PayLater '{$this->installment->name}' jatuh tempo HARI INI.";
+            $message = "{$entityLabel} '{$displayName}' jatuh tempo HARI INI.";
             $alertType = 'ALERT';
         } else {
-            $message = "Tagihan PayLater '{$this->installment->name}' jatuh tempo dalam {$this->daysRemaining} hari.";
+            $message = "{$entityLabel} '{$displayName}' jatuh tempo dalam {$this->daysRemaining} hari.";
         }
 
         return [
-            'title' => "Pengingat Tagihan PayLater",
+            'title' => $title,
             'message' => $message,
             'type' => $alertType,
             'link' => route('debts.index'),

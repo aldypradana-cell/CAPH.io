@@ -229,7 +229,7 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
                                                     ))}
                                                 </Pie>
                                                 <RechartsTooltip 
-                                                    formatter={(value: number | string | Array<number | string> | undefined) => formatIDR(Number(value || 0))}
+                                                    formatter={(value) => formatIDR(Number(Array.isArray(value) ? value[0] : value || 0))}
                                                     contentStyle={{ borderRadius: '1.5rem', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(10px)', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)', padding: '12px 20px', fontWeight: 'bold' }}
                                                     itemStyle={{ color: '#0f172a', fontSize: '15px' }}
                                                 />

@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Models\RecurringTransaction;
 use App\Services\TransactionService;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use App\Notifications\RecurringPaymentDue;
 use App\Notifications\RecurringPaymentSuccess;
 
@@ -43,6 +44,16 @@ class ProcessRecurringTransactions extends Command
             try {
                 if (!$recurring->auto_cut) {
                     $this->info("Manual Payment Required: {$recurring->name}");
+                    Log::info('Recurring transaction requires manual confirmation', [
+                        'recurring_id' => $recurring->id,
+                        'user_id' => $recurring->user_id,
+                        'name' => $recurring->name,
+                        'type' => $recurring->type,
+                        'amount' => $recurring->amount,
+                        'wallet_id' => $recurring->wallet_id,
+                        'category' => $recurring->category,
+                        'next_run_date' => optional($recurring->next_run_date)?->toDateString(),
+                    ]);
                     $recurring->user->notify(new RecurringPaymentDue($recurring, false));
                     
                     // Update Next Run Date so it doesn't notify every day
@@ -52,6 +63,17 @@ class ProcessRecurringTransactions extends Command
                 }
 
                 $this->info("Processing Auto-Cut: {$recurring->name} ({$recurring->amount})");
+                Log::info('Processing recurring transaction', [
+                    'recurring_id' => $recurring->id,
+                    'user_id' => $recurring->user_id,
+                    'name' => $recurring->name,
+                    'type' => $recurring->type,
+                    'amount' => $recurring->amount,
+                    'wallet_id' => $recurring->wallet_id,
+                    'category' => $recurring->category,
+                    'next_run_date' => optional($recurring->next_run_date)?->toDateString(),
+                    'auto_cut' => $recurring->auto_cut,
+                ]);
 
                 // Create Transaction
                 $transactionService->createTransactions(
@@ -71,13 +93,38 @@ class ProcessRecurringTransactions extends Command
                 $recurring->next_run_date = $recurring->calculateNextRunDate();
                 $recurring->save();
 
+                Log::info('Recurring transaction processed successfully', [
+                    'recurring_id' => $recurring->id,
+                    'user_id' => $recurring->user_id,
+                    'name' => $recurring->name,
+                    'type' => $recurring->type,
+                    'amount' => $recurring->amount,
+                    'wallet_id' => $recurring->wallet_id,
+                    'category' => $recurring->category,
+                    'next_run_date' => optional($recurring->next_run_date)?->toDateString(),
+                ]);
+
                 $recurring->user->notify(new RecurringPaymentSuccess($recurring));
                 $this->info("Success: {$recurring->name} processed.");
             }
             catch (\Exception $e) {
+                $failureContext = [
+                    'recurring_id' => $recurring->id,
+                    'user_id' => $recurring->user_id,
+                    'name' => $recurring->name,
+                    'type' => $recurring->type,
+                    'amount' => $recurring->amount,
+                    'wallet_id' => $recurring->wallet_id,
+                    'category' => $recurring->category,
+                    'next_run_date' => optional($recurring->next_run_date)?->toDateString(),
+                    'auto_cut' => $recurring->auto_cut,
+                    'error' => $e->getMessage(),
+                ];
+
                 $this->error("Failed to process {$recurring->name}: " . $e->getMessage());
+                Log::error('Failed to process recurring transaction', $failureContext);
                 if ($recurring->auto_cut) {
-                    $recurring->user->notify(new RecurringPaymentDue($recurring, true));
+                    $recurring->user->notify(new RecurringPaymentDue($recurring, true, $e->getMessage()));
                 }
             }
         }

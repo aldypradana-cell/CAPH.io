@@ -14,7 +14,7 @@ class RecurringPaymentDue extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct(public $recurringTransaction, public $isFailed = false)
+    public function __construct(public $recurringTransaction, public $isFailed = false, public ?string $failureReason = null)
     {
         //
     }
@@ -46,11 +46,15 @@ class RecurringPaymentDue extends Notification
         $formattedAmount = "Rp" . number_format($this->recurringTransaction->amount, 0, ',', '.');
         
         if ($this->isFailed) {
+            $baseMessage = $isIncome
+                ? "Sistem gagal menambah saldo untuk jadwal pemasukan '{$this->recurringTransaction->name}'."
+                : "Sistem gagal memotong saldo untuk langganan '{$this->recurringTransaction->name}'.";
+
+            $reason = $this->failureReason ? (' Alasan: ' . $this->failureReason) : ($isIncome ? '' : ' Pastikan saldo dompet cukup.');
+
             return [
                 'title' => $isIncome ? 'Pemasukan Otomatis Gagal' : 'Pembayaran Otomatis Gagal',
-                'message' => $isIncome 
-                    ? "Sistem gagal menambah saldo untuk jadwal pemasukan '{$this->recurringTransaction->name}'."
-                    : "Sistem gagal memotong saldo untuk langganan '{$this->recurringTransaction->name}'. Pastikan saldo dompet cukup.",
+                'message' => $baseMessage . $reason,
                 'type' => 'ALERT',
                 'link' => route('recurring.index'),
             ];

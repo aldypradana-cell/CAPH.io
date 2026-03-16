@@ -23,9 +23,21 @@ class InstallmentPaymentSuccess extends Notification
 
     public function toArray(object $notifiable): array
     {
+        $rawName = trim((string) ($this->installment->name ?? ''));
+        $cleanName = preg_replace('/^PayLater\s*-\s*/i', '', $rawName) ?: $rawName;
+        $lender = trim((string) ($this->installment->lender ?? ''));
+        $isPayLater = str_starts_with(strtolower($rawName), 'paylater -')
+            || str_contains(strtolower($lender), 'paylater');
+
+        $entityLabel = $isPayLater ? 'tagihan PayLater' : 'cicilan';
+        $title = $isPayLater
+            ? ($lender ? "Pembayaran {$lender} Berhasil" : 'Pembayaran Tagihan PayLater Berhasil')
+            : 'Pembayaran Cicilan Berhasil';
+        $displayName = $cleanName ?: ($lender ?: 'Tanpa Nama');
+
         return [
-            'title' => 'Pembayaran Cicilan Sukses',
-            'message' => "Sistem berhasil memotong " . number_format($this->paymentAmount, 0, ',', '.') . " untuk cicilan '{$this->installment->name}'.",
+            'title' => $title,
+            'message' => "Sistem berhasil memotong " . number_format($this->paymentAmount, 0, ',', '.') . " untuk {$entityLabel} '{$displayName}'.",
             'type' => 'SUCCESS',
             'link' => route('debts.index'),
         ];

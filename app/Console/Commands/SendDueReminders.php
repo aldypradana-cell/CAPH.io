@@ -54,7 +54,7 @@ class SendDueReminders extends Command
         }
         $this->info("Sent {$debtCount} debt reminders.");
 
-        // 2. Process PayLater Installments
+        // 2. Process installment reminders (PayLater + cicilan biasa)
         $installments = Installment::with('user')->where('is_completed', false)->get();
         $installmentCount = 0;
 
@@ -82,7 +82,7 @@ class SendDueReminders extends Command
                 $installmentCount++;
             }
         }
-        $this->info("Sent {$installmentCount} PayLater reminders.");
+        $this->info("Sent {$installmentCount} installment reminders.");
         $this->info('Completed sending due reminders.');
     }
 }
