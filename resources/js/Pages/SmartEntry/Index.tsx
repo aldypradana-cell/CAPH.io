@@ -36,6 +36,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
     const [aiQuota, setAiQuota] = useState(initialAiQuota);
     const recognitionRef = useRef<any>(null);
     const originalInputRef = useRef<string>('');
+    const finalTranscriptRef = useRef<string>('');
 
     const isQuotaExceeded = aiQuota ? aiQuota.used >= aiQuota.limit : false;
 
@@ -129,33 +130,31 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
         const recognition = new SpeechRecognition();
         recognitionRef.current = recognition;
         originalInputRef.current = input;
+        finalTranscriptRef.current = '';
 
         recognition.lang = 'id-ID';
         recognition.continuous = true;
         recognition.interimResults = true;
 
         recognition.onresult = (event: any) => {
-            let sessionText = '';
-            
-            for (let i = 0; i < event.results.length; i++) {
-                const transcript = event.results[i][0].transcript;
-                const currentTextTrimmed = sessionText.trim().toLowerCase();
-                const newTranscriptTrimmed = transcript.trim().toLowerCase();
+            let interimTranscript = '';
 
-                // Android Chrome cumulative fix: 
-                // Jika hasil baru diawali dengan hasil sebelumnya (prefix), kita gunakan yang baru saja.
-                // Ini mencegah duplikasi teks yang sering terjadi di Android.
-                if (currentTextTrimmed && newTranscriptTrimmed.startsWith(currentTextTrimmed)) {
-                    sessionText = transcript;
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const result = event.results[i];
+                const transcript = result[0]?.transcript?.trim() || '';
+                if (!transcript) continue;
+
+                if (result.isFinal) {
+                    finalTranscriptRef.current = `${finalTranscriptRef.current} ${transcript}`.trim();
                 } else {
-                    sessionText += (sessionText ? ' ' : '') + transcript;
+                    interimTranscript = `${interimTranscript} ${transcript}`.trim();
                 }
             }
 
-            const base = originalInputRef.current;
-            const currentSessionText = sessionText.trimStart();
-            const separator = base.trim() && currentSessionText ? ' ' : '';
-            setInput(base + separator + currentSessionText);
+            const base = originalInputRef.current.trim();
+            const spokenText = `${finalTranscriptRef.current} ${interimTranscript}`.trim();
+            const nextValue = [base, spokenText].filter(Boolean).join(' ');
+            setInput(nextValue);
         };
 
         recognition.onerror = (event: any) => {
@@ -169,6 +168,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
         };
 
         recognition.onend = () => {
+            finalTranscriptRef.current = '';
             setIsListening(false);
         };
 

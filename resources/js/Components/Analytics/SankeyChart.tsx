@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sankey, Tooltip, ResponsiveContainer, Layer, Rectangle } from 'recharts';
+import { Sankey, Tooltip, ResponsiveContainer, Layer } from 'recharts';
 import { SankeyData } from '@/types/dashboard';
 import { MagnifyingGlass as FileSearch } from '@phosphor-icons/react';
 
@@ -165,6 +165,13 @@ const CustomLink = ({ sourceX, targetX, sourceY, targetY, sourceControlX, target
     );
 };
 
+const getNodeDepthKey = (name: string) => {
+    if (name.startsWith('IN: ')) return 'income';
+    if (name.startsWith('OUT: ')) return 'expense';
+    return 'wallet';
+};
+
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
 export default function SankeyChart({ data, isLoading }: SankeyChartProps) {
     const [activeLink, setActiveLink] = React.useState<number | null>(null);
@@ -180,6 +187,17 @@ export default function SankeyChart({ data, isLoading }: SankeyChartProps) {
         fill: getColorForIndex(i), 
         index: i 
     }));
+
+    const depthCounts = nodes.reduce<Record<string, number>>((acc, node) => {
+        const key = getNodeDepthKey(node.name || '');
+        acc[key] = (acc[key] ?? 0) + 1;
+        return acc;
+    }, {});
+
+    const densestColumnCount = Math.max(1, ...Object.values(depthCounts));
+    const adaptiveNodePadding = clamp(Math.floor(560 / Math.max(densestColumnCount * 2.2, 1)), 8, 40);
+    const adaptiveChartHeight = clamp(Math.max(650, densestColumnCount * (adaptiveNodePadding + 18) + 120), 650, 1600);
+    const adaptiveVerticalMargin = densestColumnCount > 18 ? 12 : 20;
 
     // Filtering internal links
     const links = rawLinks.filter(l => {
@@ -223,7 +241,7 @@ export default function SankeyChart({ data, isLoading }: SankeyChartProps) {
                 </div>
 
                 {isLoading ? (
-                    <div className="w-full h-[650px] flex flex-col items-center justify-center space-y-4">
+                    <div className="w-full flex flex-col items-center justify-center space-y-4" style={{ height: adaptiveChartHeight }}>
                         <div className="relative">
                             <div className="w-16 h-16 border-4 border-indigo-100 dark:border-slate-800 rounded-full"></div>
                             <div className="absolute top-0 left-0 w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
@@ -231,7 +249,7 @@ export default function SankeyChart({ data, isLoading }: SankeyChartProps) {
                         <p className="text-slate-400 font-medium animate-pulse text-lg">Memetakan miliaran rupiah...</p>
                     </div>
                 ) : !chartData ? (
-                    <div className="w-full h-[800px] flex flex-col items-center justify-center text-center p-8">
+                    <div className="w-full flex flex-col items-center justify-center text-center p-8" style={{ minHeight: Math.max(800, adaptiveChartHeight) }}>
                         <div className="w-24 h-24 bg-slate-50 dark:bg-slate-800/50 rounded-3xl flex items-center justify-center mb-6 text-slate-300 dark:text-slate-700">
                             <FileSearch weight="duotone" className="w-12 h-12" />
                         </div>
@@ -251,8 +269,8 @@ export default function SankeyChart({ data, isLoading }: SankeyChartProps) {
                         </div>
 
                         <div className="overflow-x-auto scrollbar-hide pb-2">
-                            <div className="min-w-[800px] w-full max-w-[1000px] h-[650px] mx-auto">
-                                <ResponsiveContainer width="100%" height={600}>
+                            <div className="min-w-[800px] w-full max-w-[1000px] mx-auto" style={{ height: adaptiveChartHeight }}>
+                                <ResponsiveContainer width="100%" height="100%">
                                     <Sankey
                                         data={{
                                             nodes: nodes,
@@ -270,7 +288,7 @@ export default function SankeyChart({ data, isLoading }: SankeyChartProps) {
                                                 selectedWallet={selectedWallet}
                                             />
                                         }
-                                        nodePadding={40}
+                                        nodePadding={adaptiveNodePadding}
                                         nodeWidth={16}
                                         link={
                                             <CustomLink 
@@ -279,7 +297,7 @@ export default function SankeyChart({ data, isLoading }: SankeyChartProps) {
                                                 setActiveLink={setActiveLink} 
                                             />
                                         }
-                                        margin={{ top: 20, right: 120, bottom: 20, left: 120 }}
+                                        margin={{ top: adaptiveVerticalMargin, right: 120, bottom: adaptiveVerticalMargin, left: 120 }}
                                         iterations={64}
                                     >
                                         <Tooltip content={<CustomTooltip />} />

@@ -1,20 +1,22 @@
-# Task Checklist
+# Task
 
-## Progress
-- [x] Identifikasi akar masalah dari log 500 Wealth Tree
-- [x] Tambah migration `max_wealth_level` ke tabel users
-- [x] Hardening controller Wealth Tree agar update level tidak mematikan endpoint
-- [ ] Review perubahan file
-- [ ] Berikan langkah verifikasi ke user
+## Checklist
+- [done] Review komponen Sankey saat ini
+- [done] Tambahkan kalkulasi density/layout adaptif
+- [done] Update tinggi chart dan node padding secara aman
+- [done] Verifikasi tidak merusak tooltip/click/filter state
+- [done] Jalankan build/check yang relevan (catatan: build gagal di file lain yang tidak disentuh)
 
 ## Validation Steps
-- [ ] `php artisan migrate`
-- [ ] Buka dashboard lalu popup Wealth Tree
-- [ ] Pastikan Network `/api/analytics/wealth-tree` -> 200
-- [ ] Pastikan angka wealth tree tampil sesuai data user
-- [ ] Cek `storage/logs/laravel.log` tidak ada error kolom `max_wealth_level`
+- Buka halaman Analytics
+- Coba range data kecil
+- Coba range data besar
+- Pastikan node dompet tetap terlihat
+- Pastikan klik node dompet masih memunculkan transfer internal terkait
+- Pastikan tooltip link/node masih tampil
 
 ## User Check
-- [ ] Test pada local setelah migrate
-- [ ] Deploy ke hosting lalu jalankan migrate
-- [ ] Re-test user yang sebelumnya selalu 0
+- Cek tampilan Sankey untuk bulan dengan transaksi padat
+- Klik beberapa dompet berbeda
+- Pastikan tidak ada node penting yang hilang
+- Pastikan tampilan data sedikit tetap enak dilihat

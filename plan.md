@@ -1,31 +1,31 @@
 # Small Change Plan
 
 ## Objective
-Memperbaiki fitur Wealth Tree yang gagal membaca data karena endpoint `/api/analytics/wealth-tree` error 500 saat mengakses kolom `users.max_wealth_level` yang belum ada.
+Perbaiki diagram Sankey agar node dompet/kategori tetap terlihat dan tetap bisa diklik saat jumlah node banyak, tanpa merusak tooltip, filter tanggal, transfer internal, atau rendering data yang sudah ada.
 
 ## Scope
-- Tambah migration untuk kolom `max_wealth_level` pada tabel `users`
-- Hardening ringan pada `AnalyticsController::wealthTreeDataApi()` agar kegagalan update max level tidak menjatuhkan seluruh endpoint
-- Tidak mengubah rumus wealth tree atau UI besar-besaran
+- Ubah perilaku layout pada komponen frontend Sankey.
+- Tidak mengubah kontrak API backend.
+- Tidak mengubah struktur data `nodes/links`.
 
 ## Assumptions
-- Database local dan hosting sama-sama belum memiliki kolom `max_wealth_level`
-- Frontend sudah benar memanggil endpoint wealth tree, masalah utama ada di backend/schema
+- Masalah utama berasal dari kompresi layout Recharts saat `nodePadding` besar dan tinggi chart fixed.
+- Fitur yang harus tetap aman: tooltip, klik node dompet, filtering transfer internal, loading state, empty state.
 
 ## Proposed Approach
-1. Tambah migration baru untuk `users.max_wealth_level` dengan default `1`
-2. Ubah logika update max level menjadi aman dengan `try/catch` + logging
-3. Pastikan response tetap memakai fallback `maxLevel` yang aman
-4. Beri langkah verifikasi untuk local dan hosting
+1. Hitung kompleksitas node per depth/kolom dari data yang sudah ada.
+2. Jadikan `nodePadding`, tinggi chart, dan margin lebih adaptif terhadap kepadatan node.
+3. Pertahankan perilaku klik dompet dan tooltip yang sudah ada.
+4. Hindari perubahan pada backend/API agar risiko regresi kecil.
 
 ## Definition of Done
-- Endpoint `/api/analytics/wealth-tree` tidak lagi 500 karena kolom `max_wealth_level`
-- Wealth Tree kembali menampilkan data user
-- Perubahan siap direview di VS Code Source Control
+- Pada data besar, node tetap terlihat secara visual.
+- Node dompet tetap bisa diklik.
+- Tooltip tetap muncul normal.
+- Empty state dan loading state tetap bekerja.
+- Tidak ada perubahan kontrak API.
 
 ## Verification Plan
-- Jalankan `php artisan migrate`
-- Buka dashboard dan klik Wealth Tree popup
-- Pastikan request `/api/analytics/wealth-tree` status 200
-- Pastikan data bukan lagi fallback 0 palsu
-- Cek log tidak ada lagi error unknown column `max_wealth_level`
+- Build/check TypeScript frontend.
+- Review visual untuk data sedikit dan data banyak.
+- Verifikasi klik node dompet masih memfilter transfer internal.
