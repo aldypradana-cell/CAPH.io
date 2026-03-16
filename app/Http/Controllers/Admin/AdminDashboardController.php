@@ -25,21 +25,9 @@ class AdminDashboardController extends Controller
 
         $newUsersThisMonth = User::where('created_at', '>=', $start)->count();
         $transactionsThisMonth = Transaction::where('created_at', '>=', $start)->count();
-
-        // Flagged transactions
-        $flaggedTransactions = Transaction::where('is_flagged', true)
-            ->with('user')
-            ->orderBy('created_at', 'desc')
-            ->take(10)
-            ->get()
-            ->map(fn($t) => [
-                'id' => $t->id,
-                'user_name' => $t->user->name ?? 'Unknown',
-                'description' => $t->description,
-                'amount' => $t->amount,
-                'type' => $t->type,
-                'date' => $t->date->format('Y-m-d'),
-            ]);
+        $flaggedTransactionsCount = Transaction::where('is_flagged', true)->count();
+        $highValueTransactionsCount = Transaction::where('amount', '>=', 10000000)->count();
+        $transactionsToday = Transaction::whereDate('created_at', Carbon::today())->count();
 
         // Recent logs
         $recentLogs = SystemLog::with('admin')
@@ -64,8 +52,10 @@ class AdminDashboardController extends Controller
                 'totalTransactions' => $totalTransactions,
                 'newUsersThisMonth' => $newUsersThisMonth,
                 'transactionsThisMonth' => $transactionsThisMonth,
+                'flaggedTransactionsCount' => $flaggedTransactionsCount,
+                'highValueTransactionsCount' => $highValueTransactionsCount,
+                'transactionsToday' => $transactionsToday,
             ],
-            'flaggedTransactions' => $flaggedTransactions,
             'recentLogs' => $recentLogs,
         ]);
     }

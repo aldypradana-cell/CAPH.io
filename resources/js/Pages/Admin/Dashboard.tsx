@@ -2,7 +2,7 @@ import AppLayout from '@/Layouts/AppLayout';
 import { Head, usePage, router, Link } from '@inertiajs/react';
 import {
     SquaresFour as LayoutDashboard, Users, Pulse as Activity, Database,
-    Shield, ArrowsLeftRight as ArrowRightLeft, FileText, List as Menu,
+    Shield, FileText, List as Menu,
     ChatCircleDots
 } from '@phosphor-icons/react';
 import { Toaster } from 'react-hot-toast';
@@ -10,7 +10,6 @@ import { Toaster } from 'react-hot-toast';
 // Partials
 import OverviewTab from './Partials/OverviewTab';
 import UsersTab from './Partials/UsersTab';
-import TransactionsTab from './Partials/TransactionsTab';
 import MasterTab from './Partials/MasterTab';
 import LogsTab from './Partials/LogsTab';
 import FeedbacksTab from './Partials/FeedbacksTab';
@@ -21,9 +20,7 @@ export default function AdminDashboard() {
         tab = 'overview',
         stats = {},
         recentLogs = [],
-        flaggedTransactions = [],
         users = { data: [] },
-        transactions = { data: [] },
         categories = [],
         logs = { data: [] },
         feedbacks = { data: [] },
@@ -34,7 +31,6 @@ export default function AdminDashboard() {
     const tabs = [
         { id: 'overview', label: 'Overview', icon: LayoutDashboard, route: 'admin.dashboard' },
         { id: 'users', label: 'Users', icon: Users, route: 'admin.users.index' },
-        { id: 'transactions', label: 'Transaksi', icon: ArrowRightLeft, route: 'admin.transactions.index' },
         { id: 'master', label: 'Master Data', icon: Database, route: 'admin.master.index' },
         { id: 'logs', label: 'System Logs', icon: FileText, route: 'admin.logs.index' },
         { id: 'feedbacks', label: 'Feedback', icon: ChatCircleDots, route: 'admin.feedbacks.index' },
@@ -46,8 +42,6 @@ export default function AdminDashboard() {
         switch (tab) {
             case 'users':
                 return <UsersTab users={users} filters={filters} />;
-            case 'transactions':
-                return <TransactionsTab transactions={transactions} filters={filters} />;
             case 'master':
                 return <MasterTab categories={categories} />;
             case 'logs':
@@ -61,7 +55,11 @@ export default function AdminDashboard() {
                     totalUsers: stats.totalUsers ?? 0,
                     activeUsers: stats.activeUsers ?? 0,
                     totalTransactions: stats.totalTransactions ?? 0,
-                    flaggedTransactions: flaggedTransactions.length ?? 0,
+                    flaggedTransactions: stats.flaggedTransactionsCount ?? 0,
+                    highValueTransactions: stats.highValueTransactionsCount ?? 0,
+                    transactionsToday: stats.transactionsToday ?? 0,
+                    newUsersThisMonth: stats.newUsersThisMonth ?? 0,
+                    transactionsThisMonth: stats.transactionsThisMonth ?? 0,
                 };
                 return <OverviewTab stats={overviewStats} recentLogs={recentLogs} />;
         }

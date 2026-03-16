@@ -7,6 +7,8 @@ import { createPortal } from 'react-dom';
 import toast from 'react-hot-toast';
 import { formatDateLocale } from '@/utils/date';
 
+const formatSafeDate = (value?: string | null) => value ? formatDateLocale(value) : 'Belum ada';
+
 interface User {
     id: number;
     name: string;
@@ -22,6 +24,9 @@ interface User {
     smart_entry_used_today: number;
     insight_used_this_week: number;
     roast_used_this_week: number;
+    last_transaction_at?: string | null;
+    last_ai_usage_at?: string | null;
+    last_activity_at?: string | null;
 }
 
 export default function UsersTab({ users, filters }: { users: { data: User[] }, filters: any }) {
@@ -113,10 +118,12 @@ export default function UsersTab({ users, filters }: { users: { data: User[] }, 
                                     </span>
                                 </div>
                                 <p className="text-[10px] text-slate-400 mt-0.5">{user.email}</p>
-                                <div className="flex items-center gap-3 mt-1">
+                                <div className="flex items-center gap-3 mt-1 flex-wrap">
                                     <span className="text-[10px] text-slate-400">{user.transactions_count} transaksi</span>
                                     <span className="text-[10px] text-slate-400">{user.wallets_count} dompet</span>
                                     <span className="text-[10px] text-slate-400">Bergabung: {formatDateLocale(user.created_at)}</span>
+                                    <span className="text-[10px] text-slate-400">Last Activity: {formatSafeDate(user.last_activity_at)}</span>
+                                    <span className="text-[10px] text-slate-400">Last Transaction: {formatSafeDate(user.last_transaction_at)}</span>
                                 </div>
                             </div>
                         </div>

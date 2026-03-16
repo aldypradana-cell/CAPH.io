@@ -66,10 +66,15 @@ class InsightsController extends Controller
             ->where('used_at', '>=', $weekStart)
             ->count();
 
+        $latestInsight = FinancialInsight::where('user_id', $user->id)->latest()->first();
+        if ($latestInsight && is_array($latestInsight->content)) {
+            $latestInsight->content['budgetCompliance'] = $this->buildBudgetCompliance($user, $now->copy()->startOfMonth(), $now->copy()->endOfMonth());
+        }
+
         return Inertia::render('Insights/Index', [
             'transactionCount' => $transactionCount,
             'hasProfile'       => !empty($user->financial_profile),
-            'latestInsight'    => FinancialInsight::where('user_id', $user->id)->latest()->first(),
+            'latestInsight'    => $latestInsight,
             'aiQuota'          => [
                 'used'     => $usedThisWeek,
                 'limit'    => $user->role === 'ADMIN' ? 999999 : $user->insight_limit,
@@ -393,6 +398,7 @@ class InsightsController extends Controller
 
         try {
             $insight = $this->geminiService->getFinancialAdvice($user, $contextData);
+            $insight['budgetCompliance'] = $this->buildBudgetCompliance($user, $startDate, $endDate);
 
             // Save to database
             $storedInsight = FinancialInsight::create([
@@ -562,6 +568,74 @@ class InsightsController extends Controller
                 'message' => 'AI sedang sibuk atau mengalami kendala. Silakan coba kembali dalam beberapa saat.',
             ], 500);
         }
+    }
+
+    private function buildBudgetCompliance($user, Carbon $startDate, Carbon $endDate): array
+    {
+        $budgets = Budget::where('user_id', $user->id)->get();
+
+        if ($budgets->isEmpty()) {
+            return [];
+        }
+
+        $budgetExpenses = Transaction::forUser($user->id)
+            ->inDateRange($startDate->format('Y-m-d'), $endDate->format('Y-m-d'))
+            ->where(function ($q) {
+                $q->where('type', 'EXPENSE')
+                    ->orWhere(function ($sub) {
+                        $sub->where('type', 'TRANSFER')
+                            ->where('category', 'Tabungan');
+                    });
+            })
+            ->selectRaw('category, SUM(amount) as total')
+            ->groupBy('category')
+            ->pluck('total', 'category')
+            ->toArray();
+
+        $ruleCategoryNames = [];
+        $allUserCategories = Category::userCategories($user->id)
+            ->whereNotNull('budget_rule')
+            ->get();
+
+        foreach ($allUserCategories as $cat) {
+            $ruleCategoryNames[$cat->budget_rule][] = $cat->name;
+        }
+
+        $labels = BudgetTemplate::getLabels(
+            BudgetTemplate::detectTemplate($budgets->where('is_master', true)->pluck('category')->toArray())
+        );
+
+        return $budgets->map(function ($budget) use ($budgetExpenses, $ruleCategoryNames, $labels) {
+            if ($budget->is_master) {
+                $rules = BudgetTemplate::SLOT_TO_RULES[$budget->category] ?? [$budget->category];
+                $mappedCategories = collect($rules)
+                    ->flatMap(fn($rule) => $ruleCategoryNames[$rule] ?? [])
+                    ->toArray();
+
+                if (in_array('SAVINGS', $rules) || in_array('SAVINGS_PLUS', $rules)) {
+                    $mappedCategories[] = 'Tabungan';
+                }
+
+                $spent = 0;
+                foreach ($mappedCategories as $catName) {
+                    $spent += (float) ($budgetExpenses[$catName] ?? 0);
+                }
+            } else {
+                $spent = (float) ($budgetExpenses[$budget->category] ?? 0);
+            }
+
+            $usagePercent = $budget->limit > 0 ? round(($spent / $budget->limit) * 100, 1) : 0;
+
+            return [
+                'category' => $budget->is_master
+                    ? ($labels[$budget->category] ?? $budget->category)
+                    : $budget->category,
+                'limit' => (float) $budget->limit,
+                'spent' => $spent,
+                'usagePercent' => $usagePercent,
+                'status' => $usagePercent >= 100 ? 'OVER' : ($usagePercent >= 80 ? 'WARNING' : 'OK'),
+            ];
+        })->values()->all();
     }
 
     /**

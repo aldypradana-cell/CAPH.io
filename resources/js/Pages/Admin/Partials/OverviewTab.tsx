@@ -1,7 +1,7 @@
 import { router } from '@inertiajs/react';
 import {
     Users, Pulse as Activity,
-    ShieldCheck, UserCheck, Warning as AlertTriangle, FileText
+    ShieldCheck, UserCheck, Warning as AlertTriangle, FileText, TrendUp, CalendarBlank
 } from '@phosphor-icons/react';
 
 export default function OverviewTab({ stats, recentLogs }: { stats: any, recentLogs: any[] }) {
@@ -10,6 +10,13 @@ export default function OverviewTab({ stats, recentLogs }: { stats: any, recentL
         { label: 'Pengguna Aktif', value: stats.activeUsers, icon: UserCheck, color: 'from-emerald-600 to-green-600', shadowColor: 'shadow-emerald-500/20' },
         { label: 'Total Transaksi', value: stats.totalTransactions, icon: Activity, color: 'from-violet-600 to-purple-600', shadowColor: 'shadow-violet-500/20' },
         { label: 'Flagged', value: stats.flaggedTransactions, icon: AlertTriangle, color: 'from-red-600 to-rose-600', shadowColor: 'shadow-red-500/20' },
+    ];
+
+    const aggregateCards = [
+        { label: 'Transaksi Hari Ini', value: stats.transactionsToday, icon: CalendarBlank, tone: 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' },
+        { label: 'Transaksi Bulan Ini', value: stats.transactionsThisMonth, icon: Activity, tone: 'bg-violet-50 text-violet-600 dark:bg-violet-900/20 dark:text-violet-400' },
+        { label: 'High Value', value: stats.highValueTransactions, icon: TrendUp, tone: 'bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400' },
+        { label: 'User Baru Bulan Ini', value: stats.newUsersThisMonth, icon: Users, tone: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400' },
     ];
 
     const getActionColor = (action: string) => {
@@ -32,6 +39,18 @@ export default function OverviewTab({ stats, recentLogs }: { stats: any, recentL
                         
                         <p className="text-3xl font-bold text-slate-800 dark:text-white drop-shadow-sm">{card.value.toLocaleString('id-ID')}</p>
                         <p className="text-sm text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mt-1">{card.label}</p>
+                    </div>
+                ))}
+            </div>
+
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {aggregateCards.map((card, i) => (
+                    <div key={card.label} className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 animate-fade-in-up" style={{ animationDelay: `${0.4 + i * 0.05}s` }}>
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${card.tone}`}>
+                            <card.icon weight="duotone" className="w-5 h-5" />
+                        </div>
+                        <p className="text-2xl font-bold text-slate-800 dark:text-white">{card.value.toLocaleString('id-ID')}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wide mt-1">{card.label}</p>
                     </div>
                 ))}
             </div>

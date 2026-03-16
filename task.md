@@ -1,33 +1,24 @@
 # Task
 
 ## Checklist
-- [done] Review komponen Sankey saat ini
-- [done] Tambahkan kalkulasi density/layout adaptif
-- [done] Update tinggi chart dan node padding secara aman
-- [done] Verifikasi tidak merusak tooltip/click/filter state
-- [done] Jalankan build/check yang relevan (catatan: build gagal di file lain yang tidak disentuh)
-- [done] Tambahkan logging diagnosis recurring transaction
-- [done] Tambahkan notifikasi error recurring yang lebih jelas untuk user
-- [done] Verifikasi build tetap lolos
-- [done] Perbaiki label notifikasi reminder cicilan agar non-PayLater tidak disebut PayLater
-- [done] Verifikasi build tetap lolos setelah perbaikan notif cicilan
-- [done] Rapikan notifikasi sukses/gagal cicilan agar label konsisten
-- [done] Verifikasi build tetap lolos setelah perapian notif cicilan
+- [done] Audit current admin access ke transaksi user
+- [done] Rumuskan policy privasi admin panel
+- [done] Siapkan plan implementasi bertahap yang minim risiko
+- [done] Implementasikan Phase 1 (hide/redirect transaksi mentah admin)
+- [done] Tambahkan kolom waktu aktivitas yang aman di tabel user
+- [done] Implementasikan Phase 2 metrik agregat aman di overview admin
+- [done] Verifikasi route handling aman (redirect tanpa merusak flow)
+- [pending] Siapkan desain audit support-access untuk fase lanjutan
+- [done] Verifikasi build tetap lolos setelah Phase 2
 
 ## Validation Steps
-- Buka halaman Analytics
-- Coba range data kecil
-- Coba range data besar
-- Pastikan node dompet tetap terlihat
-- Pastikan klik node dompet masih memunculkan transfer internal terkait
-- Pastikan tooltip link/node masih tampil
-- Jalankan recurring processor manual
-- Pastikan error recurring tercatat di log
-- Pastikan user menerima notifikasi kegagalan yang lebih informatif
+- Review file admin yang terdampak
+- Pastikan tidak ada fitur non-admin yang ikut terseret
+- Pastikan Phase 1 bisa dilakukan tanpa mengubah data user
+- Pastikan pendekatan baru tidak memutus flow admin penting
 
 ## User Check
-- Cek tampilan Sankey untuk bulan dengan transaksi padat
-- Klik beberapa dompet berbeda
-- Pastikan tidak ada node penting yang hilang
-- Pastikan tampilan data sedikit tetap enak dilihat
-- Cek notifikasi jika recurring expense gagal
+- Review plan sebelum implementasi
+- Putuskan apakah Phase 1 langsung hide+redirect atau hide+deny
+- Putuskan apakah fase agregat dikerjakan langsung setelah hardening awal
+- Putuskan apakah support-access audited perlu masuk scope sekarang atau nanti

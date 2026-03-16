@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\SystemLog;
 use App\Models\AiUsageLog;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Inertia\Inertia;
@@ -36,13 +37,47 @@ class UserManagementController extends Controller
         $today = Carbon::today();
         $week  = Carbon::now()->startOfWeek(Carbon::MONDAY);
 
-        $users = $query->orderBy('created_at', 'desc')->paginate(20)->through(function ($user) use ($today, $week) {
-            $user->smart_entry_used_today = AiUsageLog::where('user_id', $user->id)
-                ->where('feature', 'smart_entry')->where('used_at', '>=', $today)->count();
-            $user->insight_used_this_week = AiUsageLog::where('user_id', $user->id)
-                ->where('feature', 'ai_insight')->where('used_at', '>=', $week)->count();
-            $user->roast_used_this_week = AiUsageLog::where('user_id', $user->id)
-                ->where('feature', 'roast_me')->where('used_at', '>=', $week)->count();
+        $userPage = $query->orderBy('created_at', 'desc')->paginate(20);
+        $userIds = $userPage->getCollection()->pluck('id');
+
+        $smartEntryUsageToday = AiUsageLog::whereIn('user_id', $userIds)
+            ->where('feature', 'smart_entry')
+            ->where('used_at', '>=', $today)
+            ->selectRaw('user_id, COUNT(*) as total')
+            ->groupBy('user_id')
+            ->pluck('total', 'user_id');
+
+        $insightUsageThisWeek = AiUsageLog::whereIn('user_id', $userIds)
+            ->where('feature', 'ai_insight')
+            ->where('used_at', '>=', $week)
+            ->selectRaw('user_id, COUNT(*) as total')
+            ->groupBy('user_id')
+            ->pluck('total', 'user_id');
+
+        $roastUsageThisWeek = AiUsageLog::whereIn('user_id', $userIds)
+            ->where('feature', 'roast_me')
+            ->where('used_at', '>=', $week)
+            ->selectRaw('user_id, COUNT(*) as total')
+            ->groupBy('user_id')
+            ->pluck('total', 'user_id');
+
+        $lastTransactionAt = Transaction::whereIn('user_id', $userIds)
+            ->selectRaw('user_id, MAX(created_at) as last_transaction_at')
+            ->groupBy('user_id')
+            ->pluck('last_transaction_at', 'user_id');
+
+        $lastAiUsageAt = AiUsageLog::whereIn('user_id', $userIds)
+            ->selectRaw('user_id, MAX(used_at) as last_ai_usage_at')
+            ->groupBy('user_id')
+            ->pluck('last_ai_usage_at', 'user_id');
+
+        $users = $userPage->through(function ($user) use ($smartEntryUsageToday, $insightUsageThisWeek, $roastUsageThisWeek, $lastTransactionAt, $lastAiUsageAt) {
+            $user->smart_entry_used_today = (int) ($smartEntryUsageToday[$user->id] ?? 0);
+            $user->insight_used_this_week = (int) ($insightUsageThisWeek[$user->id] ?? 0);
+            $user->roast_used_this_week = (int) ($roastUsageThisWeek[$user->id] ?? 0);
+            $user->last_transaction_at = $lastTransactionAt[$user->id] ?? null;
+            $user->last_ai_usage_at = $lastAiUsageAt[$user->id] ?? null;
+            $user->last_activity_at = $user->last_ai_usage_at ?? $user->last_transaction_at ?? $user->created_at;
             return $user;
         });
 

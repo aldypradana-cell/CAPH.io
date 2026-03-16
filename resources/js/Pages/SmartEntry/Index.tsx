@@ -22,6 +22,36 @@ interface ParsedTransaction {
 const formatIDR = (amount: number) =>
     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
 
+const normalizeTranscript = (text: string) => text.replace(/\s+/g, ' ').trim();
+
+const appendUniqueTranscript = (existing: string, incoming: string) => {
+    const base = normalizeTranscript(existing);
+    const addition = normalizeTranscript(incoming);
+
+    if (!addition) return base;
+    if (!base) return addition;
+
+    const lowerBase = base.toLowerCase();
+    const lowerAddition = addition.toLowerCase();
+
+    if (lowerBase === lowerAddition || lowerBase.endsWith(lowerAddition)) {
+        return base;
+    }
+
+    if (lowerAddition.startsWith(lowerBase)) {
+        return addition;
+    }
+
+    const maxOverlap = Math.min(lowerBase.length, lowerAddition.length);
+    for (let overlap = maxOverlap; overlap > 0; overlap--) {
+        if (lowerBase.endsWith(lowerAddition.slice(0, overlap))) {
+            return `${base} ${addition.slice(overlap).trim()}`.trim();
+        }
+    }
+
+    return `${base} ${addition}`.trim();
+};
+
 export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: initialAiQuota }: PageProps<{ 
     wallets: Wallet[], 
     categories: Category[],
@@ -37,6 +67,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
     const recognitionRef = useRef<any>(null);
     const originalInputRef = useRef<string>('');
     const finalTranscriptRef = useRef<string>('');
+    const lastFinalChunkRef = useRef<string>('');
 
     const isQuotaExceeded = aiQuota ? aiQuota.used >= aiQuota.limit : false;
 
@@ -131,6 +162,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
         recognitionRef.current = recognition;
         originalInputRef.current = input;
         finalTranscriptRef.current = '';
+        lastFinalChunkRef.current = '';
 
         recognition.lang = 'id-ID';
         recognition.continuous = true;
@@ -141,18 +173,21 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
 
             for (let i = event.resultIndex; i < event.results.length; i++) {
                 const result = event.results[i];
-                const transcript = result[0]?.transcript?.trim() || '';
+                const transcript = normalizeTranscript(result[0]?.transcript || '');
                 if (!transcript) continue;
 
                 if (result.isFinal) {
-                    finalTranscriptRef.current = `${finalTranscriptRef.current} ${transcript}`.trim();
+                    if (transcript !== lastFinalChunkRef.current) {
+                        finalTranscriptRef.current = appendUniqueTranscript(finalTranscriptRef.current, transcript);
+                        lastFinalChunkRef.current = transcript;
+                    }
                 } else {
-                    interimTranscript = `${interimTranscript} ${transcript}`.trim();
+                    interimTranscript = appendUniqueTranscript(interimTranscript, transcript);
                 }
             }
 
-            const base = originalInputRef.current.trim();
-            const spokenText = `${finalTranscriptRef.current} ${interimTranscript}`.trim();
+            const base = normalizeTranscript(originalInputRef.current);
+            const spokenText = appendUniqueTranscript(finalTranscriptRef.current, interimTranscript);
             const nextValue = [base, spokenText].filter(Boolean).join(' ');
             setInput(nextValue);
         };
@@ -169,6 +204,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
 
         recognition.onend = () => {
             finalTranscriptRef.current = '';
+            lastFinalChunkRef.current = '';
             setIsListening(false);
         };
 
