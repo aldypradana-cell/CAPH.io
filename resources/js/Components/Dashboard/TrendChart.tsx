@@ -91,20 +91,20 @@ export default function TrendChart({
                         </div>
                     </div>
                     
-                    <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl shrink-0" onMouseDown={(e) => e.stopPropagation()}>
+                    <div className="flex bg-[#0E3D42]/5 dark:bg-[#0E3D42]/20 p-1 rounded-xl border border-[#C5A059]/10 shrink-0" onMouseDown={(e) => e.stopPropagation()}>
                         <button
                                 onClick={() => setChartType('BAR')}
                                 title="Grafik Batang"
-                                className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'BAR' ? 'bg-[#0B5F64] text-[#EDEDD6] shadow-md' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                                className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'BAR' ? 'bg-[#0E3D42] text-[#C5A059] shadow-lg shadow-[#0E3D42]/20' : 'text-[#8F7442] dark:text-[#C5A059]/40 hover:text-[#0E3D42]'}`}
                             >
-                                <BarChart3 weight="duotone" className="w-4 h-4" />
+                                <BarChart3 weight="duotone" className="w-3.5 h-3.5" />
                             </button>
                             <button
                                 onClick={() => setChartType('AREA')}
                                 title="Grafik Garis Area"
-                                className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'AREA' ? 'bg-[#0B5F64] text-[#EDEDD6] shadow-md' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                                className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'AREA' ? 'bg-[#0E3D42] text-[#C5A059] shadow-lg shadow-[#0E3D42]/20' : 'text-[#8F7442] dark:text-[#C5A059]/40 hover:text-[#0E3D42]'}`}
                             >
-                                <TrendingUp weight="duotone" className="w-4 h-4" />
+                                <TrendingUp weight="duotone" className="w-3.5 h-3.5" />
                             </button>
                         </div>
                     </div>
@@ -112,14 +112,14 @@ export default function TrendChart({
                 
                 {/* Row 2: Time Filter and Range */}
                 <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-                    <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl w-full sm:w-max overflow-x-auto scrollbar-hide">
+                    <div className="flex bg-[#0E3D42]/5 dark:bg-[#0E3D42]/20 p-1 rounded-xl w-full sm:w-max overflow-x-auto scrollbar-hide border border-[#C5A059]/10">
                         {(['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY', 'CUSTOM'] as const).map(filter => (
                             <button
                                 key={filter}
                                 onClick={() => onFilterChange(filter)}
                                 className={`px-2 py-1.5 sm:px-3 text-[10px] sm:text-xs font-bold rounded-lg transition-all whitespace-nowrap active:scale-95 flex-1 sm:flex-none ${activeFilter === filter
-                                    ? 'bg-[#0B5F64] text-[#EDEDD6] shadow-md'
-                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                                    ? 'bg-[#0E3D42] text-[#C5A059] shadow-lg shadow-[#0E3D42]/20'
+                                    : 'text-[#8F7442] dark:text-[#C5A059]/40 hover:text-[#0E3D42] dark:hover:text-[#C5A059]'
                                     }`}
                             >
                                 {filter === 'DAILY' ? 'Harian' : filter === 'WEEKLY' ? 'Mingguan' : filter === 'MONTHLY' ? 'Bulanan' : filter === 'YEARLY' ? 'Tahunan' : 'Custom'}
@@ -128,9 +128,9 @@ export default function TrendChart({
                     </div>
                     
                     <div className="flex justify-center gap-2" onMouseDown={(e) => e.stopPropagation()}>
-                        <input type="date" value={filters.startDate} onChange={(e) => onDateChange('start', e.target.value)} className="bg-slate-50 dark:bg-slate-800 border-none rounded-lg text-[10px] text-slate-500 dark:text-slate-400 px-2 py-1 outline-none font-medium flex-1 w-full sm:w-auto text-center" />
-                        <span className="text-slate-300 self-center">-</span>
-                        <input type="date" value={filters.endDate} onChange={(e) => onDateChange('end', e.target.value)} className="bg-slate-50 dark:bg-slate-800 border-none rounded-lg text-[10px] text-slate-500 dark:text-slate-400 px-2 py-1 outline-none font-medium flex-1 w-full sm:w-auto text-center" />
+                        <input type="date" value={filters.startDate} onChange={(e) => onDateChange('start', e.target.value)} className="bg-[#0E3D42]/5 dark:bg-[#0E3D42]/10 border-none rounded-lg text-[10px] text-[#8F7442] dark:text-[#C5A059]/70 px-2 py-1 outline-none font-medium flex-1 w-full sm:w-auto text-center ring-1 ring-[#C5A059]/10 focus:ring-[#C5A059]" />
+                        <span className="text-[#C5A059]/30 self-center">-</span>
+                        <input type="date" value={filters.endDate} onChange={(e) => onDateChange('end', e.target.value)} className="bg-[#0E3D42]/5 dark:bg-[#0E3D42]/10 border-none rounded-lg text-[10px] text-[#8F7442] dark:text-[#C5A059]/70 px-2 py-1 outline-none font-medium flex-1 w-full sm:w-auto text-center ring-1 ring-[#C5A059]/10 focus:ring-[#C5A059]" />
                     </div>
             </div>
             <div className="flex-1 w-full min-h-0">

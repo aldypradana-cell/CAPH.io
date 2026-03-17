@@ -128,33 +128,33 @@ export default function DistributionPieChart({
                 </div>
                 
                 <div className="flex flex-wrap gap-2 items-center justify-end" onMouseDown={(e) => e.stopPropagation()}>
-                    <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+                    <div className="flex bg-[#0E3D42]/5 dark:bg-[#0E3D42]/20 p-1 rounded-xl border border-[#C5A059]/10">
                         <button
                             onClick={() => setChartType('DONUT')}
                             title="Donut Chart"
-                            className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'DONUT' ? 'bg-[#0B5F64] text-[#EDEDD6] shadow-md' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                            className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'DONUT' ? 'bg-[#0E3D42] text-[#C5A059] shadow-lg shadow-[#0E3D42]/20' : 'text-[#8F7442] dark:text-[#C5A059]/40 hover:text-[#0E3D42]'}`}
                         >
-                            <PieChartIcon weight="duotone" className="w-4 h-4" />
+                            <PieChartIcon weight="duotone" className="w-3.5 h-3.5" />
                         </button>
                         <button
                             onClick={() => setChartType('TREEMAP')}
                             title="Treemap"
-                            className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'TREEMAP' ? 'bg-[#0B5F64] text-[#EDEDD6] shadow-md' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                            className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'TREEMAP' ? 'bg-[#0E3D42] text-[#C5A059] shadow-lg shadow-[#0E3D42]/20' : 'text-[#8F7442] dark:text-[#C5A059]/40 hover:text-[#0E3D42]'}`}
                         >
-                            <LayoutGrid weight="duotone" className="w-4 h-4" />
+                            <LayoutGrid weight="duotone" className="w-3.5 h-3.5" />
                         </button>
                     </div>
-                    <div className="flex bg-[#0B5F64] p-1 rounded-xl items-center gap-1 text-[10px] font-bold px-2 py-1 text-[#EDEDD6] shadow-md">
-                        <Calendar weight="duotone" className="w-3 h-3" />
+                    <div className="flex bg-gradient-to-r from-[#0E3D42] to-[#0D3B3F] p-1 rounded-xl items-center gap-1.5 text-[10px] font-bold px-3 py-1.5 text-[#C5A059] shadow-lg shadow-[#0E3D42]/20 border border-[#C5A059]/20">
+                        <Calendar weight="duotone" className="w-3.5 h-3.5" />
                         Custom
                     </div>
                 </div>
             </div>
             
             <div className="flex justify-center gap-2 mb-4" onMouseDown={(e) => e.stopPropagation()}>
-                <input type="date" value={filters.pieStartDate || filters.startDate} onChange={(e) => onDateChange('start', e.target.value)} className="bg-slate-50 dark:bg-slate-800 border-none rounded-lg text-[10px] text-slate-500 dark:text-slate-400 px-2 py-1 outline-none font-medium" />
-                <span className="text-slate-300 self-center">-</span>
-                <input type="date" value={filters.pieEndDate || filters.endDate} onChange={(e) => onDateChange('end', e.target.value)} className="bg-slate-50 dark:bg-slate-800 border-none rounded-lg text-[10px] text-slate-500 dark:text-slate-400 px-2 py-1 outline-none font-medium" />
+                <input type="date" value={filters.pieStartDate || filters.startDate} onChange={(e) => onDateChange('start', e.target.value)} className="bg-[#0E3D42]/5 dark:bg-[#0E3D42]/10 border-none rounded-lg text-[10px] text-[#8F7442] dark:text-[#C5A059]/70 px-2 py-1 outline-none font-medium ring-1 ring-[#C5A059]/10 focus:ring-[#C5A059]" />
+                <span className="text-[#C5A059]/30 self-center">-</span>
+                <input type="date" value={filters.pieEndDate || filters.endDate} onChange={(e) => onDateChange('end', e.target.value)} className="bg-[#0E3D42]/5 dark:bg-[#0E3D42]/10 border-none rounded-lg text-[10px] text-[#8F7442] dark:text-[#C5A059]/70 px-2 py-1 outline-none font-medium ring-1 ring-[#C5A059]/10 focus:ring-[#C5A059]" />
             </div>
             {isLoading ? (
                 <div className="flex-1 flex items-center justify-center">

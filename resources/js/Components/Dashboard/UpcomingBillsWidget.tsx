@@ -35,15 +35,15 @@ export default function UpcomingBillsWidget({
         >
             {/* Ambient Glows */}
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 -z-10 pointer-events-none">
-                <div className="absolute -right-20 -top-20 w-80 h-80 bg-rose-500/10 rounded-full blur-[100px]" />
-                <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-amber-500/10 rounded-full blur-[100px]" />
+                <div className="absolute -right-20 -top-20 w-80 h-80 bg-[#9F1239]/5 rounded-full blur-[100px]" />
+                <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-[#C5A059]/5 rounded-full blur-[100px]" />
             </div>
 
             <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 group cursor-grab active:cursor-grabbing">
+                <h3 className="text-lg font-bold text-slate-800 dark:text-[#EDEDD6] flex items-center gap-2 group cursor-grab active:cursor-grabbing">
                     <div className="relative">
-                        <AlertTriangle weight="duotone" className="w-5 h-5 text-[#0B5F64] dark:text-teal-400 group-hover:opacity-0 transition-opacity duration-200" />
-                        <GripHorizontal weight="bold" className="w-5 h-5 text-slate-400 absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
+                        <AlertTriangle weight="duotone" className="w-5 h-5 text-[#0E3D42] dark:text-[#C5A059] group-hover:opacity-0 transition-opacity duration-200" />
+                        <GripHorizontal weight="bold" className="w-5 h-5 text-[#C5A059] absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
                     </div>
                     Hutang & Piutang
                 </h3>
@@ -61,9 +61,9 @@ export default function UpcomingBillsWidget({
                             <div key={bill.id} className="group relative p-3 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 hover:border-indigo-200 dark:hover:border-indigo-900 transition-all hover:shadow-md hover:scale-[1.02]">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-sm shrink-0 flex-shrink-0 ${isDebt ? 'bg-gradient-to-br from-rose-500 to-red-600' :
-                                            isReceivable ? 'bg-gradient-to-br from-emerald-500 to-teal-600' :
-                                                'bg-gradient-to-br from-amber-500 to-orange-600'
+                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-[#EDEDD6] shadow-sm shrink-0 flex-shrink-0 ${isDebt ? 'bg-gradient-to-br from-[#9F1239] to-[#881337]' :
+                                            isReceivable ? 'bg-gradient-to-br from-[#0E3D42] to-[#0D3B3F]' :
+                                                'bg-[#C5A059]'
                                             }`}>
                                             {isDebt ? <ArrowDownRight weight="bold" className="w-5 h-5" /> :
                                                 isReceivable ? <ArrowUpRight weight="bold" className="w-5 h-5" /> :
@@ -82,9 +82,9 @@ export default function UpcomingBillsWidget({
                                         </div>
                                     </div>
                                     <div className="text-right whitespace-nowrap pl-2">
-                                        <p className={`text-sm font-bold ${isDebt ? 'text-rose-600 dark:text-rose-400' :
-                                            isReceivable ? 'text-emerald-600 dark:text-emerald-400' :
-                                                'text-amber-600 dark:text-amber-400'
+                                        <p className={`text-sm font-bold ${isDebt ? 'text-[#9F1239] dark:text-rose-400' :
+                                            isReceivable ? 'text-[#0E3D42] dark:text-[#5EEAD4]' :
+                                                'text-[#C5A059]'
                                             }`}>
                                             {formatShortIDR(bill.remaining_amount ?? bill.amount)}
                                         </p>

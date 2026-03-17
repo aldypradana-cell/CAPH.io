@@ -35,17 +35,17 @@ export default function RecentTransactionsWidget({
         >
             {/* Ambient Glows */}
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 -z-10 pointer-events-none">
-                <div className="absolute -right-20 -top-20 w-80 h-80 bg-slate-500/10 rounded-full blur-[100px]" />
-                <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-indigo-500/10 rounded-full blur-[100px]" />
+                <div className="absolute -right-20 -top-20 w-80 h-80 bg-[#0E3D42]/5 rounded-full blur-[100px]" />
+                <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-[#C5A059]/5 rounded-full blur-[100px]" />
             </div>
 
             <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 group cursor-grab active:cursor-grabbing">
+                <h3 className="text-lg font-bold text-slate-800 dark:text-[#EDEDD6] flex items-center gap-2 group cursor-grab active:cursor-grabbing">
                     <div className="relative">
-                        <div className="p-2 bg-[#0B5F64]/10 dark:bg-[#0B5F64]/5 text-[#0B5F64] dark:text-teal-400 rounded-lg group-hover:opacity-0 transition-opacity duration-200">
+                        <div className="p-2 bg-[#0E3D42]/10 dark:bg-[#0E3D42]/5 text-[#0E3D42] dark:text-[#C5A059] rounded-lg group-hover:opacity-0 transition-opacity duration-200">
                             <Clock weight="duotone" className="w-5 h-5" />
                         </div>
-                        <GripHorizontal weight="bold" className="w-5 h-5 text-slate-400 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
+                        <GripHorizontal weight="bold" className="w-5 h-5 text-[#C5A059] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
                     </div>
                     Transaksi Terbaru
                 </h3>
@@ -54,14 +54,14 @@ export default function RecentTransactionsWidget({
             <div className="space-y-3 flex-1 overflow-y-auto scrollbar-hide">
                 {transactions.length > 0 ? (
                     transactions.slice(0, 5).map((t) => (
-                        <div key={t.id} className="flex items-center justify-between py-2 border-b border-slate-50 dark:border-slate-800 last:border-0 transition-colors hover:bg-slate-50/50 dark:hover:bg-slate-800/30 rounded-lg px-2 -mx-2 animate-pop-in">
+                        <div key={t.id} className="flex items-center justify-between py-2 border-b border-[#0E3D42]/5 dark:border-[#C5A059]/5 last:border-0 transition-colors hover:bg-[#0E3D42]/5 dark:hover:bg-[#0E3D42]/10 rounded-lg px-2 -mx-2 animate-pop-in">
                             <div className="flex items-start sm:items-center gap-3 flex-1 min-w-0 pr-2 sm:pr-0">
-                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-sm shrink-0 flex-shrink-0 ${t.type === 'INCOME' ? 'bg-emerald-500' : t.type === 'TRANSFER' ? 'bg-blue-500' : 'bg-red-500'}`}>
+                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-[#EDEDD6] shadow-sm shrink-0 flex-shrink-0 ${t.type === 'INCOME' ? 'bg-[#0E3D42]' : t.type === 'TRANSFER' ? 'bg-[#C5A059]' : 'bg-[#9F1239]'}`}>
                                     {t.type === 'INCOME' ? <TrendingUp weight="bold" className="w-5 h-5" /> : t.type === 'TRANSFER' ? <ArrowRightLeft weight="bold" className="w-5 h-5" /> : <TrendingDown weight="bold" className="w-5 h-5" />}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 line-clamp-2 sm:truncate">{t.description}</p>
-                                    <p className="text-[10px] text-slate-400 flex items-center gap-1.5 mt-0.5 flex-wrap">
+                                    <p className="text-sm font-semibold text-slate-700 dark:text-[#EDEDD6] line-clamp-2 sm:truncate">{t.description}</p>
+                                    <p className="text-[10px] text-[#8F7442] dark:text-[#C5A059]/50 flex items-center gap-1.5 mt-0.5 flex-wrap font-bold uppercase tracking-wider">
                                         <span>{t.category}</span>
                                         <span className="opacity-30">·</span>
                                         <span className="shrink-0">{formatDateDayMonth(t.date)}</span>
@@ -77,7 +77,7 @@ export default function RecentTransactionsWidget({
                                 </div>
                             </div>
                             <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-4 shrink-0">
-                                <span className={`text-sm font-bold ${t.type === 'INCOME' ? 'text-emerald-600 dark:text-emerald-400' : t.type === 'TRANSFER' ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400'}`}>
+                                <span className={`text-sm font-bold ${t.type === 'INCOME' ? 'text-[#0E3D42] dark:text-[#5EEAD4]' : t.type === 'TRANSFER' ? 'text-[#C5A059]' : 'text-[#9F1239] dark:text-rose-400'}`}>
                                     {t.type === 'INCOME' ? '+' : '-'}{formatShortIDR(t.amount)}
                                 </span>
                             </div>
