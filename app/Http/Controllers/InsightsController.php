@@ -68,7 +68,9 @@ class InsightsController extends Controller
 
         $latestInsight = FinancialInsight::where('user_id', $user->id)->latest()->first();
         if ($latestInsight && is_array($latestInsight->content)) {
-            $latestInsight->content['budgetCompliance'] = $this->buildBudgetCompliance($user, $now->copy()->startOfMonth(), $now->copy()->endOfMonth());
+            $content = $latestInsight->content;
+            $content['budgetCompliance'] = $this->buildBudgetCompliance($user, $now->copy()->startOfMonth(), $now->copy()->endOfMonth());
+            $latestInsight->content = $content;
         }
 
         return Inertia::render('Insights/Index', [
@@ -431,9 +433,16 @@ class InsightsController extends Controller
                 'trace' => $e->getTraceAsString(),
             ]);
 
+            $errorMessage = 'AI sedang sibuk atau mengalami kendala. Silakan coba kembali dalam beberapa saat.';
+            
+            // Helpful error for admins or local development
+            if ($user->role === 'ADMIN' || config('app.debug')) {
+                $errorMessage .= ' Error: ' . $e->getMessage();
+            }
+
             return response()->json([
                 'success' => false,
-                'message' => 'AI sedang sibuk atau mengalami kendala. Silakan coba kembali dalam beberapa saat.',
+                'message' => $errorMessage,
             ], 500);
         }
     }

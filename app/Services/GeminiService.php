@@ -32,7 +32,7 @@ Kembalikan array objek JSON dengan properti:
 - category (string): Kategori yang paling relevan (Contoh: Makanan, Transportasi, Gaji, dll)
 - date (string): Tanggal dalam format ISO (YYYY-MM-DD). Jika tidak disebutkan, gunakan tanggal hari ini: {$today}.";
 
-            $result = Gemini::generativeModel(config('services.gemini.model', 'gemini-2.5-flash'))
+            $result = Gemini::generativeModel(config('services.gemini.model', 'gemini-1.5-flash'))
                 ->withGenerationConfig(
                     new GenerationConfig(
                         responseMimeType: ResponseMimeType::APPLICATION_JSON,
@@ -250,6 +250,7 @@ PENTING:
             ];
 
             $response = \Illuminate\Support\Facades\Http::timeout(60)
+                ->withoutVerifying()
                 ->acceptJson()
                 ->post($url, $payload);
 
@@ -405,6 +406,7 @@ PENTING: JSON HARUS valid. Jangan tambahkan komentar atau teks di luar JSON. Sem
             ];
 
             $response = \Illuminate\Support\Facades\Http::timeout(60)
+                ->withoutVerifying()
                 ->acceptJson()
                 ->post($url, $payload);
 
