@@ -1,7 +1,7 @@
 import React from 'react';
 import { Sankey, Tooltip, ResponsiveContainer, Layer } from 'recharts';
 import { SankeyData } from '@/types/dashboard';
-import { MagnifyingGlass as FileSearch } from '@phosphor-icons/react';
+import { MagnifyingGlass as FileSearch, TrendUp, ArrowsLeftRight } from '@phosphor-icons/react';
 
 interface SankeyChartProps {
     data: SankeyData | null;
@@ -39,7 +39,7 @@ const CustomTooltip = ({ active, payload }: any) => {
         return (
             <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 max-w-[200px]">
                 {isInternal && (
-                    <div className="inline-block px-2 py-0.5 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-wider mb-2">
+                    <div className="inline-block px-2 py-0.5 rounded-lg bg-[#0B5F64]/10 dark:bg-[#0B5F64]/5 text-[#0B5F64] dark:text-teal-400 text-[10px] font-bold uppercase tracking-wider mb-2">
                         Transfer Internal
                     </div>
                 )}
@@ -47,7 +47,7 @@ const CustomTooltip = ({ active, payload }: any) => {
                     {data.source?.name ? `${data.source.name} → ${data.target.name}` : data.name}
                 </p>
                 <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: isInternal ? '#818cf8' : '#6366f1' }}></span>
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: isInternal ? '#115e59' : '#0B5F64' }}></span>
                     <p className="text-slate-600 dark:text-slate-300 font-bold text-sm">
                         {formatShortIDR(data.value)}
                     </p>
@@ -70,7 +70,7 @@ const CustomNode = ({ x, y, width, height, index, payload, containerWidth, onNod
     const fill = payload.fill || getColorForIndex(index);
     
     // Calculate contrast text color using Tailwind text utilities combined with currentColor fill
-    const labelColor = isSelected ? 'text-indigo-600 dark:text-indigo-400 font-black scale-110' : 'text-slate-800 dark:text-white';
+    const labelColor = isSelected ? 'text-[#0B5F64] dark:text-[#B89A5D] font-black scale-110' : 'text-slate-800 dark:text-white';
 
     // Still use ratio for physical positioning of the text label
     const ratio = x / (containerWidth || 1100);
@@ -84,11 +84,11 @@ const CustomNode = ({ x, y, width, height, index, payload, containerWidth, onNod
                 height={height}
                 fill={fill}
                 fillOpacity={1}
-                stroke={isSelected ? '#6366f1' : fill}
+                stroke={isSelected ? '#0B5F64' : fill}
                 strokeWidth={isSelected ? 4 : 2}
                 rx={6}
                 ry={6}
-                className={`transition-all duration-300 ${isWallet ? 'cursor-pointer hover:brightness-110 hover:stroke-indigo-400' : 'pointer-events-none'}`}
+                className={`transition-all duration-300 ${isWallet ? 'cursor-pointer hover:brightness-110 hover:stroke-teal-400' : 'pointer-events-none'}`}
                 style={{ 
                     filter: isSelected 
                         ? `drop-shadow(0 0 12px ${fill})` 
@@ -117,7 +117,7 @@ const CustomNode = ({ x, y, width, height, index, payload, containerWidth, onNod
                 fontFamily="'Inter', sans-serif"
                 fontWeight="500"
                 fill="currentColor"
-                className={`${isSelected ? 'text-indigo-500' : 'text-slate-500 dark:text-slate-300'} uppercase tracking-wider pointer-events-none transition-all duration-300`}
+                className={`${isSelected ? 'text-[#0B5F64] dark:text-[#B89A5D]' : 'text-slate-500 dark:text-slate-300'} uppercase tracking-wider pointer-events-none transition-all duration-300`}
             >
                 {formatShortIDR(payload.value)}
             </text>
@@ -223,19 +223,18 @@ export default function SankeyChart({ data, isLoading }: SankeyChartProps) {
         <div className="flex flex-col h-full w-full min-h-[700px]">
             <div className="w-full relative bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 overflow-hidden flex flex-col">
                 {/* Decorative background gradients */}
-                <div className="absolute top-0 left-0 w-80 h-80 bg-emerald-500/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
-                <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-indigo-500/5 rounded-full blur-3xl translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
+                <div className="absolute top-0 left-0 w-80 h-80 bg-[#0B5F64]/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+                <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[#0B5F64]/5 rounded-full blur-3xl translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
 
                 {/* Card Header for Title */}
                 <div className="px-6 sm:px-10 pt-8 pb-4 relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                         <h3 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white mb-2">Sankey Diagram</h3>
-                        <p className="text-sm text-slate-500 dark:text-slate-400">Visualisasi dari mana uang Anda berasal dan ke mana mengalirnya.</p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400"><TrendUp weight="fill" className="w-3.5 h-3.5 text-[#0E3D42] dark:text-teal-400" />Visualisasi dari mana uang Anda berasal dan ke mana mengalirnya.</p>
                     </div>
                     {hasData && (
                         <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl border border-slate-100 dark:border-slate-700 animate-fade-in whitespace-nowrap">
-                            <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
-                            <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Tip: Klik Dompet Untuk Lihat Transfer Internal</span>
+                            <span className="text-[10px] font-black text-[#0D3B3F] dark:text-[#C5A059] uppercase tracking-widest opacity-70">Transfer Internal</span>
                         </div>
                     )}
                 </div>
@@ -243,17 +242,18 @@ export default function SankeyChart({ data, isLoading }: SankeyChartProps) {
                 {isLoading ? (
                     <div className="w-full flex flex-col items-center justify-center space-y-4" style={{ height: adaptiveChartHeight }}>
                         <div className="relative">
-                            <div className="w-16 h-16 border-4 border-indigo-100 dark:border-slate-800 rounded-full"></div>
-                            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                            <div className="w-16 h-16 border-4 border-[#0B5F64]/10 dark:border-slate-800 rounded-full"></div>
+                            <div className="absolute top-0 left-0 w-12 h-12 rounded-full border-4 border-[#0E3D42] border-t-transparent animate-spin"></div>
                         </div>
                         <p className="text-slate-400 font-medium animate-pulse text-lg">Memetakan miliaran rupiah...</p>
                     </div>
                 ) : !chartData ? (
                     <div className="w-full flex flex-col items-center justify-center text-center p-8" style={{ minHeight: Math.max(800, adaptiveChartHeight) }}>
-                        <div className="w-24 h-24 bg-slate-50 dark:bg-slate-800/50 rounded-3xl flex items-center justify-center mb-6 text-slate-300 dark:text-slate-700">
-                            <FileSearch weight="duotone" className="w-12 h-12" />
-                        </div>
+                        <div className="w-10 h-10 rounded-2xl bg-[#0E3D42]/10 dark:bg-[#0E3D42]/20 flex items-center justify-center mb-6">
+                        <ArrowsLeftRight weight="duotone" className="w-5 h-5 text-[#0E3D42] dark:text-[#C5A059]" />
+                    </div>
                         <h4 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">Tidak Ada Data Aliran</h4>
+                        <p className="text-sm font-bold text-[#0E3D42] dark:text-[#C5A059] animate-pulse">Menghitung Aliran Kas...</p>
                         <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm">
                             Coba sesuaikan filter tanggal atau tambahkan transaksi baru untuk melihat visualisasi aliran dana.
                         </p>

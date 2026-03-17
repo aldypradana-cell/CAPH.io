@@ -120,7 +120,7 @@ export default function TagInput({ availableTags, selectedTags, onChange }: TagI
     // Get color for a selected tag name from availableTags
     const getTagColor = (name: string): string => {
         const found = availableTags.find(t => t.name.toLowerCase() === name.toLowerCase());
-        return found?.color || '#6366f1';
+        return found?.color || '#0E3D42';
     };
 
     return (
@@ -129,7 +129,7 @@ export default function TagInput({ availableTags, selectedTags, onChange }: TagI
                 Tags
             </label>
             <div
-                className="flex flex-wrap items-center gap-1.5 min-h-[42px] px-3 py-2 glass-heavy rounded-2xl focus-within:ring-2 focus-within:ring-indigo-500 transition-all cursor-text"
+                className="flex flex-wrap items-center gap-1.5 min-h-[42px] px-3 py-2 glass-heavy rounded-2xl focus-within:ring-2 focus-within:ring-[#0E3D42] transition-all cursor-text"
                 onClick={() => inputRef.current?.focus()}
             >
                 {/* Selected tag badges */}
@@ -177,7 +177,7 @@ export default function TagInput({ availableTags, selectedTags, onChange }: TagI
                             onClick={() => addTag(opt.name)}
                             onMouseEnter={() => setHighlightIndex(idx)}
                             className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 text-left text-sm transition-colors ${idx === highlightIndex
-                                    ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
+                                    ? 'bg-[#0E3D42]/10 dark:bg-[#0E3D42]/5 text-[#0E3D42] dark:text-[#C5A059]'
                                     : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
                                 }`}
                         >
@@ -185,15 +185,15 @@ export default function TagInput({ availableTags, selectedTags, onChange }: TagI
                                 <>
                                     <span
                                         className="w-3 h-3 rounded-full shrink-0"
-                                        style={{ backgroundColor: opt.color || '#6366f1' }}
+                                        style={{ backgroundColor: opt.color || '#0E3D42' }}
                                     />
                                     <span className="font-medium">{opt.name}</span>
                                 </>
                             ) : (
                                 <>
-                                    <Plus weight="bold" className="w-4 h-4 text-indigo-500 shrink-0" />
+                                    <Plus weight="bold" className="w-4 h-4 text-[#0E3D42] shrink-0" />
                                     <span className="font-medium">
-                                        Buat tag: <strong className="text-indigo-600 dark:text-indigo-400">"{opt.name}"</strong>
+                                        Buat tag: <strong className="text-[#0E3D42] dark:text-[#C5A059]">"{opt.name}"</strong>
                                     </span>
                                 </>
                             )}

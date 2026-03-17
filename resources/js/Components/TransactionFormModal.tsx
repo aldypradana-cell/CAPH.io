@@ -193,14 +193,14 @@ export default function TransactionFormModal({
 
     return createPortal(
         <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 animate-fade-in">
-            <div className="absolute inset-0 bg-indigo-900/10 dark:bg-slate-950/50 backdrop-blur-md transition-opacity" onClick={handleClose} />
+            <div className="absolute inset-0 bg-[#0E3D42]/10 dark:bg-slate-950/50 backdrop-blur-md transition-opacity" onClick={handleClose} />
             <div className="relative w-full max-w-md glass-heavy rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-pop-in">
                 {/* Ambient Colors for Glass */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-purple-400/20 dark:bg-purple-500/20 rounded-full blur-3xl pointer-events-none" style={{ transform: 'translate(30%, -30%)' }} />
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-400/20 dark:bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" style={{ transform: 'translate(-30%, 30%)' }} />
+                <div className="absolute top-0 right-0 w-64 h-64 bg-[#0E3D42]/10 dark:bg-[#0E3D42]/5 rounded-full blur-3xl pointer-events-none" style={{ transform: 'translate(30%, -30%)' }} />
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#0E3D42]/10 dark:bg-[#0E3D42]/5 rounded-full blur-3xl pointer-events-none" style={{ transform: 'translate(-30%, 30%)' }} />
 
                 {/* Gradient top bar */}
-                <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 z-10" />
+                <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#0E3D42] via-[#C5A059] to-[#134E4A] z-10" />
 
                 {/* Header */}
                 <div className="p-5 pb-0 shrink-0">
@@ -254,7 +254,7 @@ export default function TransactionFormModal({
                                 className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 ${inputType === type
                                     ? type === 'INCOME' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
                                         : type === 'EXPENSE' ? 'bg-red-500 text-white shadow-lg shadow-red-500/30'
-                                            : 'bg-blue-500 text-white shadow-lg shadow-blue-500/30'
+                                            : 'bg-[#0E3D42] text-white shadow-lg shadow-[#0E3D42]/30'
                                     : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
                                     }`}
                             >
@@ -294,13 +294,13 @@ export default function TransactionFormModal({
                         {/* Amount First */}
                         <div>
                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Jumlah (Rp)</label>
-                            <input type="tel" inputMode="numeric" autoComplete="off" value={data.amount} onChange={(e) => handleAmountChange(e.target.value)} className="w-full px-4 py-3 border border-slate-200/60 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-2xl text-slate-900 dark:text-white bg-white/50 dark:bg-slate-900/50 text-center backdrop-blur-sm" placeholder="0" autoFocus required />
+                            <input type="tel" inputMode="numeric" autoComplete="off" value={data.amount} onChange={(e) => handleAmountChange(e.target.value)} className="w-full px-4 py-3 border border-slate-200/60 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-[#0E3D42] outline-none font-bold text-2xl text-slate-900 dark:text-white bg-white/50 dark:bg-slate-900/50 text-center backdrop-blur-sm" placeholder="0" autoFocus required />
                         </div>
 
                         {!data.is_paylater && (
                             <div>
                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Dompet</label>
-                                <select value={data.wallet_id} onChange={(e) => setData('wallet_id', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200/60 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm" required={!data.is_paylater}>
+                                <select value={data.wallet_id} onChange={(e) => setData('wallet_id', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200/60 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-[#0E3D42] outline-none font-medium text-slate-900 dark:text-white bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm" required={!data.is_paylater}>
                                     <option value="">Pilih Dompet</option>
                                     {wallets.filter(w => !(w as any).is_archived).map(w => (
                                         <option key={w.id} value={w.id}>
@@ -389,7 +389,7 @@ export default function TransactionFormModal({
                         {inputType === 'TRANSFER' && (
                             <div>
                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Ke Dompet</label>
-                                <select value={data.to_wallet_id} onChange={(e) => setData('to_wallet_id', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200/60 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm" required>
+                                <select value={data.to_wallet_id} onChange={(e) => setData('to_wallet_id', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200/60 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-[#0E3D42] outline-none font-medium text-slate-900 dark:text-white bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm" required>
                                     <option value="">Pilih Dompet Tujuan</option>
                                     {wallets.filter(w => w.id.toString() !== data.wallet_id && !(w as any).is_archived).map(w => (
                                         <option key={w.id} value={w.id}>
@@ -480,7 +480,7 @@ export default function TransactionFormModal({
                                 <select
                                     value={data.category}
                                     onChange={(e) => setData('category', e.target.value)}
-                                    className="w-full px-4 py-2.5 border border-slate-200/60 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm"
+                                    className="w-full px-4 py-2.5 border border-slate-200/60 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-[#0E3D42] outline-none font-medium text-slate-900 dark:text-white bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm"
                                     required
                                 >
                                     <option value="">Pilih</option>
@@ -494,7 +494,7 @@ export default function TransactionFormModal({
                             </div>
                             <div>
                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Tanggal</label>
-                                <input type="date" value={data.date} onChange={(e) => setData('date', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200/60 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm" required />
+                                <input type="date" value={data.date} onChange={(e) => setData('date', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200/60 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-[#0E3D42] outline-none font-medium text-slate-900 dark:text-white bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm" required />
                             </div>
                         </div>
 
@@ -519,7 +519,7 @@ export default function TransactionFormModal({
                                                     setData('description', s);
                                                     setIsDescFocused(false);
                                                 }}
-                                                className="shrink-0 px-3 py-1.5 text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/40 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-900/40 hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
+                                                className="shrink-0 px-3 py-1.5 text-[11px] font-semibold text-[#0E3D42] dark:text-[#C5A059] bg-[#0E3D42]/10 dark:bg-[#0E3D42]/5 border border-[#0E3D42]/20 dark:border-teal-900/30 rounded-full hover:bg-[#0E3D42]/20 dark:hover:bg-[#0E3D42]/10 hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
                                             >
                                                 {s}
                                             </button>
@@ -533,7 +533,7 @@ export default function TransactionFormModal({
                                 onChange={(e) => setData('description', e.target.value)}
                                 onFocus={() => setIsDescFocused(true)}
                                 onBlur={() => setTimeout(() => setIsDescFocused(false), 200)}
-                                className="w-full px-4 py-2.5 border border-slate-200/60 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm"
+                                className="w-full px-4 py-2.5 border border-slate-200/60 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-[#0B5F64] outline-none font-medium text-slate-900 dark:text-white bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm"
                                 placeholder="Makan siang"
                                 required
                             />
@@ -547,7 +547,7 @@ export default function TransactionFormModal({
 
                         <div className="flex space-x-3 pt-4">
                             <button type="button" onClick={handleClose} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors active:scale-95">Batal</button>
-                            <button type="submit" disabled={processing} className={`flex-1 py-3 text-white rounded-2xl text-sm font-bold shadow-lg hover:scale-105 active:scale-95 transition-transform disabled:opacity-50 ${data.is_paylater ? 'bg-gradient-to-r from-amber-500 to-orange-500 shadow-amber-500/30' : 'bg-gradient-to-r from-indigo-600 to-violet-600 shadow-indigo-500/30'}`}>
+                            <button type="submit" disabled={processing} className={`flex-1 py-3 text-white rounded-2xl text-sm font-bold shadow-lg hover:scale-105 active:scale-95 transition-transform disabled:opacity-50 ${data.is_paylater ? 'bg-gradient-to-r from-amber-500 to-orange-500 shadow-amber-500/30' : 'bg-gradient-to-r from-[#0E3D42] to-[#134E4A] shadow-[#0E3D42]/30'}`}>
                                 {processing ? 'Menyimpan...' : (data.is_paylater ? 'Simpan (PayLater 🕒)' : 'Simpan')}
                             </button>
                         </div>

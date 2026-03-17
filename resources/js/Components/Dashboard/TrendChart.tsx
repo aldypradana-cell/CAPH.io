@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { TrendUp as TrendingUp, ChartBar as BarChart3, DotsSix as GripHorizontal, Pulse } from '@phosphor-icons/react';
+import { TrendUp as TrendingUp, ChartBar as BarChart3, DotsSix as GripHorizontal, Pulse, ChartLine } from '@phosphor-icons/react';
 import {
     AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
@@ -137,7 +137,7 @@ export default function TrendChart({
                 {isLoading ? (
                     <div className="flex flex-col h-full px-4 pb-8 relative overflow-hidden">
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <Pulse weight="duotone" className="w-12 h-12 text-[#0B5F64]/20 dark:text-[#B89A5D]/20 animate-pulse" />
+                            <ChartLine weight="duotone" className="w-12 h-12 text-[#0E3D42]/20 dark:text-[#C5A059]/20 animate-pulse" />
                         </div>
                         <div className="mt-auto h-1/2 flex items-end gap-1 opacity-20">
                             {Array.from({ length: 20 }).map((_, i) => (

@@ -67,8 +67,8 @@ function TransactionHeatmap({ data, month, onDateSelect }: { data: Record<string
         if (avgExpense === 0) return 'bg-amber-100 dark:bg-amber-900/30 text-amber-600';
         
         const ratio = expense / avgExpense;
-        if (ratio < 0.3) return 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-500 hover:bg-indigo-200';
-        if (ratio <= 1.0) return 'bg-amber-200 dark:bg-amber-900/50 text-amber-700 hover:bg-amber-300';
+        if (ratio < 0.3) return 'bg-[#0E3D42]/10 dark:bg-[#0E3D42]/5 text-[#0E3D42] dark:text-teal-400 hover:bg-[#0E3D42]/20';
+        if (ratio <= 1.0) return 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 hover:bg-amber-200';
         return 'bg-red-500 hover:bg-red-400 text-white';
     };
 
@@ -89,7 +89,7 @@ function TransactionHeatmap({ data, month, onDateSelect }: { data: Record<string
                 <button 
                     onClick={() => { onDateSelect(dateStr); setIsExpanded(false); }}
                     className={`w-full aspect-square rounded sm:rounded-md flex items-center justify-center text-[10px] font-bold transition-all hover:scale-110 active:scale-95 ${colorClass} ${
-                        todayString() === dateStr ? 'ring-2 ring-offset-1 ring-indigo-500 dark:ring-offset-slate-900' : ''
+                        todayString() === dateStr ? 'ring-2 ring-offset-1 ring-[#0E3D42] dark:ring-teal-400 dark:ring-offset-slate-900' : ''
                     }`}
                 >
                     {i}
@@ -108,7 +108,7 @@ function TransactionHeatmap({ data, month, onDateSelect }: { data: Record<string
         <div className="relative inline-block z-30">
             <button 
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="w-full sm:w-auto flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all shadow-sm"
+                className="w-full sm:w-auto flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold text-[#0E3D42] dark:text-[#C5A059] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all shadow-sm"
             >
                 <Calendar weight="duotone" className="w-3.5 h-3.5" />
                 Aktivitas
@@ -133,8 +133,8 @@ function TransactionHeatmap({ data, month, onDateSelect }: { data: Record<string
                         </div>
 
                         <div className="flex justify-between items-center mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 text-[9px] font-bold text-slate-500">
-                            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm bg-indigo-100 dark:bg-indigo-900/40"></div> Baik</div>
-                            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm bg-amber-200 dark:bg-amber-900/50"></div> Sedang</div>
+                            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm bg-[#0E3D42]/20 dark:bg-[#0E3D42]/10"></div> Baik</div>
+                            <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm bg-amber-100 dark:bg-amber-900/30"></div> Sedang</div>
                             <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm bg-red-500"></div> Boros</div>
                         </div>
                     </div>
@@ -159,8 +159,8 @@ function TransactionHeatmap({ data, month, onDateSelect }: { data: Record<string
                                 </div>
 
                                 <div className="flex justify-between items-center mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-[10px] font-bold text-slate-500">
-                                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-sm bg-indigo-100 dark:bg-indigo-900/40"></div> Baik</div>
-                                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-sm bg-amber-200 dark:bg-amber-900/50"></div> Sedang</div>
+                                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-sm bg-[#0E3D42]/20 dark:bg-[#0E3D42]/10"></div> Baik</div>
+                                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-sm bg-amber-100 dark:bg-amber-900/30"></div> Sedang</div>
                                     <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-sm bg-red-500"></div> Boros</div>
                                 </div>
                             </div>
@@ -389,12 +389,12 @@ export default function TransactionsIndex({
                                 placeholder="Cari transaksi..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-11 pr-4 py-3 glass-card rounded-2xl text-sm outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-slate-700 dark:text-slate-200 placeholder-slate-400 border-none"
+                                className="w-full pl-11 pr-4 py-3 glass-card rounded-2xl text-sm outline-none focus:ring-2 focus:ring-[#0E3D42] font-medium text-slate-700 dark:text-slate-200 placeholder-slate-400 border-none"
                             />
                         </div>
 
                         {/* Mobile-only: CSV Export */}
-                        <button onClick={handleExportCSV} className="flex sm:hidden items-center justify-center py-2.5 px-2.5 glass-card rounded-xl text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md transition-all active:scale-95 shrink-0" title="Export CSV">
+                        <button onClick={handleExportCSV} className="flex sm:hidden items-center justify-center py-2.5 px-2.5 glass-card rounded-xl text-slate-500 hover:text-[#0B5F64] dark:hover:text-[#B89A5D] hover:shadow-md transition-all active:scale-95 shrink-0" title="Export CSV">
                             <Download weight="bold" className="w-4 h-4" />
                         </button>
 
@@ -405,7 +405,7 @@ export default function TransactionsIndex({
                                     setIsSelectionMode(!isSelectionMode);
                                     if (isSelectionMode) setSelectedIds([]);
                                 }} 
-                                className={`flex sm:hidden items-center justify-center py-2.5 px-2.5 rounded-xl transition-all active:scale-95 shrink-0 ${isSelectionMode ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800' : 'glass-card text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md'}`} 
+                                className={`flex sm:hidden items-center justify-center py-2.5 px-2.5 rounded-xl transition-all active:scale-95 shrink-0 ${isSelectionMode ? 'bg-[#0B5F64]/10 dark:bg-[#0B5F64]/5 text-[#0B5F64] dark:text-teal-400 border border-[#0B5F64]/20 dark:border-teal-900/30' : 'glass-card text-slate-500 hover:text-[#0B5F64] dark:hover:text-[#B89A5D] hover:shadow-md'}`} 
                                 title="Pilih Beberapa"
                             >
                                 <ListChecks weight={isSelectionMode ? "fill" : "bold"} className="w-4 h-4" />
@@ -433,7 +433,7 @@ export default function TransactionsIndex({
                             />
                         </div>
 
-                        <button onClick={applyFilters} className="px-3 py-1.5 sm:px-4 sm:py-2 bg-indigo-600 text-white rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold hover:bg-indigo-700 transition-all active:scale-95 shrink-0">
+                        <button onClick={applyFilters} className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#0E3D42] text-white rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold hover:bg-[#0A2E31] transition-all active:scale-95 shrink-0">
                             Cari
                         </button>
 
@@ -450,13 +450,13 @@ export default function TransactionsIndex({
                         />
 
                         {(filterType || filterWallet || filterCategory || filterTag || startDate || endDate) && (
-                            <button onClick={clearFilters} className="px-3 py-1.5 sm:px-4 sm:py-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95 shrink-0">
+                            <button onClick={clearFilters} className="px-3 py-1.5 sm:px-4 sm:py-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold hover:text-[#0E3D42] dark:hover:text-[#C5A059] transition-all active:scale-95 shrink-0">
                                 Reset
                             </button>
                         )}
 
                         {/* CSV Export — desktop only */}
-                        <button onClick={handleExportCSV} className="hidden sm:flex p-2 sm:p-3 glass-card rounded-xl sm:rounded-2xl text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md transition-all active:scale-95" title="Export CSV">
+                        <button onClick={handleExportCSV} className="hidden sm:flex p-2 sm:p-3 glass-card rounded-xl sm:rounded-2xl text-slate-500 hover:text-[#0B5F64] dark:hover:text-[#B89A5D] hover:shadow-md transition-all active:scale-95" title="Export CSV">
                             <Download weight="bold" className="w-4 h-4" />
                         </button>
 
@@ -467,7 +467,7 @@ export default function TransactionsIndex({
                                     setIsSelectionMode(!isSelectionMode);
                                     if (isSelectionMode) setSelectedIds([]);
                                 }} 
-                                className={`hidden sm:flex p-2 sm:p-3 rounded-xl sm:rounded-2xl transition-all active:scale-95 ${isSelectionMode ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800' : 'glass-card text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md'}`} 
+                                className={`hidden sm:flex p-2 sm:p-3 rounded-xl sm:rounded-2xl transition-all active:scale-95 ${isSelectionMode ? 'bg-[#0B5F64]/10 dark:bg-[#0B5F64]/5 text-[#0B5F64] dark:text-teal-400 border border-[#0B5F64]/20 dark:border-teal-900/30' : 'glass-card text-slate-500 hover:text-[#0B5F64] dark:hover:text-[#B89A5D] hover:shadow-md'}`} 
                                 title="Pilih Beberapa"
                             >
                                 <ListChecks weight={isSelectionMode ? "fill" : "bold"} className="w-4 h-4" />
@@ -493,7 +493,7 @@ export default function TransactionsIndex({
                         {/* Add Button */}
                         <button
                             onClick={() => { setEditingTransaction(null); setIsModalOpen(true); }}
-                            className="hidden sm:flex items-center px-5 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95"
+                            className="hidden sm:flex items-center px-5 py-3 bg-gradient-to-r from-[#0E3D42] to-[#134E4A] text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-[#0E3D42]/30 transition-all hover:scale-105 active:scale-95"
                         >
                             <Plus weight="bold" className="w-4 h-4 mr-2" /> Transaksi Baru
                         </button>
@@ -502,19 +502,19 @@ export default function TransactionsIndex({
 
                 {/* Bulk Actions Bar */}
                 {filteredTransactions.length > 0 && isSelectionMode && (
-                    <div className="flex items-center justify-between px-4 py-2 bg-indigo-50 dark:bg-indigo-900/10 rounded-xl border border-indigo-200 dark:border-indigo-800/50 shadow-sm animate-fade-in-up">
+                    <div className="flex items-center justify-between px-4 py-2 bg-[#0E3D42]/10 dark:bg-[#0E3D42]/5 rounded-xl border border-[#0E3D42]/20 dark:border-teal-900/30 shadow-sm animate-fade-in-up">
                         <div className="flex items-center gap-3">
                             <button 
                                 onClick={toggleSelectAll}
                                 className={`w-5 h-5 rounded flex items-center justify-center border-2 transition-all ${
                                     selectedIds.length > 0 && selectedIds.length === filteredTransactions.length
-                                    ? 'bg-indigo-600 border-indigo-600 text-white'
+                                    ? 'bg-[#0E3D42] border-[#0E3D42] text-white'
                                     : selectedIds.length > 0
-                                    ? 'bg-indigo-600/20 border-indigo-600 text-indigo-600'
-                                    : 'border-slate-300 dark:border-slate-700 hover:border-indigo-400'
+                                    ? 'bg-[#0E3D42]/20 border-[#0E3D42] text-[#0E3D42]'
+                                    : 'border-slate-300 dark:border-slate-700 hover:border-[#0E3D42]'
                                 }`}
                             >
-                                {selectedIds.length === filteredTransactions.length ? <Checks weight="bold" className="w-3.5 h-3.5" /> : selectedIds.length > 0 ? <div className="w-2 h-0.5 bg-indigo-600 rounded-full" /> : null}
+                                {selectedIds.length === filteredTransactions.length ? <Checks weight="bold" className="w-3.5 h-3.5" /> : selectedIds.length > 0 ? <div className="w-2 h-0.5 bg-[#0E3D42] rounded-full" /> : null}
                             </button>
                             <span className="text-[10px] sm:text-xs font-bold text-slate-500">
                                 {selectedIds.length > 0 ? `${selectedIds.length} terpilih` : 'Pilih Semua'}
@@ -567,12 +567,12 @@ export default function TransactionsIndex({
                         <div className="hidden sm:block w-px h-8 bg-slate-200 dark:bg-slate-800"></div>
 
                         <div className="flex items-center gap-2 sm:ml-auto">
-                            <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${filterStats.net >= 0 ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400' : 'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400'}`}>
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${filterStats.net >= 0 ? 'bg-teal-100 dark:bg-teal-900/40 text-teal-600 dark:text-teal-400' : 'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400'}`}>
                                 <ArrowRightLeft weight="bold" className="w-3 h-3" />
                             </div>
                             <div>
                                 <p className="text-[10px] sm:text-xs font-medium text-slate-500 mb-0.5">Arus Bersih</p>
-                                <p className={`text-xs sm:text-sm font-bold ${filterStats.net >= 0 ? 'text-indigo-600 dark:text-indigo-400' : 'text-red-600 dark:text-red-400'}`}>
+                                <p className={`text-xs sm:text-sm font-bold ${filterStats.net >= 0 ? 'text-[#0E3D42] dark:text-teal-400' : 'text-red-600 dark:text-red-400'}`}>
                                     {filterStats.net > 0 ? '+' : ''}{formatIDR(filterStats.net)}
                                 </p>
                             </div>
@@ -587,7 +587,7 @@ export default function TransactionsIndex({
                             <div
                                 key={t.id}
                                 onClick={() => { if (isSelectionMode) handleSelect(t.id); }}
-                                className={`glass-card rounded-2xl p-4 flex items-center justify-between group transition-all duration-300 animate-fade-in-up ${isSelectionMode ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50' : ''} ${selectedIds.includes(t.id) ? 'ring-2 ring-indigo-500 bg-indigo-500/5 shadow-md' : 'hover:shadow-lg'}`}
+                                className={`glass-card rounded-2xl p-4 flex items-center justify-between group transition-all duration-300 animate-fade-in-up ${isSelectionMode ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50' : ''} ${selectedIds.includes(t.id) ? 'ring-2 ring-[#0E3D42] bg-[#0E3D42]/5 shadow-md' : 'hover:shadow-lg'}`}
                                 style={{ animationDelay: `${idx * 50}ms` }}
                             >
                                 <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
@@ -596,8 +596,8 @@ export default function TransactionsIndex({
                                         <div 
                                             className={`w-5 h-5 mt-2.5 sm:mt-0 rounded flex items-center justify-center border-2 shrink-0 transition-all ${
                                                 selectedIds.includes(t.id)
-                                                ? 'bg-indigo-600 border-indigo-600 text-white'
-                                                : 'border-slate-300 dark:border-slate-700 group-hover:border-indigo-400 bg-white dark:bg-slate-900'
+                                                ? 'bg-[#0E3D42] border-[#0E3D42] text-white'
+                                                : 'border-slate-300 dark:border-slate-700 group-hover:border-[#0E3D42] bg-white dark:bg-slate-900'
                                             }`}
                                         >
                                             {selectedIds.includes(t.id) && <Check weight="bold" className="w-3.5 h-3.5" />}
@@ -658,7 +658,7 @@ export default function TransactionsIndex({
                                     {!isSelectionMode && (
                                         t.category !== 'Investasi Emas' ? (
                                             <div className="flex items-center gap-2 sm:gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                                                <button onClick={(e) => { e.stopPropagation(); handleEdit(t); }} className="p-2 text-indigo-500 dark:text-indigo-400 sm:text-slate-300 md:hover:text-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/20 sm:bg-transparent md:hover:bg-indigo-50 md:dark:hover:bg-indigo-900/30 rounded-lg transition-all md:hover:scale-110 active:scale-90 flex items-center justify-center">
+                                                <button onClick={(e) => { e.stopPropagation(); handleEdit(t); }} className="p-2 text-[#0E3D42] dark:text-[#C5A059] sm:text-slate-300 md:hover:text-[#0E3D42] bg-[#0E3D42]/10 dark:bg-[#0E3D42]/5 sm:bg-transparent md:hover:bg-[#0E3D42]/10 md:dark:hover:bg-[#0E3D42]/5 rounded-lg transition-all md:hover:scale-110 active:scale-90 flex items-center justify-center">
                                                     <Pencil weight="duotone" className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                                 </button>
                                                 <button onClick={(e) => { e.stopPropagation(); setDeleteId(t.id); }} className="p-2 text-red-500 dark:text-red-400 sm:text-slate-300 md:hover:text-red-500 bg-red-50/50 dark:bg-red-900/20 sm:bg-transparent md:hover:bg-red-50 md:dark:hover:bg-red-900/30 rounded-lg transition-all md:hover:scale-110 active:scale-90 flex items-center justify-center">
@@ -699,15 +699,15 @@ export default function TransactionsIndex({
                                     );
                                 }
                                 return (
-                                    <button
-                                        key={i}
-                                        onClick={() => router.get(link.url!, {}, { preserveState: true, preserveScroll: true })}
-                                        className={`px-3 py-2 text-xs font-bold rounded-xl transition-all active:scale-95 ${link.active
-                                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
-                                            : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
-                                            }`}
-                                        dangerouslySetInnerHTML={{ __html: link.label }}
-                                    />
+                                        <button
+                                            key={i}
+                                            onClick={() => router.get(link.url!, {}, { preserveState: true, preserveScroll: true })}
+                                            className={`px-3 py-2 text-xs font-bold rounded-xl transition-all active:scale-95 ${link.active
+                                                ? 'bg-[#0E3D42] text-white shadow-lg shadow-[#0E3D42]/30'
+                                                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                                                }`}
+                                            dangerouslySetInnerHTML={{ __html: link.label }}
+                                        />
                                 );
                             })}
                         </div>
@@ -790,8 +790,8 @@ TransactionsIndex.layout = (page: any) => (
     <AppLayout
         header={
             <div className="flex flex-col min-w-0">
-                <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Riwayat Transaksi</h1>
-                <p className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">
+                <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-[#EDEDD6] tracking-tight truncate">Riwayat Transaksi</h1>
+                <p className="hidden sm:block text-xs text-[#8F7442] dark:text-[#C5A059] font-medium mt-0.5 truncate">
                     Kelola semua transaksi keuangan Anda
                 </p>
             </div>

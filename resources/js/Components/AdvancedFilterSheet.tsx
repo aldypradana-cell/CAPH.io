@@ -42,7 +42,7 @@ function FilterPill({
             onClick={onClick}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-95 ${
                 isActive
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30'
+                    ? 'bg-[#0E3D42] text-white shadow-md shadow-[#0E3D42]/30'
                     : 'bg-white/40 dark:bg-slate-800/40 backdrop-blur-sm border-white/40 dark:border-slate-700/50 border text-slate-600 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-slate-700/50'
             }`}
         >
@@ -141,7 +141,7 @@ export default function AdvancedFilterSheet({
                 onClick={openSheet}
                 className={`flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold transition-all active:scale-95 ${
                     activeCount > 0
-                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30'
+                        ? 'bg-[#0E3D42] text-white shadow-md shadow-[#0E3D42]/30'
                         : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
                 }`}
             >
@@ -159,14 +159,14 @@ export default function AdvancedFilterSheet({
                 <div className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center animate-fade-in">
                     {/* Backdrop */}
                     <div
-                        className="absolute inset-0 bg-indigo-900/10 dark:bg-slate-950/50 backdrop-blur-md transition-opacity"
+                        className="absolute inset-0 bg-[#0E3D42]/10 dark:bg-slate-950/50 backdrop-blur-md transition-opacity"
                         onClick={() => setIsOpen(false)}
                     />
 
                     {/* Sheet */}
                     <div className="relative w-full sm:max-w-md glass-heavy rounded-t-[2rem] sm:rounded-[2rem] shadow-2xl overflow-hidden animate-pop-in max-h-[85vh] flex flex-col border-t sm:border border-slate-100/50 dark:border-slate-800/50">
                         {/* Ambient Colors for Glass */}
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-400/20 dark:bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" style={{ transform: 'translate(30%, -30%)' }} />
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-[#0E3D42]/10 dark:bg-[#0E3D42]/5 rounded-full blur-3xl pointer-events-none" style={{ transform: 'translate(30%, -30%)' }} />
                         <div className="absolute bottom-0 left-0 w-64 h-64 bg-rose-400/20 dark:bg-pink-500/20 rounded-full blur-3xl pointer-events-none" style={{ transform: 'translate(-30%, 30%)' }} />
                         {/* Drag handle (mobile) */}
                         <div className="sm:hidden flex justify-center pt-3 pb-1">
@@ -176,7 +176,7 @@ export default function AdvancedFilterSheet({
                         {/* Header */}
                         <div className="flex items-center justify-between px-5 pt-3 sm:pt-5 pb-3 border-b border-slate-100 dark:border-slate-800">
                             <h3 className="text-base font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                                <SlidersHorizontal weight="duotone" className="w-4 h-4 text-indigo-500" />
+                                <SlidersHorizontal weight="duotone" className="w-4 h-4 text-[#0E3D42] dark:text-[#C5A059]" />
                                 Filter Lanjutan
                             </h3>
                             <button
@@ -290,7 +290,7 @@ export default function AdvancedFilterSheet({
                             </button>
                             <button
                                 onClick={handleApply}
-                                className="flex-1 py-3 rounded-xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/30 transition-all active:scale-95 flex items-center justify-center gap-1.5"
+                                className="flex-1 py-3 rounded-xl text-sm font-bold text-white bg-[#0E3D42] hover:bg-[#0A2E31] shadow-lg shadow-[#0E3D42]/30 transition-all active:scale-95 flex items-center justify-center gap-1.5"
                             >
                                 <Check weight="bold" className="w-4 h-4" />
                                 Terapkan
