@@ -42,12 +42,12 @@ export default function UpcomingBillsWidget({
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 group cursor-grab active:cursor-grabbing">
                     <div className="relative">
-                        <AlertTriangle weight="duotone" className="w-5 h-5 text-rose-500 group-hover:opacity-0 transition-opacity duration-200" />
+                        <AlertTriangle weight="duotone" className="w-5 h-5 text-[#0B5F64] dark:text-teal-400 group-hover:opacity-0 transition-opacity duration-200" />
                         <GripHorizontal weight="bold" className="w-5 h-5 text-slate-400 absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
                     </div>
                     Hutang & Piutang
                 </h3>
-                <Link href={route('debts.index')} onMouseDown={(e) => e.stopPropagation()} className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">Lihat Semua</Link>
+                <Link href={route('debts.index')} onMouseDown={(e) => e.stopPropagation()} className="text-xs font-bold text-[#0B5F64] dark:text-[#B89A5D] hover:underline">Lihat Semua</Link>
             </div>
             <div className="space-y-3 flex-1 overflow-y-auto scrollbar-hide">
                 {bills.length > 0 ? (
@@ -71,7 +71,7 @@ export default function UpcomingBillsWidget({
                                         </div>
                                         <div className="min-w-0">
                                             <p className="text-sm font-bold text-slate-800 dark:text-white truncate">{bill.person}</p>
-                                            <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                                            <p className="text-[10px] font-bold text-[#8F7442] dark:text-[#B89A5D] flex items-center gap-1">
                                                 {isDebt ? 'Hutang' : isReceivable ? 'Piutang' : 'Tagihan'}
                                                 {dueDate && (
                                                     <span className={`flex items-center ml-1 ${isOverdue ? 'text-rose-500' : ''}`}>

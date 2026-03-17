@@ -38,11 +38,11 @@ export default function TopTagsWidget({
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 group cursor-grab active:cursor-grabbing">
                     <div className="relative">
-                        <Tag weight="duotone" className="w-4 h-4 text-emerald-500 dark:text-emerald-400 group-hover:scale-110 transition-transform" />
+                        <Tag weight="duotone" className="w-4 h-4 text-[#0B5F64] dark:text-teal-400 group-hover:scale-110 transition-transform" />
                     </div>
                     Fokus Pengeluaran
                 </h3>
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Bulan Ini</span>
+                <span className="text-[10px] font-bold text-[#8F7442] dark:text-[#B89A5D] uppercase tracking-widest">Bulan Ini</span>
             </div>
             <div className="space-y-4 flex-1 overflow-y-auto min-h-0 pr-1 scrollbar-hide">
                 {tags.length > 0 ? (

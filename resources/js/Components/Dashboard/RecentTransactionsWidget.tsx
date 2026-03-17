@@ -42,11 +42,14 @@ export default function RecentTransactionsWidget({
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 group cursor-grab active:cursor-grabbing">
                     <div className="relative">
-                        <GripHorizontal weight="bold" className="w-5 h-5 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
+                        <div className="p-2 bg-[#0B5F64]/10 dark:bg-[#0B5F64]/5 text-[#0B5F64] dark:text-teal-400 rounded-lg group-hover:opacity-0 transition-opacity duration-200">
+                            <Clock weight="duotone" className="w-5 h-5" />
+                        </div>
+                        <GripHorizontal weight="bold" className="w-5 h-5 text-slate-400 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
                     </div>
                     Transaksi Terbaru
                 </h3>
-                <Link href={route('transactions.index')} onMouseDown={(e) => e.stopPropagation()} className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">Lihat</Link>
+                <Link href={route('transactions.index')} onMouseDown={(e) => e.stopPropagation()} className="text-xs font-bold text-[#0B5F64] dark:text-[#B89A5D] hover:underline">Lihat</Link>
             </div>
             <div className="space-y-3 flex-1 overflow-y-auto scrollbar-hide">
                 {transactions.length > 0 ? (

@@ -64,12 +64,12 @@ export default function BudgetWidget({
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 group cursor-grab active:cursor-grabbing">
                     <div className="relative">
-                        <Target weight="duotone" className="w-5 h-5 text-indigo-500 group-hover:opacity-0 transition-opacity duration-200" />
+                        <Target weight="duotone" className="w-5 h-5 text-[#0B5F64] group-hover:opacity-0 transition-opacity duration-200" />
                         <GripHorizontal weight="bold" className="w-5 h-5 text-slate-400 absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
                     </div>
                     Budget Watch
                 </h3>
-                <Link href={route('budgets.index')} onMouseDown={(e) => e.stopPropagation()} className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">Lihat</Link>
+                <Link href={route('budgets.index')} onMouseDown={(e) => e.stopPropagation()} className="text-xs font-bold text-[#0B5F64] dark:text-[#B89A5D] hover:underline">Lihat</Link>
             </div>
             <div className="space-y-4 flex-1 overflow-y-auto scrollbar-hide">
                 {budgets.length === 0 && (
@@ -82,8 +82,8 @@ export default function BudgetWidget({
                 {masterBudgets.length > 0 && (
                     <div>
                         <div className="flex items-center gap-1.5 mb-2">
-                            <Zap weight="duotone" className="w-3.5 h-3.5 text-indigo-500" />
-                            <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">Alokasi Otomatis</span>
+                            <Zap weight="duotone" className="w-3.5 h-3.5 text-[#0B5F64]" />
+                            <span className="text-[10px] font-bold text-[#8F7442] dark:text-[#B89A5D] uppercase tracking-widest">Alokasi Otomatis</span>
                         </div>
                         <div className="grid grid-cols-2 gap-2">
                             {masterBudgets.map((b) => {
@@ -128,7 +128,7 @@ export default function BudgetWidget({
                         {masterBudgets.length > 0 && (
                             <div className="flex items-center gap-1.5 mb-2">
                                 <Target weight="duotone" className="w-3.5 h-3.5 text-slate-400" />
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Budget Manual</span>
+                                <span className="text-[10px] font-bold text-[#8F7442] dark:text-[#B89A5D] uppercase tracking-widest">Budget Manual</span>
                             </div>
                         )}
                         {manualBudgets.map((b) => {

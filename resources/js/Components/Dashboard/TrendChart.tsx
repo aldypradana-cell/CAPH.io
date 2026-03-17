@@ -77,7 +77,7 @@ export default function TrendChart({
             <div className="flex flex-col mb-6 gap-4">
                 <div className="flex flex-row items-start justify-between gap-2">
                     <div className="flex items-center gap-2 sm:gap-3">
-                        <div className="p-2 sm:p-2.5 bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 rounded-xl relative group cursor-grab active:cursor-grabbing shrink-0">
+                        <div className="p-2 sm:p-2.5 bg-[#0B5F64]/10 dark:bg-[#0B5F64]/5 text-[#0B5F64] dark:text-teal-400 rounded-xl relative group cursor-grab active:cursor-grabbing shrink-0">
                             {chartType === 'AREA' ? (
                                 <TrendingUp weight="duotone" className="w-4 h-4 sm:w-5 sm:h-5 group-hover:opacity-0 transition-opacity duration-200" />
                             ) : (
@@ -87,7 +87,7 @@ export default function TrendChart({
                         </div>
                         <div className="min-w-0">
                             <h4 className="font-bold text-slate-800 dark:text-white text-base sm:text-lg truncate">Analisis Tren</h4>
-                            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium truncate hidden sm:block">Pemasukan vs Pengeluaran</p>
+                            <p className="text-[10px] sm:text-xs text-[#8F7442] dark:text-[#B89A5D] font-medium truncate">Pemasukan vs Pengeluaran</p>
                         </div>
                     </div>
                     
@@ -95,14 +95,14 @@ export default function TrendChart({
                         <button
                                 onClick={() => setChartType('BAR')}
                                 title="Grafik Batang"
-                                className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'BAR' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                                className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'BAR' ? 'bg-[#0B5F64] text-[#EDEDD6] shadow-md' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
                             >
                                 <BarChart3 weight="duotone" className="w-4 h-4" />
                             </button>
                             <button
                                 onClick={() => setChartType('AREA')}
                                 title="Grafik Garis Area"
-                                className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'AREA' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                                className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'AREA' ? 'bg-[#0B5F64] text-[#EDEDD6] shadow-md' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
                             >
                                 <TrendingUp weight="duotone" className="w-4 h-4" />
                             </button>
@@ -118,7 +118,7 @@ export default function TrendChart({
                                 key={filter}
                                 onClick={() => onFilterChange(filter)}
                                 className={`px-2 py-1.5 sm:px-3 text-[10px] sm:text-xs font-bold rounded-lg transition-all whitespace-nowrap active:scale-95 flex-1 sm:flex-none ${activeFilter === filter
-                                    ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm'
+                                    ? 'bg-[#0B5F64] text-[#EDEDD6] shadow-md'
                                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
                                     }`}
                             >
@@ -137,11 +137,11 @@ export default function TrendChart({
                 {isLoading ? (
                     <div className="flex flex-col h-full px-4 pb-8 relative overflow-hidden">
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <Pulse weight="duotone" className="w-12 h-12 text-indigo-200 dark:text-indigo-900/40 animate-pulse" />
+                            <Pulse weight="duotone" className="w-12 h-12 text-[#0B5F64]/20 dark:text-[#B89A5D]/20 animate-pulse" />
                         </div>
                         <div className="mt-auto h-1/2 flex items-end gap-1 opacity-20">
                             {Array.from({ length: 20 }).map((_, i) => (
-                                <div key={i} className="flex-1 bg-indigo-100 dark:bg-indigo-900/30 rounded-t-sm" style={{ height: `${Math.random() * 100}%` }} />
+                                <div key={i} className="flex-1 bg-[#0B5F64]/10 dark:bg-[#B89A5D]/5 rounded-t-sm" style={{ height: `${Math.random() * 100}%` }} />
                             ))}
                         </div>
                     </div>

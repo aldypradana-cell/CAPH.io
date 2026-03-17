@@ -115,7 +115,7 @@ export default function TrackerModal({ isOpen, onClose, onDateClick }: Props) {
                             <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-[2rem] bg-white dark:bg-slate-900 p-6 text-left align-middle shadow-2xl transition-all border border-slate-200 dark:border-slate-800">
                                 <div className="flex items-center justify-between mb-6">
                                     <Dialog.Title as="h3" className="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
-                                        <CalendarCheck weight="duotone" className="w-7 h-7 text-indigo-500" />
+                                        <CalendarCheck weight="duotone" className="w-7 h-7 text-[#0B5F64]" />
                                         Kalender Disiplin Input
                                     </Dialog.Title>
                                     <button
@@ -126,29 +126,29 @@ export default function TrackerModal({ isOpen, onClose, onDateClick }: Props) {
                                     </button>
                                 </div>
                                 
-                                <div className="bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-800 rounded-[2rem] p-6 text-white flex items-center mb-8 shadow-xl shadow-indigo-500/20 relative overflow-hidden group">
+                                <div className="bg-gradient-to-br from-[#0B5F64] via-[#044D52] to-[#013538] rounded-[2rem] p-6 text-white flex items-center mb-8 shadow-xl shadow-[#0B5F64]/20 relative overflow-hidden group">
                                     {/* Decorative background element */}
                                     <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:scale-110 transition-transform duration-700" />
-                                    <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-indigo-400/10 rounded-full blur-2xl" />
+                                    <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-teal-400/10 rounded-full blur-2xl" />
                                     
                                     <div className="flex-1 relative z-10 border-r border-white/10 pr-6">
-                                        <div className="flex items-center gap-1.5 text-indigo-100 text-[10px] font-bold uppercase tracking-widest mb-2 opacity-90">
+                                        <div className="flex items-center gap-1.5 text-[#B89A5D] text-[10px] font-bold uppercase tracking-widest mb-2 opacity-90">
                                             <Fire weight="fill" className="w-3 h-3 text-orange-400" />
                                             Beruntun
                                         </div>
                                         <div className="flex items-baseline gap-1.5">
                                             <span className="text-4xl font-black tabular-nums tracking-tight">{data?.current_streak || 0}</span>
-                                            <span className="text-xs font-bold text-indigo-200 uppercase tracking-tighter">Hari</span>
+                                            <span className="text-xs font-bold text-[#B89A5D] uppercase tracking-tighter">Hari</span>
                                         </div>
                                     </div>
                                     <div className="flex-1 relative z-10 pl-8">
-                                        <div className="flex items-center gap-1.5 text-indigo-100 text-[10px] font-bold uppercase tracking-widest mb-2 opacity-90">
-                                            <Crown weight="fill" className="w-3 h-3 text-indigo-300" />
+                                        <div className="flex items-center gap-1.5 text-[#B89A5D] text-[10px] font-bold uppercase tracking-widest mb-2 opacity-90">
+                                            <Crown weight="fill" className="w-3 h-3 text-amber-500" />
                                             Puncak
                                         </div>
                                         <div className="flex items-baseline gap-1.5">
                                             <span className="text-3xl font-black tabular-nums tracking-tight">{data?.max_streak || 0}</span>
-                                            <span className="text-xs font-bold text-indigo-200 uppercase tracking-tighter">Hari</span>
+                                            <span className="text-xs font-bold text-[#B89A5D] uppercase tracking-tighter">Hari</span>
                                         </div>
                                     </div>
                                 </div>
@@ -194,11 +194,11 @@ export default function TrackerModal({ isOpen, onClose, onDateClick }: Props) {
                                         
                                         let bgClass = "bg-slate-50 dark:bg-slate-800/50 text-slate-400";
                                         if (isRecorded) {
-                                            bgClass = "bg-indigo-500 text-white shadow-md shadow-indigo-500/30 font-bold";
+                                            bgClass = "bg-[#0B5F64] text-white shadow-md shadow-[#0B5F64]/30 font-bold";
                                         } else if (isFuture) {
                                             bgClass = "bg-transparent text-slate-300 dark:text-slate-600";
                                         } else if (isToday && !isRecorded) {
-                                            bgClass = "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-500 ring-2 ring-indigo-500 font-bold";
+                                            bgClass = "bg-teal-50 dark:bg-[#0B5F64]/10 text-[#0B5F64] dark:text-[#B89A5D] ring-2 ring-[#0B5F64] font-bold";
                                         }
 
                                         return (
@@ -207,12 +207,12 @@ export default function TrackerModal({ isOpen, onClose, onDateClick }: Props) {
                                                 type="button" 
                                                 onClick={() => handleCellClick(dateStr, isRecorded, isFuture)}
                                                 disabled={isFuture || isRecorded || !onDateClick}
-                                                className={`aspect-square rounded-xl flex items-center justify-center transition-all relative ${bgClass} ${!isFuture && !isRecorded && onDateClick ? 'hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer hover:ring-2 hover:ring-indigo-400 hover:text-indigo-500 active:scale-95' : ''}`}
+                                                className={`aspect-square rounded-xl flex items-center justify-center transition-all relative ${bgClass} ${!isFuture && !isRecorded && onDateClick ? 'hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer hover:ring-2 hover:ring-[#0B5F64]/50 hover:text-[#0B5F64] dark:hover:text-[#B89A5D] active:scale-95' : ''}`}
                                                 title={isRecorded ? 'Tercatat' : isFuture ? '' : 'Klik untuk isi catatan hari ini'}
                                             >
                                                 <span className={isToday ? 'mb-1' : ''}>{dateNum}</span>
                                                 {isToday && (
-                                                    <div className={`absolute bottom-2 w-1.5 h-1.5 rounded-full ${isRecorded ? 'bg-white' : 'bg-indigo-500'}`} />
+                                                    <div className={`absolute bottom-2 w-1.5 h-1.5 rounded-full ${isRecorded ? 'bg-white' : 'bg-[#0B5F64]'}`} />
                                                 )}
                                             </button>
                                         );
@@ -221,13 +221,13 @@ export default function TrackerModal({ isOpen, onClose, onDateClick }: Props) {
                                 
                                 <div className="mt-6 flex flex-wrap gap-4 justify-center text-xs font-medium text-slate-500">
                                     <div className="flex items-center gap-1.5">
-                                        <div className="w-3 h-3 rounded-full bg-indigo-500"></div> Tercatat
+                                        <div className="w-3 h-3 rounded-full bg-[#0B5F64]"></div> Tercatat
                                     </div>
                                     <div className="flex items-center gap-1.5">
                                         <div className="w-3 h-3 rounded-full bg-slate-200 dark:bg-slate-800"></div> Bolong
                                     </div>
                                     <div className="flex items-center gap-1.5">
-                                        <div className="w-3 h-3 rounded-full bg-indigo-50 dark:bg-indigo-900/30 ring-1 ring-indigo-500"></div> Hari Ini
+                                        <div className="w-3 h-3 rounded-full bg-teal-50 dark:bg-[#0B5F64]/10 ring-1 ring-[#0B5F64]"></div> Hari Ini
                                     </div>
                                 </div>
 

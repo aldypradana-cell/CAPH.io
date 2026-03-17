@@ -40,7 +40,7 @@ const ResizeHandle = React.forwardRef<HTMLDivElement, any>(({ handleAxis, ...pro
         <div
             ref={ref}
             {...props}
-            className={`absolute bottom-2 right-2 cursor-nwse-resize p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-indigo-500 transition-colors z-20`}
+            className={`absolute bottom-2 right-2 cursor-nwse-resize p-1 rounded-md hover:bg-[#EDEDD6]/70 dark:hover:bg-white/10 text-[#8F7442] hover:text-[#0B5F64] transition-colors z-20`}
         >
             <ArrowDownRight weight="bold" className="w-5 h-5" />
         </div>
@@ -89,17 +89,14 @@ export default function Dashboard({
         return () => window.removeEventListener('resize', updateMargin);
     }, []);
 
-    // --- LAZY-LOADED CHART STATE ---
     const [trendData, setTrendData] = useState<ChartData[]>(initialTrendData || []);
     const [pieData, setPieData] = useState<PieData[]>(initialPieData || []);
     const [isTrendLoading, setIsTrendLoading] = useState(true);
     const [isPieLoading, setIsPieLoading] = useState(true);
 
-    // --- QUERY STATE ---
     const [activeFilter, setActiveFilter] = useState<string>(filters.mode || 'DAILY');
     const [currentFilters, setCurrentFilters] = useState(filters);
 
-    // Fetch recurring transactions 
     useEffect(() => {
         axios.get('/api/dashboard/recurring')
             .then(res => setRecurringTransactions(res.data))
@@ -116,7 +113,6 @@ export default function Dashboard({
         }
     }, []);
 
-    // Lazy-load trend data on mount and when filters change
     const fetchTrendData = (params: Record<string, any>) => {
         setIsTrendLoading(true);
         axios.get('/api/dashboard/trend', { params })
@@ -128,7 +124,6 @@ export default function Dashboard({
             .finally(() => setIsTrendLoading(false));
     };
 
-    // Lazy-load pie data on mount and when filters change
     const fetchPieData = (params: Record<string, any>) => {
         setIsPieLoading(true);
         axios.get('/api/dashboard/pie', { params })
@@ -139,7 +134,6 @@ export default function Dashboard({
             .finally(() => setIsPieLoading(false));
     };
 
-    // Initial fetch on mount
     useEffect(() => {
         fetchTrendData({
             startDate: filters.startDate,
@@ -153,7 +147,6 @@ export default function Dashboard({
         });
     }, []);
 
-    // Helper for formatting local date strings
     const getLocalDateString = (date?: Date) => toDateString(date);
 
     const handleFilterChange = (filter: string) => {
@@ -217,8 +210,6 @@ export default function Dashboard({
         fetchPieData(params);
     };
 
-    // --- GRID LAYOUT STATE ---
-    // Default layout
     const defaultLayout = {
         lg: [
             { i: 'trendChart', x: 0, y: 0, w: 2, h: 8 },
@@ -273,12 +264,11 @@ export default function Dashboard({
             <Toaster position="top-right" />
 
             <div className="space-y-4 sm:space-y-8">
-                {/* Header Action Bar */}
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 animate-fade-in-up" style={{ animationDelay: '0ms' }}>
                     <div className="w-full md:w-auto">
                         <NetWorthCard amount={stats.netWorth} />
                     </div>
-                    
+
                     <div className="flex flex-col items-end gap-3 w-full md:w-auto mt-2 md:mt-0">
                         <div className="hidden sm:flex justify-end">
                             <HabitTrackerWidget onDateClick={(dateStr) => setIsAddModalOpen(true)} />
@@ -286,21 +276,21 @@ export default function Dashboard({
                         <div className="hidden sm:flex items-center gap-3 justify-end w-full">
                             <button
                                 onClick={resetLayout}
-                                className="hidden sm:flex p-3 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-2xl border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all hover:scale-105 active:scale-95"
+                                className="hidden sm:flex p-3 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-2xl border border-[#EDEDD6] dark:border-white/10 hover:bg-[#EDEDD6]/70 dark:hover:bg-white/10 hover:text-[#0B5F64] dark:hover:text-[#EDEDD6] transition-all hover:scale-105 active:scale-95"
                                 title="Reset Layout"
                             >
                                 <RotateCcw className="w-4 h-4" />
                             </button>
                             <Link
                                 href={route('smart-entry.index')}
-                                className="hidden sm:flex items-center px-5 py-3 bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 rounded-2xl text-sm font-bold hover:bg-indigo-50 dark:hover:bg-slate-700 transition-all border border-indigo-100 dark:border-slate-700 shadow-sm hover:shadow-md hover:scale-105 active:scale-95"
+                                className="hidden sm:flex items-center px-5 py-3 bg-[#0B5F64]/10 dark:bg-[#0B5F64]/20 text-[#0B5F64] dark:text-[#EDEDD6] rounded-2xl text-sm font-bold hover:bg-[#0B5F64]/20 dark:hover:bg-[#0B5F64]/30 transition-all border border-[#0B5F64]/20 dark:border-[#0B5F64]/30 shadow-sm hover:shadow-md hover:scale-105 active:scale-95"
                             >
-                                <Sparkles className="w-4 h-4 mr-2 text-indigo-500 dark:text-indigo-400" />
+                                <Sparkles className="w-4 h-4 mr-2 text-[#B89A5D] dark:text-[#B89A5D]" />
                                 AI Input
                             </Link>
                             <button
                                 onClick={() => setIsAddModalOpen(true)}
-                                className="flex items-center px-5 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95"
+                                className="flex items-center px-5 py-3 bg-gradient-to-r from-[#0B5F64] to-[#1B3742] text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-[#1B3742]/25 transition-all hover:scale-105 active:scale-95"
                             >
                                 <Plus className="w-4 h-4 mr-2" />
                                 Transaksi Baru
@@ -309,10 +299,8 @@ export default function Dashboard({
                     </div>
                 </div>
 
-                {/* Stats Cards - Fixed */}
                 <StatsCards stats={stats} />
 
-                {/* Draggable Grid */}
                 <div ref={containerRef as React.Ref<HTMLDivElement>} style={{ minHeight: '800px' }}>
                     {mounted && (
                         <ResponsiveGridLayout
@@ -401,8 +389,10 @@ Dashboard.layout = (page: any) => (
             <div className="flex items-center gap-3 min-w-0">
                 <CaphLogo size={34} className="hidden sm:inline-flex" />
                 <div className="flex flex-col min-w-0">
-                    <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Dashboard Ringkasan</h1>
-                    <p className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">
+                    <h1 className="text-lg sm:text-2xl font-bold text-[#0B5F64] dark:text-[#EDEDD6] tracking-tight truncate">
+                        Dashboard Ringkasan
+                    </h1>
+                    <p className="hidden sm:block text-xs text-[#8F7442] dark:text-[#B89A5D] font-medium mt-0.5 truncate">
                         Selamat datang kembali, {page.props.auth.user.name.split(' ')[0]}!
                     </p>
                 </div>

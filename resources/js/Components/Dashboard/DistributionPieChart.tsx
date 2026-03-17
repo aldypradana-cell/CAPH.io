@@ -18,7 +18,7 @@ interface DistributionPieChartProps {
 const formatIDR = (amount: number) =>
     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
 
-const PIE_COLORS = ['#6366f1', '#ec4899', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#06b6d4', '#64748b'];
+const PIE_COLORS = ['#0F766E', '#1D4ED8', '#6D28D9', '#9D174D', '#A16207', '#047857', '#1E40AF', '#7E22CE'];
 
 const CustomTooltip = ({ active, payload, total }: any) => {
     if (active && payload && payload.length) {
@@ -113,7 +113,7 @@ export default function DistributionPieChart({
 
             <div className="flex flex-row items-start justify-between mb-4 gap-2">
                 <div className="flex items-center gap-3">
-                    <div className="p-2.5 bg-pink-50 dark:bg-slate-800 text-pink-600 dark:text-pink-400 rounded-xl relative group cursor-grab active:cursor-grabbing">
+                    <div className="p-2.5 bg-[#0B5F64]/10 dark:bg-[#0B5F64]/5 text-[#0B5F64] dark:text-teal-400 rounded-xl relative group cursor-grab active:cursor-grabbing">
                         {chartType === 'DONUT' ? (
                             <PieChartIcon weight="duotone" className="w-5 h-5 group-hover:opacity-0 transition-opacity duration-200" />
                         ) : (
@@ -123,7 +123,7 @@ export default function DistributionPieChart({
                     </div>
                     <div>
                         <h4 className="font-bold text-slate-800 dark:text-white text-lg">Distribusi</h4>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Berdasarkan Kategori</p>
+                        <p className="text-xs text-[#8F7442] dark:text-[#B89A5D] font-medium">Berdasarkan Kategori</p>
                     </div>
                 </div>
                 
@@ -132,19 +132,19 @@ export default function DistributionPieChart({
                         <button
                             onClick={() => setChartType('DONUT')}
                             title="Donut Chart"
-                            className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'DONUT' ? 'bg-white dark:bg-slate-700 text-pink-600 dark:text-pink-400 shadow-sm' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                            className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'DONUT' ? 'bg-[#0B5F64] text-[#EDEDD6] shadow-md' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
                         >
                             <PieChartIcon weight="duotone" className="w-4 h-4" />
                         </button>
                         <button
                             onClick={() => setChartType('TREEMAP')}
                             title="Treemap"
-                            className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'TREEMAP' ? 'bg-white dark:bg-slate-700 text-pink-600 dark:text-pink-400 shadow-sm' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                            className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'TREEMAP' ? 'bg-[#0B5F64] text-[#EDEDD6] shadow-md' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
                         >
                             <LayoutGrid weight="duotone" className="w-4 h-4" />
                         </button>
                     </div>
-                    <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl items-center gap-1 text-[10px] font-bold px-2 py-1 text-slate-500 dark:text-slate-400">
+                    <div className="flex bg-[#0B5F64] p-1 rounded-xl items-center gap-1 text-[10px] font-bold px-2 py-1 text-[#EDEDD6] shadow-md">
                         <Calendar weight="duotone" className="w-3 h-3" />
                         Custom
                     </div>
@@ -159,7 +159,7 @@ export default function DistributionPieChart({
             {isLoading ? (
                 <div className="flex-1 flex items-center justify-center">
                     <div className="w-52 h-52 rounded-full border-[24px] border-slate-100 dark:border-slate-800 animate-pulse relative">
-                        <div className="absolute inset-0 rounded-full border-t-[24px] border-indigo-200 dark:border-indigo-900/50 animate-spin" style={{ animationDuration: '2s' }} />
+                        <div className="absolute inset-0 rounded-full border-t-[24px] border-[#0B5F64]/30 dark:border-[#B89A5D]/30 animate-spin" style={{ animationDuration: '2s' }} />
                     </div>
                 </div>
             ) : data.length > 0 ? (
@@ -167,7 +167,7 @@ export default function DistributionPieChart({
                     <div className="flex-1 min-h-0 flex items-center justify-center relative">
                         {chartType === 'DONUT' && (
                             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none pb-12">
-                                <span className="text-[10px] font-bold text-slate-400 tracking-widest uppercase mb-0.5">Total</span>
+                                <span className="text-[10px] font-bold text-[#8F7442] dark:text-[#B89A5D] tracking-widest uppercase mb-0.5">Total</span>
                                 <span className="text-xl font-bold text-slate-800 dark:text-white">
                                     {formatShortIDR(totalCategoryExpense)}
                                 </span>

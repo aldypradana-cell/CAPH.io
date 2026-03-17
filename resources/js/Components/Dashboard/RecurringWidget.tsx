@@ -42,12 +42,12 @@ export default function RecurringWidget({
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 group cursor-grab active:cursor-grabbing">
                     <div className="relative">
-                        <Repeat weight="duotone" className="w-5 h-5 text-indigo-500 group-hover:opacity-0 transition-opacity duration-200" />
+                        <Repeat weight="duotone" className="w-5 h-5 text-[#0B5F64] group-hover:opacity-0 transition-opacity duration-200" />
                         <GripHorizontal weight="bold" className="w-5 h-5 text-slate-400 absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
                     </div>
                     Transaksi Rutin
                 </h3>
-                <Link href={route('debts.index')} onMouseDown={(e) => e.stopPropagation()} className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline">Lihat Semua</Link>
+                <Link href={route('debts.index')} onMouseDown={(e) => e.stopPropagation()} className="text-xs font-bold text-[#0B5F64] dark:text-[#B89A5D] hover:underline">Lihat Semua</Link>
             </div>
             <div className="space-y-3 flex-1 overflow-y-auto scrollbar-hide">
                 {transactions.length > 0 ? (
@@ -73,7 +73,7 @@ export default function RecurringWidget({
                                         <div>
                                             <p className="text-sm font-bold text-slate-800 dark:text-white line-clamp-1">{rt.name}</p>
                                             <div className="flex items-center gap-2">
-                                                <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400">{rt.category}</span>
+                                                <span className="text-[10px] font-medium text-[#8F7442] dark:text-[#B89A5D]">{rt.category}</span>
                                                 {rt.auto_cut && (
                                                     <span className="px-1.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-[9px] font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-0.5">
                                                         <Sparkles weight="fill" className="w-2 h-2" /> Auto
@@ -91,7 +91,7 @@ export default function RecurringWidget({
                                 </div>
 
                                 {/* Date Indicator */}
-                                <div className={`flex items-center justify-between text-[10px] font-bold px-2 py-1 rounded-lg ${isToday ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300' :
+                                <div className={`flex items-center justify-between text-[10px] font-bold px-2 py-1 rounded-lg ${isToday ? 'bg-[#0B5F64]/10 text-[#0B5F64] dark:bg-[#0B5F64]/20 dark:text-[#EDEDD6]' :
                                     isOverdue ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300' :
                                         isSoon ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' :
                                             'bg-slate-100 text-slate-500 dark:bg-slate-700/50 dark:text-slate-400'

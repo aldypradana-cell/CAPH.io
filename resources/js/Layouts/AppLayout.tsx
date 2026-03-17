@@ -209,12 +209,12 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                 href={href}
                 onClick={() => setIsSidebarOpen(false)}
                 className={`group flex items-center w-full px-4 py-3 mb-1.5 rounded-2xl transition-all duration-500 ease-out relative overflow-hidden ${active
-                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30 translate-x-1'
-                    : 'text-slate-500 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-800/50 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-sm'
+                    ? 'bg-gradient-to-r from-[#0B5F64] to-[#1B3742] text-white shadow-lg shadow-[#1B3742]/25 translate-x-1'
+                    : 'text-slate-600 dark:text-slate-300 hover:bg-[#EDEDD6]/70 dark:hover:bg-white/5 hover:text-[#0B5F64] dark:hover:text-[#EDEDD6] hover:shadow-sm'
                     }`}
             >
                 <div className={`mr-3 transition-transform duration-500 ease-out ${active ? 'scale-110' : 'group-hover:scale-110'}`}>
-                    <Icon weight="duotone" className={`w-5 h-5 ${active ? 'text-white' : 'text-slate-400 dark:text-slate-500 group-hover:text-indigo-600 dark:group-hover:text-indigo-400'}`} />
+                    <Icon weight="duotone" className={`w-5 h-5 ${active ? 'text-white' : 'text-slate-400 dark:text-slate-500 group-hover:text-teal-700 dark:group-hover:text-teal-300'}`} />
                 </div>
                 <span className="font-semibold text-sm tracking-wide">{label}</span>
                 {active && <div className="absolute right-3 w-1.5 h-1.5 rounded-full bg-white/40 animate-pulse" />}
@@ -223,14 +223,14 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
     };
 
     return (
-        <div className="flex h-screen bg-slate-50/50 dark:bg-slate-950 overflow-hidden text-slate-900 dark:text-slate-100 transition-colors duration-500">
+        <div className="flex h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden text-slate-900 dark:text-slate-100 transition-colors duration-500">
             {/* Mobile overlay */}
             {isSidebarOpen && (
                 <div className="fixed inset-0 modal-overlay z-30 lg:hidden animate-fade-in" onClick={() => setIsSidebarOpen(false)} />
             )}
 
             {/* Glassmorphism Sidebar */}
-            <aside className={`fixed lg:static inset-y-0 left-0 z-40 w-72 bg-slate-50/95 dark:bg-slate-900/95 lg:bg-transparent transform transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1) lg:transform-none flex flex-col ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+            <aside className={`fixed lg:static inset-y-0 left-0 z-40 w-72 bg-[#E9E5DE]/95 dark:bg-slate-900/95 lg:bg-transparent transform transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1) lg:transform-none flex flex-col ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                 <div className="h-full flex flex-col p-4 lg:py-6 lg:pl-6">
                     <div className="flex-1 glass lg:rounded-[2rem] lg:shadow-2xl flex flex-col overflow-hidden transition-all duration-500">
 
@@ -244,7 +244,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                     className="transition-transform duration-500 group-hover:scale-[1.03]"
                                 />
                             </div>
-                            <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 p-2 rounded-xl transition-colors">
+                            <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden text-slate-400 hover:bg-teal-50 dark:hover:bg-teal-950/30 p-2 rounded-xl transition-colors">
                                 <X weight="bold" className="w-5 h-5" />
                             </button>
                         </div>
@@ -252,7 +252,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                         {/* Navigation */}
                         <nav className="flex-1 px-4 py-6 overflow-y-auto space-y-8 scrollbar-hide overscroll-contain">
                             <div className="animate-slide-in-right" style={{ animationDelay: '0.1s' }}>
-                                <p className="px-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">Menu Utama</p>
+                                <p className="px-4 text-[10px] font-bold text-[#8F7442] dark:text-[#B89A5D] uppercase tracking-widest mb-3">Menu Utama</p>
                                 <div className="space-y-1">
                                     <NavItem href={route('dashboard')} icon={LayoutDashboard} label="Dashboard" active={currentRoute === 'dashboard'} />
                                     <NavItem href={route('analytics.index')} icon={BarChart3} label="Analisis Arus Kas" active={currentRoute?.startsWith('analytics') ?? false} />
@@ -263,7 +263,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                             </div>
 
                             <div className="animate-slide-in-right" style={{ animationDelay: '0.2s' }}>
-                                <p className="px-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">Keuangan</p>
+                                <p className="px-4 text-[10px] font-bold text-[#8F7442] dark:text-[#B89A5D] uppercase tracking-widest mb-3">Keuangan</p>
                                 <div className="space-y-1">
                                     <NavItem href={route('wallets.index')} icon={CreditCard} label="Dompet" active={currentRoute?.startsWith('wallets') ?? false} />
                                     <NavItem href={route('budgets.index')} icon={Target} label="Anggaran" active={currentRoute?.startsWith('budgets') ?? false} />
@@ -275,7 +275,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                             </div>
 
                             <div className="animate-slide-in-right" style={{ animationDelay: '0.3s' }}>
-                                <p className="px-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">Akun</p>
+                                <p className="px-4 text-[10px] font-bold text-[#8F7442] dark:text-[#B89A5D] uppercase tracking-widest mb-3">Akun</p>
                                 <div className="space-y-1">
                                     <NavItem href={route('profile.edit')} icon={UserIcon} label="Profil Saya" active={currentRoute === 'profile.edit'} />
                                     <NavItem href={route('settings.index')} icon={Settings} label="Pengaturan" active={currentRoute?.startsWith('settings') ?? false} />
@@ -288,7 +288,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
 
                             {(user as any)?.role === 'ADMIN' && (
                                 <div className="animate-slide-in-right" style={{ animationDelay: '0.4s' }}>
-                                    <p className="px-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">Sistem</p>
+                                    <p className="px-4 text-[10px] font-bold text-[#8F7442] dark:text-[#B89A5D] uppercase tracking-widest mb-3">Sistem</p>
                                     <div className="space-y-1">
                                         <NavItem
                                             href={route('admin.dashboard')}
@@ -303,9 +303,9 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
 
                         {/* User Profile Footer */}
                         <div className="p-4 mt-auto animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
-                            <div className="bg-slate-50/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl p-4 border border-slate-100 dark:border-slate-700 relative group transition-all duration-300 hover:bg-slate-100/80 dark:hover:bg-slate-800/80">
+                            <div className="bg-white/65 dark:bg-teal-950/30 backdrop-blur-sm rounded-2xl p-4 border border-teal-100/80 dark:border-teal-900/40 relative group transition-all duration-300 hover:bg-teal-50/85 dark:hover:bg-teal-950/45">
                                 <div className="flex items-center space-x-3 mb-3">
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-sm shadow-md overflow-hidden ring-2 ring-white dark:ring-slate-700">
+                                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-teal-600 to-cyan-700 text-white flex items-center justify-center font-bold text-sm shadow-md overflow-hidden ring-2 ring-white dark:ring-teal-900/50">
                                         {user?.name?.charAt(0).toUpperCase()}
                                     </div>
                                     <div className="overflow-hidden flex-1">
@@ -330,7 +330,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
             {/* Main Content */}
             < main className="flex-1 flex flex-col h-full overflow-hidden relative" >
                 {/* Glassmorphism Header */}
-                < header className="h-14 lg:h-20 flex items-center justify-between px-3 sm:px-6 lg:px-10 z-20 sticky top-0 glass transition-colors" >
+                < header className="h-14 lg:h-20 flex items-center justify-between px-3 sm:px-6 lg:px-10 z-20 sticky top-0 bg-[#E9E5DE]/95 dark:bg-slate-900/95 backdrop-blur-xl border-b border-[#ddd8d0] dark:border-slate-800/95 transition-colors" >
                     <div className="flex items-center gap-2 sm:gap-4 lg:gap-0 flex-1 min-w-0">
                         <button onClick={() => setIsSidebarOpen(true)} className="lg:hidden p-1.5 sm:p-2 mr-1 sm:mr-2 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 rounded-xl shadow-sm transition-all active:scale-95 flex-shrink-0">
                             <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -351,7 +351,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                         <div className="relative" ref={notifRef}>
                             <button
                                 onClick={() => setIsNotifOpen(!isNotifOpen)}
-                                className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md transition-all active:scale-95 relative"
+                                className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-teal-700 dark:hover:text-teal-300 hover:shadow-md transition-all active:scale-95 relative"
                             >
                                 <Bell weight="duotone" className="w-5 h-5" />
                                 {unreadCount > 0 && (
@@ -366,7 +366,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                         {unreadCount > 0 && (
                                             <button
                                                 onClick={handleMarkAllRead}
-                                                className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 px-2 py-1 rounded-lg transition-colors flex items-center"
+                                                className="text-[10px] font-bold text-[#0B5F64] dark:text-[#B89A5D] hover:bg-[#0B5F64]/10 dark:hover:bg-white/10 px-2 py-1 rounded-lg transition-colors flex items-center"
                                             >
                                                 <Check className="w-3 h-3 mr-1" /> Tandai dibaca
                                             </button>
@@ -384,7 +384,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                                 <div
                                                     key={notif.id}
                                                     onClick={() => handleNotificationClick(notif.id, notif.data.link)}
-                                                    className={`p-4 border-b border-slate-50 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors flex gap-3 bg-indigo-50/40 dark:bg-indigo-900/10`}
+                                                    className={`p-4 border-b border-slate-50 dark:border-slate-700/50 hover:bg-teal-50/70 dark:hover:bg-teal-950/20 cursor-pointer transition-colors flex gap-3 bg-teal-50/40 dark:bg-teal-950/10`}
                                                 >
                                                     <div className={`mt-1 flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${notif.data.type === 'ALERT' || notif.data.type === 'WARNING' ? 'bg-red-100 text-red-500' :
                                                         notif.data.type === 'SUCCESS' ? 'bg-emerald-100 text-emerald-500' :
@@ -395,7 +395,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                                     <div className="flex-1">
                                                         <div className="flex justify-between items-start mb-0.5">
                                                             <p className={`text-sm font-bold text-slate-800 dark:text-white`}>{notif.data.title}</p>
-                                                            <span className="w-2 h-2 bg-indigo-500 rounded-full"></span>
+                                                            <span className="w-2 h-2 bg-teal-600 rounded-full"></span>
                                                         </div>
                                                         <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">{notif.data.message}</p>
                                                         <p className="text-[10px] text-slate-400 mt-1.5">
@@ -411,7 +411,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                         <Link
                                             href={route('notifications.page')}
                                             onClick={() => setIsNotifOpen(false)}
-                                            className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline py-1 block"
+                                            className="text-xs font-bold text-[#0B5F64] dark:text-[#B89A5D] hover:underline py-1 block"
                                         >
                                             Lihat Semua Notifikasi
                                         </Link>
@@ -423,7 +423,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                         {/* Dark Mode Toggle */}
                         <button
                             onClick={() => setIsDark(!isDark)}
-                            className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md transition-all active:scale-95"
+                            className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-teal-700 dark:hover:text-teal-300 hover:shadow-md transition-all active:scale-95"
                             title={isDark ? 'Mode Terang' : 'Mode Gelap'}
                         >
                             {isDark ? <Sun weight="duotone" className="w-5 h-5" /> : <Moon weight="duotone" className="w-5 h-5" />}
@@ -432,7 +432,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                         {/* Help Button */}
                         <Link
                             href="/help"
-                            className="p-3 rounded-2xl bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md transition-all active:scale-95 hidden sm:block"
+                            className="p-3 rounded-2xl bg-[#E9E5DE] dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-[#0B5F64] dark:hover:text-[#EDEDD6] hover:shadow-md transition-all active:scale-95 hidden sm:block"
                             title="Bantuan"
                         >
                             <HelpCircle weight="duotone" className="w-5 h-5" />
@@ -488,14 +488,14 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                     key={item.label}
                                     href={item.href}
                                     className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-300 min-w-[50px] ${item.active
-                                        ? 'text-indigo-600 dark:text-indigo-400'
-                                        : 'text-slate-400 dark:text-slate-500 active:text-indigo-600 dark:active:text-indigo-400'
+                                        ? 'text-[#0B5F64] dark:text-[#B89A5D]'
+                                        : 'text-slate-400 dark:text-slate-500 active:text-[#0B5F64] dark:active:text-[#B89A5D]'
                                         }`}
                                 >
                                     <div className="relative">
                                         <item.icon weight="duotone" className={`w-6 h-6 transition-transform duration-300 ${item.active ? 'scale-110' : ''}`} />
                                         {item.active && (
-                                            <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-indigo-600 dark:bg-indigo-400" />
+                                            <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#0B5F64] dark:bg-[#B89A5D]" />
                                         )}
                                     </div>
                                     <span className={`text-[10px] font-semibold mt-0.5 ${item.active ? 'font-bold' : ''}`}>{item.label}</span>
@@ -506,7 +506,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                             <div className="relative -top-5 px-2">
                                 <Link
                                     href={route('transactions.index') + '?action=add'}
-                                    className="flex items-center justify-center w-12 h-12 bg-gradient-to-tr from-indigo-600 to-violet-600 text-white rounded-full shadow-lg shadow-indigo-500/40 hover:scale-110 active:scale-95 transition-all duration-300 ring-4 ring-slate-50 dark:ring-slate-950"
+                                    className="flex items-center justify-center w-12 h-12 bg-gradient-to-tr from-[#0B5F64] to-[#044D52] text-white rounded-full shadow-lg shadow-[#0B5F64]/40 hover:scale-110 active:scale-95 transition-all duration-300 ring-4 ring-slate-50 dark:ring-slate-950"
                                     aria-label="Tambah Transaksi"
                                 >
                                     <Plus weight="bold" className="w-6 h-6 leading-none" />
@@ -520,14 +520,14 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                     key={item.label}
                                     href={item.href}
                                     className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-300 min-w-[50px] ${item.active
-                                        ? 'text-indigo-600 dark:text-indigo-400'
-                                        : 'text-slate-400 dark:text-slate-500 active:text-indigo-600 dark:active:text-indigo-400'
+                                        ? 'text-[#0B5F64] dark:text-[#B89A5D]'
+                                        : 'text-slate-400 dark:text-slate-500 active:text-[#0B5F64] dark:active:text-[#B89A5D]'
                                         }`}
                                 >
                                     <div className="relative">
                                         <item.icon weight="duotone" className={`w-6 h-6 transition-transform duration-300 ${item.active ? 'scale-110' : ''}`} />
                                         {item.active && (
-                                            <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-indigo-600 dark:bg-indigo-400" />
+                                            <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#0B5F64] dark:bg-[#B89A5D]" />
                                         )}
                                     </div>
                                     <span className={`text-[10px] font-semibold mt-0.5 ${item.active ? 'font-bold' : ''}`}>{item.label}</span>
@@ -540,8 +540,8 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                 className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-300 min-w-[50px] ${[
                                     'wallets', 'debts', 'insights', 'budgets', 'assets', 'categories', 'settings', 'export', 'help', 'notifications', 'profile', 'feedback'
                                 ].some(r => currentRoute?.startsWith(r))
-                                    ? 'text-indigo-600 dark:text-indigo-400'
-                                    : 'text-slate-400 dark:text-slate-500 active:text-indigo-600 dark:active:text-indigo-400'
+                                    ? 'text-[#0B5F64] dark:text-[#B89A5D]'
+                                    : 'text-slate-400 dark:text-slate-500 active:text-[#0B5F64] dark:active:text-[#B89A5D]'
                                 }`}
                             >
                                 <div className="relative">
@@ -567,13 +567,13 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                             </div>
                             <div className="px-4 pb-4 grid grid-cols-4 gap-3">
                                 {[
-                                    { href: route('wallets.index'), icon: CreditCard, label: 'Dompet', color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' },
+                                    { href: route('wallets.index'), icon: CreditCard, label: 'Dompet', color: 'bg-teal-50 dark:bg-[#0B5F64]/10 text-[#0B5F64] dark:text-[#B89A5D]' },
                                     { href: route('budgets.index'), icon: Target, label: 'Anggaran', color: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400' },
                                     { href: route('savings.index'), icon: PiggyBank, label: 'Tabungan', color: 'bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400' },
                                     { href: route('debts.index'), icon: HandCoins, label: 'Jadwal', color: 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400' },
                                     { href: route('insights.index'), icon: PieChart, label: 'Analisis', color: 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400' },
                                     { href: route('assets.index'), icon: Gem, label: 'Aset', color: 'bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400' },
-                                    { href: route('categories.index'), icon: Tags, label: 'Kategori', color: 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400' },
+                                    { href: route('categories.index'), icon: Tags, label: 'Kategori', color: 'bg-[#B89A5D]/10 dark:bg-[#B89A5D]/5 text-[#8F7442] dark:text-[#B89A5D]' },
                                     { href: route('settings.index'), icon: Settings, label: 'Pengaturan', color: 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400' },
                                     { href: route('feedback.index'), icon: ChatCircleDots, label: 'Saran', color: 'bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400' },
                                     { href: route('profile.edit'), icon: UserIcon, label: 'Profil', color: 'bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400' },
@@ -598,3 +598,4 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
         </div >
     );
 }
+
