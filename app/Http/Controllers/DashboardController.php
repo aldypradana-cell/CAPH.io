@@ -218,6 +218,12 @@ class DashboardController extends Controller
         $categories = Category::userCategories($user->id)->get();
         $userTags = Tag::where('user_id', $user->id)->orderBy('name')->get();
 
+        $walletCount = $allWallets->count();
+        $hasWallet = $walletCount > 0;
+        $hasInitialBalance = ((float) $allWallets->sum('balance')) > 0;
+        $hasFirstTransaction = Transaction::forUser($user->id)->exists();
+        $completedSetupSteps = collect([$hasWallet, $hasInitialBalance, $hasFirstTransaction])->filter()->count();
+
         return Inertia::render('Dashboard', [
             'stats' => [
                 'totalIncome' => $totalIncome,
@@ -245,7 +251,41 @@ class DashboardController extends Controller
                 'trendCategory' => $trendCategory,
                 'pieStartDate' => $pieStartDate,
                 'pieEndDate' => $pieEndDate,
-            ]
+            ],
+            'onboarding' => [
+                'show' => !($hasWallet && $hasInitialBalance && $hasFirstTransaction),
+                'completedSteps' => $completedSetupSteps,
+                'progressPercent' => (int) round(($completedSetupSteps / 3) * 100),
+                'steps' => [
+                    [
+                        'key' => 'wallet',
+                        'title' => 'Buat wallet pertama',
+                        'description' => 'Tempat menyimpan saldo utama Anda.',
+                        'completed' => $hasWallet,
+                        'active' => !$hasWallet,
+                        'href' => route('wallets.index'),
+                        'actionLabel' => 'Buat Wallet',
+                    ],
+                    [
+                        'key' => 'balance',
+                        'title' => 'Tambahkan saldo awal',
+                        'description' => 'Isi jumlah saldo yang Anda miliki saat ini.',
+                        'completed' => $hasInitialBalance,
+                        'active' => $hasWallet && !$hasInitialBalance,
+                        'href' => route('wallets.index'),
+                        'actionLabel' => 'Isi Saldo',
+                    ],
+                    [
+                        'key' => 'transaction',
+                        'title' => 'Catat transaksi pertama',
+                        'description' => 'Mulai dengan satu pemasukan atau pengeluaran.',
+                        'completed' => $hasFirstTransaction,
+                        'active' => $hasWallet && $hasInitialBalance && !$hasFirstTransaction,
+                        'href' => route('dashboard', ['action' => 'add-transaction']),
+                        'actionLabel' => 'Tambah Transaksi',
+                    ],
+                ],
+            ],
         ]);
     }
 

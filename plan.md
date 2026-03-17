@@ -1,31 +1,58 @@
-# Small Change Plan
+# Feature Plan
 
 ## Objective
-Menambahkan identitas visual CAPH.io ke aplikasi dengan memasang logo pada PWA/mobile assets dan menampilkan logo di UI dashboard/layout.
+Menambahkan onboarding user baru di dashboard CAPH.io dengan fokus 3 langkah awal: buat wallet, tambah saldo awal, dan catat transaksi pertama.
 
 ## Scope
-- Buat komponen logo reusable untuk frontend.
-- Pasang logo ke dashboard/header dan area brand di layout aplikasi.
-- Perbarui aset PWA dasar (manifest, apple touch icon, Android icons) agar tidak lagi memakai branding placeholder lama.
-- Pertahankan perubahan tetap kecil dan mudah direview.
+- Tambah data onboarding status dari backend dashboard.
+- Tampilkan onboarding dengan perilaku berbeda untuk desktop vs mobile:
+  - desktop: panel onboarding ringan di area kanan atas dashboard
+  - mobile: card onboarding inline di atas Net Worth
+- CTA harus mengarahkan ke aksi relevan (wallet / saldo awal / transaksi pertama).
+- Menjaga layout dashboard lama tetap stabil, terutama di desktop.
+
+## Impact Analysis
+### Files likely to be modified
+- `app/Http/Controllers/DashboardController.php`
+- `resources/js/Pages/Dashboard.tsx`
+- `resources/js/Components/Dashboard/NetWorthCard.tsx` (jika perlu penyesuaian layout ringan)
+- file komponen baru untuk onboarding dashboard
+
+### Files that may be indirectly affected
+- alur wallet / transaksi bila CTA perlu membuka halaman atau modal yang sudah ada
+- styling dashboard responsif
+
+### UX rules agreed
+- 3 langkah onboarding:
+  1. Buat wallet pertama
+  2. Tambahkan saldo awal
+  3. Catat transaksi pertama
+- Mobile-first
+- Desktop tidak boleh merusak layout dashboard utama
+- Desktop menggunakan panel onboarding ringan di kanan atas
+- Mobile menggunakan card inline di atas Net Worth
 
 ## Assumptions
-- Implementasi awal memakai versi logo v1 yang sudah disetujui user sebagai base concept.
-- Aset PWA bisa dimulai dari placeholder serius yang konsisten dengan branding baru.
-- Tidak mengubah flow bisnis aplikasi.
+- Step 1 complete jika user memiliki minimal 1 wallet.
+- Step 2 complete sementara dianggap jika total saldo wallet > 0.
+- Step 3 complete jika user memiliki minimal 1 transaksi.
+- Setelah semua step selesai, onboarding tidak perlu ditampilkan lagi.
 
 ## Proposed Approach
-1. Buat komponen SVG/React untuk brand CAPH.io.
-2. Gunakan komponen itu di AppLayout dan dashboard header.
-3. Generate icon PNG sederhana yang konsisten untuk `192`, `512`, dan Apple touch icon.
-4. Update manifest dan meta tag agar menunjuk ke aset baru.
+1. Tambahkan payload onboarding dari backend.
+2. Buat komponen onboarding reusable dengan mode desktop/mobile.
+3. Pasang komponen di dashboard tanpa menggeser layout desktop secara agresif.
+4. Sambungkan CTA ke route yang paling relevan dan sudah ada.
+5. Verifikasi build dan responsivitas dasar.
 
 ## Definition of Done
-- Logo terlihat di area dashboard/layout.
-- Manifest dan meta PWA memakai branding CAPH.io.
-- Aset icon dasar tersedia di `public/`.
+- User baru melihat onboarding 3 langkah di dashboard.
+- Desktop layout utama tetap rapi.
+- Mobile menampilkan onboarding sebelum Net Worth.
+- CTA jelas dan mengarah ke aksi yang tepat.
+- Onboarding hilang saat semua step selesai.
 
 ## Verification Plan
-- Review file frontend dan manifest yang berubah.
-- Cek referensi asset PWA tidak menunjuk ke file lama/placeholder.
-- Jika memungkinkan, sarankan build/test visual setelah review.
+- Review tampilan desktop dan mobile.
+- Verifikasi state 0/3, 1/3, 2/3, dan selesai.
+- Jalankan build frontend untuk memastikan perubahan aman.

@@ -10,6 +10,7 @@ import {
     ChatCircleDots
 } from '@phosphor-icons/react';
 import HabitTrackerWidget from '@/Components/Dashboard/HabitTrackerWidget';
+import OnboardingSetupCard from '@/Components/Dashboard/OnboardingSetupCard';
 import CaphLogo from '@/Components/Brand/CaphLogo';
 import { User } from '@/types';
 import { formatTime } from '@/utils/date';
@@ -31,9 +32,39 @@ interface Notification {
 }
 
 export default function AppLayout({ header, children }: PropsWithChildren<LayoutProps>) {
-    const user = usePage().props.auth.user as User;
+    const page = usePage().props as any;
+    const user = page.auth.user as User;
+    const onboarding = page.onboarding as {
+        show?: boolean;
+        completedSteps?: number;
+        progressPercent?: number;
+        steps?: {
+            key: string;
+            title: string;
+            description: string;
+            completed: boolean;
+            active: boolean;
+            href?: string;
+            actionLabel?: string;
+        }[];
+    } | undefined;
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isMoreOpen, setIsMoreOpen] = useState(false);
+    const [isOnboardingDismissed, setIsOnboardingDismissed] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('caph_onboarding_dismissed') === 'true';
+        }
+        return false;
+    });
+    const [isOnboardingMinimized, setIsOnboardingMinimized] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('caph_onboarding_minimized') === 'true';
+        }
+        return false;
+    });
+    const [dragPosition, setDragPosition] = useState<{ x: number; y: number } | null>(null);
+    const dragOffsetRef = useRef({ x: 0, y: 0 });
+    const draggingRef = useRef(false);
     const currentRoute = route().current() || '';
 
     // Dark mode state
@@ -55,6 +86,24 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
         }
         localStorage.setItem('caph-theme', isDark ? 'dark' : 'light');
     }, [isDark]);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('caph_onboarding_dismissed');
+            localStorage.setItem('caph_onboarding_minimized', isOnboardingMinimized ? 'true' : 'false');
+        }
+    }, [isOnboardingMinimized]);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        if (window.innerWidth < 1024) return;
+        if (!dragPosition) {
+            setDragPosition({
+                x: Math.max(16, Math.round((window.innerWidth - 280) / 2)),
+                y: 92,
+            });
+        }
+    }, [dragPosition]);
 
     // Notification state
     const [isNotifOpen, setIsNotifOpen] = useState(false);
@@ -116,6 +165,43 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
             default: return <Info weight="duotone" className="w-4 h-4 text-blue-500" />;
         }
     };
+
+    const handleOnboardingMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+        if (typeof window === 'undefined' || window.innerWidth < 1024) return;
+        const target = event.target as HTMLElement;
+        if (!target.closest('[data-drag-handle="true"]')) return;
+        if (target.closest('[data-no-drag="true"]')) return;
+
+        draggingRef.current = true;
+        const rect = event.currentTarget.getBoundingClientRect();
+        dragOffsetRef.current = {
+            x: event.clientX - rect.left,
+            y: event.clientY - rect.top,
+        };
+        event.preventDefault();
+    };
+
+    useEffect(() => {
+        const handleMove = (event: MouseEvent) => {
+            if (!draggingRef.current || typeof window === 'undefined' || window.innerWidth < 1024) return;
+            const width = 280;
+            const estimatedHeight = isOnboardingMinimized ? 72 : 170;
+            const nextX = Math.min(Math.max(12, event.clientX - dragOffsetRef.current.x), window.innerWidth - width - 12);
+            const nextY = Math.min(Math.max(12, event.clientY - dragOffsetRef.current.y), window.innerHeight - estimatedHeight - 12);
+            setDragPosition({ x: nextX, y: nextY });
+        };
+
+        const handleUp = () => {
+            draggingRef.current = false;
+        };
+
+        window.addEventListener('mousemove', handleMove);
+        window.addEventListener('mouseup', handleUp);
+        return () => {
+            window.removeEventListener('mousemove', handleMove);
+            window.removeEventListener('mouseup', handleUp);
+        };
+    }, [isOnboardingMinimized]);
 
     const NavItem = ({ href, icon: Icon, label, active }: { href: string; icon: any; label: string; active: boolean }) => {
         return (
@@ -360,6 +446,35 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                         {children}
                     </div>
                 </div >
+
+                {onboarding?.show && Array.isArray(onboarding.steps) && onboarding.steps.length > 0 && (
+                    <>
+                        <div
+                            className="hidden lg:block fixed z-40 max-w-[280px] opacity-95 hover:opacity-100 transition-opacity"
+                            onMouseDown={handleOnboardingMouseDown}
+                            style={dragPosition ? { left: dragPosition.x, top: dragPosition.y } : { left: '50%', top: 92, transform: 'translateX(-50%)' }}
+                        >
+                            <OnboardingSetupCard
+                                mode="floating"
+                                progressText={`${onboarding.completedSteps ?? 0}/3 selesai`}
+                                progressPercent={onboarding.progressPercent ?? 0}
+                                steps={onboarding.steps}
+                                minimized={isOnboardingMinimized}
+                                onToggleMinimize={() => setIsOnboardingMinimized((prev: boolean) => !prev)}
+                            />
+                        </div>
+                        <div className="lg:hidden fixed left-3 right-3 top-20 z-40 opacity-95">
+                            <OnboardingSetupCard
+                                mode="floating"
+                                progressText={`${onboarding.completedSteps ?? 0}/3 selesai`}
+                                progressPercent={onboarding.progressPercent ?? 0}
+                                steps={onboarding.steps}
+                                minimized={isOnboardingMinimized}
+                                onToggleMinimize={() => setIsOnboardingMinimized((prev: boolean) => !prev)}
+                            />
+                        </div>
+                    </>
+                )}
 
                 {/* Mobile Bottom Navigation Bar */}
                 < nav className="fixed bottom-0 left-0 right-0 z-40 lg:hidden" >

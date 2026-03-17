@@ -48,7 +48,7 @@ const ResizeHandle = React.forwardRef<HTMLDivElement, any>(({ handleAxis, ...pro
 });
 
 export default function Dashboard({
-    auth, stats, trendData: initialTrendData, pieData: initialPieData, budgetProgress, recentTransactions, wallets, allWallets, upcomingBills, topTags, categories, userTags, suggestions, filters
+    auth, stats, trendData: initialTrendData, pieData: initialPieData, budgetProgress, recentTransactions, wallets, allWallets, upcomingBills, topTags, categories, userTags, suggestions, filters, onboarding
 }: PageProps<{
     stats: Stats;
     trendData: ChartData[];
@@ -63,6 +63,20 @@ export default function Dashboard({
     userTags: TagData[];
     suggestions: Record<string, string[]>;
     filters: FilterState;
+    onboarding: {
+        show: boolean;
+        completedSteps: number;
+        progressPercent: number;
+        steps: {
+            key: string;
+            title: string;
+            description: string;
+            completed: boolean;
+            active: boolean;
+            href?: string;
+            actionLabel?: string;
+        }[];
+    };
 }>) {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [recurringTransactions, setRecurringTransactions] = useState<RecurringTransaction[]>([]);
@@ -90,6 +104,16 @@ export default function Dashboard({
         axios.get('/api/dashboard/recurring')
             .then(res => setRecurringTransactions(res.data))
             .catch(err => console.error('Failed to fetch recurring transactions:', err));
+    }, []);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const url = new URL(window.location.href);
+        if (url.searchParams.get('action') === 'add-transaction') {
+            setIsAddModalOpen(true);
+            url.searchParams.delete('action');
+            window.history.replaceState({}, '', url.toString());
+        }
     }, []);
 
     // Lazy-load trend data on mount and when filters change
