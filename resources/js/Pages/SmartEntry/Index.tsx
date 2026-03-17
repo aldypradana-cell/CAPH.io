@@ -220,10 +220,10 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
             <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6 animate-fade-in-up">
                 {/* Hero - Hidden on mobile to prioritize input */}
                 <div className="hidden md:block glass-card p-8 rounded-[2rem] text-center animate-fade-in-up">
-                    <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-white mx-auto mb-4 shadow-lg shadow-indigo-500/30">
+                    <div className="w-16 h-16 bg-[#0E3D42] rounded-2xl flex items-center justify-center text-[#C5A059] mx-auto mb-4 shadow-lg shadow-[#0E3D42]/30 ring-1 ring-white/20">
                         <Sparkles weight="duotone" className="w-8 h-8" />
                     </div>
-                    <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">AI Smart Entry</h2>
+                    <h2 className="text-2xl font-bold text-slate-800 dark:text-[#EDEDD6] mb-2">AI Smart Entry</h2>
                     <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
                         Ketik transaksi dengan bahasa sehari-hari, AI akan otomatis memisahkan dan mengkategorikan!
                     </p>
@@ -237,12 +237,12 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
                         onChange={(e) => setInput(e.target.value)}
                         placeholder="Contoh: beli nasi goreng 25ribu, kopi 10rb, bensin 50000"
                         rows={4}
-                        className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 resize-none"
+                        className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-[#0E3D42] outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 resize-none"
                     />
                     <div className="flex items-center justify-between mt-3">
                         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
                             <span className="text-[10px] text-slate-400 flex items-center gap-1 font-bold">
-                                <Sparkles weight="fill" className="w-3 h-3 text-indigo-500" /> Powered by Gemini
+                                <Sparkles weight="fill" className="w-3 h-3 text-[#0E3D42] dark:text-[#C5A059]" /> Powered by Gemini
                             </span>
                             {aiQuota && (
                                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${isQuotaExceeded ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
@@ -270,7 +270,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
                             <button
                                 onClick={handleParse}
                                 disabled={isParsing || !input.trim() || isQuotaExceeded}
-                                className={`flex items-center px-5 py-2.5 rounded-2xl text-sm font-bold transition-all transition-transform ${isQuotaExceeded ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:shadow-lg hover:shadow-indigo-500/30 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100'}`}
+                                className={`flex items-center px-5 py-2.5 rounded-2xl text-sm font-bold transition-all transition-transform ${isQuotaExceeded ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-[#0E3D42] text-[#EDEDD6] hover:shadow-lg hover:shadow-[#0E3D42]/30 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100'}`}
                             >
                                 {isParsing ? (
                                     <><Loader2 weight="bold" className="w-4 h-4 mr-2 animate-spin" /> Memproses...</>
@@ -311,9 +311,9 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
 
                         <div className="space-y-3">
                             {parsedTransactions.map((t, idx) => (
-                                <div key={idx} className={`flex items-center justify-between p-4 rounded-2xl border-l-4 ${t.type === 'INCOME' ? 'border-l-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/10' : 'border-l-red-500 bg-red-50/50 dark:bg-red-900/10'} transition-all animate-pop-in`} style={{ animationDelay: `${idx * 80}ms` }}>
+                                <div key={idx} className={`flex items-center justify-between p-4 rounded-2xl border-l-4 ${t.type === 'INCOME' ? 'border-l-[#0E3D42] bg-[#0E3D42]/5 dark:bg-[#0E3D42]/10' : 'border-l-[#9F1239] bg-[#9F1239]/5 dark:bg-[#9F1239]/10'} transition-all animate-pop-in shadow-sm`} style={{ animationDelay: `${idx * 80}ms` }}>
                                     <div className="flex items-center gap-3">
-                                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${t.type === 'INCOME' ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600' : 'bg-red-100 dark:bg-red-900/40 text-red-600'}`}>
+                                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${t.type === 'INCOME' ? 'bg-[#0E3D42]/10 text-[#0E3D42] dark:text-[#5EEAD4]' : 'bg-[#9F1239]/10 text-[#9F1239] dark:text-rose-400'}`}>
                                             {t.type === 'INCOME' ? <TrendingUp weight="bold" className="w-4 h-4" /> : <TrendingDown weight="bold" className="w-4 h-4" />}
                                         </div>
                                         <div>
@@ -321,7 +321,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
                                             <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                                                 <span className="text-[10px] text-slate-400">{t.category} · {formatDateLocale(t.date)}</span>
                                                 {t.tags && t.tags.length > 0 && t.tags.map((tag, ti) => (
-                                                    <span key={ti} className="inline-flex items-center gap-0.5 text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-1.5 py-0.5 rounded-full">
+                                                    <span key={ti} className="inline-flex items-center gap-0.5 text-[10px] font-bold text-[#0E3D42] dark:text-[#C5A059] bg-[#0E3D42]/10 dark:bg-[#0E3D42]/20 px-1.5 py-0.5 rounded-full">
                                                         <Hash weight="bold" className="w-2.5 h-2.5" />{tag}
                                                     </span>
                                                 ))}
@@ -329,7 +329,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3 shrink-0">
-                                        <span className={`text-base font-bold ${t.type === 'INCOME' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                                        <span className={`text-base font-bold ${t.type === 'INCOME' ? 'text-[#0E3D42] dark:text-[#5EEAD4]' : 'text-[#9F1239] dark:text-rose-400'}`}>
                                             {t.type === 'INCOME' ? '+' : '-'}{formatIDR(t.amount)}
                                         </span>
                                         <button 
@@ -347,14 +347,14 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
                         <div className="pt-4 border-t border-slate-200 dark:border-slate-700 space-y-3">
                             <div>
                                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Simpan ke Dompet</label>
-                                <select value={selectedWallet} onChange={(e) => setSelectedWallet(e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required>
+                                <select value={selectedWallet} onChange={(e) => setSelectedWallet(e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-[#0E3D42] outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required>
                                     <option value="">Pilih Dompet</option>
                                     {wallets.filter(w => !w.is_archived).map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
                                 </select>
                             </div>
                             <div className="flex gap-3">
                                 <button onClick={() => setParsedTransactions([])} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors active:scale-95">Batal</button>
-                                <button onClick={handleConfirm} disabled={processing} className="flex-1 py-3 bg-emerald-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50">
+                                <button onClick={handleConfirm} disabled={processing} className="flex-1 py-3 bg-[#0D3B3F] text-[#EDEDD6] rounded-2xl text-sm font-bold shadow-lg shadow-[#0D3B3F]/30 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50 ring-1 ring-white/10">
                                     {processing ? 'Menyimpan...' : 'Konfirmasi & Simpan'}
                                 </button>
                             </div>
@@ -371,7 +371,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
                             'terima gaji 5 juta, bonus 500ribu #rezeki',
                             'beli rokok surya 30rb #boros, bayar listrik 300rb'
                         ].map((ex, i) => (
-                            <div key={i} onClick={() => setInput(ex)} className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-sm text-slate-600 dark:text-slate-400 cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors border border-transparent hover:border-indigo-200 dark:hover:border-indigo-800">
+                            <div key={i} onClick={() => setInput(ex)} className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-sm text-slate-600 dark:text-slate-400 cursor-pointer hover:bg-[#0E3D42]/10 dark:hover:bg-[#0E3D42]/20 hover:text-[#0E3D42] dark:hover:text-[#C5A059] transition-colors border border-transparent hover:border-[#0E3D42]/20 dark:hover:border-[#0E3D42]/40">
                                 "{ex}"
                             </div>
                         ))}
@@ -385,8 +385,8 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
 SmartEntryIndex.layout = (page: any) => (
     <AppLayout header={
         <div className="flex flex-col min-w-0">
-            <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Input Cerdas AI</h1>
-                <p className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">Masukkan transaksi dengan bahasa natural</p>
+            <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-[#EDEDD6] tracking-tight truncate">Input Cerdas AI</h1>
+                <p className="hidden sm:block text-xs text-[#8F7442] dark:text-[#B89A5D] font-medium mt-0.5 truncate">Masukkan transaksi dengan bahasa natural</p>
         </div>
     }>
         {page}

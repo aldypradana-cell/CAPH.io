@@ -111,9 +111,9 @@ interface RoastData {
 type RoastLevel = 'MILD' | 'MEDIUM' | 'BRUTAL';
 
 const ROAST_LEVELS: { key: RoastLevel; emoji: string; label: string; desc: string; color: string; ring: string }[] = [
-    { key: 'MILD', emoji: '🟡', label: 'Halus', desc: 'Teman baik yang becanda', color: 'from-yellow-400 to-amber-400', ring: 'ring-yellow-400' },
-    { key: 'MEDIUM', emoji: '🟠', label: 'Medium', desc: 'Kakak yang blak-blakan', color: 'from-orange-400 to-orange-500', ring: 'ring-orange-400' },
-    { key: 'BRUTAL', emoji: '🔴', label: 'Brutal', desc: 'Stand-up tanpa ampun', color: 'from-red-500 to-rose-600', ring: 'ring-red-500' },
+    { key: 'MILD', emoji: '🟡', label: 'Halus', desc: 'Teman baik yang becanda', color: 'from-[#C5A059] to-[#8F7442]', ring: 'ring-[#C5A059]' },
+    { key: 'MEDIUM', emoji: '🟠', label: 'Medium', desc: 'Kakak yang blak-blakan', color: 'from-[#B89A5D] to-[#8F7442]', ring: 'ring-[#B89A5D]' },
+    { key: 'BRUTAL', emoji: '🔴', label: 'Brutal', desc: 'Stand-up tanpa ampun', color: 'from-[#9F1239] to-[#881337]', ring: 'ring-[#9F1239]' },
 ];
 
 const LOADING_TEXTS = [
@@ -144,17 +144,17 @@ const formatShortIDR = (n: number) => {
 };
 
 const sentimentConfig: Record<string, { color: string; bgFrom: string; bgTo: string; icon: string; ringColor: string }> = {
-    EXCELLENT: { color: 'text-emerald-500', bgFrom: 'from-emerald-500', bgTo: 'to-teal-500', icon: '🎉', ringColor: '#10b981' },
-    GOOD: { color: 'text-blue-500', bgFrom: 'from-blue-500', bgTo: 'to-indigo-500', icon: '👍', ringColor: '#3b82f6' },
-    CAUTIOUS: { color: 'text-amber-500', bgFrom: 'from-amber-500', bgTo: 'to-yellow-500', icon: '⚠️', ringColor: '#f59e0b' },
-    WARNING: { color: 'text-orange-500', bgFrom: 'from-orange-500', bgTo: 'to-red-400', icon: '🚨', ringColor: '#f97316' },
-    CRITICAL: { color: 'text-red-600', bgFrom: 'from-red-600', bgTo: 'to-rose-600', icon: '🔴', ringColor: '#dc2626' },
+    EXCELLENT: { color: 'text-[#0E3D42] dark:text-[#5EEAD4]', bgFrom: 'from-[#0E3D42]', bgTo: 'to-[#0D3B3F]', icon: '✨', ringColor: '#0E3D42' },
+    GOOD: { color: 'text-[#0D3B3F] dark:text-[#C5A059]', bgFrom: 'from-[#0D3B3F]', bgTo: 'to-[#0E3D42]', icon: '👍', ringColor: '#0D3B3F' },
+    CAUTIOUS: { color: 'text-[#8F7442] dark:text-[#C5A059]', bgFrom: 'from-[#C5A059]', bgTo: 'to-[#8F7442]', icon: '⚖️', ringColor: '#C5A059' },
+    WARNING: { color: 'text-[#9F1239] dark:text-rose-400', bgFrom: 'from-[#9F1239]', bgTo: 'to-[#881337]', icon: '⚠️', ringColor: '#9F1239' },
+    CRITICAL: { color: 'text-[#881337] dark:text-rose-500', bgFrom: 'from-[#881337]', bgTo: 'to-[#9F1239]', icon: '🚨', ringColor: '#881337' },
 };
 
 const goalStatusConfig: Record<string, { label: string; color: string; bg: string }> = {
-    ON_TRACK: { label: 'On Track', color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-100 dark:bg-emerald-900/30' },
-    DELAYED: { label: 'Delayed', color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-100 dark:bg-amber-900/30' },
-    AT_RISK: { label: 'At Risk', color: 'text-red-600 dark:text-red-400', bg: 'bg-red-100 dark:bg-red-900/30' },
+    ON_TRACK: { label: 'On Track', color: 'text-[#0E3D42] dark:text-[#5EEAD4]', bg: 'bg-[#0E3D42]/10 dark:bg-[#0E3D42]/20' },
+    DELAYED: { label: 'Delayed', color: 'text-[#8F7442] dark:text-[#C5A059]', bg: 'bg-[#C5A059]/10 dark:bg-[#C5A059]/20' },
+    AT_RISK: { label: 'At Risk', color: 'text-[#9F1239] dark:text-rose-400', bg: 'bg-[#9F1239]/10 dark:bg-[#9F1239]/20' },
 };
 
 // ── Gauge Component ──────────────────────────────────
@@ -397,7 +397,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                 <div className="flex items-center justify-between transition-colors duration-500 z-10 relative mb-4">
                     <div className="flex-1">
                         {activeTab !== 'roast' && lastUpdated && (
-                            <p className="text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 font-medium">Terakhir diupdate: {formatDateTime(lastUpdated)}</p>
+                            <p className="text-[10px] sm:text-xs text-[#8F7442] dark:text-[#C5A059] font-medium">Terakhir diupdate: {formatDateTime(lastUpdated)}</p>
                         )}
                     </div>
                     <div className="flex items-center gap-3 pr-1">
@@ -429,11 +429,11 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
 
                         {isRoasting ? (
                             <div className="flex flex-col items-center text-center z-10 w-full max-w-sm">
-                                {/* Loading text block without fire icons */}
-                                <div className="w-full h-1 bg-slate-800 rounded-full overflow-hidden mb-6 mt-4">
-                                    <div className="h-full bg-red-600 rounded-full animate-pulse" style={{ width: '100%' }} />
+                                {/* Loading indicator */}
+                                <div className="w-full h-1.5 bg-[#0E3D42]/20 rounded-full overflow-hidden mb-6 mt-4">
+                                    <div className="h-full bg-gradient-to-r from-[#0E3D42] via-[#C5A059] to-[#0E3D42] rounded-full animate-shimmer" style={{ width: '100%', backgroundSize: '200% 100%' }} />
                                 </div>
-                                <p className="text-sm font-mono text-red-500/80 animate-pulse tracking-widest uppercase">
+                                <p className="text-sm font-mono text-[#C5A059] animate-pulse tracking-widest uppercase font-bold">
                                     {LOADING_TEXTS[loadingTextIdx]}
                                 </p>
                             </div>
@@ -441,8 +441,8 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                             <div className="z-10 w-full flex flex-col items-center animate-pop-in">
                                 {/* The exact share card rendered on screen */}
                                 <div 
-                                    className="w-full max-w-[420px] rounded-[1.5rem] overflow-hidden shadow-[0_20px_60px_-15px_rgba(220,38,38,0.2)] border border-white/5"
-                                    style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
+                                    className="w-full max-w-[420px] rounded-[2rem] overflow-hidden shadow-[0_20px_60px_-15px_rgba(143,116,66,0.2)] border border-[#C5A059]/10"
+                                    style={{ fontFamily: 'var(--font-outfit), sans-serif' }}
                                 >
                                     <div style={{ background: '#101010', color: '#F3F5F7', padding: '24px', position: 'relative' }}>
                                         {/* Post Container */}
@@ -544,7 +544,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                     
                                     <button
                                         onClick={handleGetSolution}
-                                        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:shadow-lg hover:shadow-indigo-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-xs font-bold bg-gradient-to-r from-[#0E3D42] to-[#0D3B3F] text-[#C5A059] border border-[#C5A059]/20 hover:shadow-lg hover:shadow-[#0E3D42]/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
                                     >
                                         <Sparkles weight="fill" className="w-4 h-4" />
                                         Minta Solusi Penyelamat (AI Analysis)
@@ -554,12 +554,12 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                         ) : (
                             /* Empty State - The Dark Room */
                             <div className="z-10 flex flex-col items-center text-center max-w-sm w-full py-8">
-                                <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mb-6 ring-1 ring-red-500/20 shadow-[0_0_30px_rgba(239,68,68,0.2)]">
-                                    <Fire weight="duotone" className="w-10 h-10 text-red-500" />
+                                <div className="w-20 h-20 bg-[#0E3D42]/10 rounded-full flex items-center justify-center mb-6 ring-1 ring-[#C5A059]/20 shadow-[0_0_30px_rgba(197,160,89,0.2)]">
+                                    <Fire weight="duotone" className="w-10 h-10 text-[#C5A059]" />
                                 </div>
-                                <h3 className="text-2xl sm:text-3xl font-black text-white mb-4 leading-tight tracking-tight">Fakta Terdalam Keuanganmu.</h3>
-                                <p className="text-sm text-slate-400 mb-10 leading-relaxed font-medium">
-                                    AI akan memberikan roasting brutal tanpa filter tentang kebiasaan pengeluaranmu. Berani lihat realitanya?
+                                <h3 className="text-2xl sm:text-3xl font-black text-[#EDEDD6] mb-4 leading-tight tracking-tight">Kebenaran Yang Menyakitkan.</h3>
+                                <p className="text-sm text-[#8F7442] mb-10 leading-relaxed font-medium">
+                                    AI akan memberikan roasting elegan namun tajam tentang kebiasaan pengeluaranmu. Berani lihat realitanya?
                                 </p>
 
                                 {roastError && (
@@ -588,12 +588,12 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                     disabled={auth.user.role === 'ADMIN' ? isRoasting : (roastedToday || isRoasting || (roastQuota && roastQuota.used >= roastQuota.limit))}
                                     className="w-full relative group overflow-hidden rounded-[1.25rem] p-[2px] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                                 >
-                                    <span className="absolute inset-0 bg-gradient-to-r from-red-600 via-orange-500 to-red-600 rounded-[1.25rem] opacity-70 group-hover:opacity-100 animate-[pulse_3s_ease-in-out_infinite] transition-opacity" />
+                                    <span className="absolute inset-0 bg-gradient-to-r from-[#0E3D42] via-[#C5A059] to-[#0E3D42] rounded-[1.25rem] opacity-70 group-hover:opacity-100 transition-opacity" />
                                     <div className="relative bg-[#050505] px-6 py-5 rounded-2xl flex items-center justify-center gap-3 transition-transform group-hover:scale-[0.99] group-active:scale-[0.97]">
                                         {roastedToday && auth.user.role !== 'ADMIN' ? (
-                                            <><ClockIcon weight="bold" className="w-5 h-5 text-slate-400" /> <span className="font-bold text-slate-300 text-lg">Istirahat {cooldownStr}</span></>
+                                            <><ClockIcon weight="bold" className="w-5 h-5 text-[#8F7442]" /> <span className="font-bold text-[#8F7442] text-lg">Istirahat {cooldownStr}</span></>
                                         ) : (
-                                            <span className="font-black text-white text-lg tracking-widest uppercase">ROASTING SAYA</span>
+                                            <span className="font-black text-[#C5A059] text-lg tracking-widest uppercase">ROAST SAYA SEKARANG</span>
                                         )}
                                     </div>
                                 </button>
@@ -620,17 +620,17 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
 
                 {/* ── Profile Completion Banner ── */}
                 {!hasProfile && (
-                    <div className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-200 dark:border-indigo-800/30 rounded-2xl p-4 flex items-center justify-between animate-fade-in-up">
+                    <div className="bg-gradient-to-r from-[#0E3D42]/10 to-[#C5A059]/10 border border-[#0E3D42]/20 dark:border-[#C5A059]/10 rounded-2xl p-4 flex items-center justify-between animate-fade-in-up">
                         <div className="flex items-center gap-3">
-                            <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl text-indigo-600 dark:text-indigo-400">
+                            <div className="p-2 bg-[#0E3D42]/10 dark:bg-[#0E3D42]/30 rounded-xl text-[#0E3D42] dark:text-[#C5A059]">
                                 <Info weight="duotone" className="w-5 h-5" />
                             </div>
                             <div>
-                                <p className="text-sm font-bold text-slate-800 dark:text-white">Profil Finansial Belum Lengkap</p>
-                                <p className="text-xs text-slate-500 dark:text-slate-400">Lengkapi di Pengaturan agar AI dapat menganalisis Dana Darurat & Proyeksi Goal.</p>
+                                <p className="text-sm font-bold text-slate-800 dark:text-[#EDEDD6]">Profil Finansial Belum Lengkap</p>
+                                <p className="text-xs text-[#8F7442] dark:text-[#C5A059]/70">Lengkapi di Pengaturan agar AI dapat menganalisis Dana Darurat & Proyeksi Goal.</p>
                             </div>
                         </div>
-                        <Link href={route('settings.index')} className="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold hover:bg-indigo-700 transition-colors flex-shrink-0">
+                        <Link href={route('settings.index')} className="px-4 py-2 bg-[#0E3D42] text-[#EDEDD6] rounded-xl text-xs font-bold hover:shadow-lg hover:shadow-[#0E3D42]/20 transition-all flex-shrink-0 border border-white/10">
                             Lengkapi →
                         </Link>
                     </div>
@@ -643,19 +643,19 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                         <div className="flex bg-slate-100 dark:bg-slate-800 rounded-xl p-1">
                             <button
                                 onClick={() => setPeriod('THIS_MONTH')}
-                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${period === 'THIS_MONTH' ? 'bg-white dark:bg-slate-700 shadow text-indigo-600 dark:text-indigo-400' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${period === 'THIS_MONTH' ? 'bg-white dark:bg-[#0E3D42] shadow text-[#0E3D42] dark:text-[#C5A059]' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
                             >
                                 Bulan Ini
                             </button>
                             <button
                                 onClick={() => setPeriod('LAST_MONTH')}
-                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${period === 'LAST_MONTH' ? 'bg-white dark:bg-slate-700 shadow text-indigo-600 dark:text-indigo-400' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${period === 'LAST_MONTH' ? 'bg-white dark:bg-[#0E3D42] shadow text-[#0E3D42] dark:text-[#C5A059]' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
                             >
                                 Bulan Lalu
                             </button>
                             <button
                                 onClick={() => setPeriod('CUSTOM')}
-                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${period === 'CUSTOM' ? 'bg-white dark:bg-slate-700 shadow text-indigo-600 dark:text-indigo-400' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${period === 'CUSTOM' ? 'bg-white dark:bg-[#0E3D42] shadow text-[#0E3D42] dark:text-[#C5A059]' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
                             >
                                 Custom
                             </button>
@@ -666,14 +666,14 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                     type="date"
                                     value={customStart}
                                     onChange={(e) => setCustomStart(e.target.value)}
-                                    className="bg-white dark:bg-slate-800 border-none rounded-xl text-xs px-3 py-2 outline-none ring-1 ring-slate-200 dark:ring-slate-700 focus:ring-indigo-500"
+                                    className="bg-white dark:bg-slate-800 border-none rounded-xl text-xs px-3 py-2 outline-none ring-1 ring-slate-200 dark:ring-slate-700 focus:ring-[#0E3D42]"
                                 />
                                 <span className="text-slate-400">-</span>
                                 <input
                                     type="date"
                                     value={customEnd}
                                     onChange={(e) => setCustomEnd(e.target.value)}
-                                    className="bg-white dark:bg-slate-800 border-none rounded-xl text-xs px-3 py-2 outline-none ring-1 ring-slate-200 dark:ring-slate-700 focus:ring-indigo-500"
+                                    className="bg-white dark:bg-slate-800 border-none rounded-xl text-xs px-3 py-2 outline-none ring-1 ring-slate-200 dark:ring-slate-700 focus:ring-[#0E3D42]"
                                 />
                             </div>
                         )}
@@ -690,7 +690,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                             <button
                                 onClick={handleGenerate}
                                 disabled={isLoading || isQuotaExceeded}
-                                className={`w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-xs font-bold transition-all transition-transform ${isQuotaExceeded ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg hover:shadow-purple-500/30 hover:scale-105 active:scale-95 disabled:opacity-50'}`}
+                                className={`w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-xs font-bold transition-all transition-transform ${isQuotaExceeded ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-[#0E3D42] text-[#EDEDD6] hover:shadow-lg hover:shadow-[#0E3D42]/30 hover:scale-105 active:scale-95 disabled:opacity-50 border border-white/10'}`}
                             >
                                 {isLoading ? <><Loader2 weight="bold" className="w-3.5 h-3.5 mr-1.5 animate-spin" />Menganalisis...</> : <><Sparkles weight="fill" className="w-3.5 h-3.5 mr-1.5" />{insight ? 'Refresh Analysis' : 'Generate Insights'}</>}
                             </button>
@@ -701,7 +701,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                 {/* ── Hero (first time, no insight yet) ── */}
                 {!insight && !isLoading && (
                     <div className="glass-card p-5 sm:p-8 rounded-[2rem] text-center animate-fade-in-up">
-                        <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center text-white mx-auto mb-4 shadow-lg shadow-purple-500/30 animate-pulse-slow">
+                        <div className="w-16 h-16 bg-[#0E3D42] rounded-2xl flex items-center justify-center text-[#C5A059] mx-auto mb-4 shadow-lg shadow-[#0E3D42]/30 animate-pulse-slow ring-1 ring-white/10">
                             <Sparkles weight="duotone" className="w-8 h-8" />
                         </div>
                         <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">Financial Health Check</h2>
@@ -755,8 +755,8 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                 {/* ── Loading State ── */}
                 {isLoading && (
                     <div className="glass-card p-12 rounded-[2rem] text-center animate-fade-in-up">
-                        <Loader2 weight="bold" className="w-12 h-12 mx-auto mb-4 text-purple-500 animate-spin" />
-                        <p className="text-lg font-bold text-slate-700 dark:text-slate-200 mb-1">AI sedang menganalisis...</p>
+                        <Loader2 weight="bold" className="w-12 h-12 mx-auto mb-4 text-[#0E3D42] dark:text-[#C5A059] animate-spin" />
+                        <p className="text-lg font-bold text-slate-700 dark:text-[#EDEDD6] mb-1">AI sedang menganalisis...</p>
                         <p className="text-sm text-slate-400">Memproses transaksi & menghitung proyeksi</p>
                     </div>
                 )}
@@ -788,31 +788,31 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                     <TrendingUp weight="bold" className="w-5 h-5 mr-2 text-blue-500" /> Cashflow Bulan Ini
                                 </h3>
                                 <div className="space-y-3">
-                                    <div className="flex justify-between items-center p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl">
+                                    <div className="flex justify-between items-center p-3 bg-[#0E3D42]/5 dark:bg-[#0E3D42]/10 rounded-xl">
                                         <div className="flex items-center gap-2">
-                                            <ArrowUpRight weight="bold" className="w-4 h-4 text-emerald-500" />
+                                            <ArrowUpRight weight="bold" className="w-4 h-4 text-[#0E3D42] dark:text-[#5EEAD4]" />
                                             <span className="text-sm text-slate-600 dark:text-slate-300">Pemasukan</span>
                                         </div>
-                                        <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">{formatShortIDR(insight.cashflow.income)}</span>
+                                        <span className="text-sm font-bold text-[#0E3D42] dark:text-[#5EEAD4]">{formatShortIDR(insight.cashflow.income)}</span>
                                     </div>
-                                    <div className="flex justify-between items-center p-3 bg-red-50 dark:bg-red-900/10 rounded-xl">
+                                    <div className="flex justify-between items-center p-3 bg-red-50/50 dark:bg-[#9F1239]/10 rounded-xl">
                                         <div className="flex items-center gap-2">
-                                            <ArrowDownRight weight="bold" className="w-4 h-4 text-red-500" />
+                                            <ArrowDownRight weight="bold" className="w-4 h-4 text-[#9F1239]" />
                                             <span className="text-sm text-slate-600 dark:text-slate-300">Pengeluaran</span>
                                         </div>
-                                        <span className="text-sm font-bold text-red-600 dark:text-red-400">{formatShortIDR(insight.cashflow.expense)}</span>
+                                        <span className="text-sm font-bold text-[#9F1239] dark:text-rose-400">{formatShortIDR(insight.cashflow.expense)}</span>
                                     </div>
-                                    <div className="flex justify-between items-center p-3 bg-blue-50 dark:bg-blue-900/10 rounded-xl">
+                                    <div className="flex justify-between items-center p-3 bg-[#0E3D42]/5 dark:bg-[#0E3D42]/10 rounded-xl">
                                         <div className="flex items-center gap-2">
-                                            <Zap weight="fill" className="w-4 h-4 text-blue-500" />
+                                            <Zap weight="fill" className="w-4 h-4 text-[#0E3D42] dark:text-[#C5A059]" />
                                             <span className="text-sm text-slate-600 dark:text-slate-300">Surplus</span>
                                         </div>
-                                        <span className={`text-sm font-bold ${insight.cashflow.surplus >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                                        <span className={`text-sm font-bold ${insight.cashflow.surplus >= 0 ? 'text-[#0E3D42] dark:text-[#5EEAD4]' : 'text-[#9F1239] dark:text-rose-400'}`}>
                                             {formatShortIDR(insight.cashflow.surplus)}
                                         </span>
                                     </div>
                                     <div className="text-center pt-2">
-                                        <span className={`text-2xl font-black ${insight.cashflow.savingsRate >= 20 ? 'text-emerald-500' : insight.cashflow.savingsRate >= 10 ? 'text-amber-500' : 'text-red-500'}`}>
+                                        <span className={`text-2xl font-black ${insight.cashflow.savingsRate >= 20 ? 'text-[#0E3D42] dark:text-[#5EEAD4]' : insight.cashflow.savingsRate >= 10 ? 'text-[#C5A059]' : 'text-[#9F1239]'}`}>
                                             {insight.cashflow.savingsRate}%
                                         </span>
                                         <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Savings Rate</p>
@@ -825,13 +825,13 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
 
                             {/* Emergency Fund */}
                             <div className="glass-card p-6 rounded-[2rem] animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-                                <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center mb-4">
-                                    <Shield weight="duotone" className="w-5 h-5 mr-2 text-indigo-500" /> Dana Darurat
+                                <h3 className="text-lg font-bold text-slate-800 dark:text-[#EDEDD6] flex items-center mb-4">
+                                    <Shield weight="duotone" className="w-5 h-5 mr-2 text-[#0E3D42] dark:text-[#C5A059]" /> Dana Darurat
                                 </h3>
                                 <div className="space-y-4">
                                     <div className="text-center">
-                                        <span className="text-4xl font-black text-indigo-500">{insight.emergencyFund.idealMonths}</span>
-                                        <p className="text-sm text-slate-500">bulan ideal</p>
+                                        <span className="text-4xl font-black text-[#0E3D42] dark:text-[#C5A059]">{insight.emergencyFund.idealMonths}</span>
+                                        <p className="text-sm text-[#8F7442] dark:text-[#C5A059]/70">bulan ideal</p>
                                     </div>
                                     <div className="grid grid-cols-2 gap-3">
                                         <div className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-center">
@@ -840,7 +840,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                         </div>
                                         <div className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-center">
                                             <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Target Dana</p>
-                                            <p className="text-sm font-bold text-indigo-600 dark:text-indigo-400">{formatShortIDR(insight.emergencyFund.idealAmount)}</p>
+                                            <p className="text-sm font-bold text-[#0E3D42] dark:text-[#5EEAD4]">{formatShortIDR(insight.emergencyFund.idealAmount)}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -857,21 +857,21 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                     <span className="text-xl mr-2">💎</span> Net Worth
                                 </h3>
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-                                    <div className="p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl text-center">
+                                    <div className="p-3 bg-[#0E3D42]/5 dark:bg-[#0E3D42]/10 rounded-xl text-center">
                                         <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Saldo Dompet</p>
-                                        <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">{formatShortIDR(insight.netWorthSnapshot.totalWallet)}</p>
+                                        <p className="text-sm font-bold text-[#0E3D42] dark:text-[#5EEAD4]">{formatShortIDR(insight.netWorthSnapshot.totalWallet)}</p>
                                     </div>
-                                    <div className="p-3 bg-blue-50 dark:bg-blue-900/10 rounded-xl text-center">
+                                    <div className="p-3 bg-[#C5A059]/5 dark:bg-[#C5A059]/10 rounded-xl text-center">
                                         <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Total Aset</p>
-                                        <p className="text-sm font-bold text-blue-600 dark:text-blue-400">{formatShortIDR(insight.netWorthSnapshot.totalAssets)}</p>
+                                        <p className="text-sm font-bold text-[#8F7442] dark:text-[#C5A059]">{formatShortIDR(insight.netWorthSnapshot.totalAssets)}</p>
                                     </div>
-                                    <div className="p-3 bg-red-50 dark:bg-red-900/10 rounded-xl text-center">
+                                    <div className="p-3 bg-[#9F1239]/5 dark:bg-[#9F1239]/10 rounded-xl text-center">
                                         <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Total Hutang</p>
-                                        <p className="text-sm font-bold text-red-600 dark:text-red-400">{formatShortIDR(insight.netWorthSnapshot.totalDebt)}</p>
+                                        <p className="text-sm font-bold text-[#9F1239] dark:text-rose-400">{formatShortIDR(insight.netWorthSnapshot.totalDebt)}</p>
                                     </div>
-                                    <div className={`p-3 rounded-xl text-center ${insight.netWorthSnapshot.netWorth >= 0 ? 'bg-indigo-50 dark:bg-indigo-900/10' : 'bg-red-50 dark:bg-red-900/10'}`}>
+                                    <div className={`p-3 rounded-xl text-center ${insight.netWorthSnapshot.netWorth >= 0 ? 'bg-[#0E3D42]/5 dark:bg-[#0E3D42]/10' : 'bg-[#9F1239]/5 dark:bg-[#9F1239]/10'}`}>
                                         <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Net Worth</p>
-                                        <p className={`text-sm font-bold ${insight.netWorthSnapshot.netWorth >= 0 ? 'text-indigo-600 dark:text-indigo-400' : 'text-red-600 dark:text-red-400'}`}>{formatShortIDR(insight.netWorthSnapshot.netWorth)}</p>
+                                        <p className={`text-sm font-bold ${insight.netWorthSnapshot.netWorth >= 0 ? 'text-[#0E3D42] dark:text-[#5EEAD4]' : 'text-[#9F1239] dark:text-rose-400'}`}>{formatShortIDR(insight.netWorthSnapshot.netWorth)}</p>
                                     </div>
                                 </div>
                                 <p className="text-xs text-slate-500 dark:text-slate-400 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl leading-relaxed">
@@ -905,7 +905,7 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                                 </div>
                                                 <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mb-2">
                                                     <div
-                                                        className={`h-full rounded-full transition-all duration-1000 ${goal.status === 'ON_TRACK' ? 'bg-emerald-500' : goal.status === 'DELAYED' ? 'bg-amber-500' : 'bg-red-500'}`}
+                                                        className={`h-full rounded-full transition-all duration-1000 ${goal.status === 'ON_TRACK' ? 'bg-[#0E3D42] dark:bg-[#5EEAD4]' : goal.status === 'DELAYED' ? 'bg-[#C5A059]' : 'bg-[#9F1239]'}`}
                                                         style={{ width: `${Math.max(5, progress)}%` }}
                                                     />
                                                 </div>
@@ -954,9 +954,9 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                                 <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{b.category}</span>
                                                 <div className="flex items-center gap-2">
                                                     <span className="text-xs text-slate-500">{formatShortIDR(b.spent)} / {formatShortIDR(b.limit)}</span>
-                                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${b.status === 'OVER' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
-                                                        b.status === 'WARNING' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
-                                                            'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${b.status === 'OVER' ? 'bg-[#9F1239]/10 text-[#9F1239] dark:text-rose-400' :
+                                                        b.status === 'WARNING' ? 'bg-[#C5A059]/10 text-[#8F7442] dark:text-[#C5A059]' :
+                                                            'bg-[#0E3D42]/10 text-[#0E3D42] dark:text-[#5EEAD4]'
                                                         }`}>{b.status === 'OVER' ? '🔴 OVER' : b.status === 'WARNING' ? '⚠️ Hampir' : '✅ Aman'}</span>
                                                 </div>
                                             </div>
@@ -976,10 +976,10 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                             </div>
                         )}
 
-                        {/* ── 6. SPENDING ALERTS ── */}
+                        {/* ── 4. SPENDING ALERTS ── */}
                         <div className="glass-card p-6 rounded-[2rem] animate-fade-in-up" style={{ animationDelay: '400ms' }}>
-                            <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center mb-4">
-                                <AlertTriangle weight="fill" className="w-5 h-5 mr-2 text-amber-500" /> Spending Alerts
+                            <h3 className="text-lg font-bold text-slate-800 dark:text-[#EDEDD6] flex items-center mb-4">
+                                <AlertTriangle weight="fill" className="w-5 h-5 mr-2 text-[#C5A059]" /> Spending Alerts
                             </h3>
                             {insight.spendingAlerts.length > 0 ? (
                                 <div className="space-y-3">
@@ -987,19 +987,19 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                         <div
                                             key={alert.category}
                                             className={`p-4 rounded-2xl border-l-4 ${alert.severity === 'DANGER'
-                                                ? 'border-red-500 bg-red-50 dark:bg-red-900/10'
+                                                ? 'border-[#9F1239] bg-[#9F1239]/5 dark:bg-[#9F1239]/10'
                                                 : alert.severity === 'WARNING'
-                                                    ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/10'
-                                                    : 'border-blue-500 bg-blue-50 dark:bg-blue-900/10'
+                                                    ? 'border-[#C5A059] bg-[#C5A059]/5 dark:bg-[#C5A059]/10'
+                                                    : 'border-[#0E3D42] bg-[#0E3D42]/5 dark:bg-[#0E3D42]/10'
                                                 }`}
                                         >
                                             <div className="flex items-center justify-between mb-1">
-                                                <span className="text-sm font-bold text-slate-800 dark:text-white">{alert.category}</span>
+                                                <span className="text-sm font-bold text-slate-800 dark:text-[#EDEDD6]">{alert.category}</span>
                                                 <div className="flex items-center gap-2">
                                                     <span className="text-xs font-bold text-slate-600 dark:text-slate-300">{formatShortIDR(alert.amount)}</span>
                                                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${alert.changePercent > 0
-                                                        ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400'
-                                                        : 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'
+                                                        ? 'bg-[#9F1239]/10 text-[#9F1239] dark:text-rose-400'
+                                                        : 'bg-[#0E3D42]/10 text-[#0E3D42] dark:text-[#5EEAD4]'
                                                         }`}>
                                                         {alert.changePercent > 0 ? '+' : ''}{alert.changePercent}%
                                                     </span>
@@ -1008,18 +1008,18 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                             <p className="text-xs text-slate-500 dark:text-slate-400">
                                                 Rata-rata 6 bln: {formatShortIDR(alert.avgLast6m)}
                                             </p>
-                                            <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 font-medium">💡 {alert.advice}</p>
+                                            <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 font-medium italic">💡 {alert.advice}</p>
                                         </div>
                                     ))}
                                 </div>
                             ) : (
-                                <div className="p-4 bg-emerald-50 dark:bg-emerald-900/10 rounded-2xl flex items-center gap-4">
-                                    <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                                <div className="p-4 bg-[#0E3D42]/5 dark:bg-[#0E3D42]/10 rounded-2xl flex items-center gap-4">
+                                    <div className="w-10 h-10 bg-[#0E3D42]/10 dark:bg-[#0E3D42]/30 rounded-full flex items-center justify-center text-[#0E3D42] dark:text-[#5EEAD4]">
                                         <CheckCircle2 weight="fill" className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <p className="text-sm font-bold text-slate-800 dark:text-white">Pengeluaran Terkendali!</p>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400">Tidak ada lonjakan signifikan dibanding rata-rata 6 bulan Anda.</p>
+                                        <p className="text-sm font-bold text-slate-800 dark:text-[#EDEDD6]">Pengeluaran Terkendali!</p>
+                                        <p className="text-xs text-[#8F7442] dark:text-[#C5A059]/70">Tidak ada lonjakan signifikan dibanding rata-rata 6 bulan Anda.</p>
                                     </div>
                                 </div>
                             )}
@@ -1027,24 +1027,24 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
 
                         {/* ── 5. ACTION PLAN ── */}
                         <div className="glass-card p-6 rounded-[2rem] animate-fade-in-up" style={{ animationDelay: '500ms' }}>
-                            <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center mb-4">
-                                <CheckCircle2 weight="fill" className="w-5 h-5 mr-2 text-emerald-500" /> Action Plan
+                            <h3 className="text-lg font-bold text-slate-800 dark:text-[#EDEDD6] flex items-center mb-4">
+                                <CheckCircle2 weight="fill" className="w-5 h-5 mr-2 text-[#0E3D42]" /> Action Plan
                             </h3>
                             {insight.actionItems.length > 0 ? (
                                 <div className="space-y-3">
                                     {insight.actionItems.map((item) => (
                                         <div key={item.priority} className="flex items-start gap-4 p-4 border border-slate-100 dark:border-slate-700 rounded-2xl hover:shadow-md transition-shadow">
-                                            <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-white text-sm font-black flex-shrink-0 ${item.impact === 'HIGH' ? 'bg-gradient-to-br from-red-500 to-orange-500'
-                                                : item.impact === 'MEDIUM' ? 'bg-gradient-to-br from-amber-500 to-yellow-500'
-                                                    : 'bg-gradient-to-br from-blue-500 to-indigo-500'
+                                            <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-white text-sm font-black flex-shrink-0 ${item.impact === 'HIGH' ? 'bg-gradient-to-br from-[#9F1239] to-[#881337]'
+                                                : item.impact === 'MEDIUM' ? 'bg-gradient-to-br from-[#C5A059] to-[#8F7442]'
+                                                    : 'bg-gradient-to-br from-[#0E3D42] to-[#0D3B3F]'
                                                 }`}>
                                                 {item.priority}
                                             </div>
                                             <div className="flex-1">
                                                 <div className="flex items-center justify-between mb-0.5">
-                                                    <h4 className="text-sm font-bold text-slate-800 dark:text-white">{item.title}</h4>
+                                                    <h4 className="text-sm font-bold text-slate-800 dark:text-[#EDEDD6]">{item.title}</h4>
                                                     {item.savingsPotential > 0 && (
-                                                        <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-full">
+                                                        <span className="text-[10px] font-bold text-[#0E3D42] dark:text-[#5EEAD4] bg-[#0E3D42]/10 dark:bg-[#0E3D42]/20 px-2 py-0.5 rounded-full">
                                                             +{formatShortIDR(item.savingsPotential)}/bln
                                                         </span>
                                                     )}
@@ -1098,10 +1098,10 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                     {/* Left Column: Avatar & Thread Line */}
                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                         <div style={{ 
-                                            width: '42px', height: '42px', borderRadius: '50%', background: 'linear-gradient(135deg, #FF6B6B, #C0392B, #8E44AD)', 
+                                            width: '42px', height: '42px', borderRadius: '50%', background: 'linear-gradient(135deg, #0E3D42, #C5A059, #0D3B3F)', 
                                             display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden'
                                         }}>
-                                            <span style={{ fontSize: '24px', lineHeight: 1, marginTop: '0px', display: 'flex' }}>🔥</span>
+                                            <span style={{ fontSize: '24px', lineHeight: 1, marginTop: '0px', display: 'flex' }}>👔</span>
                                         </div>
                                         <div style={{ width: '2px', flexGrow: 1, backgroundColor: '#222', marginTop: '10px', marginBottom: '10px', borderRadius: '1px' }}></div>
                                         <div style={{ 
@@ -1116,8 +1116,8 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
                                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingTop: '2px' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                <span style={{ fontSize: '15px', fontWeight: '600', color: '#F3F5F7', letterSpacing: '-0.2px' }}>caph_roast_ai</span>
-                                                <svg viewBox="0 0 24 24" fill="#0095F6" style={{ width: '14px', height: '14px' }}>
+                                                <span style={{ fontSize: '15px', fontWeight: '600', color: '#C5A059', letterSpacing: '-0.2px' }}>caph_luxury_ai</span>
+                                                <svg viewBox="0 0 24 24" fill="#C5A059" style={{ width: '14px', height: '14px' }}>
                                                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
                                                 </svg>
                                             </div>
@@ -1185,8 +1185,8 @@ export default function InsightsIndex({ auth, transactionCount, hasProfile, late
 InsightsIndex.layout = (page: any) => (
     <AppLayout header={
         <div className="flex flex-col min-w-0">
-            <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Analisis AI</h1>
-                <p className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">Insight cerdas dari data keuangan Anda</p>
+            <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-[#EDEDD6] tracking-tight truncate">Analisis AI</h1>
+                <p className="hidden sm:block text-xs text-[#8F7442] dark:text-[#C5A059] font-medium mt-0.5 truncate">Insight cerdas dari data keuangan Anda</p>
         </div>
     }>
         {page}
