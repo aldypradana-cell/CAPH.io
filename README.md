@@ -1,59 +1,232 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# CAPH.io
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+CAPH.io adalah aplikasi web untuk **personal finance management** yang dibangun dengan **Laravel, Inertia.js, React, dan TypeScript**.
 
-## About Laravel
+Project ini membantu pengguna mencatat transaksi, mengelola wallet dan aset, memantau kondisi keuangan, menyusun budgeting, melihat insight finansial, dan mengekspor data. Repo ini juga memiliki panel admin untuk kebutuhan operasional internal.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Highlights
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Dashboard keuangan dengan statistik dan widget ringkas
+- Pencatatan transaksi pemasukan dan pengeluaran
+- **Smart Entry** berbasis AI untuk parsing transaksi
+- Pengelolaan wallet, savings goals, budget, debt, dan installment
+- Asset tracking termasuk aset emas
+- Financial insights dan analytics
+- Export data, feedback inbox, notifikasi, backup/restore
+- Admin panel untuk user management, logs, feedback, dan master data
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Quick Start
 
-## Learning Laravel
+```bash
+composer install
+copy .env.example .env
+php artisan key:generate
+php artisan migrate
+npm install
+composer run dev
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+> Sebelum migrasi, pastikan konfigurasi database pada `.env` sudah benar.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Tech Stack
 
-## Laravel Sponsors
+### Backend
+- **PHP 8.2+**
+- **Laravel 12**
+- Laravel Sanctum
+- Barryvdh DomPDF
+- Laravel Excel
+- Sentry Laravel
+- Google Gemini Laravel SDK
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Frontend
+- **React 18**
+- **TypeScript**
+- **Inertia.js**
+- **Vite**
+- **Tailwind CSS**
+- Headless UI
+- Recharts
+- Framer Motion
 
-### Premium Partners
+## Main Modules
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Beberapa area utama yang saat ini tersedia di aplikasi:
 
-## Contributing
+- Dashboard
+- Transactions
+- Smart Entry
+- Wallets
+- Savings
+- Budgets
+- Debts / bills / receivables
+- Assets & gold assets
+- Categories
+- Insights
+- Analytics
+- Export
+- Feedback
+- Notifications
+- Settings
+- Admin dashboard
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Detail route implementation dapat dilihat di `routes/web.php`.
 
-## Code of Conduct
+## Project Structure
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```text
+app/                 Backend logic: controllers, models, services, exports, policies, notifications
+routes/web.php       Main web routes
+resources/js/Pages/  Inertia pages
+resources/js/Components/
+                     Reusable React components and dashboard widgets
+resources/views/     Blade/view support files
+database/            Migrations, factories, seeders
+public/              Public assets
+deploy.bat           Local helper for build/package update
+PANDUAN_UPDATE.txt   Deployment/update guide for Hostinger
+```
 
-## Security Vulnerabilities
+## Requirements
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Untuk menjalankan project ini secara lokal, siapkan:
 
-## License
+- PHP 8.2 atau lebih baru
+- Composer
+- Node.js versi LTS terbaru disarankan
+- Database sesuai konfigurasi `.env`
+- Ekstensi PHP yang dibutuhkan Laravel
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Local Setup
+
+```bash
+composer install
+copy .env.example .env
+php artisan key:generate
+php artisan migrate
+npm install
+```
+
+## Running the Project
+
+### Option 1 — Recommended
+Gunakan script dev yang sudah tersedia di `composer.json`:
+
+```bash
+composer run dev
+```
+
+Command ini menjalankan beberapa proses sekaligus:
+- Laravel development server
+- queue listener
+- log tail (`pail`)
+- Vite dev server
+
+### Option 2 — Manual
+Jika ingin menjalankan service satu per satu:
+
+```bash
+php artisan serve
+php artisan queue:listen --tries=1 --timeout=0
+php artisan pail --timeout=0
+npm run dev
+```
+
+## Build and Test
+
+### Build production assets
+```bash
+npm run build
+```
+
+### Run tests
+```bash
+composer test
+```
+
+Atau:
+
+```bash
+php artisan test
+```
+
+## Helpful Commands
+
+### One-step initial setup
+Repo ini menyediakan script setup cepat:
+
+```bash
+composer run setup
+```
+
+Script tersebut akan:
+- install dependency PHP
+- membuat `.env` jika belum ada
+- generate application key
+- menjalankan migrasi database
+- install dependency frontend
+- build asset production
+
+## Environment Notes
+
+Beberapa fitur membutuhkan konfigurasi environment tambahan, misalnya:
+
+- database connection
+- queue
+- mail
+- Sentry
+- Gemini / AI integration
+
+Sebaiknya dokumentasikan nilai env sensitif di tempat internal terpisah, dan gunakan README ini hanya untuk menjelaskan **kategori konfigurasi yang dibutuhkan**, bukan secret-nya.
+
+## Deployment
+
+Project ini sudah memiliki alur update manual ke Hostinger, dengan panduan utama di file `PANDUAN_UPDATE.txt`.
+
+### Ringkasan proses deploy/update
+1. Jalankan `deploy.bat` di lokal untuk build dan membuat `update.zip`
+2. Upload `update.zip` ke server Hostinger
+3. Extract ke folder project `caph`
+4. Sinkronkan hasil build ke `public_html`
+5. Jalankan migrasi jika ada perubahan schema/database
+6. Bersihkan cache Laravel
+7. Hard refresh browser
+
+### Sinkronisasi build di server
+```bash
+cd domains/caph.io/caph
+rm -rf ../public_html/build
+cp -r public/build ../public_html/
+rm -f ../public_html/hot
+```
+
+### Migration and cache clear
+```bash
+php artisan migrate --force
+php artisan optimize:clear
+```
+
+## Troubleshooting
+
+### Aset frontend tidak ter-update
+Coba lakukan:
+- pastikan `npm run build` sudah dijalankan
+- sinkronkan ulang folder `public/build` ke `public_html`
+- hapus file `hot` di server jika masih ada
+- lakukan hard refresh browser (`Ctrl + Shift + R`)
+
+### Error setelah deploy
+Periksa hal berikut:
+- `.env` di server sesuai
+- permission file/folder benar
+- migrasi database sudah dijalankan
+- cache sudah dibersihkan dengan `php artisan optimize:clear`
+
+### Error 500 di Hostinger
+Mengacu ke panduan internal, cek apakah `public_html/index.php` sudah mengarah ke path project `caph` yang benar.
+
+## Maintenance Notes
+
+- README ini disusun berdasarkan struktur repo saat ini.
+- Jika ada perubahan besar pada flow deploy, stack, atau modul utama, update README agar tetap relevan.
+- Untuk detail operasional server yang lebih spesifik, tetap refer ke `PANDUAN_UPDATE.txt` atau dokumentasi internal tambahan.
