@@ -10,6 +10,7 @@ import {
     ChatCircleDots
 } from '@phosphor-icons/react';
 import HabitTrackerWidget from '@/Components/Dashboard/HabitTrackerWidget';
+import CaphLogo from '@/Components/Brand/CaphLogo';
 import { User } from '@/types';
 import { formatTime } from '@/utils/date';
 
@@ -149,14 +150,13 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
 
                         {/* Logo */}
                         <div className="flex items-center justify-between p-6 pb-2">
-                            <div className="flex items-center space-x-3 group cursor-default">
-                                <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110">
-                                    <WalletIcon weight="duotone" className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h1 className="text-xl font-bold tracking-tight text-slate-800 dark:text-white leading-none">CAPH.io</h1>
-                                    <span className="text-[10px] font-bold text-indigo-500 dark:text-indigo-400 tracking-widest uppercase">AI Powered</span>
-                                </div>
+                            <div className="group cursor-default">
+                                <CaphLogo
+                                    size={40}
+                                    showWordmark
+                                    subtitle="Premium Finance"
+                                    className="transition-transform duration-500 group-hover:scale-[1.03]"
+                                />
                             </div>
                             <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 p-2 rounded-xl transition-colors">
                                 <X weight="bold" className="w-5 h-5" />

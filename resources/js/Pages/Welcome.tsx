@@ -1,4 +1,5 @@
 
+import CaphLogo from '@/Components/Brand/CaphLogo';
 import { PageProps } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 
@@ -31,8 +32,10 @@ export default function Welcome({
                     <div className="relative w-full max-w-2xl px-6 lg:max-w-7xl">
                         <header className="grid grid-cols-2 items-center gap-2 py-10 lg:grid-cols-3">
                             <div className="flex lg:col-start-2 lg:justify-center">
-                                {/* Logo Replacement */}
-                                <h1 className="text-4xl font-extrabold text-[#FF2D20] tracking-tight">CAPH.io</h1>
+                                <div className="flex items-center gap-3">
+                                    <CaphLogo size={52} />
+                                    <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">CAPH.io</h1>
+                                </div>
                             </div>
                             <nav className="-mx-3 flex flex-1 justify-end">
                                 {auth.user ? (

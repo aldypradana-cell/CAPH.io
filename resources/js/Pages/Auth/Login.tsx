@@ -1,7 +1,8 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
-import { Wallet, Eye, EyeSlash as EyeOff } from '@phosphor-icons/react';
+import { Eye, EyeSlash as EyeOff } from '@phosphor-icons/react';
 import { useState } from 'react';
+import CaphLogo from '@/Components/Brand/CaphLogo';
 
 export default function Login({
     status,
@@ -52,9 +53,8 @@ export default function Login({
                     
                     {/* Logo & Headline */}
                     <div className="flex flex-col items-center text-center mb-8">
-                        <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-2xl flex items-center justify-center text-white shadow-2xl shadow-indigo-500/40 mb-5 relative group">
-                            <div className="absolute inset-0 rounded-2xl bg-white/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                            <Wallet weight="duotone" className="w-8 h-8 relative z-10" />
+                        <div className="mb-5 rounded-[1.4rem] shadow-2xl shadow-slate-950/40 ring-1 ring-white/10 overflow-hidden">
+                            <CaphLogo size={72} />
                         </div>
                         <h1 className="text-3xl font-bold tracking-tight text-white mb-1">CAPH.io</h1>
                         <p className="text-sm font-medium tracking-[0.2em] text-indigo-400 uppercase">
@@ -159,7 +159,7 @@ export default function Login({
                     
                     {/* Minimal Footer */}
                     <div className="mt-8 text-center text-xs font-medium text-slate-600">
-                        &copy; {new Date().getFullYear()} FinTrack • Selalu Aman & Terenkripsi
+                        &copy; {new Date().getFullYear()} CAPH.io • Selalu Aman & Terenkripsi
                     </div>
                 </div>
             </div>

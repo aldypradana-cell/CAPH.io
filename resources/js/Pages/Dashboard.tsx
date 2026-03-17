@@ -10,6 +10,7 @@ import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
 // Components
+import CaphLogo from '@/Components/Brand/CaphLogo';
 import StatsCards from '@/Components/Dashboard/StatsCards';
 import TrendChart from '@/Components/Dashboard/TrendChart';
 import DistributionPieChart from '@/Components/Dashboard/DistributionPieChart';
@@ -373,11 +374,14 @@ export default function Dashboard({
 Dashboard.layout = (page: any) => (
     <AppLayout
         header={
-            <div className="flex flex-col min-w-0">
-                <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Dashboard Ringkasan</h1>
-                <p className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">
-                    Selamat datang kembali, {page.props.auth.user.name.split(' ')[0]}!
-                </p>
+            <div className="flex items-center gap-3 min-w-0">
+                <CaphLogo size={34} className="hidden sm:inline-flex" />
+                <div className="flex flex-col min-w-0">
+                    <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white tracking-tight truncate">Dashboard Ringkasan</h1>
+                    <p className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5 truncate">
+                        Selamat datang kembali, {page.props.auth.user.name.split(' ')[0]}!
+                    </p>
+                </div>
             </div>
         }
     >

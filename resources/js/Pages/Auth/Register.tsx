@@ -148,7 +148,7 @@ export default function Register() {
                     
                     {/* Minimal Footer */}
                     <div className="mt-8 text-center text-xs font-medium text-slate-600">
-                        &copy; {new Date().getFullYear()} FinTrack • Selalu Aman & Terenkripsi
+                        &copy; {new Date().getFullYear()} CAPH.io • Selalu Aman & Terenkripsi
                     </div>
                 </div>
             </div>

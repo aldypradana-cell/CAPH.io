@@ -1,17 +1,20 @@
 # Task
 
 ## Checklist
-- [done] Review README lama
-- [done] Identifikasi fitur/stack utama dari project
-- [done] Tulis README baru yang sesuai untuk CAPH.io
-- [done] Review ulang akurasi command setup/build/deploy
+- [done] Audit struktur PWA dan lokasi icon saat ini
+- [done] Buat komponen logo CAPH.io reusable
+- [done] Pasang logo ke layout/dashboard
+- [done] Generate aset icon PWA dasar
+- [done] Update manifest dan meta tag agar pakai branding baru
+- [done] Review hasil perubahan untuk UI dan PWA
 
 ## Validation Steps
-- Cocokkan setup command dengan `composer.json`
-- Cocokkan frontend command dengan `package.json`
-- Cocokkan langkah deploy dengan `PANDUAN_UPDATE.txt`
+- Pastikan file icon baru ada di `public/`
+- Pastikan `manifest.webmanifest` menunjuk ke icon yang benar
+- Pastikan logo tampil di UI tanpa merusak layout
+- Jalankan build frontend untuk memastikan import/perubahan lolos
 
 ## User Check
-- Review isi README baru di Source Control
-- Pastikan deskripsi produk/fitur sudah sesuai dengan positioning CAPH.io
-- Tambahkan detail bisnis/domain kalau ingin README lebih formal untuk publik
+- Review tampilan logo di sidebar/header/dashboard
+- Tes install PWA di device untuk melihat icon home screen
+- Putuskan apakah versi logo v1 cukup atau perlu revisi visual tahap berikutnya
