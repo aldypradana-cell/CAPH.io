@@ -42,7 +42,7 @@ export default function TopTagsWidget({
                     </div>
                     Fokus Pengeluaran
                 </h3>
-                <span className="text-[10px] font-bold text-[#8F7442] dark:text-[#B89A5D] uppercase tracking-widest">Bulan Ini</span>
+                <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-widest">Bulan Ini</span>
             </div>
             <div className="space-y-4 flex-1 overflow-y-auto min-h-0 pr-1 scrollbar-hide">
                 {tags.length > 0 ? (

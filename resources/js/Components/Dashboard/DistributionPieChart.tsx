@@ -123,28 +123,28 @@ export default function DistributionPieChart({
                     </div>
                     <div>
                         <h4 className="font-bold text-slate-800 dark:text-white text-lg">Distribusi</h4>
-                        <p className="text-xs text-[#8F7442] dark:text-[#B89A5D] font-medium">Berdasarkan Kategori</p>
+                        <p className="text-xs text-emerald-700 dark:text-emerald-400 font-medium">Berdasarkan Kategori</p>
                     </div>
                 </div>
                 
                 <div className="flex flex-wrap gap-2 items-center justify-end" onMouseDown={(e) => e.stopPropagation()}>
-                    <div className="flex bg-[#0E3D42]/5 dark:bg-[#0E3D42]/20 p-1 rounded-xl border border-[#C5A059]/10">
+                    <div className="flex bg-[#0E3D42]/5 dark:bg-[#0E3D42]/20 p-1 rounded-xl border border-emerald-500/10">
                         <button
                             onClick={() => setChartType('DONUT')}
                             title="Donut Chart"
-                            className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'DONUT' ? 'bg-[#0E3D42] text-[#C5A059] shadow-lg shadow-[#0E3D42]/20' : 'text-[#8F7442] dark:text-[#C5A059]/40 hover:text-[#0E3D42]'}`}
+                            className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'DONUT' ? 'bg-[#0E3D42] text-emerald-400 shadow-lg shadow-[#0E3D42]/20' : 'text-emerald-700 dark:text-emerald-400/40 hover:text-[#0E3D42]'}`}
                         >
                             <PieChartIcon weight="duotone" className="w-3.5 h-3.5" />
                         </button>
                         <button
                             onClick={() => setChartType('TREEMAP')}
                             title="Treemap"
-                            className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'TREEMAP' ? 'bg-[#0E3D42] text-[#C5A059] shadow-lg shadow-[#0E3D42]/20' : 'text-[#8F7442] dark:text-[#C5A059]/40 hover:text-[#0E3D42]'}`}
+                            className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'TREEMAP' ? 'bg-[#0E3D42] text-emerald-400 shadow-lg shadow-[#0E3D42]/20' : 'text-emerald-700 dark:text-emerald-400/40 hover:text-[#0E3D42]'}`}
                         >
                             <LayoutGrid weight="duotone" className="w-3.5 h-3.5" />
                         </button>
                     </div>
-                    <div className="flex bg-gradient-to-r from-[#0E3D42] to-[#0D3B3F] p-1 rounded-xl items-center gap-1.5 text-[10px] font-bold px-3 py-1.5 text-[#C5A059] shadow-lg shadow-[#0E3D42]/20 border border-[#C5A059]/20">
+                    <div className="flex bg-gradient-to-r from-[#0E3D42] to-[#0D3B3F] p-1 rounded-xl items-center gap-1.5 text-[10px] font-bold px-3 py-1.5 text-emerald-400 shadow-lg shadow-[#0E3D42]/20 border border-emerald-500/20">
                         <Calendar weight="duotone" className="w-3.5 h-3.5" />
                         Custom
                     </div>
@@ -152,14 +152,14 @@ export default function DistributionPieChart({
             </div>
             
             <div className="flex justify-center gap-2 mb-4" onMouseDown={(e) => e.stopPropagation()}>
-                <input type="date" value={filters.pieStartDate || filters.startDate} onChange={(e) => onDateChange('start', e.target.value)} className="bg-[#0E3D42]/5 dark:bg-[#0E3D42]/10 border-none rounded-lg text-[10px] text-[#8F7442] dark:text-[#C5A059]/70 px-2 py-1 outline-none font-medium ring-1 ring-[#C5A059]/10 focus:ring-[#C5A059]" />
-                <span className="text-[#C5A059]/30 self-center">-</span>
-                <input type="date" value={filters.pieEndDate || filters.endDate} onChange={(e) => onDateChange('end', e.target.value)} className="bg-[#0E3D42]/5 dark:bg-[#0E3D42]/10 border-none rounded-lg text-[10px] text-[#8F7442] dark:text-[#C5A059]/70 px-2 py-1 outline-none font-medium ring-1 ring-[#C5A059]/10 focus:ring-[#C5A059]" />
+                <input type="date" value={filters.pieStartDate || filters.startDate} onChange={(e) => onDateChange('start', e.target.value)} className="bg-[#0E3D42]/5 dark:bg-[#0E3D42]/10 border-none rounded-lg text-[10px] text-emerald-700 dark:text-emerald-400/70 px-2 py-1 outline-none font-medium ring-1 ring-emerald-500/10 focus:ring-emerald-500" />
+                <span className="text-emerald-500/30 self-center">-</span>
+                <input type="date" value={filters.pieEndDate || filters.endDate} onChange={(e) => onDateChange('end', e.target.value)} className="bg-[#0E3D42]/5 dark:bg-[#0E3D42]/10 border-none rounded-lg text-[10px] text-emerald-700 dark:text-emerald-400/70 px-2 py-1 outline-none font-medium ring-1 ring-emerald-500/10 focus:ring-emerald-500" />
             </div>
             {isLoading ? (
                 <div className="flex-1 flex items-center justify-center">
                     <div className="w-52 h-52 rounded-full border-[24px] border-slate-100 dark:border-slate-800 animate-pulse relative">
-                        <div className="absolute inset-0 rounded-full border-t-[24px] border-[#0B5F64]/30 dark:border-[#B89A5D]/30 animate-spin" style={{ animationDuration: '2s' }} />
+                        <div className="absolute inset-0 rounded-full border-t-[24px] border-[#0B5F64]/30 dark:border-emerald-500/30 animate-spin" style={{ animationDuration: '2s' }} />
                     </div>
                 </div>
             ) : data.length > 0 ? (
@@ -167,7 +167,7 @@ export default function DistributionPieChart({
                     <div className="flex-1 min-h-0 flex items-center justify-center relative">
                         {chartType === 'DONUT' && (
                             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none pb-12">
-                                <span className="text-[10px] font-bold text-[#8F7442] dark:text-[#B89A5D] tracking-widest uppercase mb-0.5">Total</span>
+                                <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 tracking-widest uppercase mb-0.5">Total</span>
                                 <span className="text-xl font-bold text-slate-800 dark:text-white">
                                     {formatShortIDR(totalCategoryExpense)}
                                 </span>

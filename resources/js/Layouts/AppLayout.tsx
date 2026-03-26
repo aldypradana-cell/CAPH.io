@@ -252,7 +252,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                         {/* Navigation */}
                         <nav className="flex-1 px-4 py-6 overflow-y-auto space-y-8 scrollbar-hide overscroll-contain">
                             <div className="animate-slide-in-right" style={{ animationDelay: '0.1s' }}>
-                                <p className="px-4 text-[10px] font-bold text-[#8F7442] dark:text-[#B89A5D] uppercase tracking-widest mb-3">Menu Utama</p>
+                                <p className="px-4 text-[10px] font-bold text-emerald-700 dark:text-emerald-500 uppercase tracking-widest mb-3">Menu Utama</p>
                                 <div className="space-y-1">
                                     <NavItem href={route('dashboard')} icon={LayoutDashboard} label="Dashboard" active={currentRoute === 'dashboard'} />
                                     <NavItem href={route('analytics.index')} icon={BarChart3} label="Analisis Arus Kas" active={currentRoute?.startsWith('analytics') ?? false} />
@@ -263,7 +263,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                             </div>
 
                             <div className="animate-slide-in-right" style={{ animationDelay: '0.2s' }}>
-                                <p className="px-4 text-[10px] font-bold text-[#8F7442] dark:text-[#B89A5D] uppercase tracking-widest mb-3">Keuangan</p>
+                                <p className="px-4 text-[10px] font-bold text-emerald-700 dark:text-emerald-500 uppercase tracking-widest mb-3">Keuangan</p>
                                 <div className="space-y-1">
                                     <NavItem href={route('wallets.index')} icon={CreditCard} label="Dompet" active={currentRoute?.startsWith('wallets') ?? false} />
                                     <NavItem href={route('budgets.index')} icon={Target} label="Anggaran" active={currentRoute?.startsWith('budgets') ?? false} />
@@ -275,7 +275,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                             </div>
 
                             <div className="animate-slide-in-right" style={{ animationDelay: '0.3s' }}>
-                                <p className="px-4 text-[10px] font-bold text-[#8F7442] dark:text-[#B89A5D] uppercase tracking-widest mb-3">Akun</p>
+                                <p className="px-4 text-[10px] font-bold text-emerald-700 dark:text-emerald-500 uppercase tracking-widest mb-3">Akun</p>
                                 <div className="space-y-1">
                                     <NavItem href={route('profile.edit')} icon={UserIcon} label="Profil Saya" active={currentRoute === 'profile.edit'} />
                                     <NavItem href={route('settings.index')} icon={Settings} label="Pengaturan" active={currentRoute?.startsWith('settings') ?? false} />
@@ -288,7 +288,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
 
                             {(user as any)?.role === 'ADMIN' && (
                                 <div className="animate-slide-in-right" style={{ animationDelay: '0.4s' }}>
-                                    <p className="px-4 text-[10px] font-bold text-[#8F7442] dark:text-[#B89A5D] uppercase tracking-widest mb-3">Sistem</p>
+                                    <p className="px-4 text-[10px] font-bold text-emerald-700 dark:text-emerald-500 uppercase tracking-widest mb-3">Sistem</p>
                                     <div className="space-y-1">
                                         <NavItem
                                             href={route('admin.dashboard')}
@@ -366,7 +366,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                         {unreadCount > 0 && (
                                             <button
                                                 onClick={handleMarkAllRead}
-                                                className="text-[10px] font-bold text-[#0B5F64] dark:text-[#B89A5D] hover:bg-[#0B5F64]/10 dark:hover:bg-white/10 px-2 py-1 rounded-lg transition-colors flex items-center"
+                                                className="text-[10px] font-bold text-[#0B5F64] dark:text-emerald-400 hover:bg-[#0B5F64]/10 dark:hover:bg-white/10 px-2 py-1 rounded-lg transition-colors flex items-center"
                                             >
                                                 <Check className="w-3 h-3 mr-1" /> Tandai dibaca
                                             </button>
@@ -411,7 +411,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                         <Link
                                             href={route('notifications.page')}
                                             onClick={() => setIsNotifOpen(false)}
-                                            className="text-xs font-bold text-[#0B5F64] dark:text-[#B89A5D] hover:underline py-1 block"
+                                            className="text-xs font-bold text-[#0B5F64] dark:text-emerald-400 hover:underline py-1 block"
                                         >
                                             Lihat Semua Notifikasi
                                         </Link>
@@ -488,8 +488,8 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                     key={item.label}
                                     href={item.href}
                                     className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-300 min-w-[50px] ${item.active
-                                        ? 'text-[#0B5F64] dark:text-[#B89A5D]'
-                                        : 'text-slate-400 dark:text-slate-500 active:text-[#0B5F64] dark:active:text-[#B89A5D]'
+                                        ? 'text-[#0B5F64] dark:text-emerald-400'
+                                        : 'text-slate-400 dark:text-slate-500 active:text-[#0B5F64] dark:active:text-emerald-400'
                                         }`}
                                 >
                                     <div className="relative">
@@ -520,8 +520,8 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                     key={item.label}
                                     href={item.href}
                                     className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-300 min-w-[50px] ${item.active
-                                        ? 'text-[#0B5F64] dark:text-[#B89A5D]'
-                                        : 'text-slate-400 dark:text-slate-500 active:text-[#0B5F64] dark:active:text-[#B89A5D]'
+                                        ? 'text-[#0B5F64] dark:text-emerald-400'
+                                        : 'text-slate-400 dark:text-slate-500 active:text-[#0B5F64] dark:active:text-emerald-400'
                                         }`}
                                 >
                                     <div className="relative">
@@ -540,8 +540,8 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                 className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-300 min-w-[50px] ${[
                                     'wallets', 'debts', 'insights', 'budgets', 'assets', 'categories', 'settings', 'export', 'help', 'notifications', 'profile', 'feedback'
                                 ].some(r => currentRoute?.startsWith(r))
-                                    ? 'text-[#0B5F64] dark:text-[#B89A5D]'
-                                    : 'text-slate-400 dark:text-slate-500 active:text-[#0B5F64] dark:active:text-[#B89A5D]'
+                                    ? 'text-[#0B5F64] dark:text-emerald-400'
+                                    : 'text-slate-400 dark:text-slate-500 active:text-[#0B5F64] dark:active:text-emerald-400'
                                 }`}
                             >
                                 <div className="relative">
@@ -573,7 +573,7 @@ export default function AppLayout({ header, children }: PropsWithChildren<Layout
                                     { href: route('debts.index'), icon: HandCoins, label: 'Jadwal', color: 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400' },
                                     { href: route('insights.index'), icon: PieChart, label: 'Analisis', color: 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400' },
                                     { href: route('assets.index'), icon: Gem, label: 'Aset', color: 'bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400' },
-                                    { href: route('categories.index'), icon: Tags, label: 'Kategori', color: 'bg-[#B89A5D]/10 dark:bg-[#B89A5D]/5 text-[#8F7442] dark:text-[#B89A5D]' },
+                                    { href: route('categories.index'), icon: Tags, label: 'Kategori', color: 'bg-emerald-500/10 dark:bg-emerald-500/5 text-emerald-700 dark:text-emerald-400' },
                                     { href: route('settings.index'), icon: Settings, label: 'Pengaturan', color: 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400' },
                                     { href: route('feedback.index'), icon: ChatCircleDots, label: 'Saran', color: 'bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400' },
                                     { href: route('profile.edit'), icon: UserIcon, label: 'Profil', color: 'bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400' },

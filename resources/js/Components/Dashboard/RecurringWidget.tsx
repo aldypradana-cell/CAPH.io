@@ -47,7 +47,7 @@ export default function RecurringWidget({
                     </div>
                     Transaksi Rutin
                 </h3>
-                <Link href={route('debts.index')} onMouseDown={(e) => e.stopPropagation()} className="text-xs font-bold text-[#0B5F64] dark:text-[#B89A5D] hover:underline">Lihat Semua</Link>
+                <Link href={route('debts.index')} onMouseDown={(e) => e.stopPropagation()} className="text-xs font-bold text-[#0B5F64] dark:text-emerald-400 hover:underline">Lihat Semua</Link>
             </div>
             <div className="space-y-3 flex-1 overflow-y-auto scrollbar-hide">
                 {transactions.length > 0 ? (
@@ -73,7 +73,7 @@ export default function RecurringWidget({
                                         <div>
                                             <p className="text-sm font-bold text-slate-800 dark:text-white line-clamp-1">{rt.name}</p>
                                             <div className="flex items-center gap-2">
-                                                <span className="text-[10px] font-medium text-[#8F7442] dark:text-[#B89A5D]">{rt.category}</span>
+                                                <span className="text-[10px] font-medium text-emerald-700 dark:text-emerald-400">{rt.category}</span>
                                                 {rt.auto_cut && (
                                                     <span className="px-1.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-[9px] font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-0.5">
                                                         <Sparkles weight="fill" className="w-2 h-2" /> Auto
@@ -91,7 +91,7 @@ export default function RecurringWidget({
                                 </div>
 
                                 {/* Date Indicator */}
-                                <div className={`flex items-center justify-between text-[10px] font-bold px-2 py-1 rounded-lg ${isToday ? 'bg-[#0B5F64]/10 text-[#0B5F64] dark:bg-[#0B5F64]/20 dark:text-[#EDEDD6]' :
+                                <div className={`flex items-center justify-between text-[10px] font-bold px-2 py-1 rounded-lg ${isToday ? 'bg-[#0B5F64]/10 text-[#0B5F64] dark:bg-[#0B5F64]/20 dark:text-emerald-50' :
                                     isOverdue ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300' :
                                         isSoon ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' :
                                             'bg-slate-100 text-slate-500 dark:bg-slate-700/50 dark:text-slate-400'

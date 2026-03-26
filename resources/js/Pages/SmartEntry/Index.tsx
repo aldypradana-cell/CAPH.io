@@ -220,7 +220,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
             <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6 animate-fade-in-up">
                 {/* Hero - Hidden on mobile to prioritize input */}
                 <div className="hidden md:block glass-card p-8 rounded-[2rem] text-center animate-fade-in-up">
-                    <div className="w-16 h-16 bg-[#0E3D42] rounded-2xl flex items-center justify-center text-[#C5A059] mx-auto mb-4 shadow-lg shadow-[#0E3D42]/30 ring-1 ring-white/20">
+                    <div className="w-16 h-16 bg-[#0E3D42] rounded-2xl flex items-center justify-center text-emerald-500 mx-auto mb-4 shadow-lg shadow-[#0E3D42]/30 ring-1 ring-white/20">
                         <Sparkles weight="duotone" className="w-8 h-8" />
                     </div>
                     <h2 className="text-2xl font-bold text-slate-800 dark:text-[#EDEDD6] mb-2">AI Smart Entry</h2>
@@ -242,7 +242,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
                     <div className="flex items-center justify-between mt-3">
                         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
                             <span className="text-[10px] text-slate-400 flex items-center gap-1 font-bold">
-                                <Sparkles weight="fill" className="w-3 h-3 text-[#0E3D42] dark:text-[#C5A059]" /> Powered by Gemini
+                                <Sparkles weight="fill" className="w-3 h-3 text-[#0E3D42] dark:text-emerald-400" /> Powered by Gemini
                             </span>
                             {aiQuota && (
                                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${isQuotaExceeded ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
@@ -321,7 +321,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
                                             <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                                                 <span className="text-[10px] text-slate-400">{t.category} · {formatDateLocale(t.date)}</span>
                                                 {t.tags && t.tags.length > 0 && t.tags.map((tag, ti) => (
-                                                    <span key={ti} className="inline-flex items-center gap-0.5 text-[10px] font-bold text-[#0E3D42] dark:text-[#C5A059] bg-[#0E3D42]/10 dark:bg-[#0E3D42]/20 px-1.5 py-0.5 rounded-full">
+                                                    <span key={ti} className="inline-flex items-center gap-0.5 text-[10px] font-bold text-[#0E3D42] dark:text-emerald-400 bg-[#0E3D42]/10 dark:bg-[#0E3D42]/20 px-1.5 py-0.5 rounded-full">
                                                         <Hash weight="bold" className="w-2.5 h-2.5" />{tag}
                                                     </span>
                                                 ))}
@@ -371,7 +371,7 @@ export default function SmartEntryIndex({ auth, wallets, categories, aiQuota: in
                             'terima gaji 5 juta, bonus 500ribu #rezeki',
                             'beli rokok surya 30rb #boros, bayar listrik 300rb'
                         ].map((ex, i) => (
-                            <div key={i} onClick={() => setInput(ex)} className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-sm text-slate-600 dark:text-slate-400 cursor-pointer hover:bg-[#0E3D42]/10 dark:hover:bg-[#0E3D42]/20 hover:text-[#0E3D42] dark:hover:text-[#C5A059] transition-colors border border-transparent hover:border-[#0E3D42]/20 dark:hover:border-[#0E3D42]/40">
+                            <div key={i} onClick={() => setInput(ex)} className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-sm text-slate-600 dark:text-slate-400 cursor-pointer hover:bg-[#0E3D42]/10 dark:hover:bg-[#0E3D42]/20 hover:text-[#0E3D42] dark:hover:text-emerald-400 transition-colors border border-transparent hover:border-[#0E3D42]/20 dark:hover:border-[#0E3D42]/40">
                                 "{ex}"
                             </div>
                         ))}
@@ -386,7 +386,7 @@ SmartEntryIndex.layout = (page: any) => (
     <AppLayout header={
         <div className="flex flex-col min-w-0">
             <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-[#EDEDD6] tracking-tight truncate">Input Cerdas AI</h1>
-                <p className="hidden sm:block text-xs text-[#8F7442] dark:text-[#B89A5D] font-medium mt-0.5 truncate">Masukkan transaksi dengan bahasa natural</p>
+                <p className="hidden sm:block text-xs text-emerald-700 dark:text-emerald-400 font-medium mt-0.5 truncate">Masukkan transaksi dengan bahasa natural</p>
         </div>
     }>
         {page}

@@ -36,18 +36,18 @@ export default function UpcomingBillsWidget({
             {/* Ambient Glows */}
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 -z-10 pointer-events-none">
                 <div className="absolute -right-20 -top-20 w-80 h-80 bg-[#9F1239]/5 rounded-full blur-[100px]" />
-                <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-[#C5A059]/5 rounded-full blur-[100px]" />
+                <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-emerald-500/5 rounded-full blur-[100px]" />
             </div>
 
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-slate-800 dark:text-[#EDEDD6] flex items-center gap-2 group cursor-grab active:cursor-grabbing">
                     <div className="relative">
-                        <AlertTriangle weight="duotone" className="w-5 h-5 text-[#0E3D42] dark:text-[#C5A059] group-hover:opacity-0 transition-opacity duration-200" />
-                        <GripHorizontal weight="bold" className="w-5 h-5 text-[#C5A059] absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
+                        <AlertTriangle weight="duotone" className="w-5 h-5 text-[#0E3D42] dark:text-emerald-400 group-hover:opacity-0 transition-opacity duration-200" />
+                        <GripHorizontal weight="bold" className="w-5 h-5 text-emerald-500 absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 drag-handle" />
                     </div>
                     Hutang & Piutang
                 </h3>
-                <Link href={route('debts.index')} onMouseDown={(e) => e.stopPropagation()} className="text-xs font-bold text-[#0B5F64] dark:text-[#B89A5D] hover:underline">Lihat Semua</Link>
+                <Link href={route('debts.index')} onMouseDown={(e) => e.stopPropagation()} className="text-xs font-bold text-[#0B5F64] dark:text-emerald-400 hover:underline">Lihat Semua</Link>
             </div>
             <div className="space-y-3 flex-1 overflow-y-auto scrollbar-hide">
                 {bills.length > 0 ? (
@@ -63,7 +63,7 @@ export default function UpcomingBillsWidget({
                                     <div className="flex items-center gap-3">
                                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-[#EDEDD6] shadow-sm shrink-0 flex-shrink-0 ${isDebt ? 'bg-gradient-to-br from-[#9F1239] to-[#881337]' :
                                             isReceivable ? 'bg-gradient-to-br from-[#0E3D42] to-[#0D3B3F]' :
-                                                'bg-[#C5A059]'
+                                                'bg-teal-500'
                                             }`}>
                                             {isDebt ? <ArrowDownRight weight="bold" className="w-5 h-5" /> :
                                                 isReceivable ? <ArrowUpRight weight="bold" className="w-5 h-5" /> :
@@ -71,7 +71,7 @@ export default function UpcomingBillsWidget({
                                         </div>
                                         <div className="min-w-0">
                                             <p className="text-sm font-bold text-slate-800 dark:text-white truncate">{bill.person}</p>
-                                            <p className="text-[10px] font-bold text-[#8F7442] dark:text-[#B89A5D] flex items-center gap-1">
+                                            <p className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
                                                 {isDebt ? 'Hutang' : isReceivable ? 'Piutang' : 'Tagihan'}
                                                 {dueDate && (
                                                     <span className={`flex items-center ml-1 ${isOverdue ? 'text-rose-500' : ''}`}>
@@ -84,7 +84,7 @@ export default function UpcomingBillsWidget({
                                     <div className="text-right whitespace-nowrap pl-2">
                                         <p className={`text-sm font-bold ${isDebt ? 'text-[#9F1239] dark:text-rose-400' :
                                             isReceivable ? 'text-[#0E3D42] dark:text-[#5EEAD4]' :
-                                                'text-[#C5A059]'
+                                                'text-teal-500'
                                             }`}>
                                             {formatShortIDR(bill.remaining_amount ?? bill.amount)}
                                         </p>

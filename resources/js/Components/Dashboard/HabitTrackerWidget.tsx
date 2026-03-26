@@ -37,11 +37,11 @@ export default function HabitTrackerWidget({ onDateClick, variant = 'default' }:
             <>
                 <div 
                     onClick={() => setIsModalOpen(true)}
-                    className="flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-800 text-[#8F7442] dark:text-[#C5A059]/40 hover:text-[#0E3D42] dark:hover:text-[#C5A059] hover:shadow-md transition-all active:scale-95 relative cursor-pointer"
+                    className="flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-400/40 hover:text-[#0E3D42] dark:hover:text-emerald-400 hover:shadow-md transition-all active:scale-95 relative cursor-pointer"
                     title={`Streak: ${current_streak} Hari`}
                 >
                     <div className="relative">
-                        <Fire weight="duotone" className="w-5 h-5 text-[#8F7442] dark:text-[#C5A059]/40 group-hover:text-[#0E3D42] dark:group-hover:text-[#C5A059] transition-colors" />
+                        <Fire weight="duotone" className="w-5 h-5 text-emerald-700 dark:text-emerald-400/40 group-hover:text-[#0E3D42] dark:group-hover:text-emerald-400 transition-colors" />
                         {current_streak > 0 && (
                             <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[14px] h-3.5 px-1 bg-[#9F1239] text-[#EDEDD6] text-[8px] font-black rounded-full border border-white dark:border-slate-800 shadow-lg shadow-[#9F1239]/20">
                                 {current_streak}
@@ -101,9 +101,9 @@ export default function HabitTrackerWidget({ onDateClick, variant = 'default' }:
                                         : 'bg-slate-200 dark:bg-slate-800/80 text-slate-400 dark:text-slate-500'
                                 } ${isToday && !hasTransaction ? 'ring-2 ring-[#0E3D42] ring-offset-2 dark:ring-offset-slate-950 scale-110 z-10' : ''} ${isToday && hasTransaction ? 'ring-2 ring-white/50 ring-offset-1 dark:ring-offset-slate-900 shadow-2xl' : ''}`}
                             >
-                                <span className={`text-[11px] font-black tracking-tight leading-none ${hasTransaction ? 'text-[#C5A059]' : ''} ${isToday ? 'mb-0.5' : ''}`}>{dateNum}</span>
+                                <span className={`text-[11px] font-black tracking-tight leading-none ${hasTransaction ? 'text-emerald-400' : ''} ${isToday ? 'mb-0.5' : ''}`}>{dateNum}</span>
                                 {isToday && (
-                                    <div className={`absolute bottom-1 w-1.5 h-1.5 rounded-full ${hasTransaction ? 'bg-[#C5A059]' : 'bg-[#0E3D42] shadow-sm shadow-[#0E3D42]/50'}`} />
+                                    <div className={`absolute bottom-1 w-1.5 h-1.5 rounded-full ${hasTransaction ? 'bg-emerald-400' : 'bg-[#0E3D42] shadow-sm shadow-[#0E3D42]/50'}`} />
                                 )}
                             </div>
                         );

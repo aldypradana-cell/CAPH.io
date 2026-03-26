@@ -87,22 +87,22 @@ export default function TrendChart({
                         </div>
                         <div className="min-w-0">
                             <h4 className="font-bold text-slate-800 dark:text-white text-base sm:text-lg truncate">Analisis Tren</h4>
-                            <p className="text-[10px] sm:text-xs text-[#8F7442] dark:text-[#B89A5D] font-medium truncate">Pemasukan vs Pengeluaran</p>
+                            <p className="text-[10px] sm:text-xs text-emerald-700 dark:text-emerald-400 font-medium truncate">Pemasukan vs Pengeluaran</p>
                         </div>
                     </div>
                     
-                    <div className="flex bg-[#0E3D42]/5 dark:bg-[#0E3D42]/20 p-1 rounded-xl border border-[#C5A059]/10 shrink-0" onMouseDown={(e) => e.stopPropagation()}>
+                    <div className="flex bg-[#0E3D42]/5 dark:bg-[#0E3D42]/20 p-1 rounded-xl border border-emerald-500/10 shrink-0" onMouseDown={(e) => e.stopPropagation()}>
                         <button
                                 onClick={() => setChartType('BAR')}
                                 title="Grafik Batang"
-                                className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'BAR' ? 'bg-[#0E3D42] text-[#C5A059] shadow-lg shadow-[#0E3D42]/20' : 'text-[#8F7442] dark:text-[#C5A059]/40 hover:text-[#0E3D42]'}`}
+                                className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'BAR' ? 'bg-[#0E3D42] text-emerald-400 shadow-lg shadow-[#0E3D42]/20' : 'text-emerald-700 dark:text-emerald-400/40 hover:text-[#0E3D42]'}`}
                             >
                                 <BarChart3 weight="duotone" className="w-3.5 h-3.5" />
                             </button>
                             <button
                                 onClick={() => setChartType('AREA')}
                                 title="Grafik Garis Area"
-                                className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'AREA' ? 'bg-[#0E3D42] text-[#C5A059] shadow-lg shadow-[#0E3D42]/20' : 'text-[#8F7442] dark:text-[#C5A059]/40 hover:text-[#0E3D42]'}`}
+                                className={`p-1.5 rounded-lg transition-all active:scale-95 ${chartType === 'AREA' ? 'bg-[#0E3D42] text-emerald-400 shadow-lg shadow-[#0E3D42]/20' : 'text-emerald-700 dark:text-emerald-400/40 hover:text-[#0E3D42]'}`}
                             >
                                 <TrendingUp weight="duotone" className="w-3.5 h-3.5" />
                             </button>
@@ -112,14 +112,14 @@ export default function TrendChart({
                 
                 {/* Row 2: Time Filter and Range */}
                 <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-                    <div className="flex bg-[#0E3D42]/5 dark:bg-[#0E3D42]/20 p-1 rounded-xl w-full sm:w-max overflow-x-auto scrollbar-hide border border-[#C5A059]/10">
+                    <div className="flex bg-[#0E3D42]/5 dark:bg-[#0E3D42]/20 p-1 rounded-xl w-full sm:w-max overflow-x-auto scrollbar-hide border border-emerald-500/10">
                         {(['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY', 'CUSTOM'] as const).map(filter => (
                             <button
                                 key={filter}
                                 onClick={() => onFilterChange(filter)}
                                 className={`px-2 py-1.5 sm:px-3 text-[10px] sm:text-xs font-bold rounded-lg transition-all whitespace-nowrap active:scale-95 flex-1 sm:flex-none ${activeFilter === filter
-                                    ? 'bg-[#0E3D42] text-[#C5A059] shadow-lg shadow-[#0E3D42]/20'
-                                    : 'text-[#8F7442] dark:text-[#C5A059]/40 hover:text-[#0E3D42] dark:hover:text-[#C5A059]'
+                                    ? 'bg-[#0E3D42] text-emerald-400 shadow-lg shadow-[#0E3D42]/20'
+                                    : 'text-emerald-700 dark:text-emerald-400/40 hover:text-[#0E3D42] dark:hover:text-emerald-400'
                                     }`}
                             >
                                 {filter === 'DAILY' ? 'Harian' : filter === 'WEEKLY' ? 'Mingguan' : filter === 'MONTHLY' ? 'Bulanan' : filter === 'YEARLY' ? 'Tahunan' : 'Custom'}
@@ -128,20 +128,20 @@ export default function TrendChart({
                     </div>
                     
                     <div className="flex justify-center gap-2" onMouseDown={(e) => e.stopPropagation()}>
-                        <input type="date" value={filters.startDate} onChange={(e) => onDateChange('start', e.target.value)} className="bg-[#0E3D42]/5 dark:bg-[#0E3D42]/10 border-none rounded-lg text-[10px] text-[#8F7442] dark:text-[#C5A059]/70 px-2 py-1 outline-none font-medium flex-1 w-full sm:w-auto text-center ring-1 ring-[#C5A059]/10 focus:ring-[#C5A059]" />
-                        <span className="text-[#C5A059]/30 self-center">-</span>
-                        <input type="date" value={filters.endDate} onChange={(e) => onDateChange('end', e.target.value)} className="bg-[#0E3D42]/5 dark:bg-[#0E3D42]/10 border-none rounded-lg text-[10px] text-[#8F7442] dark:text-[#C5A059]/70 px-2 py-1 outline-none font-medium flex-1 w-full sm:w-auto text-center ring-1 ring-[#C5A059]/10 focus:ring-[#C5A059]" />
+                        <input type="date" value={filters.startDate} onChange={(e) => onDateChange('start', e.target.value)} className="bg-[#0E3D42]/5 dark:bg-[#0E3D42]/10 border-none rounded-lg text-[10px] text-emerald-700 dark:text-emerald-400/70 px-2 py-1 outline-none font-medium flex-1 w-full sm:w-auto text-center ring-1 ring-emerald-500/10 focus:ring-emerald-500" />
+                        <span className="text-emerald-500/30 self-center">-</span>
+                        <input type="date" value={filters.endDate} onChange={(e) => onDateChange('end', e.target.value)} className="bg-[#0E3D42]/5 dark:bg-[#0E3D42]/10 border-none rounded-lg text-[10px] text-emerald-700 dark:text-emerald-400/70 px-2 py-1 outline-none font-medium flex-1 w-full sm:w-auto text-center ring-1 ring-emerald-500/10 focus:ring-emerald-500" />
                     </div>
             </div>
             <div className="flex-1 w-full min-h-0">
                 {isLoading ? (
                     <div className="flex flex-col h-full px-4 pb-8 relative overflow-hidden">
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <ChartLine weight="duotone" className="w-12 h-12 text-[#0E3D42]/20 dark:text-[#C5A059]/20 animate-pulse" />
+                            <ChartLine weight="duotone" className="w-12 h-12 text-[#0E3D42]/20 dark:text-emerald-500/20 animate-pulse" />
                         </div>
                         <div className="mt-auto h-1/2 flex items-end gap-1 opacity-20">
                             {Array.from({ length: 20 }).map((_, i) => (
-                                <div key={i} className="flex-1 bg-[#0B5F64]/10 dark:bg-[#B89A5D]/5 rounded-t-sm" style={{ height: `${Math.random() * 100}%` }} />
+                                <div key={i} className="flex-1 bg-[#0B5F64]/10 dark:bg-emerald-500/5 rounded-t-sm" style={{ height: `${Math.random() * 100}%` }} />
                             ))}
                         </div>
                     </div>

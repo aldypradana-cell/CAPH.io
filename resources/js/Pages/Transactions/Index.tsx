@@ -108,7 +108,7 @@ function TransactionHeatmap({ data, month, onDateSelect }: { data: Record<string
         <div className="relative inline-block z-30">
             <button 
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="w-full sm:w-auto flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold text-[#0E3D42] dark:text-[#C5A059] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all shadow-sm"
+                className="w-full sm:w-auto flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold text-[#0E3D42] dark:text-emerald-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all shadow-sm"
             >
                 <Calendar weight="duotone" className="w-3.5 h-3.5" />
                 Aktivitas
@@ -394,7 +394,7 @@ export default function TransactionsIndex({
                         </div>
 
                         {/* Mobile-only: CSV Export */}
-                        <button onClick={handleExportCSV} className="flex sm:hidden items-center justify-center py-2.5 px-2.5 glass-card rounded-xl text-slate-500 hover:text-[#0B5F64] dark:hover:text-[#B89A5D] hover:shadow-md transition-all active:scale-95 shrink-0" title="Export CSV">
+                        <button onClick={handleExportCSV} className="flex sm:hidden items-center justify-center py-2.5 px-2.5 glass-card rounded-xl text-slate-500 hover:text-[#0B5F64] dark:hover:text-emerald-400 hover:shadow-md transition-all active:scale-95 shrink-0" title="Export CSV">
                             <Download weight="bold" className="w-4 h-4" />
                         </button>
 
@@ -405,7 +405,7 @@ export default function TransactionsIndex({
                                     setIsSelectionMode(!isSelectionMode);
                                     if (isSelectionMode) setSelectedIds([]);
                                 }} 
-                                className={`flex sm:hidden items-center justify-center py-2.5 px-2.5 rounded-xl transition-all active:scale-95 shrink-0 ${isSelectionMode ? 'bg-[#0B5F64]/10 dark:bg-[#0B5F64]/5 text-[#0B5F64] dark:text-teal-400 border border-[#0B5F64]/20 dark:border-teal-900/30' : 'glass-card text-slate-500 hover:text-[#0B5F64] dark:hover:text-[#B89A5D] hover:shadow-md'}`} 
+                                className={`flex sm:hidden items-center justify-center py-2.5 px-2.5 rounded-xl transition-all active:scale-95 shrink-0 ${isSelectionMode ? 'bg-[#0B5F64]/10 dark:bg-[#0B5F64]/5 text-[#0B5F64] dark:text-teal-400 border border-[#0B5F64]/20 dark:border-teal-900/30' : 'glass-card text-slate-500 hover:text-[#0B5F64] dark:hover:text-emerald-400 hover:shadow-md'}`} 
                                 title="Pilih Beberapa"
                             >
                                 <ListChecks weight={isSelectionMode ? "fill" : "bold"} className="w-4 h-4" />
@@ -450,13 +450,13 @@ export default function TransactionsIndex({
                         />
 
                         {(filterType || filterWallet || filterCategory || filterTag || startDate || endDate) && (
-                            <button onClick={clearFilters} className="px-3 py-1.5 sm:px-4 sm:py-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold hover:text-[#0E3D42] dark:hover:text-[#C5A059] transition-all active:scale-95 shrink-0">
+                            <button onClick={clearFilters} className="px-3 py-1.5 sm:px-4 sm:py-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold hover:text-[#0E3D42] dark:hover:text-emerald-500 transition-all active:scale-95 shrink-0">
                                 Reset
                             </button>
                         )}
 
                         {/* CSV Export — desktop only */}
-                        <button onClick={handleExportCSV} className="hidden sm:flex p-2 sm:p-3 glass-card rounded-xl sm:rounded-2xl text-slate-500 hover:text-[#0B5F64] dark:hover:text-[#B89A5D] hover:shadow-md transition-all active:scale-95" title="Export CSV">
+                        <button onClick={handleExportCSV} className="hidden sm:flex p-2 sm:p-3 glass-card rounded-xl sm:rounded-2xl text-slate-500 hover:text-[#0B5F64] dark:hover:text-emerald-400 hover:shadow-md transition-all active:scale-95" title="Export CSV">
                             <Download weight="bold" className="w-4 h-4" />
                         </button>
 
@@ -467,7 +467,7 @@ export default function TransactionsIndex({
                                     setIsSelectionMode(!isSelectionMode);
                                     if (isSelectionMode) setSelectedIds([]);
                                 }} 
-                                className={`hidden sm:flex p-2 sm:p-3 rounded-xl sm:rounded-2xl transition-all active:scale-95 ${isSelectionMode ? 'bg-[#0B5F64]/10 dark:bg-[#0B5F64]/5 text-[#0B5F64] dark:text-teal-400 border border-[#0B5F64]/20 dark:border-teal-900/30' : 'glass-card text-slate-500 hover:text-[#0B5F64] dark:hover:text-[#B89A5D] hover:shadow-md'}`} 
+                                className={`hidden sm:flex p-2 sm:p-3 rounded-xl sm:rounded-2xl transition-all active:scale-95 ${isSelectionMode ? 'bg-[#0B5F64]/10 dark:bg-[#0B5F64]/5 text-[#0B5F64] dark:text-teal-400 border border-[#0B5F64]/20 dark:border-teal-900/30' : 'glass-card text-slate-500 hover:text-[#0B5F64] dark:hover:text-emerald-400 hover:shadow-md'}`} 
                                 title="Pilih Beberapa"
                             >
                                 <ListChecks weight={isSelectionMode ? "fill" : "bold"} className="w-4 h-4" />
@@ -658,7 +658,7 @@ export default function TransactionsIndex({
                                     {!isSelectionMode && (
                                         t.category !== 'Investasi Emas' ? (
                                             <div className="flex items-center gap-2 sm:gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                                                <button onClick={(e) => { e.stopPropagation(); handleEdit(t); }} className="p-2 text-[#0E3D42] dark:text-[#C5A059] sm:text-slate-300 md:hover:text-[#0E3D42] bg-[#0E3D42]/10 dark:bg-[#0E3D42]/5 sm:bg-transparent md:hover:bg-[#0E3D42]/10 md:dark:hover:bg-[#0E3D42]/5 rounded-lg transition-all md:hover:scale-110 active:scale-90 flex items-center justify-center">
+                                                <button onClick={(e) => { e.stopPropagation(); handleEdit(t); }} className="p-2 text-[#0E3D42] dark:text-emerald-500 sm:text-slate-300 md:hover:text-[#0E3D42] bg-[#0E3D42]/10 dark:bg-[#0E3D42]/5 sm:bg-transparent md:hover:bg-[#0E3D42]/10 md:dark:hover:bg-[#0E3D42]/5 rounded-lg transition-all md:hover:scale-110 active:scale-90 flex items-center justify-center">
                                                     <Pencil weight="duotone" className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                                 </button>
                                                 <button onClick={(e) => { e.stopPropagation(); setDeleteId(t.id); }} className="p-2 text-red-500 dark:text-red-400 sm:text-slate-300 md:hover:text-red-500 bg-red-50/50 dark:bg-red-900/20 sm:bg-transparent md:hover:bg-red-50 md:dark:hover:bg-red-900/30 rounded-lg transition-all md:hover:scale-110 active:scale-90 flex items-center justify-center">
@@ -791,7 +791,7 @@ TransactionsIndex.layout = (page: any) => (
         header={
             <div className="flex flex-col min-w-0">
                 <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-[#EDEDD6] tracking-tight truncate">Riwayat Transaksi</h1>
-                <p className="hidden sm:block text-xs text-[#8F7442] dark:text-[#C5A059] font-medium mt-0.5 truncate">
+                <p className="hidden sm:block text-xs text-emerald-700 dark:text-emerald-500 font-medium mt-0.5 truncate">
                     Kelola semua transaksi keuangan Anda
                 </p>
             </div>

@@ -40,7 +40,7 @@ const ResizeHandle = React.forwardRef<HTMLDivElement, any>(({ handleAxis, ...pro
         <div
             ref={ref}
             {...props}
-            className={`absolute bottom-2 right-2 cursor-nwse-resize p-1 rounded-md hover:bg-[#EDEDD6]/70 dark:hover:bg-white/10 text-[#8F7442] hover:text-[#0B5F64] transition-colors z-20`}
+            className={`absolute bottom-2 right-2 cursor-nwse-resize p-1 rounded-md hover:bg-emerald-50/70 dark:hover:bg-white/10 text-emerald-700 hover:text-[#0B5F64] transition-colors z-20`}
         >
             <ArrowDownRight weight="bold" className="w-5 h-5" />
         </div>
@@ -276,7 +276,7 @@ export default function Dashboard({
                         <div className="hidden sm:flex items-center gap-3 justify-end w-full">
                             <button
                                 onClick={resetLayout}
-                                className="hidden sm:flex p-3 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-2xl border border-[#EDEDD6] dark:border-white/10 hover:bg-[#EDEDD6]/70 dark:hover:bg-white/10 hover:text-[#0B5F64] dark:hover:text-[#EDEDD6] transition-all hover:scale-105 active:scale-95"
+                                className="hidden sm:flex p-3 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-2xl border border-emerald-50 dark:border-white/10 hover:bg-emerald-50/70 dark:hover:bg-white/10 hover:text-[#0B5F64] dark:hover:text-[#EDEDD6] transition-all hover:scale-105 active:scale-95"
                                 title="Reset Layout"
                             >
                                 <RotateCcw className="w-4 h-4" />
@@ -285,7 +285,7 @@ export default function Dashboard({
                                 href={route('smart-entry.index')}
                                 className="hidden sm:flex items-center px-5 py-3 bg-[#0B5F64]/10 dark:bg-[#0B5F64]/20 text-[#0B5F64] dark:text-[#EDEDD6] rounded-2xl text-sm font-bold hover:bg-[#0B5F64]/20 dark:hover:bg-[#0B5F64]/30 transition-all border border-[#0B5F64]/20 dark:border-[#0B5F64]/30 shadow-sm hover:shadow-md hover:scale-105 active:scale-95"
                             >
-                                <Sparkles className="w-4 h-4 mr-2 text-[#B89A5D] dark:text-[#B89A5D]" />
+                                <Sparkles className="w-4 h-4 mr-2 text-emerald-500 dark:text-emerald-400" />
                                 AI Input
                             </Link>
                             <button
@@ -392,7 +392,7 @@ Dashboard.layout = (page: any) => (
                     <h1 className="text-lg sm:text-2xl font-bold text-[#0B5F64] dark:text-[#EDEDD6] tracking-tight truncate">
                         Dashboard Ringkasan
                     </h1>
-                    <p className="hidden sm:block text-xs text-[#8F7442] dark:text-[#B89A5D] font-medium mt-0.5 truncate">
+                    <p className="hidden sm:block text-xs text-emerald-700 dark:text-emerald-400 font-medium mt-0.5 truncate">
                         Selamat datang kembali, {page.props.auth.user.name.split(' ')[0]}!
                     </p>
                 </div>
