@@ -97,7 +97,7 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
 
     const getTypeConfig = (type: string) => {
         switch (type) {
-            case 'PROPERTY': return { label: 'Properti', color: 'from-blue-500 to-blue-700', hex: '#3b82f6', icon: Home };
+            case 'PROPERTY': return { label: 'Properti', color: 'from-emerald-600 to-teal-700', hex: '#059669', icon: Home };
             case 'VEHICLE': return { label: 'Kendaraan', color: 'from-emerald-500 to-emerald-700', hex: '#10b981', icon: Car };
             case 'INVESTMENT': return { label: 'Investasi', color: 'from-purple-500 to-purple-700', hex: '#8b5cf6', icon: TrendingUp };
             case 'OTHER': return { label: 'Lainnya', color: 'from-amber-500 to-amber-700', hex: '#f59e0b', icon: Coins };
@@ -144,12 +144,12 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
                     <div className="absolute inset-0 bg-slate-900/40 hidden dark:block" />
                     
                     {/* Background decorations */}
-                    <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-gradient-to-br from-indigo-500/10 via-purple-500/5 to-transparent rounded-full translate-x-1/2 -translate-y-1/2 blur-3xl pointer-events-none" />
+                    <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-gradient-to-br from-emerald-500/10 via-[#C5A059]/5 to-transparent rounded-full translate-x-1/2 -translate-y-1/2 blur-3xl pointer-events-none" />
                     <div className="absolute bottom-0 left-0 w-[20rem] h-[20rem] bg-gradient-to-tr from-emerald-500/10 to-transparent rounded-full -translate-x-1/2 translate-y-1/2 blur-2xl z-0 pointer-events-none" />
 
                     <div className="relative z-10 flex flex-col sm:flex-row items-center gap-5 w-full">
-                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30 shrink-0">
-                            <Gem weight="duotone" className="w-8 h-8 text-white" />
+                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center shadow-lg shadow-emerald-500/30 shrink-0 ring-1 ring-[#C5A059]/30">
+                            <Gem weight="duotone" className="w-8 h-8 text-[#C5A059]" />
                         </div>
                         
                         <div className="flex-1 text-center sm:text-left flex flex-col justify-center">
@@ -183,7 +183,7 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
                     <div className="bg-slate-100 dark:bg-slate-800/80 backdrop-blur-md p-1.5 rounded-2xl flex items-center gap-2 border border-slate-200 shadow-sm dark:border-slate-700/50">
                         <button 
                             onClick={() => handleTabChange('assets')}
-                            className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === 'assets' ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
+                            className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === 'assets' ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'}`}
                         >
                             <Gem weight="fill" className="w-4 h-4" /> Aset Umum
                         </button>
@@ -201,7 +201,7 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
                         <div className="flex flex-col lg:flex-row gap-6 mb-8">
                             <div className="w-full flex justify-between items-center sm:hidden px-4 mb-2">
                                 <h3 className="text-xl font-bold text-slate-800 dark:text-white">Aset Tunai & Properti</h3>
-                                <button onClick={() => { setEditingAsset(null); reset(); setIsModalOpen(true); }} className="p-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-indigo-500/30 transition-all hover:-translate-y-1">
+                                <button onClick={() => { setEditingAsset(null); reset(); setIsModalOpen(true); }} className="p-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-emerald-500/30 transition-all hover:-translate-y-1 ring-1 ring-[#C5A059]/30">
                                     <Plus weight="bold" className="w-5 h-5" />
                                 </button>
                             </div>
@@ -262,9 +262,9 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
                         </div>
 
                         {/* Add Action Mini Card */}
-                        <div className="relative z-10 w-full lg:flex-1 p-6 md:p-8 rounded-[2rem] border border-white/50 dark:border-slate-800/50 flex flex-col items-center sm:items-start justify-center text-center sm:text-left shadow-sm hover:shadow-lg transition-all" style={{ background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%)' }}>
-                            <div className="w-12 h-12 rounded-xl bg-indigo-500 text-white flex items-center justify-center mb-4 shadow-lg shadow-indigo-500/30">
-                                <Gem weight="duotone" className="w-6 h-6" />
+                        <div className="relative z-10 w-full lg:flex-1 p-6 md:p-8 rounded-[2rem] border border-[#C5A059]/20 flex flex-col items-center sm:items-start justify-center text-center sm:text-left shadow-sm hover:shadow-lg transition-all" style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(197, 160, 89, 0.05) 100%)' }}>
+                            <div className="w-12 h-12 rounded-xl bg-emerald-500 text-white flex items-center justify-center mb-4 shadow-lg shadow-emerald-500/30 ring-1 ring-[#C5A059]/30">
+                                <Gem weight="duotone" className="w-6 h-6 text-[#C5A059]" />
                             </div>
                             <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">Kelola Portofolio Aset Umum</h3>
                             <p className="text-sm text-slate-500 mb-6">Tambahkan instrumen seperti reksadana, saham, deposito, atau properti untuk dipantau secara statis.</p>
@@ -326,7 +326,7 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
                                         
                                         {/* Mobile Friendly Actions - Positioned absolutely on large bento or relative on small bento */}
                                         <div className={`flex gap-1 opacity-60 hover:opacity-100 transition-opacity bg-slate-50 dark:bg-slate-800/50 rounded-xl p-1 z-10 ${isLargeBento ? 'absolute top-6 right-6 sm:relative sm:top-0 sm:right-0 ml-4' : ''}`}>
-                                            <button onClick={() => handleEdit(a)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all"><Edit2 weight="duotone" className="w-4 h-4" /></button>
+                                            <button onClick={() => handleEdit(a)} className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all"><Edit2 weight="duotone" className="w-4 h-4" /></button>
                                             <button onClick={() => setDeleteId(a.id)} className="p-2 text-slate-400 hover:text-red-500 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all"><Trash2 weight="duotone" className="w-4 h-4" /></button>
                                         </div>
                                     </div>
@@ -381,32 +381,32 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
                 <div className="fixed inset-0 z-[999] flex items-end sm:items-center justify-center p-0 sm:p-6 pb-16 lg:pb-0 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
                     <div className="relative w-full max-w-md glass-card rounded-t-[2rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-pop-in">
-                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 z-10" />
+                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-500 via-[#C5A059] to-emerald-700 z-10" />
                         <div className="p-5 pb-0 shrink-0 flex justify-between items-center">
                             <h3 className="text-lg font-bold text-slate-800 dark:text-white">{editingAsset ? 'Edit Aset' : 'Aset Baru'}</h3>
                             <button onClick={() => setIsModalOpen(false)} className="text-slate-400 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"><X weight="bold" className="w-5 h-5" /></button>
                         </div>
                         <div className="p-5 pt-4 overflow-y-auto scrollbar-hide">
                             <form onSubmit={handleSubmit} className="space-y-3">
-                                <div><label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Nama Aset</label><input type="text" required value={data.name} onChange={(e) => setData('name', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="Rumah, Mobil..." /></div>
+                                <div><label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Nama Aset</label><input type="text" required value={data.name} onChange={(e) => setData('name', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 focus:border-[#C5A059]/30 transition-all" placeholder="Rumah, Mobil..." /></div>
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Tipe</label>
                                     <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl">
                                         {([{ v: 'PROPERTY', l: 'Properti' }, { v: 'VEHICLE', l: 'Kendaraan' }, { v: 'INVESTMENT', l: 'Investasi' }, { v: 'OTHER', l: 'Lainnya' }] as const).map(opt => (
                                             <button key={opt.v} type="button" onClick={() => setData('type', opt.v)}
                                                 className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${data.type === opt.v
-                                                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
+                                                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/30 ring-1 ring-[#C5A059]/10'
                                                     : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
                                                     }`}
                                             >{opt.l}</button>
                                         ))}
                                     </div>
                                 </div>
-                                <div><label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Nilai (Rp)</label><input type="text" required value={data.value} onChange={(e) => handleAmountChange(e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="0" /></div>
-                                <div><label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Deskripsi</label><input type="text" value={data.description} onChange={(e) => setData('description', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="Opsional" /></div>
+                                <div><label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Nilai (Rp)</label><input type="text" required value={data.value} onChange={(e) => handleAmountChange(e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 focus:border-[#C5A059]/30 transition-all" placeholder="0" /></div>
+                                <div><label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Deskripsi</label><input type="text" value={data.description} onChange={(e) => setData('description', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 focus:border-[#C5A059]/30 transition-all" placeholder="Opsional" /></div>
                                 <div className="flex space-x-3 pt-4">
                                     <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors active:scale-95">Batal</button>
-                                    <button type="submit" disabled={processing} className="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-indigo-500/30 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50">{processing ? '...' : 'Simpan'}</button>
+                                    <button type="submit" disabled={processing} className="flex-1 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-emerald-500/30 ring-1 ring-[#C5A059]/30 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50">{processing ? '...' : 'Simpan'}</button>
                                 </div>
                             </form>
                         </div>

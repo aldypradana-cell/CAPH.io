@@ -254,7 +254,7 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
                                         </td>
                                         <td className="p-4 pr-6 lg:pr-8 text-right whitespace-nowrap">
                                             <div className="flex justify-end gap-2 opacity-100 md:opacity-50 group-hover:opacity-100 transition-opacity">
-                                                <button onClick={() => handleEdit(p)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all"><Edit2 weight="duotone" className="w-4 h-4" /></button>
+                                                <button onClick={() => handleEdit(p)} className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all"><Edit2 weight="duotone" className="w-4 h-4" /></button>
                                                 <button onClick={() => handleDelete(p.id)} className="p-2 text-slate-400 hover:text-rose-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all"><Trash2 weight="duotone" className="w-4 h-4" /></button>
                                             </div>
                                         </td>
@@ -291,7 +291,7 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
                                             {p.notes && <p className="text-xs text-slate-400 mt-0.5 truncate max-w-[200px]">{p.notes}</p>}
                                         </div>
                                         <div className="flex gap-1">
-                                            <button onClick={() => handleEdit(p)} className="p-1.5 text-slate-400 hover:text-indigo-600 bg-slate-50 dark:bg-slate-800 rounded-lg transition-all active:scale-95"><Edit2 weight="duotone" className="w-4 h-4" /></button>
+                                            <button onClick={() => handleEdit(p)} className="p-1.5 text-slate-400 hover:text-emerald-600 bg-slate-50 dark:bg-slate-800 rounded-lg transition-all active:scale-95"><Edit2 weight="duotone" className="w-4 h-4" /></button>
                                             <button onClick={() => handleDelete(p.id)} className="p-1.5 text-slate-400 hover:text-rose-500 bg-slate-50 dark:bg-slate-800 rounded-lg transition-all active:scale-95"><Trash2 weight="duotone" className="w-4 h-4" /></button>
                                         </div>
                                     </div>

@@ -91,13 +91,13 @@ function DebtFreedomCountdown({ data }: { data: { month: string; remaining: numb
     const freedomDate = isFree ? data[data.length - 1].month : 'Belum Terprediksi';
 
     return (
-        <div className="glass-card rounded-3xl p-4 sm:p-5 overflow-hidden relative group animate-fade-in-up h-full flex flex-col justify-between shadow-sm">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl -mr-8 -mt-8"></div>
+        <div className="glass-card rounded-3xl p-4 sm:p-5 overflow-hidden relative group animate-fade-in-up h-full flex flex-col justify-between shadow-sm border border-[#C5A059]/10">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl -mr-8 -mt-8"></div>
             
             <div className="relative z-10 flex flex-col sm:flex-row sm:items-end justify-between mb-3 gap-3">
                 <div>
                     <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2 mb-0.5">
-                        <TrendingDown weight="bold" className="w-4 h-4 text-indigo-500" />
+                        <TrendingDown weight="bold" className="w-4 h-4 text-[#C5A059]" />
                         Proyeksi Bebas Hutang
                     </h3>
                     <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -493,11 +493,11 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                 )}
 
                 {/* TABS NAVIGATION */}
-                <div className="flex space-x-2 overflow-x-auto bg-slate-100 dark:bg-slate-800/50 p-1.5 rounded-2xl w-fit mx-auto lg:mx-0 scrollbar-hide">
+                <div className="flex space-x-2 overflow-x-auto bg-slate-100 dark:bg-slate-800/50 p-1.5 rounded-2xl w-fit mx-auto lg:mx-0 scrollbar-hide border border-[#C5A059]/10">
                     <button
                         onClick={() => setActiveTab('RECURRING')}
                         className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${activeTab === 'RECURRING'
-                            ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm scale-105'
+                            ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-sm scale-105 ring-1 ring-[#C5A059]/20'
                             : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
                             }`}
                     >
@@ -506,7 +506,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                     <button
                         onClick={() => setActiveTab('INSTALLMENT')}
                         className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${activeTab === 'INSTALLMENT'
-                            ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm scale-105'
+                            ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-sm scale-105 ring-1 ring-[#C5A059]/20'
                             : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
                             }`}
                     >
@@ -515,7 +515,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                     <button
                         onClick={() => setActiveTab('DEBT')}
                         className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${activeTab === 'DEBT'
-                            ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm scale-105'
+                            ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-sm scale-105 ring-1 ring-[#C5A059]/20'
                             : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
                             }`}
                     >
@@ -532,7 +532,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                 {activeTab === 'RECURRING' && (
                     <div className="animate-fade-in-up">
                         <div className="flex justify-end mb-4">
-                            <button onClick={() => openRecurringModal()} className="flex items-center px-5 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95">
+                            <button onClick={() => openRecurringModal()} className="flex items-center px-5 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-emerald-500/30 transition-all hover:scale-105 active:scale-95 ring-1 ring-[#C5A059]/30">
                                 <Plus weight="bold" className="w-4 h-4 mr-2" /> Tambah Jadwal
                             </button>
                         </div>
@@ -563,7 +563,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                                         </div>
 
                                         <div className="flex gap-2">
-                                            <button onClick={() => openRecurringModal(item)} className="flex-1 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
+                                            <button onClick={() => openRecurringModal(item)} className="flex-1 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold hover:bg-emerald-50 hover:text-emerald-600 transition-colors">
                                                 Edit
                                             </button>
                                         </div>
@@ -583,8 +583,8 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                 {activeTab === 'DEBT' && (
                     <div className="animate-fade-in-up">
                         <div className="flex justify-end mb-4">
-                            <button onClick={() => openDebtModal()} className="flex items-center px-5 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95">
-                                <Plus weight="bold" className="w-4 h-4 mr-2" /> Tambah Catatan
+                            <button onClick={() => openDebtModal()} className="flex items-center px-5 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-emerald-500/30 transition-all hover:scale-105 active:scale-95 ring-1 ring-[#C5A059]/30">
+                                <Plus weight="bold" className="w-4 h-4 mr-2 text-[#C5A059]" /> Tambah Catatan
                             </button>
                         </div>
 
@@ -619,11 +619,11 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                                                 </div>
                                                 <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                                     {!d.is_paid && (
-                                                        <button onClick={() => openPayModal(d)} className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 transition-all hover:scale-110 text-xs font-bold" title="Bayar/Cicil">
+                                                        <button onClick={() => openPayModal(d)} className="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 transition-all hover:scale-110 text-xs font-bold ring-1 ring-[#C5A059]/10" title="Bayar/Cicil">
                                                             <CheckCircle weight="fill" className="w-4 h-4" />
                                                         </button>
                                                     )}
-                                                    <button onClick={() => openDebtModal(d)} className="p-2 text-slate-300 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-all hover:scale-110"><Edit2 weight="duotone" className="w-4 h-4" /></button>
+                                                    <button onClick={() => openDebtModal(d)} className="p-2 text-slate-300 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg transition-all hover:scale-110"><Edit2 weight="duotone" className="w-4 h-4" /></button>
                                                     <button onClick={() => setDeleteDebtId(d.id)} className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all hover:scale-110"><Trash2 weight="duotone" className="w-4 h-4" /></button>
                                                 </div>
                                             </div>
@@ -638,7 +638,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                                                 </div>
                                                 <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                                                     <div
-                                                        className="h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full transition-all duration-700"
+                                                        className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-700"
                                                         style={{ width: `${d.progress_percentage}%` }}
                                                     />
                                                 </div>
@@ -650,7 +650,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                                             <div className="border-t border-slate-100 dark:border-slate-800">
                                                 <button
                                                     onClick={() => setExpandedDebtId(isExpanded ? null : d.id)}
-                                                    className="w-full text-left px-4 py-2 text-[10px] font-bold text-slate-400 hover:text-indigo-500 flex items-center justify-between transition-colors"
+                                                    className="w-full text-left px-4 py-2 text-[10px] font-bold text-slate-400 hover:text-emerald-500 flex items-center justify-between transition-colors"
                                                 >
                                                     <span>Riwayat Cicilan ({d.payments.length}x)</span>
                                                     <span>{isExpanded ? '▲' : '▼'}</span>
@@ -687,7 +687,7 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                 <div className="fixed inset-0 z-[1001] flex items-center justify-center p-4 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setPayingDebt(null)} />
                     <div className="relative w-full max-w-md glass-card rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-pop-in">
-                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 to-violet-500 z-10" />
+                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-500 via-[#C5A059] to-emerald-700 z-10" />
                         <div className="p-5 pb-0 shrink-0">
                             <div className="flex justify-between items-center mb-1">
                                 <h2 className="text-lg font-bold text-gray-900 dark:text-white">
@@ -705,13 +705,13 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                                         type="tel" autoFocus
                                         value={paymentForm.data.amount}
                                         onChange={e => paymentForm.setData('amount', formatInputAmount(e.target.value))}
-                                        className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-2xl text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 text-center"
+                                        className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-bold text-2xl text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 text-center focus:border-[#C5A059]/30 transition-all"
                                         required
                                     />
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">{payingDebt.type === 'RECEIVABLE' ? 'Masuk ke Dompet' : 'Dompet Pembayaran'}</label>
-                                    <select value={paymentForm.data.wallet_id} onChange={e => paymentForm.setData('wallet_id', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required>
+                                    <select value={paymentForm.data.wallet_id} onChange={e => paymentForm.setData('wallet_id', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 focus:border-[#C5A059]/30 transition-all" required>
                                         <option value="">Pilih Dompet</option>
                                         {wallets.map(w => <option key={w.id} value={w.id}>{w.name} ({formatIDR(w.balance)})</option>)}
                                     </select>
@@ -719,16 +719,16 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
                                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Tanggal</label>
-                                        <input type="date" value={paymentForm.data.date} onChange={e => paymentForm.setData('date', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" required />
+                                        <input type="date" value={paymentForm.data.date} onChange={e => paymentForm.setData('date', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 focus:border-[#C5A059]/30 transition-all" required />
                                     </div>
                                     <div>
                                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Catatan (Opsional)</label>
-                                        <input type="text" value={paymentForm.data.notes} onChange={e => paymentForm.setData('notes', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="Via transfer..." />
+                                        <input type="text" value={paymentForm.data.notes} onChange={e => paymentForm.setData('notes', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 focus:border-[#C5A059]/30 transition-all" placeholder="Via transfer..." />
                                     </div>
                                 </div>
                                 <div className="flex space-x-3 pt-2">
                                     <button type="button" onClick={() => setPayingDebt(null)} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors active:scale-95">Batal</button>
-                                    <button type="submit" disabled={paymentForm.processing} className="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-indigo-500/30 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50">
+                                    <button type="submit" disabled={paymentForm.processing} className="flex-1 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-emerald-500/30 ring-1 ring-[#C5A059]/30 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50">
                                         {paymentForm.processing ? 'Memproses...' : 'Konfirmasi Bayar'}
                                     </button>
                                 </div>
@@ -790,13 +790,13 @@ export default function DebtsIndex({ auth, debts, recurring, dueRecurring, walle
                             <form onSubmit={handleDebtSubmit} className="space-y-4">
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Jumlah (Rp)</label>
-                                    <input type="tel" inputMode="numeric" autoComplete="off" value={debtForm.data.amount} onChange={(e) => handleDebtAmountChange(e.target.value)} className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-bold text-2xl text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 text-center" placeholder="0" autoFocus required />
+                                    <input type="tel" inputMode="numeric" autoComplete="off" value={debtForm.data.amount} onChange={(e) => handleDebtAmountChange(e.target.value)} className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-bold text-2xl text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 text-center focus:border-[#C5A059]/30 transition-all" placeholder="0" autoFocus required />
                                 </div>
 
                                 <div className="space-y-4">
                                     <div>
                                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Nama Orang / Instansi</label>
-                                        <input type="text" value={debtForm.data.person} onChange={(e) => debtForm.setData('person', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="Contoh: Budi / PLN" required />
+                                        <input type="text" value={debtForm.data.person} onChange={(e) => debtForm.setData('person', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 focus:border-[#C5A059]/30 transition-all" placeholder="Contoh: Budi / PLN" required />
                                     </div>
                                     <div>
                                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Jatuh Tempo</label>

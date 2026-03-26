@@ -140,48 +140,48 @@ export default function Settings() {
 
             <div className="max-w-4xl mx-auto space-y-8 animate-fade-in-up">
                 {/* Financial AI Profile */}
-                <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-[2rem] p-8 text-white shadow-xl relative overflow-hidden">
+                <div className="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-[2rem] p-8 text-white shadow-xl relative overflow-hidden ring-1 ring-[#C5A059]/30">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -translate-y-10 translate-x-10 pointer-events-none" />
                     <div className="relative z-10">
                         <div className="flex items-center gap-3 mb-6">
                             <div className="p-2 bg-white/20 backdrop-blur-md rounded-xl"><Briefcase weight="duotone" className="w-6 h-6" /></div>
                             <div>
                                 <h3 className="text-xl font-bold">Profil Finansial AI</h3>
-                                <p className="text-indigo-100 text-sm opacity-90">Lengkapi data ini agar AI dapat memberikan saran yang presisi.</p>
+                                <p className="text-emerald-100 text-sm opacity-90">Lengkapi data ini agar AI dapat memberikan saran yang presisi.</p>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                             <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-5">
-                                <div className="flex items-center gap-2 mb-4 text-indigo-100"><Users weight="duotone" className="w-4 h-4" /><span className="text-sm font-bold uppercase tracking-wider">Profil Keluarga</span></div>
+                                <div className="flex items-center gap-2 mb-4 text-emerald-100"><Users weight="duotone" className="w-4 h-4" /><span className="text-sm font-bold uppercase tracking-wider">Profil Keluarga</span></div>
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-xs text-indigo-200 mb-1">Status Pernikahan</label>
+                                        <label className="block text-xs text-emerald-200 mb-1">Status Pernikahan</label>
                                         <select value={maritalStatus} onChange={(e) => updateMarital(e.target.value)} className="w-full bg-slate-900/30 border border-white/20 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:bg-slate-900/50">
                                             <option value="SINGLE">Lajang (Single)</option>
                                             <option value="MARRIED">Menikah (Married)</option>
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="block text-xs text-indigo-200 mb-1">Jumlah Tanggungan (Anak/Ortu)</label>
+                                        <label className="block text-xs text-emerald-200 mb-1">Jumlah Tanggungan (Anak/Ortu)</label>
                                         <input type="number" min="0" value={dependents} onChange={(e) => updateDependents(parseInt(e.target.value) || 0)} className="w-full bg-slate-900/30 border border-white/20 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:bg-slate-900/50" />
                                     </div>
                                 </div>
                             </div>
 
                             <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-5">
-                                <div className="flex items-center gap-2 mb-4 text-indigo-100"><Shield weight="duotone" className="w-4 h-4" /><span className="text-sm font-bold uppercase tracking-wider">Pekerjaan & Risiko</span></div>
+                                <div className="flex items-center gap-2 mb-4 text-emerald-100"><Shield weight="duotone" className="w-4 h-4" /><span className="text-sm font-bold uppercase tracking-wider">Pekerjaan & Risiko</span></div>
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-xs text-indigo-200 mb-1">Jenis Pekerjaan</label>
+                                        <label className="block text-xs text-emerald-200 mb-1">Jenis Pekerjaan</label>
                                         <select value={occupation} onChange={(e) => updateOccupation(e.target.value)} className="w-full bg-slate-900/30 border border-white/20 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:bg-slate-900/50">
                                             <option value="STABLE">PNS / BUMN (Pendapatan Stabil)</option>
                                             <option value="PRIVATE">Karyawan Swasta (Menengah)</option>
                                             <option value="FREELANCE">Freelancer / Pengusaha (Fluktuatif)</option>
                                         </select>
                                     </div>
-                                    <div className="p-3 bg-indigo-500/20 rounded-xl border border-indigo-400/30">
-                                        <p className="text-xs text-indigo-100 leading-relaxed">
+                                    <div className="p-3 bg-emerald-500/20 rounded-xl border border-emerald-400/30">
+                                        <p className="text-xs text-emerald-100 leading-relaxed">
                                             AI akan menggunakan data ini untuk menghitung <strong>Dana Darurat</strong> ideal Anda.
                                             {occupation === 'FREELANCE' ? ' (Saran: 12x Pengeluaran)' : ' (Saran: 3-6x Pengeluaran)'}
                                         </p>
@@ -192,7 +192,7 @@ export default function Settings() {
 
                         {/* Financial Goals — Redirected to Savings Page */}
                         <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-6">
-                            <div className="flex items-center gap-2 text-indigo-100 mb-4">
+                            <div className="flex items-center gap-2 text-emerald-100 mb-4">
                                 <Target weight="duotone" className="w-5 h-5" />
                                 <span className="text-sm font-bold uppercase tracking-wider">Target Finansial</span>
                             </div>
@@ -219,7 +219,7 @@ export default function Settings() {
                                 onClick={handleSaveProfile}
                                 disabled={savingProfile}
                                 className={`px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 transition-all active:scale-95 ${profileDirty
-                                    ? 'bg-white text-indigo-700 hover:bg-indigo-50 shadow-lg shadow-white/20 hover:scale-105'
+                                    ? 'bg-white text-emerald-700 hover:bg-emerald-50 shadow-lg shadow-white/20 hover:scale-105'
                                     : 'bg-white/20 text-white/70 cursor-default'
                                     } disabled:opacity-50`}
                             >
@@ -239,7 +239,7 @@ export default function Settings() {
                         {/* Theme */}
                         <div className="p-5 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                             <div className="flex items-center gap-4">
-                                <div className={`p-2.5 rounded-xl ${theme === 'dark' ? 'bg-indigo-100 text-indigo-600' : 'bg-amber-100 text-amber-600'}`}>
+                                <div className={`p-2.5 rounded-xl ${theme === 'dark' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}`}>
                                     {theme === 'dark' ? <Moon weight="duotone" className="w-5 h-5" /> : <Sun weight="duotone" className="w-5 h-5" />}
                                 </div>
                                 <div>
@@ -247,7 +247,7 @@ export default function Settings() {
                                     <p className="text-xs text-slate-500 dark:text-slate-400">Sesuaikan tema aplikasi (Terang/Gelap)</p>
                                 </div>
                             </div>
-                            <button onClick={handleToggleTheme} className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none ${theme === 'dark' ? 'bg-indigo-600' : 'bg-slate-200 dark:bg-slate-700'}`}>
+                            <button onClick={handleToggleTheme} className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none ${theme === 'dark' ? 'bg-emerald-600' : 'bg-slate-200 dark:bg-slate-700'}`}>
                                 <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${theme === 'dark' ? 'translate-x-6' : 'translate-x-1'}`} />
                             </button>
                         </div>
@@ -261,7 +261,7 @@ export default function Settings() {
                                     <p className="text-xs text-slate-500 dark:text-slate-400">Mata uang default untuk laporan</p>
                                 </div>
                             </div>
-                            <select value={currency} onChange={(e) => { setCurrency(e.target.value); toast.success(`Mata uang diubah ke ${e.target.value}`); }} className="appearance-none bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 py-2 pl-4 pr-8 rounded-lg font-medium text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <select value={currency} onChange={(e) => { setCurrency(e.target.value); toast.success(`Mata uang diubah ke ${e.target.value}`); }} className="appearance-none bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 py-2 pl-4 pr-8 rounded-lg font-medium text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-[#C5A059]/30 transition-all">
                                 <option value="IDR">IDR (Rp)</option>
                                 <option value="USD">USD ($)</option>
                                 <option value="EUR">EUR (€)</option>
@@ -277,7 +277,7 @@ export default function Settings() {
                                     <p className="text-xs text-slate-500 dark:text-slate-400">Terima pengingat tagihan & budget</p>
                                 </div>
                             </div>
-                            <button onClick={() => { setNotifications(!notifications); toast.success(`Notifikasi ${!notifications ? 'diaktifkan' : 'dinonaktifkan'}`); }} className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none ${notifications ? 'bg-indigo-600' : 'bg-slate-200 dark:bg-slate-700'}`}>
+                            <button onClick={() => { setNotifications(!notifications); toast.success(`Notifikasi ${!notifications ? 'diaktifkan' : 'dinonaktifkan'}`); }} className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none ${notifications ? 'bg-emerald-600' : 'bg-slate-200 dark:bg-slate-700'}`}>
                                 <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${notifications ? 'translate-x-6' : 'translate-x-1'}`} />
                             </button>
                         </div>
@@ -332,21 +332,21 @@ export default function Settings() {
                             <div className="flex items-center gap-4">
                                 <div className="p-2.5 rounded-xl bg-blue-100 text-blue-600"><Shield weight="duotone" className="w-5 h-5" /></div>
                                 <div>
-                                    <p className="font-bold text-slate-800 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Keamanan Akun</p>
+                                    <p className="font-bold text-slate-800 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Keamanan Akun</p>
                                     <p className="text-xs text-slate-500 dark:text-slate-400">2FA dan riwayat login</p>
                                 </div>
                             </div>
-                            <ChevronRight weight="bold" className="w-5 h-5 text-slate-300 group-hover:text-indigo-500" />
+                            <ChevronRight weight="bold" className="w-5 h-5 text-slate-300 group-hover:text-emerald-500" />
                         </button>
                         <button className="w-full p-5 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-left group">
                             <div className="flex items-center gap-4">
                                 <div className="p-2.5 rounded-xl bg-purple-100 text-purple-600"><Globe weight="duotone" className="w-5 h-5" /></div>
                                 <div>
-                                    <p className="font-bold text-slate-800 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Bahasa</p>
+                                    <p className="font-bold text-slate-800 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Bahasa</p>
                                     <p className="text-xs text-slate-500 dark:text-slate-400">Bahasa Indonesia (Default)</p>
                                 </div>
                             </div>
-                            <ChevronRight weight="bold" className="w-5 h-5 text-slate-300 group-hover:text-indigo-500" />
+                            <ChevronRight weight="bold" className="w-5 h-5 text-slate-300 group-hover:text-emerald-500" />
                         </button>
                     </div>
                 </div>

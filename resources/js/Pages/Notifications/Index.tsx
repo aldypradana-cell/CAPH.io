@@ -108,19 +108,19 @@ export default function NotificationCenter({ notifications }: {
                 <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
                     {/* Tabs */}
                     <div className="flex border-b border-slate-100 dark:border-slate-800">
-                        <button onClick={() => setFilter('ALL')} className={`flex-1 py-4 text-sm font-bold transition-colors relative ${filter === 'ALL' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>
+                        <button onClick={() => setFilter('ALL')} className={`flex-1 py-4 text-sm font-bold transition-colors relative ${filter === 'ALL' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>
                             Semua
-                            {filter === 'ALL' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600 dark:bg-indigo-400 rounded-t-full" />}
+                            {filter === 'ALL' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-emerald-600 dark:bg-emerald-400 rounded-t-full" />}
                         </button>
-                        <button onClick={() => setFilter('UNREAD')} className={`flex-1 py-4 text-sm font-bold transition-colors relative ${filter === 'UNREAD' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>
+                        <button onClick={() => setFilter('UNREAD')} className={`flex-1 py-4 text-sm font-bold transition-colors relative ${filter === 'UNREAD' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>
                             Belum Dibaca
-                            {filter === 'UNREAD' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600 dark:bg-indigo-400 rounded-t-full" />}
+                            {filter === 'UNREAD' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-emerald-600 dark:bg-emerald-400 rounded-t-full" />}
                         </button>
                     </div>
 
                     {/* Mobile Only: Mark All Read Action */}
                     <div className="sm:hidden border-b border-slate-100 dark:border-slate-800 p-3 bg-slate-50/50 dark:bg-slate-800/30 flex justify-end">
-                        <button onClick={handleMarkAllRead} disabled={unreadCount === 0} className="px-4 py-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors disabled:opacity-50 flex items-center w-full justify-center">
+                        <button onClick={handleMarkAllRead} disabled={unreadCount === 0} className="px-4 py-2 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors disabled:opacity-50 flex items-center w-full justify-center">
                             <Check weight="bold" className="w-3 h-3 mr-1.5" /> Tandai Semua Dibaca
                         </button>
                     </div>
@@ -134,7 +134,7 @@ export default function NotificationCenter({ notifications }: {
                             </div>
                         ) : (
                             filteredNotifications.map(notification => (
-                                <div key={notification.id} className={`p-5 flex items-start gap-4 transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 group ${!notification.read_at ? 'bg-indigo-50/30 dark:bg-indigo-900/10' : ''}`} onClick={() => !notification.read_at && handleMarkAsRead(notification.id)}>
+                                <div key={notification.id} className={`p-5 flex items-start gap-4 transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 group ${!notification.read_at ? 'bg-emerald-50/30 dark:bg-emerald-900/10' : ''}`} onClick={() => !notification.read_at && handleMarkAsRead(notification.id)}>
                                     <div className={`p-3 rounded-xl flex-shrink-0 ${getBgColor(notification.data.type)}`}>{getIcon(notification.data.type)}</div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex justify-between items-start mb-1">
@@ -145,7 +145,7 @@ export default function NotificationCenter({ notifications }: {
                                     </div>
                                     <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                         {!notification.read_at && (
-                                            <button onClick={(e) => { e.stopPropagation(); handleMarkAsRead(notification.id); }} className="p-1.5 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors" title="Tandai dibaca"><Check weight="bold" className="w-4 h-4" /></button>
+                                            <button onClick={(e) => { e.stopPropagation(); handleMarkAsRead(notification.id); }} className="p-1.5 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg transition-colors" title="Tandai dibaca"><Check weight="bold" className="w-4 h-4" /></button>
                                         )}
                                         <button onClick={(e) => { e.stopPropagation(); handleDelete(notification.id); }} className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors" title="Hapus"><Trash2 weight="bold" className="w-4 h-4" /></button>
                                     </div>
@@ -168,8 +168,8 @@ export default function NotificationCenter({ notifications }: {
                                         key={i}
                                         onClick={() => router.get(link.url!, {}, { preserveScroll: true, preserveState: true })}
                                         className={`px-3 py-2 text-xs font-bold rounded-xl transition-all ${link.active
-                                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
-                                            : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-indigo-600 dark:hover:text-indigo-400'
+                                            ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/30 ring-1 ring-[#C5A059]/10'
+                                            : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-emerald-600 dark:hover:text-emerald-400'
                                             }`}
                                         dangerouslySetInnerHTML={{ __html: link.label }}
                                     />
@@ -221,10 +221,10 @@ const LayoutHeader = (page: any) => {
     return (
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full min-w-0">
             <div className="min-w-0 flex-1">
-                <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 truncate"><Bell weight="duotone" className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600 dark:text-indigo-400 flex-shrink-0" /> <span className="truncate">Pusat Notifikasi</span></h1>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 truncate">Anda memiliki <span className="font-bold text-indigo-600 dark:text-indigo-400">{unreadCount}</span> notifikasi baru.</p>
+                <h1 className="text-lg sm:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2 truncate"><Bell weight="duotone" className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600 dark:text-emerald-400 flex-shrink-0" /> <span className="truncate">Pusat Notifikasi</span></h1>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 truncate">Anda memiliki <span className="font-bold text-emerald-600 dark:text-emerald-400">{unreadCount}</span> notifikasi baru.</p>
             </div>
-            <button onClick={() => router.post(route('notifications.readAll'))} disabled={unreadCount === 0} className="hidden sm:flex px-4 py-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors disabled:opacity-50 items-center">
+            <button onClick={() => router.post(route('notifications.readAll'))} disabled={unreadCount === 0} className="hidden sm:flex px-4 py-2 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors disabled:opacity-50 items-center">
                 <Check className="w-3 h-3 mr-1.5" /> Tandai Semua Dibaca
             </button>
         </div>

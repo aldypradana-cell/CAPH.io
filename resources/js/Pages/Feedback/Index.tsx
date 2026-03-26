@@ -56,8 +56,8 @@ export default function FeedbackIndex() {
 
                 {/* Hero Section */}
                 <div className="text-center space-y-2">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-500 to-violet-500 rounded-2xl shadow-lg shadow-indigo-500/30 mb-3">
-                        <ChatCircleDots weight="duotone" className="w-8 h-8 text-white" />
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl shadow-lg shadow-emerald-500/30 mb-3 ring-1 ring-[#C5A059]/30">
+                        <ChatCircleDots weight="duotone" className="w-8 h-8 text-[#C5A059]" />
                     </div>
                     <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Kotak Saran & Laporan</h2>
                     <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
@@ -68,7 +68,7 @@ export default function FeedbackIndex() {
                 {/* Submit Form */}
                 <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 space-y-5">
                     <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                        <PaperPlaneTilt weight="duotone" className="w-5 h-5 text-indigo-500" />
+                        <PaperPlaneTilt weight="duotone" className="w-5 h-5 text-emerald-500" />
                         Kirim Feedback Baru
                     </h3>
 
@@ -84,7 +84,7 @@ export default function FeedbackIndex() {
                                         type="button"
                                         onClick={() => setData('category', cat.value)}
                                         className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-semibold transition-all duration-200 ${isActive
-                                            ? `${cat.color} ring-2 ring-offset-1 ring-indigo-400 dark:ring-offset-slate-900 scale-[1.02]`
+                                            ? `${cat.color} ring-2 ring-offset-1 ring-emerald-400 dark:ring-offset-slate-900 scale-[1.02]`
                                             : 'bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
                                         }`}
                                     >
@@ -105,7 +105,7 @@ export default function FeedbackIndex() {
                             value={data.subject}
                             onChange={(e) => setData('subject', e.target.value)}
                             placeholder="Judul singkat feedback Anda..."
-                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500 focus:border-[#C5A059]/30 transition-all"
                         />
                         {errors.subject && <p className="text-xs text-red-500 mt-1">{errors.subject}</p>}
                     </div>
@@ -118,7 +118,7 @@ export default function FeedbackIndex() {
                             onChange={(e) => setData('message', e.target.value)}
                             placeholder="Tuliskan detail saran, laporan, atau pertanyaan Anda..."
                             rows={5}
-                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none"
+                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500 focus:border-[#C5A059]/30 transition-all resize-none"
                         />
                         {errors.message && <p className="text-xs text-red-500 mt-1">{errors.message}</p>}
                     </div>
@@ -127,7 +127,7 @@ export default function FeedbackIndex() {
                     <button
                         type="submit"
                         disabled={processing || !data.subject.trim() || !data.message.trim()}
-                        className="w-full py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.98]"
+                        className="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/30 ring-1 ring-[#C5A059]/30 hover:shadow-xl hover:shadow-emerald-500/40 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.98]"
                     >
                         <PaperPlaneTilt weight="bold" className="w-5 h-5" />
                         {processing ? 'Mengirim...' : 'Kirim Feedback'}
@@ -137,10 +137,10 @@ export default function FeedbackIndex() {
                 {/* Feedback History */}
                 <div className="space-y-4">
                     <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                        <Clock weight="duotone" className="w-5 h-5 text-indigo-500" />
+                        <Clock weight="duotone" className="w-5 h-5 text-emerald-500" />
                         Riwayat Feedback Anda
                         {feedbacks?.data?.length > 0 && (
-                            <span className="text-xs bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded-full font-bold">
+                            <span className="text-xs bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full font-bold">
                                 {feedbacks.total ?? feedbacks.data.length}
                             </span>
                         )}
@@ -196,8 +196,8 @@ export default function FeedbackIndex() {
                                                 </div>
 
                                                 {fb.admin_reply && (
-                                                    <div className="bg-indigo-50 dark:bg-indigo-900/20 rounded-xl p-3 border border-indigo-100 dark:border-indigo-800/30">
-                                                        <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 mb-1">
+                                                    <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-3 border border-emerald-100 dark:border-emerald-800/30">
+                                                        <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 mb-1">
                                                             💬 Balasan Admin {fb.replied_at && <span className="font-normal text-slate-400">• {fb.replied_at}</span>}
                                                         </p>
                                                         <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{fb.admin_reply}</p>
@@ -225,7 +225,7 @@ export default function FeedbackIndex() {
 FeedbackIndex.layout = (page: any) => (
     <AppLayout header={
         <div className="flex items-center gap-4">
-            <div className="p-3 bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-xl">
+            <div className="p-3 bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-xl">
                 <ChatCircleDots weight="duotone" className="w-6 h-6" />
             </div>
             <div>

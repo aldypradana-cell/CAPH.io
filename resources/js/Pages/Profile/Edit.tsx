@@ -71,7 +71,7 @@ export default function Edit({
         setMounted(true);
     }, []);
 
-    const inputClass = "w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 transition-all";
+    const inputClass = "w-full px-4 py-3 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 focus:border-[#C5A059]/30 transition-all";
 
     return (
 
@@ -82,9 +82,9 @@ export default function Edit({
             <div className="max-w-2xl mx-auto space-y-6 animate-fade-in-up">
                 {/* User Avatar Card */}
                 <div className="glass-card rounded-[2rem] p-8 text-center relative overflow-hidden animate-pop-in">
-                    <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 opacity-20" />
+                    <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-br from-emerald-500 via-[#C5A059]/50 to-emerald-700 opacity-20" />
                     <div className="relative z-10">
-                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold mx-auto mb-4 shadow-xl shadow-indigo-500/30">
+                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white text-3xl font-bold mx-auto mb-4 shadow-xl shadow-emerald-500/30 ring-1 ring-[#C5A059]/30">
                             {user.name.charAt(0).toUpperCase()}
                         </div>
                         <h2 className="text-xl font-bold text-slate-800 dark:text-white">{user.name}</h2>
@@ -97,8 +97,8 @@ export default function Edit({
                 {/* Profile Information */}
                 <div className="glass-card rounded-[2rem] p-6 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
                     <div className="flex items-center gap-3 mb-5">
-                        <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600">
-                            <User weight="duotone" className="w-5 h-5" />
+                        <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600">
+                            <User weight="duotone" className="w-5 h-5 text-[#C5A059]" />
                         </div>
                         <div>
                             <h3 className="text-base font-bold text-slate-800 dark:text-white">Informasi Profil</h3>
@@ -132,7 +132,7 @@ export default function Edit({
                         )}
 
                         <div className="flex items-center gap-3 pt-2">
-                            <button type="submit" disabled={profileForm.processing} className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95 disabled:opacity-50">
+                            <button type="submit" disabled={profileForm.processing} className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-emerald-500/30 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 ring-1 ring-[#C5A059]/30">
                                 {profileForm.processing ? 'Menyimpan...' : 'Simpan'}
                             </button>
                             {profileForm.recentlySuccessful && (
@@ -180,7 +180,7 @@ export default function Edit({
                             {passwordForm.errors.password_confirmation && <p className="text-xs text-red-500 mt-1 ml-1">{passwordForm.errors.password_confirmation}</p>}
                         </div>
                         <div className="flex items-center gap-3 pt-2">
-                            <button type="submit" disabled={passwordForm.processing} className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-emerald-500/30 transition-all hover:scale-105 active:scale-95 disabled:opacity-50">
+                            <button type="submit" disabled={passwordForm.processing} className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-emerald-500/30 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 ring-1 ring-[#C5A059]/30">
                                 {passwordForm.processing ? 'Menyimpan...' : 'Ubah Password'}
                             </button>
                             {passwordForm.recentlySuccessful && (

@@ -192,10 +192,10 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                 {masterBudgets.length > 0 && (
                     <div className="space-y-4">
                         <div className="flex items-center gap-2">
-                            <Sparkles weight="duotone" className="w-5 h-5 text-indigo-500" />
+                            <Sparkles weight="duotone" className="w-5 h-5 text-emerald-500" />
                             <h2 className="text-sm font-bold text-slate-600 dark:text-slate-300 uppercase tracking-widest">Auto-Budget</h2>
                             {activeTemplate && (
-                                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2.5 py-0.5 rounded-full">Aturan {activeTemplate}</span>
+                                <span className="text-[10px] font-bold text-[#C5A059] bg-[#C5A059]/10 px-2.5 py-0.5 rounded-full border border-[#C5A059]/20">Aturan {activeTemplate}</span>
                             )}
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -262,8 +262,8 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                 )}
 
                 {/* ═══════════════ Overall Summary (Regular Budgets) ═══════════════ */}
-                <div className="glass-card p-5 sm:p-8 rounded-[2rem] relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-500/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+                <div className="glass-card p-5 sm:p-8 rounded-[2rem] relative overflow-hidden border border-[#C5A059]/10">
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-emerald-500/5 rounded-full -translate-y-1/2 translate-x-1/2" />
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div>
                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Ringkasan Anggaran</p>
@@ -273,7 +273,7 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                             </div>
                             <div className="w-full max-w-sm mt-3 relative">
                                 <div className={`h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden ${overallPct >= 100 ? 'ring-2 ring-rose-500/30' : ''}`}>
-                                    <div className={`h-full ${overallPct >= 100 ? 'bg-rose-600 animate-pulse' : overallPct >= 90 ? 'bg-orange-500' : overallPct >= 70 ? 'bg-amber-500' : 'bg-indigo-500'} rounded-full transition-all duration-1000`} style={{ width: `${Math.min(100, overallPct)}%` }} />
+                                    <div className={`h-full ${overallPct >= 100 ? 'bg-rose-600 animate-pulse' : overallPct >= 90 ? 'bg-orange-500' : overallPct >= 70 ? 'bg-amber-500' : 'bg-emerald-500'} rounded-full transition-all duration-1000`} style={{ width: `${Math.min(100, overallPct)}%` }} />
                                 </div>
                                 <div className="flex justify-between items-center mt-1.5">
                                     <p className="text-xs text-slate-400">{overallPct}% terpakai bulan ini</p>
@@ -292,9 +292,9 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                             </button>
                             <button
                                 onClick={() => { setEditingBudget(null); reset(); setIsModalOpen(true); }}
-                                className="flex items-center px-5 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95"
+                                className="flex items-center px-5 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-emerald-500/30 transition-all hover:scale-105 active:scale-95 ring-1 ring-[#C5A059]/30"
                             >
-                                <Plus weight="bold" className="w-4 h-4 mr-2" /> Tambah Anggaran
+                                <Plus weight="bold" className="w-4 h-4 mr-2 text-[#C5A059]" /> Tambah Anggaran
                             </button>
                         </div>
                     </div>
@@ -322,7 +322,7 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                                         </div>
                                     </div>
                                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button onClick={() => handleEdit(b)} className="p-1.5 text-slate-300 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-all"><Edit2 weight="duotone" className="w-3.5 h-3.5" /></button>
+                                        <button onClick={() => handleEdit(b)} className="p-1.5 text-slate-300 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg transition-all"><Edit2 weight="duotone" className="w-3.5 h-3.5" /></button>
                                         <button onClick={() => setDeleteId(b.id)} className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all"><Trash2 weight="duotone" className="w-3.5 h-3.5" /></button>
                                     </div>
                                 </div>
@@ -394,7 +394,7 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                 <div className="fixed inset-0 z-[999] flex items-end sm:items-center justify-center p-0 sm:p-6 pb-16 lg:pb-0 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
                     <div className="relative w-full max-w-md glass-card rounded-t-[2rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-pop-in">
-                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 z-10" />
+                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-500 via-[#C5A059] to-emerald-700 z-10" />
                         <div className="p-5 pb-0 shrink-0 flex justify-between items-center">
                             <h3 className="text-lg font-bold text-slate-800 dark:text-white">{editingBudget ? 'Edit Anggaran' : 'Anggaran Baru'}</h3>
                             <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"><X weight="bold" className="w-5 h-5" /></button>
@@ -406,7 +406,7 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                                     <select
                                         value={data.category}
                                         onChange={(e) => setData('category', e.target.value)}
-                                        className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50"
+                                        className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 focus:border-[#C5A059]/30 transition-all"
                                         required
                                     >
                                         <option value="">Pilih Kategori</option>
@@ -418,7 +418,7 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
                                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Batas (Rp)</label>
-                                        <input type="text" required value={data.limit} onChange={(e) => handleAmountChange(e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="0" />
+                                        <input type="text" required value={data.limit} onChange={(e) => handleAmountChange(e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 focus:border-[#C5A059]/30 transition-all" placeholder="0" />
                                     </div>
                                     <div>
                                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Periode</label>
@@ -430,7 +430,7 @@ export default function BudgetsIndex({ auth, budgets, categories, activeTemplate
                                 </div>
                                 <div className="flex space-x-3 pt-4">
                                     <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors active:scale-95">Batal</button>
-                                    <button type="submit" disabled={processing} className="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-indigo-500/30 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50">{processing ? 'Menyimpan...' : 'Simpan'}</button>
+                                    <button type="submit" disabled={processing} className="flex-1 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-emerald-500/30 ring-1 ring-[#C5A059]/30 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50">{processing ? 'Menyimpan...' : 'Simpan'}</button>
                                 </div>
                             </form>
                         </div>

@@ -168,11 +168,14 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
 
             <div className="space-y-4 sm:space-y-6 animate-fade-in-up">
                 {/* Total Balance Header */}
-                <div className="bg-gradient-to-br from-indigo-700 to-indigo-900 p-5 sm:p-8 rounded-3xl text-white shadow-xl relative overflow-hidden group hover:shadow-2xl transition-all duration-300 animate-fade-in-up">
-                    <WalletIcon weight="duotone" className="absolute right-[-20px] bottom-[-20px] w-64 h-64 opacity-10 group-hover:scale-110 transition-transform duration-700" />
-                    <p className="text-indigo-100 font-medium mb-1 opacity-80 uppercase tracking-widest text-xs">Total Saldo Semua Dompet</p>
-                    <h2 className="text-4xl font-bold">{formatIDR(totalBalance)}</h2>
-                    <p className="text-indigo-200 text-sm mt-2">{dailyWallets.length} dompet terdaftar</p>
+                <div className="bg-gradient-to-br from-emerald-700 to-emerald-900 p-5 sm:p-8 rounded-3xl text-white shadow-xl relative overflow-hidden group hover:shadow-2xl transition-all duration-300 animate-fade-in-up border border-[#C5A059]/10">
+                    <WalletIcon weight="duotone" className="absolute right-[-20px] bottom-[-20px] w-64 h-64 text-[#C5A059] opacity-10 group-hover:scale-110 group-hover:opacity-20 transition-all duration-700" />
+                    <p className="text-emerald-100 font-medium mb-1 opacity-80 uppercase tracking-widest text-xs">Total Saldo Semua Dompet</p>
+                    <h2 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-emerald-100 drop-shadow-sm">{formatIDR(totalBalance)}</h2>
+                    <p className="text-emerald-200 text-sm mt-2 flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#C5A059] animate-pulse"></span>
+                        {dailyWallets.length} dompet terdaftar
+                    </p>
                 </div>
 
                 {/* Active Wallet Cards Grid */}
@@ -284,11 +287,11 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                     {/* Add Card */}
                     <div
                         onClick={() => { setEditingWallet(null); reset(); setIsModalOpen(true); }}
-                        className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl h-56 flex flex-col items-center justify-center cursor-pointer hover:border-indigo-300 dark:hover:border-indigo-600 hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-all group animate-pop-in"
+                        className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl h-56 flex flex-col items-center justify-center cursor-pointer hover:border-emerald-500/50 dark:hover:border-emerald-500/50 hover:bg-emerald-50/30 dark:hover:bg-emerald-900/10 transition-all group animate-pop-in"
                         style={{ animationDelay: `${dailyWallets.length * 100}ms` }}
                     >
-                        <Plus weight="bold" className="w-10 h-10 text-slate-300 dark:text-slate-600 group-hover:text-indigo-500 transition-colors mb-2" />
-                        <p className="text-sm font-bold text-slate-400 dark:text-slate-500 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Tambah Dompet</p>
+                        <Plus weight="bold" className="w-10 h-10 text-slate-300 dark:text-slate-600 group-hover:text-emerald-500 transition-colors mb-2" />
+                        <p className="text-sm font-bold text-slate-400 dark:text-slate-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Tambah Dompet</p>
                     </div>
                 </div>
 
@@ -324,7 +327,7 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                                             <div className="relative z-20 shrink-0 ml-2">
                                                 <button 
                                                     onClick={() => confirmUnarchive(wallet.id)} 
-                                                    className="px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-800/50 text-indigo-600 dark:text-indigo-400 rounded-xl text-xs font-bold transition-colors"
+                                                    className="px-4 py-2 bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-100 dark:hover:bg-emerald-800/50 text-emerald-600 dark:text-emerald-400 rounded-xl text-xs font-bold transition-colors"
                                                 >
                                                     Aktifkan
                                                 </button>
@@ -383,7 +386,7 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                 <div className="fixed inset-0 z-[999] flex items-end sm:items-center justify-center p-0 sm:p-6 pb-16 lg:pb-0 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
                     <div className="relative w-full max-w-md glass-card rounded-t-[2rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-pop-in">
-                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 z-10" />
+                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-500 via-[#C5A059] to-emerald-700 z-10" />
                         <div className="p-5 pb-0 shrink-0">
                             <h3 className="text-lg font-bold text-slate-800 dark:text-white text-center">
                                 {editingWallet ? 'Edit Dompet' : 'Tambah Dompet Baru'}
@@ -393,7 +396,7 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                             <form onSubmit={handleSubmit} className="space-y-3">
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Nama Dompet</label>
-                                    <input type="text" required value={data.name} onChange={(e) => setData('name', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="Contoh: BCA, GoPay" />
+                                    <input type="text" required value={data.name} onChange={(e) => setData('name', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 focus:border-[#C5A059]/30 transition-all" placeholder="Contoh: BCA, GoPay" />
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Tipe</label>
@@ -401,7 +404,7 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                                         {([{ v: 'CASH', l: 'Tunai' }, { v: 'BANK', l: 'Bank' }, { v: 'E-WALLET', l: 'E-Wallet' }] as const).map(opt => (
                                             <button key={opt.v} type="button" onClick={() => setData('type', opt.v as any)}
                                                 className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${data.type === opt.v
-                                                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
+                                                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/30 ring-1 ring-[#C5A059]/30'
                                                     : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
                                                     }`}
                                             >{opt.l}</button>
@@ -410,7 +413,7 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Saldo (Rp)</label>
-                                    <input type="text" required value={data.balance} onChange={(e) => handleAmountChange(e.target.value, 'balance')} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="0" />
+                                    <input type="text" required value={data.balance} onChange={(e) => handleAmountChange(e.target.value, 'balance')} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 focus:border-[#C5A059]/30 transition-all" placeholder="0" />
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1 flex items-center gap-1">Peringatan Saldo Kritis (Rp) <span className="text-[8px] bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded text-slate-500 dark:text-slate-400 lowercase">opsional</span></label>
@@ -418,7 +421,7 @@ export default function WalletsIndex({ auth, wallets }: PageProps<{ wallets: Wal
                                 </div>
                                 <div className="flex space-x-3 pt-4">
                                     <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors active:scale-95">Batal</button>
-                                    <button type="submit" disabled={processing} className="flex-1 py-3 bg-indigo-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-indigo-100 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50">
+                                    <button type="submit" disabled={processing} className="flex-1 py-3 bg-emerald-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50 ring-1 ring-[#C5A059]/30">
                                         {processing ? 'Menyimpan...' : 'Simpan'}
                                     </button>
                                 </div>

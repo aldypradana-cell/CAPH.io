@@ -114,18 +114,18 @@ export default function ExportPage({ wallets }: ExportPageProps) {
                         {/* Date Range */}
                         <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 transition-colors">
                             <h3 className="font-bold text-slate-800 dark:text-white mb-4 flex items-center">
-                                <Calendar weight="duotone" className="w-4 h-4 mr-2 text-indigo-500" /> Rentang Tanggal
+                                <Calendar weight="duotone" className="w-4 h-4 mr-2 text-emerald-500" /> Rentang Tanggal
                             </h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="text-xs font-bold text-slate-400 uppercase block mb-1">Dari</label>
                                     <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)}
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-800 dark:text-white font-medium transition-colors" />
+                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-[#C5A059]/30 outline-none text-slate-800 dark:text-white font-medium transition-all" />
                                 </div>
                                 <div>
                                     <label className="text-xs font-bold text-slate-400 uppercase block mb-1">Sampai</label>
                                     <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)}
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-800 dark:text-white font-medium transition-colors" />
+                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-[#C5A059]/30 outline-none text-slate-800 dark:text-white font-medium transition-all" />
                                 </div>
                             </div>
                         </div>
@@ -134,10 +134,10 @@ export default function ExportPage({ wallets }: ExportPageProps) {
                         {wallets.length > 0 && (
                             <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 transition-colors">
                                 <h3 className="font-bold text-slate-800 dark:text-white mb-4 flex items-center">
-                                    <Wallet weight="duotone" className="w-4 h-4 mr-2 text-purple-500" /> Filter Dompet
+                                    <Wallet weight="duotone" className="w-4 h-4 mr-2 text-emerald-500" /> Filter Dompet
                                 </h3>
                                 <select value={walletId} onChange={e => setWalletId(e.target.value)}
-                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-800 dark:text-white font-medium transition-colors">
+                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-[#C5A059]/30 outline-none text-slate-800 dark:text-white font-medium transition-all">
                                     <option value="">Semua Dompet</option>
                                     {wallets.map(w => (
                                         <option key={w.id} value={w.id}>{w.name}</option>
@@ -179,7 +179,7 @@ export default function ExportPage({ wallets }: ExportPageProps) {
 
                             {loadingPreview && (
                                 <div className="flex items-center justify-center py-6">
-                                    <Loader2 weight="bold" className="w-6 h-6 animate-spin text-indigo-400" />
+                                    <Loader2 weight="bold" className="w-6 h-6 animate-spin text-emerald-400" />
                                 </div>
                             )}
 
@@ -219,14 +219,14 @@ export default function ExportPage({ wallets }: ExportPageProps) {
                             {!loadingPreview && previewError && (
                                 <div className="text-center py-4">
                                     <p className="text-amber-400 text-sm mb-2">Gagal memuat ringkasan</p>
-                                    <button onClick={fetchPreview} className="text-xs text-indigo-400 hover:text-indigo-300 underline">Coba lagi</button>
+                                    <button onClick={fetchPreview} className="text-xs text-emerald-400 hover:text-emerald-300 underline">Coba lagi</button>
                                 </div>
                             )}
 
                             <div className="mt-8">
                                 <button onClick={handleExport}
                                     disabled={isExporting || !startDate || !endDate}
-                                    className="w-full py-3.5 bg-white text-slate-900 rounded-xl font-bold hover:bg-indigo-50 transition-all shadow-lg flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed active:scale-95">
+                                    className="w-full py-3.5 bg-white text-slate-900 rounded-xl font-bold hover:bg-emerald-50 transition-all shadow-lg flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed active:scale-95">
                                     {isExporting
                                         ? <><Loader2 weight="bold" className="w-5 h-5 mr-2 animate-spin" /> Memproses...</>
                                         : <><FileDown weight="bold" className="w-5 h-5 mr-2" /> Download {format.toUpperCase()}</>

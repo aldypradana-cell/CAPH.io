@@ -231,8 +231,8 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
 
             <div className="space-y-4 sm:space-y-6 animate-fade-in-up">
                 {/* Hero Header */}
-                <div className="bg-gradient-to-br from-emerald-600 via-teal-700 to-cyan-800 p-5 sm:p-8 rounded-3xl text-white shadow-xl relative overflow-hidden group hover:shadow-2xl transition-all duration-500">
-                    <Vault weight="duotone" className="absolute right-[-20px] bottom-[-20px] w-64 h-64 opacity-10 group-hover:scale-110 transition-transform duration-700" />
+                <div className="bg-gradient-to-br from-emerald-700 via-teal-800 to-emerald-900 p-5 sm:p-8 rounded-3xl text-white shadow-xl relative overflow-hidden group hover:shadow-2xl transition-all duration-500 border border-[#C5A059]/20">
+                    <Vault weight="duotone" className="absolute right-[-20px] bottom-[-20px] w-64 h-64 text-[#C5A059] opacity-10 group-hover:scale-110 group-hover:opacity-20 transition-all duration-700" />
                     <div className="absolute top-0 right-0 w-80 h-80 bg-white opacity-5 rounded-full blur-3xl -translate-y-20 translate-x-20 pointer-events-none" />
                     <div className="relative z-10">
                         <p className="text-emerald-100 font-medium mb-1 opacity-80 uppercase tracking-widest text-xs">Total Simpanan</p>
@@ -256,7 +256,7 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
                     <button
                         onClick={() => setActiveTab('goals')}
                         className={`flex-1 py-3 rounded-xl text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2 ${activeTab === 'goals'
-                            ? 'bg-gradient-to-r from-purple-600 to-violet-600 text-white shadow-lg shadow-purple-500/30'
+                            ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30 ring-1 ring-[#C5A059]/30'
                             : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
                             }`}
                     >
@@ -358,9 +358,9 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
                                 <p className="text-sm text-slate-400 dark:text-slate-500 mb-6">Impikan sesuatu dan mulai menabung untuk mewujudkannya!</p>
                                 <button
                                     onClick={() => { setEditingGoal(null); goalForm.reset(); goalForm.setData('color', 'emerald'); setShowGoalModal(true); }}
-                                    className="px-6 py-3 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-purple-500/30 transition-all hover:scale-105 active:scale-95"
+                                    className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-emerald-500/30 transition-all hover:scale-105 active:scale-95 ring-1 ring-[#C5A059]/30"
                                 >
-                                    <Plus weight="bold" className="w-4 h-4 inline mr-2" /> Tambah Impian Pertama
+                                    <Plus weight="bold" className="w-4 h-4 inline mr-2 text-[#C5A059]" /> Tambah Impian Pertama
                                 </button>
                             </div>
                         ) : (
@@ -401,7 +401,7 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
                                                             </div>
                                                         </div>
                                                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                            <button onClick={() => handleEditGoal(goal)} className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                                                            <button onClick={() => handleEditGoal(goal)} className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg transition-colors">
                                                                 <Edit2 weight="duotone" className="w-3.5 h-3.5" />
                                                             </button>
                                                             <button onClick={() => setDeleteGoalId(goal.id)} className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
@@ -446,9 +446,9 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
                                 <div className="flex justify-center">
                                     <button
                                         onClick={() => { setEditingGoal(null); goalForm.reset(); goalForm.setData('color', 'emerald'); setShowGoalModal(true); }}
-                                        className="px-6 py-3 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-purple-500/30 transition-all hover:scale-105 active:scale-95"
+                                        className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-emerald-500/30 transition-all hover:scale-105 active:scale-95 ring-1 ring-[#C5A059]/30"
                                     >
-                                        <Plus weight="bold" className="w-4 h-4 inline mr-2" /> Tambah Target Baru
+                                        <Plus weight="bold" className="w-4 h-4 inline mr-2 text-[#C5A059]" /> Tambah Target Baru
                                     </button>
                                 </div>
                             </>
@@ -464,7 +464,7 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
                 <div className="fixed inset-0 z-[999] flex items-end sm:items-center justify-center p-0 sm:p-6 pb-16 lg:pb-0 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setShowSavingModal(false)} />
                     <div className="relative w-full max-w-md glass-card rounded-t-[2rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-pop-in">
-                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 z-10" />
+                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-500 via-[#C5A059] to-emerald-700 z-10" />
                         <div className="p-5 pb-0 shrink-0">
                             <h3 className="text-lg font-bold text-slate-800 dark:text-white text-center">
                                 {editingSaving ? 'Edit Tabungan' : 'Buat Tabungan Baru'}
@@ -482,7 +482,7 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
                                 </div>
                                 <div className="flex space-x-3 pt-4">
                                     <button type="button" onClick={() => setShowSavingModal(false)} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors active:scale-95">Batal</button>
-                                    <button type="submit" disabled={savingForm.processing} className="flex-1 py-3 bg-emerald-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-emerald-100 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50">
+                                    <button type="submit" disabled={savingForm.processing} className="flex-1 py-3 bg-emerald-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50 ring-1 ring-[#C5A059]/30">
                                         {savingForm.processing ? 'Menyimpan...' : 'Simpan'}
                                     </button>
                                 </div>
@@ -498,7 +498,7 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
                 <div className="fixed inset-0 z-[999] flex items-end sm:items-center justify-center p-0 sm:p-6 pb-16 lg:pb-0 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setShowGoalModal(false)} />
                     <div className="relative w-full max-w-md glass-card rounded-t-[2rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-pop-in">
-                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-purple-500 via-violet-500 to-pink-500 z-10" />
+                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-500 via-[#C5A059] to-emerald-700 z-10" />
                         <div className="p-5 pb-0 shrink-0">
                             <h3 className="text-lg font-bold text-slate-800 dark:text-white text-center">
                                 {editingGoal ? 'Edit Target' : 'Tambah Target Baru'}
@@ -508,19 +508,19 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
                             <form onSubmit={handleSaveGoal} className="space-y-3">
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Nama Impian</label>
-                                    <input type="text" required value={goalForm.data.name} onChange={e => goalForm.setData('name', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-purple-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="Contoh: Beli Rumah, Liburan Bali" />
+                                    <input type="text" required value={goalForm.data.name} onChange={e => goalForm.setData('name', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 focus:border-[#C5A059]/30 transition-all" placeholder="Contoh: Beli Rumah, Liburan Bali" />
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Target Nominal (Rp)</label>
-                                    <input type="text" required value={goalForm.data.target_amount} onChange={e => handleAmountChange(e.target.value, (f, v) => goalForm.setData(f as any, v), 'target_amount')} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-purple-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="50.000.000" />
+                                    <input type="text" required value={goalForm.data.target_amount} onChange={e => handleAmountChange(e.target.value, (f, v) => goalForm.setData(f as any, v), 'target_amount')} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 focus:border-[#C5A059]/30 transition-all" placeholder="50.000.000" />
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Tenggat Waktu (Opsional)</label>
-                                    <input type="date" value={goalForm.data.deadline} onChange={e => goalForm.setData('deadline', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-purple-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" />
+                                    <input type="date" value={goalForm.data.deadline} onChange={e => goalForm.setData('deadline', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 focus:border-[#C5A059]/30 transition-all" />
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Sudah Terkumpul (Rp)</label>
-                                    <input type="text" value={goalForm.data.current_amount} onChange={e => handleAmountChange(e.target.value, (f, v) => goalForm.setData(f as any, v), 'current_amount')} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-purple-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="0" />
+                                    <input type="text" value={goalForm.data.current_amount} onChange={e => handleAmountChange(e.target.value, (f, v) => goalForm.setData(f as any, v), 'current_amount')} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 focus:border-[#C5A059]/30 transition-all" placeholder="0" />
                                 </div>
                                 {/* Color Picker */}
                                 <div>
@@ -535,7 +535,7 @@ export default function SavingsIndex({ auth, savingWallets, goals, dailyWallets 
                                 </div>
                                 <div className="flex space-x-3 pt-4">
                                     <button type="button" onClick={() => setShowGoalModal(false)} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors active:scale-95">Batal</button>
-                                    <button type="submit" disabled={goalForm.processing} className="flex-1 py-3 bg-purple-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-purple-100 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50">
+                                    <button type="submit" disabled={goalForm.processing} className="flex-1 py-3 bg-emerald-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50 ring-1 ring-[#C5A059]/30">
                                         {goalForm.processing ? 'Menyimpan...' : 'Simpan'}
                                     </button>
                                 </div>

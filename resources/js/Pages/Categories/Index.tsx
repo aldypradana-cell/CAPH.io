@@ -85,7 +85,7 @@ export default function CategoriesIndex({ auth, categories }: PageProps<{ catego
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
                                 className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${activeTab === tab
-                                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
+                                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/30 ring-1 ring-[#C5A059]/30'
                                     : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
                                     }`}
                             >
@@ -93,8 +93,8 @@ export default function CategoriesIndex({ auth, categories }: PageProps<{ catego
                             </button>
                         ))}
                     </div>
-                    <button onClick={() => { setEditingCategory(null); reset(); setIsModalOpen(true); }} className="flex items-center px-5 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95 self-start">
-                        <Plus weight="bold" className="w-4 h-4 mr-2" /> Tambah Kategori
+                    <button onClick={() => { setEditingCategory(null); reset(); setIsModalOpen(true); }} className="flex items-center px-5 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl text-sm font-bold hover:shadow-lg hover:shadow-emerald-500/30 transition-all hover:scale-105 active:scale-95 self-start ring-1 ring-[#C5A059]/30">
+                        <Plus weight="bold" className="w-4 h-4 mr-2 text-[#C5A059]" /> Tambah Kategori
                     </button>
                 </div>
 
@@ -123,12 +123,12 @@ export default function CategoriesIndex({ auth, categories }: PageProps<{ catego
                                 </div>
                             </div>
                             <div className="flex gap-1 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                                <button onClick={() => handleToggleHide(c)} title={c.is_hidden ? "Tampilkan Kategori" : "Sembunyikan Kategori"} className={`p-1.5 rounded-lg transition-all ${c.is_hidden ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/30' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
+                                <button onClick={() => handleToggleHide(c)} title={c.is_hidden ? "Tampilkan Kategori" : "Sembunyikan Kategori"} className={`p-1.5 rounded-lg transition-all ${c.is_hidden ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
                                     {c.is_hidden ? <Eye weight="bold" className="w-4 h-4" /> : <EyeOff weight="bold" className="w-4 h-4" />}
                                 </button>
                                 {!c.is_default && (
                                     <>
-                                        <button onClick={() => handleEdit(c)} className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-all"><Edit2 weight="duotone" className="w-4 h-4" /></button>
+                                        <button onClick={() => handleEdit(c)} className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg transition-all"><Edit2 weight="duotone" className="w-4 h-4" /></button>
                                         <button onClick={() => setDeleteId(c.id)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all"><Trash2 weight="duotone" className="w-4 h-4" /></button>
                                     </>
                                 )}
@@ -164,14 +164,14 @@ export default function CategoriesIndex({ auth, categories }: PageProps<{ catego
                 <div className="fixed inset-0 z-[999] flex items-end sm:items-center justify-center p-0 sm:p-6 pb-16 lg:pb-0 animate-fade-in">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
                     <div className="relative w-full max-w-md glass-card rounded-t-[2rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-pop-in">
-                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 z-10" />
+                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-500 via-[#C5A059] to-emerald-700 z-10" />
                         <div className="p-5 pb-0 shrink-0 flex justify-between items-center">
                             <h3 className="text-lg font-bold text-slate-800 dark:text-white">{editingCategory ? 'Edit Kategori' : 'Kategori Baru'}</h3>
                             <button onClick={() => setIsModalOpen(false)} className="text-slate-400 p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"><X weight="bold" className="w-5 h-5" /></button>
                         </div>
                         <div className="p-5 pt-4 overflow-y-auto scrollbar-hide">
                             <form onSubmit={handleSubmit} className="space-y-3">
-                                <div><label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Nama</label><input type="text" required value={data.name} onChange={(e) => setData('name', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50" placeholder="Makanan" /></div>
+                                <div><label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Nama</label><input type="text" required value={data.name} onChange={(e) => setData('name', e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700/50 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-medium text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900/50 focus:border-[#C5A059]/30 transition-all" placeholder="Makanan" /></div>
                                 <div><label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1 ml-1">Tipe</label>
                                     <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl">
                                         {([{ v: 'EXPENSE', l: 'Pengeluaran', c: 'bg-red-500 text-white shadow-lg shadow-red-500/30' }, { v: 'INCOME', l: 'Pemasukan', c: 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' }] as const).map(opt => (
@@ -206,7 +206,7 @@ export default function CategoriesIndex({ auth, categories }: PageProps<{ catego
                                 )}
                                 <div className="flex space-x-3 pt-4">
                                     <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-2xl transition-colors active:scale-95">Batal</button>
-                                    <button type="submit" disabled={processing} className="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-indigo-500/30 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50">{processing ? '...' : 'Simpan'}</button>
+                                    <button type="submit" disabled={processing} className="flex-1 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-transform disabled:opacity-50 ring-1 ring-[#C5A059]/30">{processing ? '...' : 'Simpan'}</button>
                                 </div>
                             </form>
                         </div>
