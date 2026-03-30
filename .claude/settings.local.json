@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(grep -r \"export declare const Diamond\\\\b\" node_modules/@phosphor-icons/react/dist/csr/*.d.ts)"
     ]
   }
 }

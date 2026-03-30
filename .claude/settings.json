@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(node -e \"const icons = require\\(''@phosphor-icons/react''\\); const all = Object.keys\\(icons\\).filter\\(k => k.startsWith\\(''Arrow''\\) || k.startsWith\\(''Repeat''\\) || k.startsWith\\(''Star''\\) || k.startsWith\\(''Device''\\) || k.startsWith\\(''Sync''\\) || k.startsWith\\(''Loop''\\)\\); console.log\\(all.join\\(''\\\\n''\\)\\);\")",
+      "Bash(node -e \"const icons = require\\(''@phosphor-icons/react''\\); const keys = Object.keys\\(icons\\); console.log\\(keys.filter\\(k => /repeat|arrows|star|device/i.test\\(k\\)\\).join\\(''\\\\n''\\)\\);\")",
+      "Bash(grep -r \"ArrowsRepeat\\\\|Repeat\\\\|Recurring\" node_modules/@phosphor-icons/react/dist/csr/*.d.ts)",
+      "Bash(grep -r \"Device\\\\|Star\\\\|Copy\" node_modules/@phosphor-icons/react/dist/csr/*.d.ts)",
+      "Bash(grep -r \"Trend\\\\|Copy\\\\|TrendUp\" node_modules/@phosphor-icons/react/dist/csr/*.d.ts)",
+      "Bash(grep -r \"export declare const Star\\\\b\" node_modules/@phosphor-icons/react/dist/csr/*.d.ts)",
+      "Bash(grep -r \"export declare const Receipt\\\\b\\\\|export declare const Sparkle\\\\b\\\\|export declare const Fire\\\\b\\\\|export declare const Lightning\\\\b\\\\|export declare const Target\\\\b\\\\|export declare const CheckSquare\\\\b\\\\|export declare const ChartLine\\\\b\\\\|export declare const ChartBar\\\\b\\\\|export declare const Warning\\\\b\\\\|export declare const Info\\\\b\\\\|export declare const FileArrowUp\\\\b\\\\|export declare const FileArrowDown\\\\b\" node_modules/@phosphor-icons/react/dist/csr/*.d.ts)",
+      "Bash(grep -r \"export declare const Users\\\\b\\\\|export declare const Copy\\\\b\\\\|export declare const Trash\\\\b\\\\|export declare const PencilSimple\\\\b\" node_modules/@phosphor-icons/react/dist/csr/*.d.ts)",
+      "Bash(grep -v \"^Head$\\\\|^AppLayout$\\\\|^React\\\\|^useState$\\\\|^FaqItem$\\\\|^FaqCategory$\\\\|^GuideFeature$\\\\|^OnboardingTask$\\\\|^TabId$\\\\|^activeGuide$\\\\|^Icon$\")",
+      "Bash(npm run:*)"
+    ]
+  }
+}
