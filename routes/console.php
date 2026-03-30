@@ -16,3 +16,4 @@ Schedule::command('recurring:process')->dailyAt('07:00');
 Schedule::command('installments:process')->dailyAt('07:05');
 Schedule::command('reminders:send')->dailyAt('07:15');
 Schedule::command('budgets:check-milestones')->dailyAt('23:55');
+Schedule::command('gold:fetch-price')->dailyAt('09:00')->timezone('Asia/Jakarta');

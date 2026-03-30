@@ -100,6 +100,8 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('gold', GoldController::class)
             ->only(['store', 'update', 'destroy']);
         Route::post('/gold/update-price', [GoldController::class, 'updatePrice'])->name('gold.updatePrice');
+        Route::post('/gold/price/refresh', [GoldController::class, 'refreshPrice'])->name('gold.price.refresh');
+
 
         // Categories
         Route::resource('categories', CategoryController::class)

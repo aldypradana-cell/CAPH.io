@@ -29,7 +29,13 @@ class AssetController extends Controller
             ->orderBy('id', 'desc')
             ->get();
             
-        $goldPriceToday = (float) Cache::get('gold_price_today_' . $request->user()->id, 1400000);
+        // Get the latest price from global cache
+        $goldPriceService = app(\App\Services\GoldPriceService::class);
+        $latestPriceRecord = $goldPriceService->getLatest();
+        $globalPrice = $latestPriceRecord ? (float) $latestPriceRecord->price_per_gram : 1400000;
+
+        // User can still have their own 'last set' price in cache, but let's default to global if not set manually today
+        $goldPriceToday = (float) Cache::get('gold_price_today_' . $request->user()->id, $globalPrice);
 
         // Calculate Grand Total Net Worth
         $totalGoldGrams = $goldPurchases->sum('grams');
@@ -38,6 +44,7 @@ class AssetController extends Controller
 
         $wallets = \App\Models\Wallet::where('user_id', $request->user()->id)->get();
 
+
         return Inertia::render('Assets/Index', [
             'assets' => $assets,
             'summary' => $summary,
@@ -45,7 +52,13 @@ class AssetController extends Controller
             'goldPriceToday' => $goldPriceToday,
             'grandTotalValue' => $grandTotalValue,
             'wallets' => $wallets,
+            'goldMetadata' => [
+                'lastFetchedAt' => $latestPriceRecord?->last_fetched_at?->toIso8601String(),
+                'canRefresh' => $goldPriceService->canRefresh(),
+                'source' => $latestPriceRecord?->source_url ?? 'manual',
+            ]
         ]);
+
     }
 
     public function store(Request $request)

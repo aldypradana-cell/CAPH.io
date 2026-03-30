@@ -33,7 +33,7 @@ interface Wallet {
     balance: number;
 }
 
-export default function AssetsIndex({ auth, assets, summary, goldPurchases, goldPriceToday, grandTotalValue, wallets }: PageProps<{ assets: Asset[]; summary: Summary; goldPurchases: any[]; goldPriceToday: number; grandTotalValue: number; wallets: Wallet[] }>) {
+export default function AssetsIndex({ auth, assets, summary, goldPurchases, goldPriceToday, grandTotalValue, wallets, goldMetadata }: PageProps<{ assets: Asset[]; summary: Summary; goldPurchases: any[]; goldPriceToday: number; grandTotalValue: number; wallets: Wallet[]; goldMetadata: any }>) {
     const [activeTab, setActiveTab] = useState<'assets' | 'gold'>('assets');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
@@ -356,7 +356,7 @@ export default function AssetsIndex({ auth, assets, summary, goldPurchases, gold
                 </div>
                 </>
                 ) : (
-                    <GoldTab purchases={goldPurchases} currentPrice={goldPriceToday} wallets={wallets} />
+                    <GoldTab purchases={goldPurchases} currentPrice={goldPriceToday} wallets={wallets} goldMetadata={goldMetadata} />
                 )}
             </div>
 

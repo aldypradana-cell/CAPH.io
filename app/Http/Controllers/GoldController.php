@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\GoldPurchase;
+use App\Models\GoldPriceCache;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Models\Transaction;
 use App\Enums\TransactionType;
+use App\Services\GoldPriceService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Cache;
@@ -146,8 +149,39 @@ class GoldController extends Controller
             'price' => 'required|numeric|min:0',
         ]);
 
+        // Store in user-specific cache (legacy)
         Cache::put('gold_price_today_' . $request->user()->id, $validated['price'], now()->addDays(30));
 
-        return redirect()->back()->with('success', 'Harga emas hari ini berhasil diupdate');
+        // Also update the global DB cache for today so the scrape info stays in sync
+        GoldPriceCache::updateOrCreate(
+            ['date' => now()->toDateString()],
+            [
+                'price_per_gram' => $validated['price'],
+                'source_url' => 'manual',
+                'last_fetched_at' => now(),
+            ]
+        );
+
+        return redirect()->back()->with('success', 'Harga referensi emas diupdate!');
+    }
+
+    /**
+     * Manually trigger a gold price refresh from logammulia.com.
+     */
+    public function refreshPrice(Request $request, GoldPriceService $service)
+    {
+        if (!$service->canRefresh()) {
+            return redirect()->back()->with('error', 'Harap tunggu 1 jam sebelum refresh ulang.');
+        }
+
+        $price = $service->fetchAndStore();
+
+        if ($price) {
+            // Also sync to user-specific cache so the card reflects instantly
+            Cache::put('gold_price_today_' . $request->user()->id, $price, now()->addDays(30));
+            return redirect()->back()->with('success', 'Harga emas berhasil diperbarui: Rp ' . number_format($price, 0, ',', '.') . '/gr');
+        }
+
+        return redirect()->back()->with('error', 'Gagal mengambil harga emas dari logammulia.com. Coba lagi nanti.');
     }
 }

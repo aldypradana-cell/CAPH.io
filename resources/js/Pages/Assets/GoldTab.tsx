@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useForm, router } from '@inertiajs/react';
 import { 
-    Plus, PencilSimple as Edit2, Trash as Trash2, Coins, TrendUp as TrendingUp, WarningCircle as AlertCircle, FloppyDisk as Save 
+    Plus, PencilSimple as Edit2, Trash as Trash2, Coins, TrendUp as TrendingUp, WarningCircle as AlertCircle, FloppyDisk as Save, ArrowsClockwise as Refresh 
 } from '@phosphor-icons/react';
 import toast from 'react-hot-toast';
 import { todayString, formatDateShort } from '@/utils/date';
@@ -26,6 +26,11 @@ interface Props {
     purchases: GoldPurchase[];
     currentPrice: number;
     wallets: Wallet[];
+    goldMetadata?: {
+        lastFetchedAt: string | null;
+        canRefresh: boolean;
+        source: string;
+    };
 }
 
 const formatIDR = (amount: number) =>
@@ -34,10 +39,11 @@ const formatIDR = (amount: number) =>
 const formatGram = (grams: number) => 
     new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 3 }).format(grams);
 
-export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
+export default function GoldTab({ purchases, currentPrice, wallets, goldMetadata }: Props) {
     const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
     const [editingId, setEditingId] = useState<number | null>(null);
+    const [isRefreshing, setIsRefreshing] = useState(false);
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -67,6 +73,26 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
         router.post(route('gold.updatePrice'), payload, {
             preserveScroll: true,
             onSuccess: () => { setIsPriceModalOpen(false); toast.success('Harga referensi emas diupdate!'); }
+        });
+    };
+    const handleRefreshPrice = () => {
+        router.post(route('gold.price.refresh'), {}, {
+            preserveScroll: true,
+            onBefore: () => {
+                setIsRefreshing(true);
+                toast.loading('Mengambil harga terbaru dari logammulia.com...', { id: 'gold-refresh' });
+            },
+            onSuccess: () => {
+                toast.success('Harga emas berhasil diperbarui!', { id: 'gold-refresh' });
+            },
+            onError: (errors) => {
+                const message = Object.values(errors)[0] || 'Gagal memperbarui harga emas';
+                toast.error(message as string, { id: 'gold-refresh' });
+            },
+            onFinish: () => {
+                setIsRefreshing(false);
+                toast.dismiss('gold-refresh');
+            }
         });
     };
 
@@ -176,11 +202,29 @@ export default function GoldTab({ purchases, currentPrice, wallets }: Props) {
                     <div className="bg-white/50 dark:bg-slate-900/50 p-5 rounded-3xl border border-white/50 dark:border-slate-800/50 backdrop-blur-md">
                         <div className="flex justify-between items-start mb-2">
                             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Harga Acuan Emas</p>
-                            <button onClick={() => setIsPriceModalOpen(true)} className="text-amber-500 hover:text-amber-600 dark:hover:text-amber-400 text-xs font-bold flex items-center">
-                                <Edit2 weight="duotone" className="w-3 h-3 mr-1" /> Edit
-                            </button>
+                            <div className="flex items-center gap-2">
+                                <button 
+                                    onClick={handleRefreshPrice}
+                                    disabled={!goldMetadata?.canRefresh || isRefreshing}
+                                    className={`p-1.5 rounded-lg transition-all ${goldMetadata?.canRefresh && !isRefreshing ? 'text-amber-500 hover:bg-amber-500/10' : 'text-slate-300 cursor-not-allowed'}`}
+                                    title="Refresh dari logammulia.com"
+                                >
+                                    <Refresh weight="bold" className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+                                </button>
+                                <button onClick={() => setIsPriceModalOpen(true)} className="text-amber-500 hover:text-amber-600 dark:hover:text-amber-400 text-xs font-bold flex items-center">
+                                    <Edit2 weight="duotone" className="w-3.5 h-3.5 mr-1" /> Edit
+                                </button>
+                            </div>
                         </div>
-                        <p className="text-xl sm:text-2xl lg:text-xl xl:text-2xl font-black text-slate-800 dark:text-white truncate" title={formatIDR(currentPrice)}>{formatIDR(currentPrice)}<span className="text-xs sm:text-sm font-bold text-slate-400">/gr</span></p>
+                        <p className="text-xl sm:text-2xl lg:text-xl xl:text-2xl font-black text-slate-800 dark:text-white truncate" title={formatIDR(currentPrice)}>
+                            {formatIDR(currentPrice)}
+                            <span className="text-xs sm:text-sm font-bold text-slate-400">/gr</span>
+                        </p>
+                        {goldMetadata?.lastFetchedAt && (
+                            <p className="text-[10px] font-medium text-slate-400 mt-1">
+                                Sumber: {goldMetadata.source === 'manual' ? 'Manual' : 'logammulia.com'} • {new Date(goldMetadata.lastFetchedAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB
+                            </p>
+                        )}
                     </div>
 
                     {/* Floating P/L Box */}
